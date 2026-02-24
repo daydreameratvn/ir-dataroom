@@ -1,0 +1,87 @@
+import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
+import * as random from "@pulumi/random";
+import { dbConfig } from "../config.ts";
+import { mergeTags } from "../lib/tags.ts";
+import { banyanRdsSg } from "./security-groups.ts";
+import { banyanIsolatedSubnets } from "./vpc.ts";
+
+// ============================================================
+// Random Password
+// ============================================================
+
+const banyanDbPassword = new random.RandomPassword("banyan-prod-db-password", {
+  length: 32,
+  special: true,
+  overrideSpecial: "!#$%&*()-_=+[]{}|:?",
+});
+
+// ============================================================
+// Secrets Manager Secret
+// ============================================================
+
+export const banyanDbSecret = new aws.secretsmanager.Secret("banyan-prod-db-secret", {
+  name: "banyan-prod-db-credentials",
+  description: "RDS PostgreSQL credentials for banyan DDN",
+  tags: mergeTags({
+    Name: "banyan-prod-db-secret",
+    Component: "secrets-manager",
+  }),
+});
+
+// ============================================================
+// RDS Subnet Group
+// ============================================================
+
+const banyanDbSubnetGroup = new aws.rds.SubnetGroup("banyan-prod-db-subnet-group", {
+  name: "banyan-prod-db-subnet-group",
+  subnetIds: banyanIsolatedSubnets.map((s) => s.id),
+  tags: mergeTags({
+    Name: "banyan-prod-db-subnet-group",
+    Component: "rds",
+  }),
+});
+
+// ============================================================
+// RDS PostgreSQL Instance
+// ============================================================
+
+export const banyanDb = new aws.rds.Instance("banyan-prod-db", {
+  identifier: "banyan-prod-db",
+  engine: "postgres",
+  engineVersion: dbConfig.engineVersion,
+  instanceClass: dbConfig.instanceClass,
+  allocatedStorage: dbConfig.allocatedStorage,
+  storageType: "gp3",
+  storageEncrypted: true,
+  multiAz: false,
+  dbSubnetGroupName: banyanDbSubnetGroup.name,
+  vpcSecurityGroupIds: [banyanRdsSg.id],
+  username: "banyan_admin",
+  password: banyanDbPassword.result,
+  dbName: dbConfig.name,
+  skipFinalSnapshot: false,
+  finalSnapshotIdentifier: "banyan-prod-db-final-snapshot",
+  backupRetentionPeriod: 7,
+  deletionProtection: true,
+  tags: mergeTags({ Name: "banyan-prod-db", Component: "rds" }),
+});
+
+// ============================================================
+// Secret Version (created after RDS to include endpoint)
+// ============================================================
+
+new aws.secretsmanager.SecretVersion("banyan-prod-db-secret-version", {
+  secretId: banyanDbSecret.id,
+  secretString: pulumi.all([banyanDbPassword.result, banyanDb.endpoint, banyanDb.address]).apply(([password, endpoint, address]) =>
+    JSON.stringify({
+      username: "banyan_admin",
+      password,
+      host: address,
+      port: 5432,
+      dbname: dbConfig.name,
+      endpoint,
+      connection_uri: `postgresql://banyan_admin:${encodeURIComponent(password)}@${address}:5432/${dbConfig.name}`,
+    }),
+  ),
+});
