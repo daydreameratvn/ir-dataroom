@@ -23,6 +23,7 @@ This checks for required tools, correct versions, installed dependencies, and th
 - **Server Runtime**: Node.js
 - **Cloud Provider**: AWS, GCP
 - **IaC**: Pulumi for permanent infrastructure (VPC, subnets, RDS); SST for application (agent) deployment
+- **AI Agents**: [pi-mono](https://github.com/badlogic/pi-mono) (`pi-ai` + `pi-agent-core` + `pi-coding-agent`) — see `agents/CLAUDE.md`
 - **Frontend**: React + Vite micro frontend platform — see `platform/CLAUDE.md`
 - **Mobile**: React Native + Expo — see `mobile/CLAUDE.md`
 - **SDKs**: Node, React, React Native, iOS (Swift), Android (Kotlin) — see `sdks/CLAUDE.md`
