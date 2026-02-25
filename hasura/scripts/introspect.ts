@@ -2,6 +2,7 @@ import { fetchSSMParams, requireParam } from "../lib/ssm.ts";
 
 const params = await fetchSSMParams();
 const engineUrl = requireParam(params, "engine-url");
+const adminToken = requireParam(params, "admin-token");
 
 const introspectionQuery = `{
   __schema {
@@ -25,7 +26,10 @@ const introspectionQuery = `{
 
 const response = await fetch(`${engineUrl}/graphql`, {
   method: "POST",
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${adminToken}`,
+  },
   body: JSON.stringify({ query: introspectionQuery }),
 });
 

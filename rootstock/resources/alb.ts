@@ -1,5 +1,6 @@
 import * as aws from "@pulumi/aws";
 import { mergeTags } from "../lib/tags.ts";
+import { banyanCertValidation } from "./acm.ts";
 import { banyanAlbSg } from "./security-groups.ts";
 import { banyanPublicSubnets, banyanVpc } from "./vpc.ts";
 
@@ -41,13 +42,39 @@ export const banyanEngineTg = new aws.lb.TargetGroup("banyan-prod-engine-tg", {
 });
 
 // ============================================================
-// HTTP Listener (port 80)
+// HTTP Listener (port 80) — redirect to HTTPS
 // ============================================================
 
-export const banyanAlbListener = new aws.lb.Listener("banyan-prod-alb-listener-http", {
+const banyanAlbListenerHttp = new aws.lb.Listener("banyan-prod-alb-listener-http", {
   loadBalancerArn: banyanAlb.arn,
   port: 80,
   protocol: "HTTP",
+  defaultActions: [
+    {
+      type: "redirect",
+      redirect: {
+        port: "443",
+        protocol: "HTTPS",
+        statusCode: "HTTP_301",
+      },
+    },
+  ],
+  tags: mergeTags({
+    Name: "banyan-prod-alb-listener-http",
+    Component: "alb",
+  }),
+});
+
+// ============================================================
+// HTTPS Listener (port 443) — TLS 1.3
+// ============================================================
+
+export const banyanAlbListener = new aws.lb.Listener("banyan-prod-alb-listener-https", {
+  loadBalancerArn: banyanAlb.arn,
+  port: 443,
+  protocol: "HTTPS",
+  sslPolicy: "ELBSecurityPolicy-TLS13-1-2-2021-06",
+  certificateArn: banyanCertValidation.certificateArn,
   defaultActions: [
     {
       type: "forward",
@@ -55,7 +82,7 @@ export const banyanAlbListener = new aws.lb.Listener("banyan-prod-alb-listener-h
     },
   ],
   tags: mergeTags({
-    Name: "banyan-prod-alb-listener-http",
+    Name: "banyan-prod-alb-listener-https",
     Component: "alb",
   }),
 });

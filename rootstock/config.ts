@@ -29,6 +29,10 @@ export const ecsConfig = {
   ndcMemory: Number(config.get("ecsNdcMemory") || "512"),
 };
 
+export const domainConfig = {
+  domainName: config.require("domainName"),
+};
+
 export const projectConfig = {
   name: "banyan-ddn",
   owner: "rootstock-team",

@@ -1,5 +1,7 @@
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 import { mergeTags } from "../lib/tags.ts";
+import { banyanJwtSecret } from "./jwt.ts";
 import { banyanDbSecret } from "./rds.ts";
 
 // ============================================================
@@ -31,15 +33,15 @@ new aws.iam.RolePolicyAttachment("banyan-prod-ecs-exec-policy", {
 
 const banyanExecSecretsPolicy = new aws.iam.Policy("banyan-prod-ecs-exec-secrets-policy", {
   name: "banyan-prod-ecs-exec-secrets-policy",
-  description: "Allow ECS tasks to read DB credentials from Secrets Manager",
-  policy: banyanDbSecret.arn.apply((arn) =>
+  description: "Allow ECS tasks to read DB and JWT secrets from Secrets Manager",
+  policy: pulumi.all([banyanDbSecret.arn, banyanJwtSecret.arn]).apply(([dbArn, jwtArn]) =>
     JSON.stringify({
       Version: "2012-10-17",
       Statement: [
         {
           Effect: "Allow",
           Action: ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"],
-          Resource: arn,
+          Resource: [dbArn, jwtArn],
         },
       ],
     }),

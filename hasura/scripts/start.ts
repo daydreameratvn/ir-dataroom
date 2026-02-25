@@ -5,11 +5,14 @@ const PORT = 4000;
 
 const params = await fetchSSMParams();
 const engineUrl = requireParam(params, "engine-url");
+const adminToken = requireParam(params, "admin-token");
 
 const htmlTemplate = await Bun.file(
   new URL("../console/index.html", import.meta.url),
 ).text();
-const html = htmlTemplate.replaceAll("{{ENGINE_URL}}", engineUrl);
+const html = htmlTemplate
+  .replaceAll("{{ENGINE_URL}}", engineUrl)
+  .replaceAll("{{ADMIN_TOKEN}}", adminToken);
 
 // Try custom hostname first; fall back to localhost if hosts entry is missing
 let hostname = CUSTOM_HOST;

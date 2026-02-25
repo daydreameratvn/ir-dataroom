@@ -34,4 +34,15 @@ export const stackOutputs = {
   AlbDnsName: resources.banyanAlb.dnsName,
   RdsEndpoint: resources.banyanDb.endpoint,
   SecretArn: resources.banyanDbSecret.arn,
+
+  DomainName: resources.banyanCertificate.domainName,
+  CertificateArn: resources.banyanCertificate.arn,
+  CertValidationCname: resources.banyanCertificate.domainValidationOptions.apply(
+    (opts) =>
+      opts.map((o) => ({
+        name: o.resourceRecordName,
+        value: o.resourceRecordValue,
+        type: o.resourceRecordType,
+      })),
+  ),
 };

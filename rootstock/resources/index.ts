@@ -4,6 +4,8 @@ export * from "./rds.ts";
 export * from "./ecs-cluster.ts";
 export * from "./ecs-iam.ts";
 export * from "./cloud-map.ts";
+export * from "./acm.ts";
+export * from "./jwt.ts";
 export * from "./alb.ts";
 export * from "./ecs-ndc-connector.ts";
 export * from "./ecs-engine.ts";

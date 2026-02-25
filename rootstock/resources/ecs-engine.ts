@@ -5,6 +5,7 @@ import { mergeTags } from "../lib/tags.ts";
 import { banyanAlbListener, banyanEngineTg } from "./alb.ts";
 import { banyanCluster, banyanEngineLogGroup } from "./ecs-cluster.ts";
 import { banyanExecRole, banyanTaskRole } from "./ecs-iam.ts";
+import { banyanJwtSecret } from "./jwt.ts";
 import { banyanEngineSg } from "./security-groups.ts";
 import { banyanPrivateSubnets } from "./vpc.ts";
 
@@ -16,9 +17,15 @@ const authConfigJson = JSON.stringify({
   version: "v2",
   definition: {
     mode: {
-      noAuth: {
-        role: "admin",
-        sessionVariables: {},
+      jwt: {
+        claimsConfig: {
+          namespace: {
+            claimsFormat: "Json",
+            location: "/https:~1~1hasura.io~1jwt~1claims",
+          },
+        },
+        key: { fixed: { algorithm: "HS256", key: { value: "__JWT_SECRET_KEY__" } } },
+        tokenLocation: { type: "BearerAuthorization" },
       },
     },
   },
@@ -37,7 +44,9 @@ export const banyanEngineTaskDef = new aws.ecs.TaskDefinition("banyan-prod-engin
   executionRoleArn: banyanExecRole.arn,
   taskRoleArn: banyanTaskRole.arn,
   volumes: [{ name: "engine-metadata" }],
-  containerDefinitions: banyanEngineLogGroup.name.apply((logGroupName) =>
+  containerDefinitions: pulumi
+    .all([banyanEngineLogGroup.name, banyanJwtSecret.arn])
+    .apply(([logGroupName, jwtSecretArn]) =>
     JSON.stringify([
       {
         name: "init-engine-metadata",
@@ -49,9 +58,16 @@ export const banyanEngineTaskDef = new aws.ecs.TaskDefinition("banyan-prod-engin
           [
             "mkdir -p /md",
             `echo '${authConfigJson}' > /md/auth_config.json`,
+            `sed -i "s|__JWT_SECRET_KEY__|$JWT_SECRET_KEY|" /md/auth_config.json`,
             `echo '${openDdJson}' > /md/open_dd.json`,
             "echo '{}' > /md/metadata.json",
           ].join(" && "),
+        ],
+        secrets: [
+          {
+            name: "JWT_SECRET_KEY",
+            valueFrom: `${jwtSecretArn}:key::`,
+          },
         ],
         mountPoints: [{ sourceVolume: "engine-metadata", containerPath: "/md" }],
         logConfiguration: {

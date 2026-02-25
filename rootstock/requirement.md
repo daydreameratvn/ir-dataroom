@@ -115,16 +115,22 @@ Both Hasura images are distroless (no shell). Configuration files are injected u
 * **Placement:** Private Subnets.
 * **Port:** Container port `3000`.
 * **Load Balancing:** Attached to the public ALB target group.
-* **Configuration:** Init container writes three files to `/md`:
-  - `auth_config.json` — noAuth mode (v2 format):
+* **Configuration:** Init container writes three files to `/md` and injects the JWT secret key:
+  - `auth_config.json` — JWT mode (HS256, v2 format). The init container receives the HMAC key from Secrets Manager via ECS secret injection and uses `sed` to replace the `__JWT_SECRET_KEY__` placeholder:
     ```json
     {
       "version": "v2",
       "definition": {
         "mode": {
-          "noAuth": {
-            "role": "admin",
-            "sessionVariables": {}
+          "jwt": {
+            "claimsConfig": {
+              "namespace": {
+                "claimsFormat": "Json",
+                "location": "/https:~1~1hasura.io~1jwt~1claims"
+              }
+            },
+            "key": { "fixed": { "algorithm": "HS256", "key": "<injected at deploy>" } },
+            "tokenLocation": { "type": "BearerAuthorization" }
           }
         }
       }
@@ -132,6 +138,7 @@ Both Hasura images are distroless (no shell). Configuration files are injected u
     ```
   - `open_dd.json` — Empty supergraph metadata (`[]`). Add `DataConnectorLink`, `Model`, `Command`, etc. as the schema is built.
   - `metadata.json` — Empty object (`{}`).
+* **Secrets:** `JWT_SECRET_KEY` injected from Secrets Manager ARN (`<jwtSecretArn>:key::`).
 * **CLI Arguments:**
   ```
   --metadata-path /md/open_dd.json
@@ -144,9 +151,23 @@ Both Hasura images are distroless (no shell). Configuration files are injected u
 ### 2.5 Application Load Balancer
 
 * **Type:** Public-facing, application load balancer in public subnets.
+* **Domain:** `prod.banyan.services.papaya.asia` (DNS managed in a separate AWS account).
 * **Target Group:** Port 3000, IP target type, health check on `/health` (matcher: `200-299`, interval: 15s, healthy threshold: 2, unhealthy threshold: 3).
-* **Listener:** HTTP on port 80, forwarding to the engine target group.
-* **HTTPS:** Not included initially. Requires ACM certificate + custom domain. ALB SG pre-allows port 443 for future use.
+* **HTTP Listener (port 80):** 301 redirect to HTTPS.
+* **HTTPS Listener (port 443):** TLS 1.3 (`ELBSecurityPolicy-TLS13-1-2-2021-06`), ACM certificate for `prod.banyan.services.papaya.asia` (DNS-validated), forwards to engine target group.
+
+### 2.6 ACM Certificate
+
+* **Domain:** `prod.banyan.services.papaya.asia` + SAN `*.banyan.services.papaya.asia`.
+* **Validation:** DNS (CNAME record must be added manually in the Route 53 hosted zone in the other AWS account).
+* **CertificateValidation resource** blocks deployment until the cert is validated.
+
+### 2.7 JWT Authentication
+
+* **HMAC Key:** Random 32-byte key generated via `@pulumi/random` `RandomBytes`, base64-encoded.
+* **Secret Storage:** Secrets Manager (`banyan-prod-jwt-secret`) stores `{ "key": "<base64>" }`.
+* **Admin Token:** A pre-signed JWT (HS256, 100-year expiry) with `x-hasura-default-role: admin` is generated at deploy time using `jose` and stored in SSM at `/banyan/hasura/admin-token`.
+* **Engine Integration:** The init container receives the HMAC key via ECS secret injection and replaces the `__JWT_SECRET_KEY__` placeholder in `auth_config.json` using `sed`.
 
 ---
 
@@ -154,7 +175,7 @@ Both Hasura images are distroless (no shell). Configuration files are injected u
 
 * **Execution Role (`banyan-prod-ecs-exec-role`):** Assumed by ECS agent. Permissions:
   - `AmazonECSTaskExecutionRolePolicy` (managed policy for ECR pulls, CloudWatch logs).
-  - Inline policy for Secrets Manager read access (`secretsmanager:GetSecretValue`) scoped to the DB secret ARN.
+  - Inline policy for Secrets Manager read access (`secretsmanager:GetSecretValue`) scoped to the DB secret ARN and JWT secret ARN.
 * **Task Role (`banyan-prod-ecs-task-role`):** Assumed by the running containers. Minimal permissions for future application-level needs.
 
 ---
@@ -186,6 +207,9 @@ Upon successful `pulumi up`, the stack exports:
 * `AlbDnsName`: The public DNS name to access the Hasura v3 Engine.
 * `RdsEndpoint`: The private endpoint of the PostgreSQL database.
 * `SecretArn`: The ARN of the Secrets Manager secret holding the DB credentials.
+* `DomainName`: The domain name for the Hasura engine (`prod.banyan.services.papaya.asia`).
+* `CertificateArn`: The ARN of the ACM certificate.
+* `CertValidationCname`: The DNS CNAME record(s) needed for certificate validation.
 
 ---
 
@@ -214,9 +238,11 @@ banyan/
     ├── ecs-cluster.ts           # ECS cluster, CloudWatch log groups
     ├── ecs-iam.ts               # Execution role, task role, policies
     ├── cloud-map.ts             # Private DNS namespace (ddn.internal)
-    ├── alb.ts                   # ALB, target group, HTTP listener
+    ├── acm.ts                   # ACM certificate + DNS validation
+    ├── jwt.ts                   # JWT HMAC key, Secrets Manager, admin token, SSM
+    ├── alb.ts                   # ALB, target group, HTTP redirect, HTTPS listener
     ├── ecs-ndc-connector.ts     # NDC task def + service + Cloud Map
-    └── ecs-engine.ts            # Engine task def + service + ALB
+    └── ecs-engine.ts            # Engine task def + service + ALB + JWT injection
 ```
 
 ---
@@ -229,9 +255,10 @@ banyan/
 | ECS Fargate (4 tasks: 2 engine + 2 ndc) | $67.47 | 31% |
 | NAT Gateway (1 NAT + ~10GB data) | $43.66 | 20% |
 | ALB (hourly + ~1 LCU) | $24.24 | 11% |
-| Other (Secrets Manager, Cloud Map, CloudWatch) | $1.70 | <1% |
+| ACM Certificate | $0.00 | 0% |
+| Other (Secrets Manager, Cloud Map, CloudWatch, SSM) | $1.80 | <1% |
 | **Total** | **~$218/mo** | |
 
-**Exclusions:** Data transfer, RDS backup beyond free tier, HTTPS/ACM.
+**Exclusions:** Data transfer, RDS backup beyond free tier.
 
 **Cost optimization paths:** RDS Reserved Instance (~30-40% savings), Fargate Savings Plans (~20%), reduce to 1 task per service (~50% Fargate savings).

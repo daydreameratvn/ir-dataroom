@@ -37,8 +37,12 @@
 
     <script>
       const ENGINE_URL = "{{ENGINE_URL}}";
+      const ADMIN_TOKEN = "{{ADMIN_TOKEN}}";
 
-      const fetcher = GraphiQL.createFetcher({ url: ENGINE_URL + "/graphql" });
+      const fetcher = GraphiQL.createFetcher({
+        url: ENGINE_URL + "/graphql",
+        headers: ADMIN_TOKEN ? { Authorization: "Bearer " + ADMIN_TOKEN } : {},
+      });
 
       const root = ReactDOM.createRoot(document.getElementById("graphiql"));
       root.render(React.createElement(GraphiQL, { fetcher }));
