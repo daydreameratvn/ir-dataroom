@@ -1,15 +1,31 @@
-# Project Context
+# Banyan — Project Root
 
-This is a monorepo for building Agents.
+## Project Context
+
+This is a monorepo for Papaya Insurtech, serving Thailand and Vietnam markets. It contains backend agents, infrastructure, the customer-facing product platform, the mobile app, and partner-facing SDKs.
+
+## Onboard
+
+Before starting any work, run the onboard script to verify the development environment:
+
+```bash
+bash scripts/onboard.sh
+```
+
+This checks for required tools, correct versions, installed dependencies, and that the project compiles.
 
 ## Tech Stack
 
-- **Language**: TypeScript
+- **Language**: TypeScript, Swift (iOS SDK), Kotlin (Android SDK)
+- **TypeScript Compiler**: TypeScript Go (tsgo) for type checking — falls back to `tsc` if tsgo is not installed
 - **Local Runtime**: Bun
-- **Package Manager**: Bun
+- **Package Manager**: Bun (all sub-apps including platform/)
 - **Server Runtime**: Node.js
-- **Cloud Provider**: AWS
+- **Cloud Provider**: AWS, GCP
 - **IaC**: Pulumi for permanent infrastructure (VPC, subnets, RDS); SST for application (agent) deployment
+- **Frontend**: React + Vite micro frontend platform — see `platform/CLAUDE.md`
+- **Mobile**: React Native + Expo — see `mobile/CLAUDE.md`
+- **SDKs**: Node, React, React Native, iOS (Swift), Android (Kotlin) — see `sdks/CLAUDE.md`
 - **Agent Coding**: Claude Code
 - **Code Management**: Git & GitHub
 
@@ -19,30 +35,41 @@ This is a monorepo for building Agents.
 /banyan
 ├── .github/workflows      # CI/CD (GitHub Actions)
 ├── .claude/               # Claude Code settings
-├── agents/                # Agents
-├── rootstock/             # Pulumi: VPC, RDS (PostgreSQL), IAM, S3 (Documents)
-├── hasura/                # Hasura DDN (v3)
+├── agents/                # Backend AI agents — see agents/CLAUDE.md
+├── rootstock/             # Pulumi: VPC, RDS (PostgreSQL), IAM, S3
+├── hasura/                # Hasura DDN (v3) — see hasura/CLAUDE.md
+├── platform/              # Web frontend (micro frontend) — see platform/CLAUDE.md
+├── mobile/                # React Native + Expo mobile app — see mobile/CLAUDE.md
+├── sdks/                  # Partner SDKs (Node, React, RN, iOS, Android) — see sdks/CLAUDE.md
 ├── packages/              # Shared packages
+├── scripts/               # Project-wide scripts (onboard, CI helpers)
 ├── bun.lockb
 └── package.json
 ```
 
-## Rules
+Each major folder has its own `CLAUDE.md` with domain-specific rules. Always read the local `CLAUDE.md` when working in a subfolder.
 
-- **Shared Configuration**: Sub-apps use the root `tsconfig.json` and `package.json` instead of maintaining their own.
-- **Work Scope**: When working in a particular sub-app folder, do not read code in other folders. Only the root `tsconfig.json` or `package.json` may be relevant.
+## Universal Rules
 
-## Backward Compatibility
+### Work Scope
+
+When working in a particular sub-app folder, do not read code in other folders. Only the root `tsconfig.json` or `package.json` may be relevant. Each sub-app's `CLAUDE.md` is self-contained for its domain.
+
+### Shared Configuration
+
+Sub-apps use the root `tsconfig.json` and `package.json` instead of maintaining their own — **except for `platform/`**, which is a bun workspace monorepo with its own package management. The platform folder is self-contained.
+
+### Backward Compatibility
 
 Deployments happen every day, multiple times a day. All code changes — features, refactors, bug fixes, schema changes — **must be backward compatible** to ensure zero-downtime deployments.
 
-### Workflow
+**Workflow:**
 
 1. **Add new, keep old** — Introduce the new version alongside the existing one. Both versions must work simultaneously.
 2. **Controlled switchover** — Use feature flags, version auto-switch, or auto-fallback so traffic shifts to the new version gradually or automatically.
 3. **Remove old after verification** — After confirming no consumers rely on the old version, remove it in a separate change.
 
-### Practices
+**Practices:**
 
 - **Feature flags**: Gate new behavior behind flags. Default to the old behavior until the flag is enabled.
 - **Auto-fallback**: New code paths should fall back to the old behavior on failure.
@@ -50,3 +77,84 @@ Deployments happen every day, multiple times a day. All code changes — feature
 - **Database changes**: Only additive schema changes (add columns, add tables). Never drop columns, rename columns, or change types in-place. See `hasura/CLAUDE.md` for migration-specific rules.
 - **Refactoring**: When renaming or restructuring, keep the old entry point working (re-export, adapter, alias) until all callers are migrated.
 - **Dependencies**: When updating shared packages, ensure all consumers in the monorepo work with both old and new versions during rollout.
+
+## Git Workflow & Safety
+
+### Branching Strategy
+
+- `main` — production branch, always deployable
+- `feat/<name>` — feature branches, created from main
+- `fix/<name>` — bug fix branches
+- `chore/<name>` — maintenance/infrastructure changes
+
+Branch naming: lowercase, kebab-case, short and descriptive. Examples: `feat/claim-intake-page`, `fix/markdown-table-scroll`, `chore/upgrade-vite`.
+
+### Worktree Usage
+
+Use git worktrees to isolate risky or parallel work without polluting the main checkout:
+
+**When to use worktrees:**
+- Database migrations (risk of breaking running app)
+- Dependency upgrades (may break compilation)
+- Large refactors spanning many files
+- Parallel feature development
+- Any change that might leave the repo in a non-compiling state for more than a few minutes
+
+**How:**
+- Claude Code subagents: use `isolation: "worktree"` — the agent gets an isolated copy of the repo
+- Manual: `git worktree add ../banyan-<branch> -b <branch>`
+- Cleanup: `git worktree remove ../banyan-<branch>` after merging
+
+**Rules:**
+- Never work directly on `main` for non-trivial changes — always create a branch
+- Worktrees share the same `.git` — commits in any worktree are visible to all
+- Keep worktrees short-lived — merge or discard within the same session when possible
+
+### Commit Safety for AI Agents
+
+AI agents (Claude Code) MUST follow these rules to prevent "point of no return" disasters:
+
+1. **Commit at every checkpoint** — Make small, atomic commits at natural stopping points:
+   - After each working component/feature is complete
+   - After successful typecheck/test passes
+   - Before starting risky refactors or dependency changes
+   - Before modifying shared configs (tsconfig, package.json, vite.config)
+   - Before deleting any files or directories
+
+2. **Never batch large changes** — If a change touches more than 5-7 files or crosses module boundaries, split into multiple commits. Each commit should be independently revertable.
+
+3. **Commit before destructive operations** — Always commit current work before:
+   - Deleting files or directories
+   - Running database migrations
+   - Changing package dependencies
+   - Rebasing or merging branches
+   - Modifying build/deploy configs
+
+4. **Descriptive commit messages** — Use conventional commits (`feat:`, `fix:`, `chore:`, `refactor:`, `docs:`). Explain WHY, not just WHAT.
+
+5. **Recovery checkpoints** — During multi-step operations (scaffolding, migrations, large refactors), commit after each successful step. The user must be able to `git reset --soft` to any intermediate state without losing work.
+
+6. **Never amend published commits** — If a commit has been pushed, create a new fix commit instead.
+
+7. **Verify before committing** — Run typecheck (and relevant tests) before every commit. Never commit code that doesn't compile.
+
+8. **When in doubt, commit** — It's always safer to have one extra commit than to lose 30 minutes of work. Commits are cheap; lost work is expensive.
+
+## Soul & Voice
+
+Claude Code does not natively support a `soul.md` file. To define brand voice, communication principles, or personality guidelines:
+
+**Option 1 — Inline in CLAUDE.md** (recommended): Add a `## Soul` section directly to the relevant CLAUDE.md file. Claude Code auto-loads all CLAUDE.md files in the project tree.
+
+**Option 2 — External file**: Create `.claude/soul.md` and add this line to the relevant CLAUDE.md:
+
+```
+Before generating any user-facing content, read `.claude/soul.md` for voice and tone guidelines.
+```
+
+Claude Code will follow this instruction because it's embedded in a CLAUDE.md file it auto-loads.
+
+**Files Claude Code auto-loads for instructions:**
+- `CLAUDE.md` at project root and every subdirectory in the working path
+- `~/.claude/CLAUDE.md` for user-level personal preferences
+- `.claude/settings.json` and `.claude/settings.local.json` for project/user settings
