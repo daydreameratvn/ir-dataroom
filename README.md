@@ -13,6 +13,10 @@
 
 **Monorepo for Papaya Insurtech** — AI-powered claims automation and fraud detection for insurance markets in Thailand and Vietnam.
 
+> The **banyan** (*Ficus benghalensis*) is sacred across Southeast Asia. A single tree sends aerial roots down from its branches, each one becoming a new trunk — until what started as one tree becomes an entire forest, connected underground. In Thailand it is the **ton grai** (ต้นไกร), a symbol of shelter and resilience. In Vietnam it is the **cay da** (cay da), standing at the heart of every village.
+>
+> This repo works the same way. Agents, platform, mobile, SDKs, infrastructure — separate trunks, one root system.
+
 Banyan brings together the full product stack: AI agents, a micro frontend web platform, a mobile app, partner SDKs, a GraphQL API layer, and cloud infrastructure — all in one place.
 
 ---
