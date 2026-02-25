@@ -140,6 +140,57 @@ AI agents (Claude Code) MUST follow these rules to prevent "point of no return" 
 
 8. **When in doubt, commit** — It's always safer to have one extra commit than to lose 30 minutes of work. Commits are cheap; lost work is expensive.
 
+### Commit Mechanism (Claude Code)
+
+When committing, Claude Code MUST follow this exact procedure:
+
+**Step 1 — Verify the change compiles:**
+```bash
+# Run the relevant workspace typecheck (pick whichever applies)
+cd platform && bun run typecheck   # if platform/ files changed
+cd sdks && bun run typecheck       # if sdks/ files changed
+cd mobile && bun run typecheck     # if mobile/ files changed
+```
+Do NOT commit if typecheck fails. Fix the errors first.
+
+**Step 2 — Stage specific files (never `git add -A` or `git add .`):**
+```bash
+git add path/to/file1 path/to/file2
+```
+Review what's staged with `git diff --cached --stat`. Never stage `.env`, credentials, `node_modules`, `dist`, or lockfiles unless intentional.
+
+**Step 3 — Write the commit message:**
+```
+<type>(<scope>): <short summary>
+
+<optional body — explain WHY, not WHAT>
+```
+
+Types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`, `ci`
+Scope: the workspace or area (`platform`, `sdks`, `mobile`, `hasura`, `agents`, `infra`, `root`)
+
+Examples:
+- `feat(platform): add claims intake page with form validation`
+- `fix(sdks): resolve workspace dependency resolution for react SDK`
+- `chore(root): update onboard script to check Claude Code auth`
+- `refactor(hasura): extract migration helpers into shared lib`
+
+**Step 4 — Commit (never skip hooks):**
+```bash
+git commit -m "<message>"
+```
+Never use `--no-verify`. If a hook fails, fix the issue and retry.
+
+**Step 5 — Confirm success:**
+```bash
+git status   # should show clean working tree or only unrelated changes
+```
+
+**Branching:**
+- Always work on a feature branch (`feat/`, `fix/`, `chore/`), never commit directly to `main`
+- Push with `-u` on first push: `git push -u origin feat/<name>`
+- Do NOT push to `main` without explicit user approval
+
 ## Soul & Voice
 
 Claude Code does not natively support a `soul.md` file. To define brand voice, communication principles, or personality guidelines:
