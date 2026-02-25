@@ -28,12 +28,24 @@ The `@mariozechner/pi-ai` package abstracts 20+ LLM providers behind a single st
 ```typescript
 import { getModel } from "@mariozechner/pi-ai";
 
-const claude = getModel("anthropic", "claude-sonnet-4-20250514");
+const claude = getModel("amazon-bedrock", "us.anthropic.claude-sonnet-4-20250514-v1:0");
 const gemini = getModel("google", "gemini-2.5-flash");
 const gpt = getModel("openai", "gpt-4.1");
 ```
 
-Primary: Anthropic Claude. Fallback providers configured per agent as needed.
+Primary: Claude via **AWS Bedrock** (not the direct Anthropic API). This keeps all LLM traffic within our AWS account — no separate Anthropic billing, IAM-controlled access, and VPC-compatible.
+
+### Bedrock Model IDs
+
+Use the `amazon-bedrock` provider with cross-region inference profile IDs:
+
+| Model | Bedrock Model ID |
+|-------|-----------------|
+| Claude Opus 4.6 | `us.anthropic.claude-opus-4-20250514-v1:0` |
+| Claude Sonnet 4.6 | `us.anthropic.claude-sonnet-4-20250514-v1:0` |
+| Claude Haiku 4.5 | `us.anthropic.claude-haiku-4-5-20251001-v1:0` |
+
+**Authentication**: Bedrock uses AWS credentials, not an API key. Set `AWS_PROFILE`, `AWS_REGION`, or standard AWS credential chain (IAM role, env vars, `~/.aws/credentials`). No `ANTHROPIC_API_KEY` needed.
 
 ## Folder Structure
 
@@ -108,7 +120,7 @@ import { createAgentSession } from "@mariozechner/pi-coding-agent";
 import { getModel } from "@mariozechner/pi-ai";
 
 export async function createMyAgent() {
-  const model = getModel("anthropic", "claude-sonnet-4-20250514");
+  const model = getModel("amazon-bedrock", "us.anthropic.claude-sonnet-4-20250514-v1:0");
 
   const { session } = await createAgentSession({
     model,
@@ -136,7 +148,7 @@ import { getModel } from "@mariozechner/pi-ai";
 import type { AgentMessage, Message } from "@mariozechner/pi-agent-core";
 
 export function createClaimsAgent(context: ClaimsContext) {
-  const model = getModel("anthropic", "claude-sonnet-4-20250514");
+  const model = getModel("amazon-bedrock", "us.anthropic.claude-sonnet-4-20250514-v1:0");
 
   const agent = new Agent({
     initialState: {
@@ -199,7 +211,7 @@ export async function createAssessorAgent(claimId: string) {
   const documentTool = createDocumentAnalysisTool(documents);
 
   // 3. Construct the agent
-  const model = getModel("anthropic", "claude-sonnet-4-20250514");
+  const model = getModel("amazon-bedrock", "us.anthropic.claude-sonnet-4-20250514-v1:0");
 
   const agent = new Agent({
     initialState: {
@@ -550,10 +562,13 @@ export default function (pi: ExtensionAPI) {
 
 | Variable | Purpose |
 |----------|---------|
-| `ANTHROPIC_API_KEY` | Primary LLM provider |
+| `AWS_PROFILE` or `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` | Bedrock access (Claude LLM) |
+| `AWS_REGION` | Bedrock region (default: `us-east-1`) |
 | `HASURA_GRAPHQL_ENDPOINT` | Hasura API URL |
 | `HASURA_ADMIN_SECRET` | Hasura admin authentication |
 | Additional provider keys | Fallback LLM providers as needed |
+
+**Note**: Do NOT use `ANTHROPIC_API_KEY`. All Claude access goes through Bedrock.
 
 ---
 
