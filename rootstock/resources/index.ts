@@ -1,6 +1,7 @@
 export * from "./vpc.ts";
 export * from "./security-groups.ts";
 export * from "./rds.ts";
+export * from "./bastion.ts";
 export * from "./ecs-cluster.ts";
 export * from "./ecs-iam.ts";
 export * from "./cloud-map.ts";

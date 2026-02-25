@@ -35,6 +35,8 @@ export const stackOutputs = {
   RdsEndpoint: resources.banyanDb.endpoint,
   SecretArn: resources.banyanDbSecret.arn,
 
+  BastionInstanceId: resources.banyanBastion.id,
+
   DomainName: resources.banyanCertificate.domainName,
   CertificateArn: resources.banyanCertificate.arn,
   CertValidationCname: resources.banyanCertificate.domainValidationOptions.apply(

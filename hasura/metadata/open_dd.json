@@ -10,5 +10,213 @@
         }
       }
     }
+  },
+
+  {
+    "kind": "ObjectType",
+    "version": "v1",
+    "definition": {
+      "name": "Nationality",
+      "fields": [
+        { "name": "value", "type": "String!" },
+        { "name": "comment", "type": "String" }
+      ],
+      "dataConnectorTypeMapping": [
+        {
+          "dataConnectorName": "banyan_pg",
+          "dataConnectorObjectType": "nationalities",
+          "fieldMapping": {
+            "value": { "column": { "name": "value" } },
+            "comment": { "column": { "name": "comment" } }
+          }
+        }
+      ]
+    }
+  },
+
+  {
+    "kind": "ObjectType",
+    "version": "v1",
+    "definition": {
+      "name": "Tenant",
+      "fields": [
+        { "name": "id", "type": "Uuid!" },
+        { "name": "created_at", "type": "Timestamptz!" },
+        { "name": "updated_at", "type": "Timestamptz!" },
+        { "name": "name", "type": "String!" },
+        { "name": "deleted_at", "type": "Timestamptz" },
+        { "name": "national", "type": "String" },
+        { "name": "configuration", "type": "Jsonb" }
+      ],
+      "dataConnectorTypeMapping": [
+        {
+          "dataConnectorName": "banyan_pg",
+          "dataConnectorObjectType": "tenants",
+          "fieldMapping": {
+            "id": { "column": { "name": "id" } },
+            "created_at": { "column": { "name": "created_at" } },
+            "updated_at": { "column": { "name": "updated_at" } },
+            "name": { "column": { "name": "name" } },
+            "deleted_at": { "column": { "name": "deleted_at" } },
+            "national": { "column": { "name": "national" } },
+            "configuration": { "column": { "name": "configuration" } }
+          }
+        }
+      ]
+    }
+  },
+
+  {
+    "kind": "Model",
+    "version": "v2",
+    "definition": {
+      "name": "Nationalities",
+      "objectType": "Nationality",
+      "source": {
+        "dataConnectorName": "banyan_pg",
+        "collection": "nationalities"
+      },
+      "graphql": {
+        "selectMany": { "queryRootField": "nationalities" },
+        "selectUniques": [
+          {
+            "queryRootField": "nationalityByValue",
+            "uniqueIdentifier": ["value"]
+          }
+        ]
+      }
+    }
+  },
+
+  {
+    "kind": "Model",
+    "version": "v2",
+    "definition": {
+      "name": "Tenants",
+      "objectType": "Tenant",
+      "source": {
+        "dataConnectorName": "banyan_pg",
+        "collection": "tenants"
+      },
+      "graphql": {
+        "selectMany": { "queryRootField": "tenants" },
+        "selectUniques": [
+          {
+            "queryRootField": "tenantById",
+            "uniqueIdentifier": ["id"]
+          }
+        ]
+      }
+    }
+  },
+
+  {
+    "kind": "Relationship",
+    "version": "v1",
+    "definition": {
+      "name": "nationality",
+      "sourceType": "Tenant",
+      "target": {
+        "model": {
+          "name": "Nationalities",
+          "relationshipType": "Object"
+        }
+      },
+      "mapping": [
+        {
+          "source": { "fieldPath": [{ "fieldName": "national" }] },
+          "target": { "modelField": [{ "fieldName": "value" }] }
+        }
+      ]
+    }
+  },
+
+  {
+    "kind": "Relationship",
+    "version": "v1",
+    "definition": {
+      "name": "tenants",
+      "sourceType": "Nationality",
+      "target": {
+        "model": {
+          "name": "Tenants",
+          "relationshipType": "Array"
+        }
+      },
+      "mapping": [
+        {
+          "source": { "fieldPath": [{ "fieldName": "value" }] },
+          "target": { "modelField": [{ "fieldName": "national" }] }
+        }
+      ]
+    }
+  },
+
+  {
+    "kind": "ModelPermissions",
+    "version": "v1",
+    "definition": {
+      "modelName": "Nationalities",
+      "permissions": [
+        {
+          "role": "admin",
+          "select": { "filter": null }
+        }
+      ]
+    }
+  },
+
+  {
+    "kind": "ModelPermissions",
+    "version": "v1",
+    "definition": {
+      "modelName": "Tenants",
+      "permissions": [
+        {
+          "role": "admin",
+          "select": { "filter": null }
+        }
+      ]
+    }
+  },
+
+  {
+    "kind": "TypePermissions",
+    "version": "v1",
+    "definition": {
+      "typeName": "Nationality",
+      "permissions": [
+        {
+          "role": "admin",
+          "output": {
+            "allowedFields": ["value", "comment"]
+          }
+        }
+      ]
+    }
+  },
+
+  {
+    "kind": "TypePermissions",
+    "version": "v1",
+    "definition": {
+      "typeName": "Tenant",
+      "permissions": [
+        {
+          "role": "admin",
+          "output": {
+            "allowedFields": [
+              "id",
+              "created_at",
+              "updated_at",
+              "name",
+              "deleted_at",
+              "national",
+              "configuration"
+            ]
+          }
+        }
+      ]
+    }
   }
 ]

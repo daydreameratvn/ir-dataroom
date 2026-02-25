@@ -53,11 +53,22 @@ No CIDR blocks for internal traffic — use Security Group referencing exclusive
 | `banyan-prod-alb-sg` | TCP 80, 443 | 0.0.0.0/0 |
 | `banyan-prod-engine-sg` | TCP 3000 | ALB SG |
 | `banyan-prod-ndc-sg` | TCP 8080 | Engine SG |
-| `banyan-prod-rds-sg` | TCP 5432 | NDC SG |
+| `banyan-prod-rds-sg` | TCP 5432 | NDC SG, Bastion SG |
+| `banyan-prod-bastion-sg` | (none — SSM only) | — |
 
-All security groups allow all outbound traffic (required for NAT, ECR image pulls, DNS).
+All security groups allow all outbound traffic (required for NAT, ECR image pulls, DNS, SSM).
 
-### 2.3 Database Layer (Amazon RDS)
+### 2.3 Bastion Host (SSM Tunnel)
+
+* **Purpose:** SSM port-forwarding tunnel to reach RDS in isolated subnets (for migrations, manual queries).
+* **Instance:** `t4g.nano` (ARM64, Amazon Linux 2023 standard AMI with SSM agent pre-installed).
+* **Placement:** Private subnet (`banyan-prod-private-1a`).
+* **Security Group:** `banyan-prod-bastion-sg` — no inbound rules, all outbound (SSM via NAT + RDS).
+* **IAM:** Instance profile with `AmazonSSMManagedInstanceCore` managed policy.
+* **Access:** No SSH — access exclusively via AWS SSM Session Manager.
+* **Tunnel command:** `AWS_PROFILE=banyan bun run hasura:tunnel` (forwards `localhost:15432` to RDS port `5432`).
+
+### 2.4 Database Layer (Amazon RDS)
 
 * **Engine:** Amazon RDS for PostgreSQL 16.
 * **Instance Class:** `db.t4g.medium` (ARM/Graviton, cost-effective).
@@ -77,7 +88,7 @@ All security groups allow all outbound traffic (required for NAT, ECR image pull
   ```
   The secret version is created after RDS to include the actual endpoint via `pulumi.all()`.
 
-### 2.4 Compute Layer (Amazon ECS Fargate)
+### 2.5 Compute Layer (Amazon ECS Fargate)
 
 ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatch log groups with 30-day retention: `/ecs/banyan-prod/engine` and `/ecs/banyan-prod/ndc`.
 
@@ -148,7 +159,7 @@ Both Hasura images are distroless (no shell). Configuration files are injected u
   ```
 * **Environment:** `ENABLE_CORS=true`.
 
-### 2.5 Application Load Balancer
+### 2.6 Application Load Balancer
 
 * **Type:** Public-facing, application load balancer in public subnets.
 * **Domain:** `prod.banyan.services.papaya.asia` (DNS managed in a separate AWS account).
@@ -156,13 +167,13 @@ Both Hasura images are distroless (no shell). Configuration files are injected u
 * **HTTP Listener (port 80):** 301 redirect to HTTPS.
 * **HTTPS Listener (port 443):** TLS 1.3 (`ELBSecurityPolicy-TLS13-1-2-2021-06`), ACM certificate for `prod.banyan.services.papaya.asia` (DNS-validated), forwards to engine target group.
 
-### 2.6 ACM Certificate
+### 2.7 ACM Certificate
 
 * **Domain:** `prod.banyan.services.papaya.asia` + SAN `*.banyan.services.papaya.asia`.
 * **Validation:** DNS (CNAME record must be added manually in the Route 53 hosted zone in the other AWS account).
 * **CertificateValidation resource** blocks deployment until the cert is validated.
 
-### 2.7 JWT Authentication
+### 2.8 JWT Authentication
 
 * **HMAC Key:** Random 32-byte key generated via `@pulumi/random` `RandomBytes`, base64-encoded.
 * **Secret Storage:** Secrets Manager (`banyan-prod-jwt-secret`) stores `{ "key": "<base64>" }`.
@@ -207,6 +218,7 @@ Upon successful `pulumi up`, the stack exports:
 * `AlbDnsName`: The public DNS name to access the Hasura v3 Engine.
 * `RdsEndpoint`: The private endpoint of the PostgreSQL database.
 * `SecretArn`: The ARN of the Secrets Manager secret holding the DB credentials.
+* `BastionInstanceId`: The EC2 instance ID of the SSM bastion host.
 * `DomainName`: The domain name for the Hasura engine (`prod.banyan.services.papaya.asia`).
 * `CertificateArn`: The ARN of the ACM certificate.
 * `CertValidationCname`: The DNS CNAME record(s) needed for certificate validation.
@@ -233,7 +245,8 @@ banyan/
 └── resources/
     ├── index.ts                 # Re-exports all resource modules
     ├── vpc.ts                   # VPC, IGW, NAT, subnets, route tables
-    ├── security-groups.ts       # 4 SGs in zero-trust chain
+    ├── security-groups.ts       # 5 SGs in zero-trust chain
+    ├── bastion.ts               # SSM bastion (t4g.nano, IAM, SG)
     ├── rds.ts                   # Random password, Secrets Manager, RDS instance
     ├── ecs-cluster.ts           # ECS cluster, CloudWatch log groups
     ├── ecs-iam.ts               # Execution role, task role, policies
@@ -247,17 +260,18 @@ banyan/
 
 ---
 
-## 6. Cost Estimate (~$218/month)
+## 6. Cost Estimate (~$221/month)
 
 | Component | Monthly | % of Total |
 |-----------|---------|-----------|
 | RDS PostgreSQL (db.t4g.medium + 50GB gp3) | $81.36 | 37% |
 | ECS Fargate (4 tasks: 2 engine + 2 ndc) | $67.47 | 31% |
-| NAT Gateway (1 NAT + ~10GB data) | $43.66 | 20% |
+| NAT Gateway (1 NAT + ~10GB data) | $43.66 | 19% |
 | ALB (hourly + ~1 LCU) | $24.24 | 11% |
+| Bastion (t4g.nano, on-demand) | $3.07 | 1% |
 | ACM Certificate | $0.00 | 0% |
 | Other (Secrets Manager, Cloud Map, CloudWatch, SSM) | $1.80 | <1% |
-| **Total** | **~$218/mo** | |
+| **Total** | **~$221/mo** | |
 
 **Exclusions:** Data transfer, RDS backup beyond free tier.
 
