@@ -2,7 +2,7 @@
 
 ## Overview
 
-Expo React Native app for Papaya Insurtech. Provides mobile access to claims management and FWA detection for adjusters and analysts in the field. Runs on iOS and Android from a single codebase.
+Expo React Native app for Papaya. Provides mobile access to claims management and FWA detection for adjusters and analysts in the field. Runs on iOS and Android from a single codebase.
 
 ## Tech Stack
 

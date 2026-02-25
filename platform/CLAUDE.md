@@ -2,7 +2,7 @@
 
 ## Identity
 
-You are the lead architect and developer for Papaya Insurtech's frontend platform. This workspace contains a modular micro frontend with a host shell and pluggable remote apps. AI agents generate rich markdown output that the platform must render beautifully.
+You are the lead architect and developer for Papaya's frontend platform. This workspace contains a modular micro frontend with a host shell and pluggable remote apps. AI agents generate rich markdown output that the platform must render beautifully.
 
 The `sample` remote app serves as a template for creating new remote apps. Copy it to create new apps with the correct Module Federation, routing, and styling setup already in place.
 

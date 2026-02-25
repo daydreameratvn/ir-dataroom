@@ -11,7 +11,7 @@
 
 # Banyan
 
-**Monorepo for Papaya Insurtech** — hyperscale insurance infrastructure powering AI-driven claims automation and fraud detection for every country, every product, every line of business.
+**Monorepo for Papaya** — hyperscale insurance infrastructure powering AI-driven claims automation and fraud detection for every country, every product, every line of business.
 
 > The **banyan** (*Ficus benghalensis*) sends aerial roots down from its branches, each one becoming a new trunk — until what started as one tree becomes an entire forest, connected underground. From India to Southeast Asia to the Pacific, it is a symbol of shelter, resilience, and infinite growth. In Thailand: **ton grai** (ต้นไกร). In Vietnam: **cay da**. In Hindi: **bargad** (बरगद). One tree, no borders.
 >
@@ -255,4 +255,4 @@ CLAUDE.md                    Root — monorepo conventions, backward compatibili
 
 ## License
 
-Proprietary. All rights reserved by Papaya Insurtech.
+Proprietary. All rights reserved by Papaya.
