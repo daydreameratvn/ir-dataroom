@@ -11,9 +11,9 @@
 
 # Banyan
 
-**Monorepo for Papaya Insurtech** — AI-powered claims automation and fraud detection for insurance markets in Thailand and Vietnam.
+**Monorepo for Papaya Insurtech** — hyperscale insurance infrastructure powering AI-driven claims automation and fraud detection for every country, every product, every line of business.
 
-> The **banyan** (*Ficus benghalensis*) is sacred across Southeast Asia. A single tree sends aerial roots down from its branches, each one becoming a new trunk — until what started as one tree becomes an entire forest, connected underground. In Thailand it is the **ton grai** (ต้นไกร), a symbol of shelter and resilience. In Vietnam it is the **cay da** (cay da), standing at the heart of every village.
+> The **banyan** (*Ficus benghalensis*) sends aerial roots down from its branches, each one becoming a new trunk — until what started as one tree becomes an entire forest, connected underground. From India to Southeast Asia to the Pacific, it is a symbol of shelter, resilience, and infinite growth. In Thailand: **ton grai** (ต้นไกร). In Vietnam: **cay da**. In Hindi: **bargad** (बरगद). One tree, no borders.
 >
 > This repo works the same way. Agents, platform, mobile, SDKs, infrastructure — separate trunks, one root system.
 
@@ -214,7 +214,7 @@ bun run hasura:tunnel            # Open SSM tunnel to RDS
 
 ### Infrastructure — `rootstock/`
 
-AWS infrastructure defined with [Pulumi](https://www.pulumi.com) (TypeScript). Deploys to `ap-southeast-1` (Singapore).
+AWS infrastructure defined with [Pulumi](https://www.pulumi.com) (TypeScript). Primary region: `ap-southeast-1`. Multi-region deployment planned.
 
 | Resource | Details |
 |----------|---------|

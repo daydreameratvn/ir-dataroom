@@ -2,7 +2,7 @@
 
 ## Overview
 
-This folder contains Papaya's AI agents deployed via SST to AWS. Agents handle claims processing, FWA detection, and other AI-powered workflows for the Thailand and Vietnam insurance markets.
+This folder contains Papaya's AI agents deployed via SST to AWS. Agents handle claims processing, FWA detection, and other AI-powered workflows across all markets and insurance products.
 
 ## Tech Stack
 

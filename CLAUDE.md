@@ -2,7 +2,7 @@
 
 ## Project Context
 
-This is a monorepo for Papaya Insurtech, serving Thailand and Vietnam markets. It contains backend agents, infrastructure, the customer-facing product platform, the mobile app, and partner-facing SDKs.
+This is the monorepo for Papaya Insurtech — a hyperscale insurance infrastructure platform. It contains backend AI agents, a micro frontend web platform, a mobile app, partner SDKs, a GraphQL API layer, and cloud infrastructure. Designed to support every country, every insurance product, every line of business.
 
 ## Onboard
 
