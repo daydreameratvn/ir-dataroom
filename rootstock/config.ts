@@ -29,6 +29,10 @@ export const ecsConfig = {
   ndcMemory: Number(config.get("ecsNdcMemory") || "512"),
 };
 
+export const hasuraConfig = {
+  metadataBucket: config.require("metadataBucket"),
+};
+
 export const domainConfig = {
   domainName: config.require("domainName"),
 };

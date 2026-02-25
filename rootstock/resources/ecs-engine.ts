@@ -1,6 +1,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-import { ecsConfig } from "../config.ts";
+import { ecsConfig, hasuraConfig } from "../config.ts";
 import { mergeTags } from "../lib/tags.ts";
 import { banyanAlbListener, banyanEngineTg } from "./alb.ts";
 import { banyanCluster, banyanEngineLogGroup } from "./ecs-cluster.ts";
@@ -31,9 +31,7 @@ const authConfigJson = JSON.stringify({
   },
 });
 
-// Empty supergraph metadata — no models defined yet.
-// Add DataConnectorLink, Model, Command, etc. as needed.
-const openDdJson = JSON.stringify([]);
+const metadataBucket = hasuraConfig.metadataBucket;
 
 export const banyanEngineTaskDef = new aws.ecs.TaskDefinition("banyan-prod-engine-task-def", {
   family: "banyan-prod-v3-engine",
@@ -50,17 +48,16 @@ export const banyanEngineTaskDef = new aws.ecs.TaskDefinition("banyan-prod-engin
     JSON.stringify([
       {
         name: "init-engine-metadata",
-        image: "public.ecr.aws/docker/library/busybox:latest",
+        image: "public.ecr.aws/aws-cli/aws-cli:latest",
         essential: false,
+        entryPoint: ["sh", "-c"],
         command: [
-          "sh",
-          "-c",
           [
             "mkdir -p /md",
             `echo '${authConfigJson}' > /md/auth_config.json`,
             `sed -i "s|__JWT_SECRET_KEY__|$JWT_SECRET_KEY|" /md/auth_config.json`,
-            `echo '${openDdJson}' > /md/open_dd.json`,
-            "echo '{}' > /md/metadata.json",
+            `aws s3 cp s3://${metadataBucket}/open_dd.json /md/open_dd.json`,
+            `aws s3 cp s3://${metadataBucket}/metadata.json /md/metadata.json`,
           ].join(" && "),
         ],
         secrets: [

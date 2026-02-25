@@ -76,6 +76,7 @@ All security groups allow all outbound traffic (required for NAT, ECR image pull
 * **Storage:** 50 GB `gp3` with encryption enabled (AWS-managed KMS key).
 * **Backup:** 7-day retention, deletion protection enabled.
 * **Credentials:** Random 32-character password generated via `@pulumi/random`. Connection details stored in **AWS Secrets Manager** as JSON:
+
   ```json
   {
     "username": "banyanadmin",
@@ -86,6 +87,7 @@ All security groups allow all outbound traffic (required for NAT, ECR image pull
     "connection_uri": "postgresql://banyanadmin:<password>@<host>:5432/banyan"
   }
   ```
+
   The secret version is created after RDS to include the actual endpoint via `pulumi.all()`.
 
 ### 2.5 Compute Layer (Amazon ECS Fargate)
@@ -94,10 +96,11 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
 
 #### Init Container Pattern
 
-Both Hasura images are distroless (no shell). Configuration files are injected using a busybox init container with shared ephemeral volumes:
+Both Hasura images are distroless (no shell). Configuration files are injected using init containers with shared ephemeral volumes:
 
-1. Init container (`public.ecr.aws/docker/library/busybox:latest`) writes config to a shared volume.
-2. Main container reads from the mounted volume via `dependsOn` with `condition: "SUCCESS"`.
+* **NDC Connector:** Uses `busybox` to write config, then `ndc-postgres-cli` to introspect the database.
+* **Engine:** Uses `aws-cli` to write auth config (with JWT secret injection via `sed`) and download metadata from S3.
+* Main containers read from the mounted volume via `dependsOn` with `condition: "SUCCESS"`.
 
 #### Service A: Hasura NDC Postgres Connector
 
@@ -107,16 +110,21 @@ Both Hasura images are distroless (no shell). Configuration files are injected u
 * **Placement:** Private Subnets.
 * **Port:** Container port `8080`.
 * **Cloud Map:** Registered as `ndc-banyan-postgres.ddn.internal`.
-* **Configuration:** Init container writes `/etc/connector/configuration.json`:
-  ```json
-  {
-    "version": "5",
-    "connectionSettings": {
-      "connectionUri": { "variable": "CONNECTION_URI" }
-    }
-  }
-  ```
-* **Secrets:** `CONNECTION_URI` injected from Secrets Manager ARN (`<secretArn>:connection_uri::`).
+* **Init Container Chain (3 containers):**
+  1. **`init-ndc-config`** (`busybox`): Writes `/etc/connector/configuration.json`:
+
+     ```json
+     {
+       "version": "5",
+       "connectionSettings": {
+         "connectionUri": { "variable": "CONNECTION_URI" }
+       }
+     }
+     ```
+
+  2. **`init-ndc-introspect`** (`ghcr.io/hasura/ndc-postgres:v3.0.0`): Runs `ndc-postgres-cli update` to introspect the live database and generate `/etc/connector/metadata.json`. This ensures the NDC connector has an up-to-date schema snapshot on every deployment. Uses entrypoint `/bin/ndc-postgres-cli` with command `["update"]`.
+  3. **`ndc-postgres`** (main): Starts the connector, depends on `init-ndc-introspect` completing successfully.
+* **Secrets:** `CONNECTION_URI` injected from Secrets Manager ARN (`<secretArn>:connection_uri::`) — used by both the introspect init container and the main container.
 
 #### Service B: Hasura v3 Engine
 
@@ -126,37 +134,41 @@ Both Hasura images are distroless (no shell). Configuration files are injected u
 * **Placement:** Private Subnets.
 * **Port:** Container port `3000`.
 * **Load Balancing:** Attached to the public ALB target group.
-* **Configuration:** Init container writes three files to `/md` and injects the JWT secret key:
-  - `auth_config.json` — JWT mode (HS256, v2 format). The init container receives the HMAC key from Secrets Manager via ECS secret injection and uses `sed` to replace the `__JWT_SECRET_KEY__` placeholder:
-    ```json
-    {
-      "version": "v2",
-      "definition": {
-        "mode": {
-          "jwt": {
-            "claimsConfig": {
-              "namespace": {
-                "claimsFormat": "Json",
-                "location": "/https:~1~1hasura.io~1jwt~1claims"
-              }
-            },
-            "key": { "fixed": { "algorithm": "HS256", "key": "<injected at deploy>" } },
-            "tokenLocation": { "type": "BearerAuthorization" }
-          }
-        }
-      }
-    }
-    ```
-  - `open_dd.json` — Empty supergraph metadata (`[]`). Add `DataConnectorLink`, `Model`, `Command`, etc. as the schema is built.
-  - `metadata.json` — Empty object (`{}`).
+* **Init Container** (`public.ecr.aws/aws-cli/aws-cli:latest`): Writes `auth_config.json` with JWT secret injection and downloads metadata files from S3:
+  1. Writes `auth_config.json` — JWT mode (HS256, v2 format) with `__JWT_SECRET_KEY__` placeholder, then uses `sed` to replace with the actual key from Secrets Manager:
+
+     ```json
+     {
+       "version": "v2",
+       "definition": {
+         "mode": {
+           "jwt": {
+             "claimsConfig": {
+               "namespace": {
+                 "claimsFormat": "Json",
+                 "location": "/https:~1~1hasura.io~1jwt~1claims"
+               }
+             },
+             "key": { "fixed": { "algorithm": "HS256", "key": "<injected at deploy>" } },
+             "tokenLocation": { "type": "BearerAuthorization" }
+           }
+         }
+       }
+     }
+     ```
+
+  2. Downloads `open_dd.json` from `s3://banyan-hasura-metadata/open_dd.json` — the OpenDD supergraph metadata (DataConnectorLink, Models, Relationships, Permissions, etc.).
+  3. Downloads `metadata.json` from `s3://banyan-hasura-metadata/metadata.json` — the NDC introspection metadata.
 * **Secrets:** `JWT_SECRET_KEY` injected from Secrets Manager ARN (`<jwtSecretArn>:key::`).
 * **CLI Arguments:**
+
   ```
   --metadata-path /md/open_dd.json
   --authn-config-path /md/auth_config.json
   --otlp-endpoint http://0.0.0.0:4318
   --port 3000
   ```
+
 * **Environment:** `ENABLE_CORS=true`.
 
 ### 2.6 Application Load Balancer
@@ -173,7 +185,17 @@ Both Hasura images are distroless (no shell). Configuration files are injected u
 * **Validation:** DNS (CNAME record must be added manually in the Route 53 hosted zone in the other AWS account).
 * **CertificateValidation resource** blocks deployment until the cert is validated.
 
-### 2.8 JWT Authentication
+### 2.8 S3 Metadata Bucket
+
+* **Bucket:** `banyan-hasura-metadata` (created manually, not managed by Pulumi).
+* **Purpose:** Stores the Hasura OpenDD metadata files that the engine loads at startup.
+* **Files:**
+  * `open_dd.json` — OpenDD supergraph metadata (DataConnectorLink, Models, ObjectTypes, Relationships, Permissions, ScalarTypes, etc.).
+  * `metadata.json` — NDC connector introspection metadata.
+* **Deployment Flow:** The `hasura:deploy` script uploads these files to S3, then triggers ECS service restarts. The engine init container downloads them from S3 at task startup.
+* **Access:** ECS task role has `s3:GetObject` permission scoped to `arn:aws:s3:::banyan-hasura-metadata/*`.
+
+### 2.9 JWT Authentication
 
 * **HMAC Key:** Random 32-byte key generated via `@pulumi/random` `RandomBytes`, base64-encoded.
 * **Secret Storage:** Secrets Manager (`banyan-prod-jwt-secret`) stores `{ "key": "<base64>" }`.
@@ -185,9 +207,10 @@ Both Hasura images are distroless (no shell). Configuration files are injected u
 ## 3. IAM Roles
 
 * **Execution Role (`banyan-prod-ecs-exec-role`):** Assumed by ECS agent. Permissions:
-  - `AmazonECSTaskExecutionRolePolicy` (managed policy for ECR pulls, CloudWatch logs).
-  - Inline policy for Secrets Manager read access (`secretsmanager:GetSecretValue`) scoped to the DB secret ARN and JWT secret ARN.
-* **Task Role (`banyan-prod-ecs-task-role`):** Assumed by the running containers. Minimal permissions for future application-level needs.
+  * `AmazonECSTaskExecutionRolePolicy` (managed policy for ECR pulls, CloudWatch logs).
+  * Inline policy for Secrets Manager read access (`secretsmanager:GetSecretValue`) scoped to the DB secret ARN and JWT secret ARN.
+* **Task Role (`banyan-prod-ecs-task-role`):** Assumed by the running containers. Permissions:
+  * S3 read access (`s3:GetObject`) scoped to `arn:aws:s3:::banyan-hasura-metadata/*` — allows the engine init container to download metadata files from S3.
 
 ---
 
@@ -203,6 +226,7 @@ Both Hasura images are distroless (no shell). Configuration files are injected u
 ### 4.2 AWS Provider
 
 The AWS provider explicitly uses the `banyan` profile:
+
 ```typescript
 new aws.Provider("banyan-aws-provider", {
   region: "ap-southeast-1",
@@ -210,7 +234,24 @@ new aws.Provider("banyan-aws-provider", {
 });
 ```
 
-### 4.3 Stack Outputs
+### 4.3 Pulumi Config Keys
+
+| Key | Required | Default | Description |
+|-----|----------|---------|-------------|
+| `awsRegion` | yes | — | AWS region (`ap-southeast-1`) |
+| `environment` | no | `prod` | Environment name |
+| `vpcCidr` | no | `10.50.0.0/16` | VPC CIDR block |
+| `dbInstanceClass` | no | `db.t4g.medium` | RDS instance class |
+| `dbAllocatedStorage` | no | `50` | RDS storage in GB |
+| `dbName` | no | `banyan` | PostgreSQL database name |
+| `ecsEngineCpu` | no | `512` | Engine task CPU units |
+| `ecsEngineMemory` | no | `1024` | Engine task memory (MB) |
+| `ecsNdcCpu` | no | `256` | NDC task CPU units |
+| `ecsNdcMemory` | no | `512` | NDC task memory (MB) |
+| `metadataBucket` | yes | — | S3 bucket for Hasura metadata (`banyan-hasura-metadata`) |
+| `domainName` | yes | — | Domain for the engine ALB (`prod.banyan.services.papaya.asia`) |
+
+### 4.4 Stack Outputs
 
 Upon successful `pulumi up`, the stack exports:
 
@@ -228,7 +269,7 @@ Upon successful `pulumi up`, the stack exports:
 ## 5. File Structure
 
 ```
-banyan/
+rootstock/
 ├── index.ts                     # Entry point, stack outputs
 ├── config.ts                    # Centralized pulumi.Config
 ├── Pulumi.yaml                  # S3 backend config

@@ -39,13 +39,35 @@
       const ENGINE_URL = "{{ENGINE_URL}}";
       const ADMIN_TOKEN = "{{ADMIN_TOKEN}}";
 
-      const fetcher = GraphiQL.createFetcher({
-        url: ENGINE_URL + "/graphql",
-        headers: ADMIN_TOKEN ? { Authorization: "Bearer " + ADMIN_TOKEN } : {},
-      });
+      const authHeaders = ADMIN_TOKEN
+        ? {
+            Authorization: "Bearer " + ADMIN_TOKEN,
+            "x-hasura-role": "admin",
+          }
+        : {};
+
+      // Use raw fetch to guarantee auth header is always sent,
+      // regardless of GraphiQL's cached localStorage state.
+      function fetcher(graphQLParams) {
+        return fetch(ENGINE_URL + "/graphql", {
+          method: "POST",
+          headers: Object.assign(
+            { "Content-Type": "application/json" },
+            authHeaders,
+          ),
+          body: JSON.stringify(graphQLParams),
+        }).then(function (r) {
+          return r.json();
+        });
+      }
 
       const root = ReactDOM.createRoot(document.getElementById("graphiql"));
-      root.render(React.createElement(GraphiQL, { fetcher }));
+      root.render(
+        React.createElement(GraphiQL, {
+          fetcher: fetcher,
+          defaultHeaders: JSON.stringify(authHeaders, null, 2),
+        }),
+      );
     </script>
   </body>
 </html>

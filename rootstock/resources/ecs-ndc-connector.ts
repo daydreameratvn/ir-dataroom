@@ -66,10 +66,36 @@ export const banyanNdcTaskDef = new aws.ecs.TaskDefinition("banyan-prod-ndc-task
         },
       },
       {
+        name: "init-ndc-introspect",
+        image: "ghcr.io/hasura/ndc-postgres:v3.0.0",
+        essential: false,
+        dependsOn: [{ containerName: "init-ndc-config", condition: "SUCCESS" }],
+        entryPoint: ["/bin/ndc-postgres-cli"],
+        command: ["update"],
+        environment: [
+          { name: "HASURA_PLUGIN_CONNECTOR_CONTEXT_PATH", value: "/etc/connector" },
+        ],
+        secrets: [
+          {
+            name: "CONNECTION_URI",
+            valueFrom: `${secretArn}:connection_uri::`,
+          },
+        ],
+        mountPoints: [{ sourceVolume: "connector-config", containerPath: "/etc/connector" }],
+        logConfiguration: {
+          logDriver: "awslogs",
+          options: {
+            "awslogs-group": logGroupName,
+            "awslogs-region": "ap-southeast-1",
+            "awslogs-stream-prefix": "ndc-introspect",
+          },
+        },
+      },
+      {
         name: "ndc-postgres",
         image: "ghcr.io/hasura/ndc-postgres:v3.0.0",
         essential: true,
-        dependsOn: [{ containerName: "init-ndc-config", condition: "SUCCESS" }],
+        dependsOn: [{ containerName: "init-ndc-introspect", condition: "SUCCESS" }],
         portMappings: [{ containerPort: 8080, protocol: "tcp" }],
         mountPoints: [{ sourceVolume: "connector-config", containerPath: "/etc/connector" }],
         secrets: [

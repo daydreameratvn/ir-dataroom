@@ -66,6 +66,23 @@ All foreign keys use `RESTRICT`. No exceptions. Never use `CASCADE`, `SET NULL`,
 - Index on foreign key columns.
 - Use `CREATE INDEX CONCURRENTLY` in migrations to avoid locking.
 
+## Local Metadata Validation
+
+Always validate `open_dd.json` locally before deploying to avoid slow ECS restart cycles:
+
+```bash
+docker run --rm \
+  -v /path/to/hasura/metadata:/md:ro \
+  -e METADATA_PATH=/md/open_dd.json \
+  -e AUTHN_CONFIG_PATH=/md/auth_config.json \
+  -e INTROSPECTION_METADATA_FILE=/md/metadata.json \
+  ghcr.io/hasura/v3-engine
+```
+
+- If the metadata is valid, the engine prints `starting server on [::]:3000`.
+- If invalid, it prints the exact error with JSON path (e.g., `missing field 'foreign_keys' at path $[0].definition.schema.schema.collections[0]`).
+- This is much faster than deploying to ECS and waiting for logs.
+
 ## OpenDD Metadata Conventions
 
 Metadata lives in `hasura/metadata/open_dd.json` as an array of metadata objects. Each object has `kind`, `version`, and `definition`.
@@ -79,6 +96,95 @@ When merging multiple data sources into the supergraph, use **nested domains (su
 | Sub-graph | sub-graph `billing` with model `Invoices` | model `BillingInvoices` in root |
 | Sub-graph | sub-graph `crm` with type `Contact` | type `CrmContact` in root |
 | Connector | `billing_pg` in sub-graph `billing` | single connector with prefixed names |
+
+### DataConnectorLink Schema (v0.2)
+
+The `DataConnectorLink` embeds a snapshot of the NDC connector's schema. This project uses **schema version `v0.2`** to match the NDC PostgreSQL connector v3.0.0 (NDC spec v0.2.4). The schema version controls the NDC protocol version the engine uses — **v0.1 and v0.2 are NOT interchangeable**.
+
+Critical rules:
+
+- `schema.version` must be `"v0.2"` — determines the NDC request format the engine sends.
+- `capabilities.version` must match: `"0.2.x"` (e.g., `"0.2.4"`). A v0.1 schema requires `^0.1.0` capabilities; a v0.2 schema requires `^0.2.0`. Mismatch causes a startup error.
+- **comparison_operators**: v0.2 supports built-in types: `equal`, `in`, `less_than`, `less_than_or_equal`, `greater_than`, `greater_than_or_equal`, `custom` (with `argument_type`).
+- **aggregate_functions**: v0.2 uses tagged enum: `{ "type": "max" }`, `{ "type": "min" }`, `{ "type": "custom", "result_type": { ... } }`.
+- **foreign_keys**: Must be present on BOTH `object_types` AND `collections`. Use `{}` for tables with no foreign keys.
+- **column_mapping** in foreign_keys: v0.2 uses array values: `{ "national": ["value"] }` (NOT `{ "national": "value" }`).
+- **extraction_functions**: Include `"extraction_functions": {}` on every scalar type.
+- **`SchemaResponse` fields**: `scalar_types`, `object_types`, `collections`, `functions`, `procedures` are required. No `capabilities` or `request_arguments` inside the schema object (those are top-level siblings).
+
+Example scalar type (v0.2):
+
+```json
+{
+  "text": {
+    "representation": { "type": "string" },
+    "aggregate_functions": {
+      "max": { "type": "max" },
+      "min": { "type": "min" }
+    },
+    "comparison_operators": {
+      "_eq": { "type": "equal" },
+      "_gt": { "type": "greater_than" },
+      "_in": { "type": "in" },
+      "_like": { "type": "custom", "argument_type": { "type": "named", "name": "text" } }
+    },
+    "extraction_functions": {}
+  }
+}
+```
+
+### ScalarType and DataConnectorScalarRepresentation
+
+Every NDC scalar type used in ObjectType fields must have:
+
+1. **`ScalarType`** — registers the OpenDD type for GraphQL:
+
+```json
+{ "kind": "ScalarType", "version": "v1", "definition": { "name": "Uuid", "graphql": { "typeName": "Uuid" } } }
+```
+
+2. **`DataConnectorScalarRepresentation`** — maps the NDC scalar to the OpenDD type:
+
+```json
+{
+  "kind": "DataConnectorScalarRepresentation", "version": "v1",
+  "definition": {
+    "dataConnectorName": "banyan_pg",
+    "dataConnectorScalarType": "uuid",
+    "representation": "Uuid",
+    "graphql": { "comparisonExpressionTypeName": "UuidComparisonExp" }
+  }
+}
+```
+
+Current mappings (`banyan_pg`):
+
+| NDC scalar | OpenDD type | Notes |
+|------------|-------------|-------|
+| `text` | `String` | Built-in, no ScalarType needed |
+| `varchar` | `String` | Built-in, no ScalarType needed |
+| `uuid` | `Uuid` | Custom ScalarType required |
+| `timestamptz` | `Timestamptz` | Custom ScalarType required |
+| `jsonb` | `Jsonb` | Custom ScalarType required |
+| `int8` | `Int8` | Custom ScalarType required |
+
+When adding new column types (e.g., `boolean`, `int4`, `float8`, `date`), you MUST add both `ScalarType` and `DataConnectorScalarRepresentation` entries AND add the NDC scalar definition to the DataConnectorLink's `scalar_types`.
+
+### ObjectType Requirements
+
+Every `ObjectType` must include `graphql.typeName`:
+
+```json
+{
+  "kind": "ObjectType", "version": "v1",
+  "definition": {
+    "name": "User",
+    "graphql": { "typeName": "User" },
+    "fields": [ ... ],
+    "dataConnectorTypeMapping": [ ... ]
+  }
+}
+```
 
 ### Naming
 
@@ -264,11 +370,14 @@ Session variables come from JWT claims under the `https://hasura.io/jwt/claims` 
 After the DB schema changes, Hasura does not auto-detect them. You must update the OpenDD metadata so the engine exposes the new tables/columns via GraphQL.
 
 1. Read `hasura/metadata/open_dd.json` to understand current metadata.
-2. Add `ObjectType` with field mapping to `open_dd.json`.
-3. Add `Model` with GraphQL root fields.
-4. Add `Relationship` objects for foreign keys (both directions).
-5. Add `BooleanExpressionType` if filtering is needed.
-6. Add `ModelPermissions` (with soft-delete filter) and `TypePermissions` for each role.
+2. If new column types are used (not already in `scalar_types`), add the NDC scalar type to the DataConnectorLink's `scalar_types`, add a `ScalarType` definition, and add a `DataConnectorScalarRepresentation` mapping.
+3. Add the new table to the DataConnectorLink's `object_types` (with `foreign_keys`) and `collections` (with `foreign_keys` and `uniqueness_constraints`).
+4. Add `ObjectType` with `graphql.typeName` and `dataConnectorTypeMapping`.
+5. Add `Model` with GraphQL root fields.
+6. Add `Relationship` objects for foreign keys (both directions).
+7. Add `BooleanExpressionType` if filtering is needed.
+8. Add `ModelPermissions` (with soft-delete filter) and `TypePermissions` for each role.
+9. **Validate locally** with Docker before deploying (see "Local Metadata Validation" above).
 
 ### Phase 3: Deploy
 
