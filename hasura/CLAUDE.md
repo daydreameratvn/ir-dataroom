@@ -125,6 +125,7 @@ All migrations MUST follow the backward compatibility rules from the root `CLAUD
   - `admin-token` — Pre-signed JWT for admin access
   - `db-connection-uri` — Direct RDS connection string (for migrations/tunnel)
   - `rds-nlb-endpoint` — NLB DNS name
+  - `ddn-cloud-endpoint` — DDN Cloud GraphQL API URL
 
 ## Work Scope
 

@@ -2,18 +2,20 @@
 name: hasura
 description: |
   Hasura database, permissions, naming, and table conventions for Banyan.
-  Use when working with: database schema, migrations (dbmate), OpenDD metadata
-  (open_dd.json), permissions (ModelPermissions, TypePermissions, CommandPermissions),
+  Use when working with: database schema, migrations (dbmate), HML metadata files,
+  permissions (ModelPermissions, TypePermissions, CommandPermissions),
   relationships, NDC PostgreSQL connector, or any Hasura DDN v3 supergraph modeling.
-  Triggers on: SQL migrations, metadata JSON edits, permission definitions, new tables/models,
-  GraphQL schema changes, connector configuration.
+  Triggers on: SQL migrations, HML metadata edits, permission definitions, new tables/models,
+  GraphQL schema changes, connector configuration, DDN Cloud deployment.
 ---
 
-# Hasura DDN v3 Conventions
+# Hasura DDN Cloud Conventions
 
-Conventions for database schema, OpenDD metadata, and permissions in Banyan.
+Conventions for database schema, HML metadata, and permissions in Banyan.
 
-**Architecture**: Hasura DDN v3 with NDC PostgreSQL connector (`banyan_pg`). No DDN CLI — metadata is plain JSON in `hasura/metadata/`. Migrations use dbmate (raw SQL). See `hasura/CLAUDE.md` for commands, file structure, and migration rules.
+**Architecture**: Hasura DDN Cloud (managed v3) with NDC PostgreSQL connector (`banyan_pg`). Metadata is HML (YAML) files in `hasura/ddn/app/metadata/`. Migrations use dbmate (raw SQL). See `hasura/CLAUDE.md` for commands, file structure, and migration rules.
+
+**DDN Cloud**: Project `banyan-prod` at `https://banyan-prod.ddn.hasura.app/graphql`. Auth via JWT HS256 Bearer tokens.
 
 ## DB Connection
 
@@ -36,7 +38,6 @@ import { getDbUrl, getRdsHost, getPgDumpPath, TUNNEL_PORT } from "../lib/db.ts";
 - **Plural** — `users`, `organizations`, `documents`.
 - **Many-to-many** — both words plural, alphabetical: `authors_books`, `books_categories`.
 - **Alphabetical grouping** — name tables so related tables sit together: `projects`, `projects_members`, `projects_tags`.
-- **Schema per domain** — use PostgreSQL schemas to group tables by domain. Example: `billing.invoices`, `billing.payments`. Prefixes within a schema are fine.
 
 ### Mandatory Columns
 
@@ -68,284 +69,155 @@ All foreign keys use `RESTRICT`. No exceptions. Never use `CASCADE`, `SET NULL`,
 
 ## Local Metadata Validation
 
-Always validate `open_dd.json` locally before deploying to avoid slow ECS restart cycles:
+Validate metadata locally before deploying to DDN Cloud:
 
 ```bash
-docker run --rm \
-  -v /path/to/hasura/metadata:/md:ro \
-  -e METADATA_PATH=/md/open_dd.json \
-  -e AUTHN_CONFIG_PATH=/md/auth_config.json \
-  -e INTROSPECTION_METADATA_FILE=/md/metadata.json \
-  ghcr.io/hasura/v3-engine
+cd hasura/ddn && ddn supergraph build local
 ```
 
-- If the metadata is valid, the engine prints `starting server on [::]:3000`.
-- If invalid, it prints the exact error with JSON path (e.g., `missing field 'foreign_keys' at path $[0].definition.schema.schema.collections[0]`).
-- This is much faster than deploying to ECS and waiting for logs.
+- If valid: prints `Supergraph built for local Engine successfully`.
+- If invalid: prints the exact error with HML file path and line number.
+- Much faster than a cloud build — catches YAML syntax errors, missing env vars, and schema mismatches.
 
-## OpenDD Metadata Conventions
+## HML Metadata Conventions
 
-Metadata lives in `hasura/metadata/open_dd.json` as an array of metadata objects. Each object has `kind`, `version`, and `definition`.
+Metadata lives in `hasura/ddn/app/metadata/` as individual HML (YAML) files. Each file contains one or more metadata objects with `kind`, `version`, and `definition`. The DDN CLI generates these files — prefer CLI commands over manual editing.
 
-### Domain Organization
+### Key Files
 
-When merging multiple data sources into the supergraph, use **nested domains (sub-graphs)** — never name prefixes. Each data source or domain gets its own sub-graph namespace. The supergraph composes them without flattening.
-
-| Layer | Correct | Wrong |
-| --- | --- | --- |
-| Sub-graph | sub-graph `billing` with model `Invoices` | model `BillingInvoices` in root |
-| Sub-graph | sub-graph `crm` with type `Contact` | type `CrmContact` in root |
-| Connector | `billing_pg` in sub-graph `billing` | single connector with prefixed names |
-
-### DataConnectorLink Schema (v0.2)
-
-The `DataConnectorLink` embeds a snapshot of the NDC connector's schema. This project uses **schema version `v0.2`** to match the NDC PostgreSQL connector v3.0.0 (NDC spec v0.2.4). The schema version controls the NDC protocol version the engine uses — **v0.1 and v0.2 are NOT interchangeable**.
-
-Critical rules:
-
-- `schema.version` must be `"v0.2"` — determines the NDC request format the engine sends.
-- `capabilities.version` must match: `"0.2.x"` (e.g., `"0.2.4"`). A v0.1 schema requires `^0.1.0` capabilities; a v0.2 schema requires `^0.2.0`. Mismatch causes a startup error.
-- **comparison_operators**: v0.2 supports built-in types: `equal`, `in`, `less_than`, `less_than_or_equal`, `greater_than`, `greater_than_or_equal`, `custom` (with `argument_type`).
-- **aggregate_functions**: v0.2 uses tagged enum: `{ "type": "max" }`, `{ "type": "min" }`, `{ "type": "custom", "result_type": { ... } }`.
-- **foreign_keys**: Must be present on BOTH `object_types` AND `collections`. Use `{}` for tables with no foreign keys.
-- **column_mapping** in foreign_keys: v0.2 uses array values: `{ "national": ["value"] }` (NOT `{ "national": "value" }`).
-- **extraction_functions**: Include `"extraction_functions": {}` on every scalar type.
-- **`SchemaResponse` fields**: `scalar_types`, `object_types`, `collections`, `functions`, `procedures` are required. No `capabilities` or `request_arguments` inside the schema object (those are top-level siblings).
-
-Example scalar type (v0.2):
-
-```json
-{
-  "text": {
-    "representation": { "type": "string" },
-    "aggregate_functions": {
-      "max": { "type": "max" },
-      "min": { "type": "min" }
-    },
-    "comparison_operators": {
-      "_eq": { "type": "equal" },
-      "_gt": { "type": "greater_than" },
-      "_in": { "type": "in" },
-      "_like": { "type": "custom", "argument_type": { "type": "named", "name": "text" } }
-    },
-    "extraction_functions": {}
-  }
-}
-```
-
-### ScalarType and DataConnectorScalarRepresentation
-
-Every NDC scalar type used in ObjectType fields must have:
-
-1. **`ScalarType`** — registers the OpenDD type for GraphQL:
-
-```json
-{ "kind": "ScalarType", "version": "v1", "definition": { "name": "Uuid", "graphql": { "typeName": "Uuid" } } }
-```
-
-2. **`DataConnectorScalarRepresentation`** — maps the NDC scalar to the OpenDD type:
-
-```json
-{
-  "kind": "DataConnectorScalarRepresentation", "version": "v1",
-  "definition": {
-    "dataConnectorName": "banyan_pg",
-    "dataConnectorScalarType": "uuid",
-    "representation": "Uuid",
-    "graphql": { "comparisonExpressionTypeName": "UuidComparisonExp" }
-  }
-}
-```
-
-Current mappings (`banyan_pg`):
-
-| NDC scalar | OpenDD type | Notes |
-|------------|-------------|-------|
-| `text` | `String` | Built-in, no ScalarType needed |
-| `varchar` | `String` | Built-in, no ScalarType needed |
-| `uuid` | `Uuid` | Custom ScalarType required |
-| `timestamptz` | `Timestamptz` | Custom ScalarType required |
-| `jsonb` | `Jsonb` | Custom ScalarType required |
-| `int8` | `Int8` | Custom ScalarType required |
-
-When adding new column types (e.g., `boolean`, `int4`, `float8`, `date`), you MUST add both `ScalarType` and `DataConnectorScalarRepresentation` entries AND add the NDC scalar definition to the DataConnectorLink's `scalar_types`.
-
-### ObjectType Requirements
-
-Every `ObjectType` must include `graphql.typeName`:
-
-```json
-{
-  "kind": "ObjectType", "version": "v1",
-  "definition": {
-    "name": "User",
-    "graphql": { "typeName": "User" },
-    "fields": [ ... ],
-    "dataConnectorTypeMapping": [ ... ]
-  }
-}
-```
+| File | Purpose |
+|------|---------|
+| `banyan_pg.hml` | DataConnectorLink — NDC schema snapshot (16K+ lines, auto-generated) |
+| `banyan_pg-types.hml` | Scalar type definitions and connector type mappings |
+| `<ModelName>.hml` | Model + ObjectType + Relationships (e.g., `Claims.hml`, `Users.hml`) |
+| `Insert<ModelName>.hml` | Insert mutation command |
+| `Update<ModelName>ById.hml` | Update mutation command |
+| `Delete<ModelName>ById.hml` | Delete mutation command |
+| `globals/metadata/auth-config.hml` | JWT HS256 auth configuration |
 
 ### Naming
 
 | Kind | Naming | Example |
 |------|--------|---------|
-| `ObjectType` | PascalCase, singular | `User`, `Organization`, `ProjectMember` |
-| `Model` | PascalCase, plural | `Users`, `Organizations`, `ProjectMembers` |
-| `Relationship` | camelCase | `author`, `articles`, `projectMembers` |
-| `BooleanExpressionType` | `{Type}_bool_exp` | `User_bool_exp`, `Article_bool_exp` |
-| `Command` | camelCase verb phrase | `createUser`, `deleteDocument` |
+| `ObjectType` | PascalCase, singular | `Users` (matches DB table name in DDN convention) |
+| `Model` | PascalCase, plural | `Users`, `Claims`, `AgentSessions` |
+| `Relationship` | camelCase | `tenant`, `policy`, `claimDiagnoses` |
+| `Command` | PascalCase verb phrase | `InsertClaims`, `UpdateClaimsById`, `DeleteClaimsById` |
 | `DataConnectorLink` | snake_case | `banyan_pg` |
+| HML file name | PascalCase matching model | `Claims.hml`, `InsertClaims.hml` |
 
-### Field Naming
+### GraphQL Naming Convention
 
-- **Data-source fields**: Use snake_case matching the database column name. No renaming — respect the data source.
-- **Custom fields** (computed fields, derived values not backed by a column): Use camelCase.
-- **Sub-graph fields**: Respect the field name from the sub-graph source.
-
-```json
-{
-  "kind": "ObjectType",
-  "version": "v1",
-  "definition": {
-    "name": "User",
-    "fields": [
-      { "name": "user_id", "type": "Uuid!" },
-      { "name": "created_at", "type": "Timestamptz!" },
-      { "name": "fullName", "type": "String" }
-    ],
-    "dataConnectorTypeMapping": [{
-      "dataConnectorName": "banyan_pg",
-      "dataConnectorObjectType": "users",
-      "fieldMapping": {
-        "user_id": { "column": { "name": "user_id" } },
-        "created_at": { "column": { "name": "created_at" } }
-      }
-    }]
-  }
-}
-```
-
-`user_id` and `created_at` are snake_case (from database). `fullName` is camelCase (computed, not a column).
-
-### Model GraphQL Root Fields
-
-Use camelCase for query root fields:
-
-```json
-{
-  "kind": "Model",
-  "version": "v2",
-  "definition": {
-    "name": "Users",
-    "objectType": "User",
-    "source": { "dataConnectorName": "banyan_pg", "collection": "users" },
-    "graphql": {
-      "selectMany": { "queryRootField": "users" },
-      "selectUniques": [{ "queryRootField": "userById", "uniqueIdentifier": ["user_id"] }]
-    }
-  }
-}
-```
+The `app` subgraph uses `namingConvention: graphql` which converts snake_case DB columns to camelCase GraphQL fields automatically:
+- `claim_number` → `claimNumber`
+- `tenant_id` → `tenantId`
+- `created_at` → `createdAt`
 
 ### Relationships
 
-Define as standalone metadata objects. Use `Object` for single (many-to-one) and `Array` for multiple (one-to-many):
+Relationships are auto-generated from foreign keys by the DDN CLI. They appear inside model HML files:
 
-```json
-{
-  "kind": "Relationship",
-  "version": "v1",
-  "definition": {
-    "name": "author",
-    "sourceType": "Article",
-    "target": {
-      "model": { "name": "Users", "relationshipType": "Object" }
-    },
-    "mapping": [{
-      "source": { "fieldPath": [{ "fieldName": "author_id" }] },
-      "target": { "modelField": [{ "fieldName": "user_id" }] }
-    }]
-  }
-}
+```yaml
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant              # camelCase
+  sourceType: Claims        # PascalCase ObjectType
+  target:
+    model:
+      name: Tenants         # PascalCase Model
+      relationshipType: Object  # Object = many-to-one, Array = one-to-many
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
 ```
 
 ## Permission Conventions
 
 Three permission kinds. By default all access is denied — explicitly grant per role.
 
+### Roles
+
+Roles come from the `user_level` database enum, set in JWT claims:
+- `admin` — full unrestricted access (currently the only role with permissions)
+- `executive`, `manager`, `staff`, `viewer` — need permissions added
+
+Session variables available in JWT:
+- `x-hasura-default-role` — from `user_level`
+- `x-hasura-allowed-roles` — hierarchical list (admin gets all roles)
+- `x-hasura-user-id` — UUID
+- `x-hasura-tenant-id` — UUID (for row-level tenant scoping)
+
 ### ModelPermissions (row-level)
 
-Always filter out soft-deleted records:
+Always filter out soft-deleted records for non-admin roles:
 
-```json
-{
-  "kind": "ModelPermissions",
-  "version": "v1",
-  "definition": {
-    "modelName": "Users",
-    "permissions": [
-      { "role": "admin", "select": { "filter": null } },
-      {
-        "role": "user",
-        "select": {
-          "filter": {
-            "and": [
-              { "fieldIsNull": { "field": "deleted_at", "negate": true } },
-              { "fieldComparison": { "field": "user_id", "operator": "_eq", "value": { "sessionVariable": "x-hasura-user-id" } } }
-            ]
-          }
-        }
-      }
-    ]
-  }
-}
+```yaml
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Users
+  permissions:
+    - role: admin
+      select:
+        filter: null  # unrestricted
+    - role: viewer
+      select:
+        filter:
+          and:
+            - fieldComparison:
+                field: tenantId
+                operator: _eq
+                value:
+                  sessionVariable: x-hasura-tenant-id
+            - not:
+                fieldIsNull:
+                  field: deletedAt
 ```
-
-- `admin` role: `"filter": null` (unrestricted).
-- All other roles: always include `deleted_at IS NULL` check under `and` for extensibility.
-- Filter deleted related objects in nested permissions to prevent null reference errors at runtime.
 
 ### TypePermissions (field-level)
 
 Restrict sensitive fields per role:
 
-```json
-{
-  "kind": "TypePermissions",
-  "version": "v1",
-  "definition": {
-    "typeName": "User",
-    "permissions": [
-      { "role": "admin", "output": { "allowedFields": ["user_id", "email", "created_at", "deleted_at"] } },
-      { "role": "user", "output": { "allowedFields": ["user_id", "email", "created_at"] } }
-    ]
-  }
-}
+```yaml
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Claims
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - claimNumber
+          - status
+          - aiScore
+          - aiRecommendation
+          - deletedAt
+    - role: viewer
+      output:
+        allowedFields:
+          - id
+          - claimNumber
+          - status
+          # aiScore, aiRecommendation, deletedAt hidden from viewers
 ```
-
-- Never expose `deleted_at`, `deleted_by` to non-admin roles.
-- `created_by`, `updated_by` — expose only when needed.
 
 ### CommandPermissions (mutation-level)
 
-```json
-{
-  "kind": "CommandPermissions",
-  "version": "v1",
-  "definition": {
-    "commandName": "deleteDocument",
-    "permissions": [
-      { "role": "admin", "allowExecution": true },
-      { "role": "user", "allowExecution": true, "argumentPresets": [{
-        "argument": "preCheck",
-        "value": { "booleanExpression": {
-          "fieldComparison": { "field": "owner_id", "operator": "_eq", "value": { "sessionVariable": "x-hasura-user-id" } }
-        }}
-      }]}
-    ]
-  }
-}
+```yaml
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaims
+  permissions:
+    - role: admin
+      allowExecution: true
 ```
 
 ### JWT Claims
@@ -354,37 +226,68 @@ Session variables come from JWT claims under the `https://hasura.io/jwt/claims` 
 
 - `x-hasura-default-role` — applied when no role override header is sent.
 - `x-hasura-allowed-roles` — array of roles the token holder can assume.
-- `x-hasura-user-id` — used in permission filters and column presets.
+- `x-hasura-user-id` — used in permission filters.
+- `x-hasura-tenant-id` — used for tenant-scoped row-level security.
 
 ## Adding a New Table Checklist
 
 ### Phase 1: Database Migration
 
 1. Read `hasura/db/schema.sql` to understand current schema.
-2. Write dbmate migration SQL (forward-only, backward-compatible — see `hasura/CLAUDE.md`).
-3. Start SSM tunnel: `AWS_PROFILE=banyan bun run hasura:tunnel` (in a separate terminal).
-4. Run migration through tunnel: `AWS_PROFILE=banyan bun run hasura:migrate -- --tunnel`.
+2. Create migration: `bun run hasura:migrate:new create_<table_name>`.
+3. Write dbmate migration SQL (forward-only, backward-compatible — see `hasura/CLAUDE.md`).
+4. Start SSM tunnel: `AWS_PROFILE=banyan bun run hasura:tunnel` (in a separate terminal).
+5. Run migration: `AWS_PROFILE=banyan bun run hasura:migrate -- --tunnel`.
 
-### Phase 2: Sync Hasura Metadata
+### Phase 2: Sync DDN Metadata
 
-After the DB schema changes, Hasura does not auto-detect them. You must update the OpenDD metadata so the engine exposes the new tables/columns via GraphQL.
+After the DB schema changes, update the connector and generate HML files:
 
-1. Read `hasura/metadata/open_dd.json` to understand current metadata.
-2. If new column types are used (not already in `scalar_types`), add the NDC scalar type to the DataConnectorLink's `scalar_types`, add a `ScalarType` definition, and add a `DataConnectorScalarRepresentation` mapping.
-3. Add the new table to the DataConnectorLink's `object_types` (with `foreign_keys`) and `collections` (with `foreign_keys` and `uniqueness_constraints`).
-4. Add `ObjectType` with `graphql.typeName` and `dataConnectorTypeMapping`.
-5. Add `Model` with GraphQL root fields.
-6. Add `Relationship` objects for foreign keys (both directions).
-7. Add `BooleanExpressionType` if filtering is needed.
-8. Add `ModelPermissions` (with soft-delete filter) and `TypePermissions` for each role.
-9. **Validate locally** with Docker before deploying (see "Local Metadata Validation" above).
+1. **Introspect** — update the connector's configuration.json:
+   ```bash
+   bun run hasura:introspect
+   ```
 
-### Phase 3: Deploy
+2. **Start local connector** — needed for connector-link update:
+   ```bash
+   # Ensure tunnel is running on port 15432, then:
+   docker run -d --name banyan_pg_connector \
+     -p 7892:8080 \
+     -e 'CONNECTION_URI=<url-with-host.docker.internal:15432>' \
+     -e 'HASURA_SERVICE_TOKEN_SECRET=<from .env>' \
+     -v $(pwd)/hasura/ddn/app/connector/banyan_pg:/etc/connector:ro \
+     ghcr.io/hasura/ndc-postgres:v3.1.0
+   ```
 
-Deploy uploads metadata to S3 and restarts **both** ECS services:
+3. **Update connector link and add models**:
+   ```bash
+   cd hasura/ddn
+   ddn connector-link update banyan_pg --subgraph ./app/subgraph.yaml --add-all-resources
+   ```
+   This updates `banyan_pg.hml` (DataConnectorLink schema) and generates model/command/relationship HML files for new tables.
 
-- **NDC connector** restarts first to introspect new DB tables/columns.
-- **Engine** restarts second to load the updated OpenDD metadata.
+4. **Add permissions** — edit the generated `<ModelName>.hml` to add `ModelPermissions` and `TypePermissions` for each role beyond admin.
 
-1. Deploy and restart: `AWS_PROFILE=banyan bun run hasura:deploy`.
-2. Introspect to verify: `AWS_PROFILE=banyan bun run hasura:introspect`.
+5. **Validate locally**:
+   ```bash
+   cd hasura/ddn && ddn supergraph build local
+   ```
+
+### Phase 3: Deploy to DDN Cloud
+
+```bash
+bun run hasura:deploy
+# Equivalent to: cd hasura/ddn && ddn supergraph build create --env-file .env.cloud --apply
+```
+
+Verify on the DDN Cloud console: `https://console.hasura.io/project/banyan-prod`
+
+### Phase 4: Verify
+
+Test the new table via GraphQL:
+```bash
+curl -s https://banyan-prod.ddn.hasura.app/graphql \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <jwt-token>" \
+  -d '{"query":"{ <newTable>(limit: 5) { id } }"}'
+```
