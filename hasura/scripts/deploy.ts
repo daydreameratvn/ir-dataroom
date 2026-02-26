@@ -19,11 +19,23 @@ const params = await fetchSSMParams();
 
 const connectionUri = requireParam(params, "ddn-connection-uri");
 const jwtSecretKey = requireParam(params, "jwt-secret-key");
+const appleEndpoint = params["apple-endpoint"] ?? "https://prod.apple.papaya.services/v1/graphql";
+const appleAdminSecret = requireParam(params, "apple-admin-secret");
 
 // Generate .env.cloud from SSM values
+// READ_URL/WRITE_URL/AUTHORIZATION_HEADER are auto-populated by DDN Cloud
+// during connector builds. For --no-build-connectors, provide placeholders.
 const envContent = [
   `APP_BANYAN_PG_CONNECTION_URI="${connectionUri}"`,
+  `APP_BANYAN_PG_READ_URL="http://placeholder.local"`,
+  `APP_BANYAN_PG_WRITE_URL="http://placeholder.local"`,
+  `APP_BANYAN_PG_AUTHORIZATION_HEADER=""`,
   `JWT_SECRET_KEY="${jwtSecretKey}"`,
+  `APPLE_APPLE_GQL_GRAPHQL_ENDPOINT="${appleEndpoint}"`,
+  `APPLE_APPLE_GQL_ADMIN_SECRET="${appleAdminSecret}"`,
+  `APPLE_APPLE_GQL_READ_URL="http://placeholder.local"`,
+  `APPLE_APPLE_GQL_WRITE_URL="http://placeholder.local"`,
+  `APPLE_APPLE_GQL_AUTHORIZATION_HEADER=""`,
   "",
 ].join("\n");
 
@@ -41,19 +53,45 @@ try {
   await Bun.write(ENV_CLOUD_PATH, envContent);
   console.log("Generated .env.cloud from SSM parameters.");
 
-  // Run ddn supergraph build create --apply
-  console.log("Building and deploying supergraph to DDN Cloud...\n");
+  // Step 1: Build the supergraph
+  console.log("Building supergraph on DDN Cloud...\n");
 
-  const proc = Bun.spawn(
-    ["ddn", "supergraph", "build", "create", "--apply"],
+  const buildProc = Bun.spawn(
+    ["ddn", "supergraph", "build", "create", "--no-build-connectors", "--out", "json", "--timeout", "600"],
     {
       cwd: DDN_DIR,
-      stdio: ["inherit", "inherit", "inherit"],
+      stdout: "pipe",
+      stderr: "inherit",
       env: { ...process.env, PATH: `${process.env.HOME}/.local/bin:${process.env.PATH}` },
     },
   );
 
-  exitCode = await proc.exited;
+  const buildOutput = await new Response(buildProc.stdout).text();
+  const buildExitCode = await buildProc.exited;
+
+  if (buildExitCode !== 0) {
+    console.error("Build failed.");
+    exitCode = buildExitCode;
+  } else {
+    // Extract build version from JSON output
+    const buildResult = JSON.parse(buildOutput);
+    const buildVersion = buildResult.build_version;
+    console.log(`Build version: ${buildVersion}`);
+
+    // Step 2: Apply the build
+    console.log("Applying supergraph build...\n");
+
+    const applyProc = Bun.spawn(
+      ["ddn", "supergraph", "build", "apply", buildVersion],
+      {
+        cwd: DDN_DIR,
+        stdio: ["inherit", "inherit", "inherit"],
+        env: { ...process.env, PATH: `${process.env.HOME}/.local/bin:${process.env.PATH}` },
+      },
+    );
+
+    exitCode = await applyProc.exited;
+  }
 } finally {
   cleanup();
 }
