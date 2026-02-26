@@ -405,10 +405,6 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Footer */}
-            <p style={{ marginTop: 40, textAlign: 'center' as const, fontSize: 11, color: '#B5AFA6' }}>
-              &copy; 2026 Papaya
-            </p>
           </div>
         </div>
       </div>
