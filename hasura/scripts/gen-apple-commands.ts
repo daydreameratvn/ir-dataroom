@@ -1,16 +1,22 @@
 /**
- * Generate all HML metadata for the apple subgraph.
+ * Generate trimmed HML metadata for the apple subgraph.
  *
- * Parses the DataConnectorLink schema and generates only the types
- * that are transitively referenced by commands (functions + procedures).
+ * Parses the DataConnectorLink schema and generates only the types/commands
+ * for a whitelisted set of operations. Also trims the DataConnectorLink itself
+ * to only include the referenced functions/procedures/types.
  *
  * Output files (in apple/metadata/):
- *   - apple_gql-types.hml   — ScalarType, DataConnectorScalarRepresentation,
- *                              ObjectType, TypePermissions
- *   - apple_gql_commands.hml — Command, CommandPermissions
+ *   - apple_gql.hml           — Trimmed DataConnectorLink (NDC schema)
+ *   - apple_gql-types.hml     — ScalarType, DataConnectorScalarRepresentation,
+ *                                ObjectType, TypePermissions
+ *   - apple_gql_commands.hml  — Command, CommandPermissions
+ *
+ * The whitelist is defined in WHITELISTED_FUNCTIONS and WHITELISTED_PROCEDURES.
+ * To expose more operations, add them to the whitelist and re-run.
  *
  * Usage:
  *   cd hasura/ddn && bun run ../scripts/gen-apple-commands.ts
+ *   cd hasura/ddn && bun run ../scripts/gen-apple-commands.ts --all   # no whitelist
  *
  * Then deploy:
  *   AWS_PROFILE=banyan bun run hasura:deploy
@@ -19,27 +25,72 @@
 import { parse, stringify } from "yaml";
 
 const DDN_DIR = new URL("../ddn", import.meta.url).pathname;
-const CONNECTOR_LINK = `${DDN_DIR}/apple/metadata/apple_gql.hml`;
+const CONNECTOR_LINK_FULL = `${DDN_DIR}/apple/apple_gql-full.hml`;
 const OUTPUT_DIR = `${DDN_DIR}/apple/metadata`;
+
+const ALL_MODE = process.argv.includes("--all");
+
+// ---------------------------------------------------------------------------
+// Whitelist of operations to expose from the apple subgraph.
+// Add more names here as needed. Use the NDC function/procedure name
+// (snake_case, as it appears in the introspected schema).
+// ---------------------------------------------------------------------------
+
+const WHITELISTED_FUNCTIONS = new Set([
+  "agents",
+  "banks",
+  "claim_case_details",
+  "claim_case_payments",
+  "claim_cases",
+  "claim_documents",
+  "claim_fee_items",
+  "claim_informations",
+  "claim_notes",
+  "claim_pending_codes",
+  "corporates",
+  "correspondence_emails",
+  "correspondence_templates",
+  "disease_groups",
+  "documents",
+  "insured_benefits",
+  "insured_certificates",
+  "insured_persons",
+  "medical_booking_bookings",
+  "mp_medical_providers",
+  "plans",
+  "plan_balances",
+  "plan_insured_benefits",
+  "policies",
+  "policy_co_payments",
+  "present_cases",
+  "products",
+  "tenants",
+]);
+
+const WHITELISTED_PROCEDURES = new Set<string>([
+  // Add mutation names here as needed
+]);
 
 // ---------------------------------------------------------------------------
 // 1. Parse the DataConnectorLink schema
 // ---------------------------------------------------------------------------
 
-console.log("Parsing DataConnectorLink schema...");
-const raw = await Bun.file(CONNECTOR_LINK).text();
+console.log(`Parsing DataConnectorLink schema from ${CONNECTOR_LINK_FULL}...`);
+const raw = await Bun.file(CONNECTOR_LINK_FULL).text();
 const docs = raw.split(/^---$/m).filter((d) => d.trim());
 
+let connectorLinkDoc: any = null;
 let schema: any = null;
 for (const doc of docs) {
   const parsed = parse(doc);
   if (parsed?.kind === "DataConnectorLink") {
+    connectorLinkDoc = parsed;
     schema = parsed.definition.schema.schema;
     break;
   }
 }
 
-if (!schema) {
+if (!schema || !connectorLinkDoc) {
   console.error("Could not find DataConnectorLink schema in", CONNECTOR_LINK);
   process.exit(1);
 }
@@ -50,14 +101,32 @@ const ndcFunctions: any[] = schema.functions ?? [];
 const ndcProcedures: any[] = schema.procedures ?? [];
 
 console.log(
-  `  Scalars: ${Object.keys(ndcScalars).length}, ` +
+  `  Total: Scalars: ${Object.keys(ndcScalars).length}, ` +
     `Objects: ${Object.keys(ndcObjects).length}, ` +
     `Functions: ${ndcFunctions.length}, ` +
     `Procedures: ${ndcProcedures.length}`
 );
 
 // ---------------------------------------------------------------------------
-// 2. Build scalar type mapping (NDC scalar name → supergraph scalar name)
+// 2. Filter functions/procedures by whitelist
+// ---------------------------------------------------------------------------
+
+const filteredFunctions = ALL_MODE
+  ? ndcFunctions
+  : ndcFunctions.filter((fn: any) => WHITELISTED_FUNCTIONS.has(fn.name));
+
+const filteredProcedures = ALL_MODE
+  ? ndcProcedures
+  : ndcProcedures.filter((p: any) => WHITELISTED_PROCEDURES.has(p.name));
+
+console.log(
+  `  Filtered: Functions: ${filteredFunctions.length}, ` +
+    `Procedures: ${filteredProcedures.length}` +
+    (ALL_MODE ? " (--all mode)" : "")
+);
+
+// ---------------------------------------------------------------------------
+// 3. Build scalar type mapping (NDC scalar name → supergraph scalar name)
 // ---------------------------------------------------------------------------
 
 const BUILTIN_SCALARS: Record<string, string> = {
@@ -91,7 +160,7 @@ for (const [ndcName, ndcDef] of Object.entries(ndcScalars) as [string, any][]) {
 }
 
 // ---------------------------------------------------------------------------
-// 3. Collect all types transitively referenced by commands
+// 4. Collect all types transitively referenced by FILTERED commands
 // ---------------------------------------------------------------------------
 
 console.log("Computing transitive type dependencies...");
@@ -108,16 +177,16 @@ function collectNamedTypes(t: any, out: Set<string>): void {
   }
 }
 
-// Seed: all types referenced by command arguments and result types
+// Seed: all types referenced by filtered command arguments and result types
 const referencedTypes = new Set<string>();
 
-for (const fn of ndcFunctions) {
+for (const fn of filteredFunctions) {
   collectNamedTypes(fn.result_type, referencedTypes);
   for (const [, argDef] of Object.entries(fn.arguments ?? {}) as [string, any][]) {
     collectNamedTypes(argDef.type, referencedTypes);
   }
 }
-for (const proc of ndcProcedures) {
+for (const proc of filteredProcedures) {
   collectNamedTypes(proc.result_type, referencedTypes);
   for (const [, argDef] of Object.entries(proc.arguments ?? {}) as [string, any][]) {
     collectNamedTypes(argDef.type, referencedTypes);
@@ -157,7 +226,7 @@ if (missingTypes.size > 0) {
 console.log(`  Referenced scalars: ${usedScalars.size}, objects: ${usedObjects.size}`);
 
 // ---------------------------------------------------------------------------
-// 4. Helpers
+// 5. Helpers
 // ---------------------------------------------------------------------------
 
 /** Resolve an NDC named type to its supergraph name */
@@ -199,7 +268,7 @@ function toPascalCase(s: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// 5. Generate ScalarType + DataConnectorScalarRepresentation
+// 6. Generate ScalarType + DataConnectorScalarRepresentation
 // ---------------------------------------------------------------------------
 
 console.log("Generating scalar types...");
@@ -250,7 +319,7 @@ for (const ndcName of usedScalars) {
 console.log(`  Generated ${scalarDocs.length} scalar documents`);
 
 // ---------------------------------------------------------------------------
-// 6. Generate ObjectType + TypePermissions
+// 7. Generate ObjectType + TypePermissions
 // ---------------------------------------------------------------------------
 
 console.log("Generating object types...");
@@ -312,7 +381,7 @@ for (const ndcName of usedObjects) {
 console.log(`  Generated ${objectDocs.length} object type documents`);
 
 // ---------------------------------------------------------------------------
-// 7. Generate Command + CommandPermissions
+// 8. Generate Command + CommandPermissions
 // ---------------------------------------------------------------------------
 
 console.log("Generating commands...");
@@ -374,8 +443,8 @@ function generateCommand(
 }
 
 // Detect name collisions between functions and procedures
-const fnNames = new Set(ndcFunctions.map((fn: any) => toPascalCase(fn.name)));
-const procNames = new Set(ndcProcedures.map((p: any) => toPascalCase(p.name)));
+const fnNames = new Set(filteredFunctions.map((fn: any) => toPascalCase(fn.name)));
+const procNames = new Set(filteredProcedures.map((p: any) => toPascalCase(p.name)));
 const collisions = new Set([...fnNames].filter((n) => procNames.has(n)));
 
 if (collisions.size > 0) {
@@ -385,7 +454,7 @@ if (collisions.size > 0) {
 // Also detect collisions within functions/procedures themselves
 const usedCommandNames = new Set<string>();
 
-for (const fn of ndcFunctions) {
+for (const fn of filteredFunctions) {
   let pascal = toPascalCase(fn.name);
   if (usedCommandNames.has(pascal)) pascal = `${pascal}Query`;
   usedCommandNames.add(pascal);
@@ -394,7 +463,7 @@ for (const fn of ndcFunctions) {
   );
 }
 
-for (const proc of ndcProcedures) {
+for (const proc of filteredProcedures) {
   let pascal = toPascalCase(proc.name);
   if (usedCommandNames.has(pascal)) pascal = `${pascal}Mutation`;
   if (usedCommandNames.has(pascal)) pascal = `${pascal}_${proc.name}`;
@@ -407,7 +476,58 @@ for (const proc of ndcProcedures) {
 console.log(`  Generated ${commandDocs.length} commands`);
 
 // ---------------------------------------------------------------------------
-// 8. Write output files
+// 9. Trim and write the DataConnectorLink
+// ---------------------------------------------------------------------------
+
+console.log("Trimming DataConnectorLink schema...");
+
+// Build trimmed NDC schema
+const trimmedScalarTypes: Record<string, any> = {};
+for (const name of usedScalars) {
+  trimmedScalarTypes[name] = ndcScalars[name];
+}
+// Always include _HeaderMap if it exists (needed by functions/procedures)
+if (ndcScalars["_HeaderMap"]) {
+  trimmedScalarTypes["_HeaderMap"] = ndcScalars["_HeaderMap"];
+}
+
+const trimmedObjectTypes: Record<string, any> = {};
+for (const name of usedObjects) {
+  trimmedObjectTypes[name] = ndcObjects[name];
+}
+
+const trimmedSchema = {
+  ...schema,
+  scalar_types: trimmedScalarTypes,
+  object_types: trimmedObjectTypes,
+  functions: filteredFunctions,
+  procedures: filteredProcedures,
+};
+
+const trimmedConnectorLink = {
+  ...connectorLinkDoc,
+  definition: {
+    ...connectorLinkDoc.definition,
+    schema: {
+      ...connectorLinkDoc.definition.schema,
+      schema: trimmedSchema,
+    },
+  },
+};
+
+const connectorLinkContent = stringify(trimmedConnectorLink, {
+  lineWidth: 0, // prevent YAML line wrapping
+});
+
+const connectorLinkPath = `${OUTPUT_DIR}/apple_gql.hml`;
+await Bun.write(connectorLinkPath, connectorLinkContent);
+
+const clSize = (new TextEncoder().encode(connectorLinkContent).length / 1024 / 1024).toFixed(2);
+console.log(`  Trimmed scalars: ${Object.keys(trimmedScalarTypes).length}, objects: ${Object.keys(trimmedObjectTypes).length}`);
+console.log(`  Trimmed functions: ${filteredFunctions.length}, procedures: ${filteredProcedures.length}`);
+
+// ---------------------------------------------------------------------------
+// 10. Write types and commands files
 // ---------------------------------------------------------------------------
 
 const typesPath = `${OUTPUT_DIR}/apple_gql-types.hml`;
@@ -418,10 +538,13 @@ const commandsPath = `${OUTPUT_DIR}/apple_gql_commands.hml`;
 const commandsContent = commandDocs.join("\n");
 await Bun.write(commandsPath, commandsContent);
 
-const typesSize = (new TextEncoder().encode(typesContent).length / 1024 / 1024).toFixed(1);
-const cmdsSize = (new TextEncoder().encode(commandsContent).length / 1024 / 1024).toFixed(1);
+const typesSize = (new TextEncoder().encode(typesContent).length / 1024 / 1024).toFixed(2);
+const cmdsSize = (new TextEncoder().encode(commandsContent).length / 1024 / 1024).toFixed(2);
 
 console.log(`\nWritten:`);
+console.log(`  ${connectorLinkPath} (${clSize} MB)`);
 console.log(`  ${typesPath} (${typesSize} MB)`);
 console.log(`  ${commandsPath} (${cmdsSize} MB)`);
+const totalMB = (parseFloat(clSize) + parseFloat(typesSize) + parseFloat(cmdsSize)).toFixed(2);
+console.log(`  Total: ${totalMB} MB`);
 console.log(`\nNext: AWS_PROFILE=banyan bun run hasura:deploy`);
