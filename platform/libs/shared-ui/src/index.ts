@@ -140,7 +140,7 @@ export {
 
 // Composites
 export { default as MarkdownRenderer } from './composites/MarkdownRenderer';
-export { default as DataTable } from './composites/DataTable';
+export { default as DataTable, type ColumnDef } from './composites/DataTable';
 export { default as PageHeader } from './composites/PageHeader';
 export { default as StatCard } from './composites/StatCard';
 export { default as EmptyState } from './composites/EmptyState';

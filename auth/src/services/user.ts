@@ -156,3 +156,256 @@ export async function recordLoginAttempt(opts: {
     ]
   );
 }
+
+// ---------- Admin user management ----------
+
+export interface AdminUserView extends AuthUser {
+  title?: string;
+  department?: string;
+  locale?: string;
+  lastLoginAt?: string;
+  createdAt: string;
+}
+
+export interface ListUsersOptions {
+  tenantId: string;
+  search?: string;
+  userType?: string;
+  userLevel?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface ListUsersResult {
+  users: AdminUserView[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+interface AdminUserRow extends UserRow {
+  title: string | null;
+  department: string | null;
+  locale: string | null;
+  last_login_at: string | null;
+  created_at: string;
+}
+
+function rowToAdminUser(row: AdminUserRow): AdminUserView {
+  return {
+    ...rowToUser(row),
+    title: row.title ?? undefined,
+    department: row.department ?? undefined,
+    locale: row.locale ?? undefined,
+    lastLoginAt: row.last_login_at ?? undefined,
+    createdAt: row.created_at,
+  };
+}
+
+export async function listUsers(opts: ListUsersOptions): Promise<ListUsersResult> {
+  const page = opts.page ?? 1;
+  const limit = Math.min(opts.limit ?? 20, 100);
+  const offset = (page - 1) * limit;
+
+  const conditions: string[] = ["tenant_id = $1", "deleted_at IS NULL"];
+  const params: unknown[] = [opts.tenantId];
+  let paramIdx = 2;
+
+  if (opts.search) {
+    conditions.push(`(name ILIKE $${paramIdx} OR email ILIKE $${paramIdx})`);
+    params.push(`%${opts.search}%`);
+    paramIdx++;
+  }
+
+  if (opts.userType) {
+    conditions.push(`user_type = $${paramIdx}`);
+    params.push(opts.userType);
+    paramIdx++;
+  }
+
+  if (opts.userLevel) {
+    conditions.push(`user_level = $${paramIdx}`);
+    params.push(opts.userLevel);
+    paramIdx++;
+  }
+
+  const where = conditions.join(" AND ");
+
+  const countResult = await query<{ count: string }>(
+    `SELECT COUNT(*) as count FROM users WHERE ${where}`,
+    params
+  );
+  const total = parseInt(countResult.rows[0]!.count, 10);
+
+  const dataResult = await query<AdminUserRow>(
+    `SELECT id, email, name, tenant_id, user_type, user_level, phone,
+            title, department, locale, last_login_at, created_at
+     FROM users
+     WHERE ${where}
+     ORDER BY created_at DESC
+     LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
+    [...params, limit, offset]
+  );
+
+  return {
+    users: dataResult.rows.map(rowToAdminUser),
+    total,
+    page,
+    limit,
+  };
+}
+
+export async function createUser(opts: {
+  tenantId: string;
+  email: string;
+  name: string;
+  phone?: string;
+  userType: string;
+  userLevel: string;
+  title?: string;
+  department?: string;
+  locale?: string;
+  createdBy: string;
+}): Promise<AdminUserView> {
+  const id = crypto.randomUUID();
+  const result = await query<AdminUserRow>(
+    `INSERT INTO users (id, tenant_id, email, name, phone, user_type, user_level, title, department, locale, created_by, updated_by)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $11)
+     RETURNING id, email, name, tenant_id, user_type, user_level, phone, title, department, locale, last_login_at, created_at`,
+    [
+      id,
+      opts.tenantId,
+      opts.email,
+      opts.name,
+      opts.phone ?? null,
+      opts.userType,
+      opts.userLevel,
+      opts.title ?? null,
+      opts.department ?? null,
+      opts.locale ?? null,
+      opts.createdBy,
+    ]
+  );
+
+  return rowToAdminUser(result.rows[0]!);
+}
+
+export async function updateUser(
+  userId: string,
+  tenantId: string,
+  fields: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    userType?: string;
+    userLevel?: string;
+    title?: string;
+    department?: string;
+    locale?: string;
+  },
+  updatedBy: string
+): Promise<AdminUserView | null> {
+  const setClauses: string[] = ["updated_at = now()", "updated_by = $3"];
+  const params: unknown[] = [userId, tenantId, updatedBy];
+  let paramIdx = 4;
+
+  const fieldMap: Record<string, string> = {
+    name: "name",
+    email: "email",
+    phone: "phone",
+    userType: "user_type",
+    userLevel: "user_level",
+    title: "title",
+    department: "department",
+    locale: "locale",
+  };
+
+  for (const [key, column] of Object.entries(fieldMap)) {
+    const value = fields[key as keyof typeof fields];
+    if (value !== undefined) {
+      setClauses.push(`${column} = $${paramIdx}`);
+      params.push(value);
+      paramIdx++;
+    }
+  }
+
+  if (setClauses.length === 2) {
+    // No fields to update besides updated_at/updated_by
+    return findAdminUserById(userId, tenantId);
+  }
+
+  const result = await query<AdminUserRow>(
+    `UPDATE users
+     SET ${setClauses.join(", ")}
+     WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL
+     RETURNING id, email, name, tenant_id, user_type, user_level, phone, title, department, locale, last_login_at, created_at`,
+    params
+  );
+
+  const row = result.rows[0];
+  return row ? rowToAdminUser(row) : null;
+}
+
+export async function softDeleteUser(
+  userId: string,
+  tenantId: string,
+  deletedBy: string
+): Promise<boolean> {
+  const result = await query(
+    `UPDATE users
+     SET deleted_at = now(), deleted_by = $3, updated_at = now(), updated_by = $3
+     WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
+    [userId, tenantId, deletedBy]
+  );
+
+  return result.rowCount !== null && result.rowCount > 0;
+}
+
+export async function findAdminUserById(
+  userId: string,
+  tenantId: string
+): Promise<AdminUserView | null> {
+  const result = await query<AdminUserRow>(
+    `SELECT id, email, name, tenant_id, user_type, user_level, phone,
+            title, department, locale, last_login_at, created_at
+     FROM users
+     WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
+    [userId, tenantId]
+  );
+
+  const row = result.rows[0];
+  return row ? rowToAdminUser(row) : null;
+}
+
+interface TenantRow {
+  id: string;
+  name: string;
+  national: string | null;
+  configuration: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export interface TenantView {
+  id: string;
+  name: string;
+  national?: string;
+  configuration?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export async function listTenants(): Promise<TenantView[]> {
+  const result = await query<TenantRow>(
+    `SELECT id, name, national, configuration, created_at
+     FROM tenants
+     WHERE deleted_at IS NULL
+     ORDER BY name ASC`
+  );
+
+  return result.rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    national: row.national ?? undefined,
+    configuration: row.configuration ?? undefined,
+    createdAt: row.created_at,
+  }));
+}

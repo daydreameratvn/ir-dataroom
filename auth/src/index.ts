@@ -7,6 +7,7 @@ import otp from "./routes/otp.ts";
 import passkey from "./routes/passkey.ts";
 import token from "./routes/token.ts";
 import fatima from "./routes/fatima.ts";
+import admin from "./routes/admin.ts";
 
 const app = new Hono();
 
@@ -17,7 +18,7 @@ app.use(
     origin: [authConfig.rpOrigin, "http://localhost:3000"],
     credentials: true,
     allowHeaders: ["Content-Type", "Authorization", "x-tenant-id"],
-    allowMethods: ["GET", "POST", "OPTIONS"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
 app.use("*", logger());
@@ -33,6 +34,7 @@ app.route("/auth", otp);
 app.route("/auth", passkey);
 app.route("/auth", token);
 app.route("/auth", fatima);
+app.route("/auth", admin);
 
 console.log(`Auth service starting on port ${authConfig.port}`);
 

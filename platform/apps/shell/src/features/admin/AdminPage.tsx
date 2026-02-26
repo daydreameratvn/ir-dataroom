@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Settings } from 'lucide-react';
+import { Settings, ScrollText } from 'lucide-react';
 import {
   PageHeader,
   EmptyState,
@@ -9,6 +9,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@papaya/shared-ui';
+import UserTable from './components/UserTable';
 
 export default function AdminPage() {
   const { t } = useTranslation();
@@ -26,12 +27,7 @@ export default function AdminPage() {
           <TabsTrigger value="audit">{t('nav.adminAudit')}</TabsTrigger>
         </TabsList>
         <TabsContent value="users" className="mt-4">
-          <EmptyState
-            icon={<Settings className="h-6 w-6" />}
-            title={t('admin.usersTitle')}
-            description={t('admin.usersDesc')}
-            action={<Button variant="outline">{t('common.getStarted')}</Button>}
-          />
+          <UserTable />
         </TabsContent>
         <TabsContent value="settings" className="mt-4">
           <EmptyState
@@ -43,7 +39,7 @@ export default function AdminPage() {
         </TabsContent>
         <TabsContent value="audit" className="mt-4">
           <EmptyState
-            icon={<Settings className="h-6 w-6" />}
+            icon={<ScrollText className="h-6 w-6" />}
             title={t('admin.auditTitle')}
             description={t('admin.auditDesc')}
             action={<Button variant="outline">{t('common.getStarted')}</Button>}

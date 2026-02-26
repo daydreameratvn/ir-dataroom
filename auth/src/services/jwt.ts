@@ -14,6 +14,7 @@ export interface TokenPayload {
   email: string;
   name: string;
   tenantId: string;
+  userType: string;
   role: string;
   allowedRoles: string[];
 }
@@ -41,6 +42,7 @@ export async function signAccessToken(payload: TokenPayload): Promise<string> {
     "https://hasura.io/jwt/claims": hasuraClaims,
     email: payload.email,
     name: payload.name,
+    userType: payload.userType,
   })
     .setProtectedHeader({ alg: "HS256", typ: "JWT" })
     .setSubject(payload.sub)
@@ -64,6 +66,7 @@ export async function verifyAccessToken(
       email: (payload as Record<string, unknown>).email as string,
       name: (payload as Record<string, unknown>).name as string,
       tenantId: claims["x-hasura-tenant-id"],
+      userType: (payload as Record<string, unknown>).userType as string,
       role: claims["x-hasura-default-role"],
       allowedRoles: claims["x-hasura-allowed-roles"],
     };

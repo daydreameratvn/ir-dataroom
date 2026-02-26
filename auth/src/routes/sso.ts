@@ -170,6 +170,7 @@ sso.get("/callback/:provider", async (c) => {
       email: user.email,
       name: user.name,
       tenantId: user.tenantId,
+      userType: user.userType,
       role: roles.role,
       allowedRoles: roles.allowedRoles,
     });
