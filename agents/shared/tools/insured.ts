@@ -141,16 +141,25 @@ export const benefitsTool: AgentTool = {
   },
 };
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export const balanceTool: AgentTool = {
   name: "balance",
   label: "Balance",
   description: "Tool to get the balance of a benefit",
   parameters: Type.Object({
     claim_case_id: Type.String({ description: "The claim case ID" }),
-    insured_certificate_history_id: Type.String({ description: "The insured certificate history ID" }),
+    insured_certificate_history_id: Type.String({ description: "The insured certificate history ID — get this from insured tool: insured_certificates_by_pk.insured_certificate_histories[].id" }),
     plan_insured_benefit_id: Type.String({ description: "The plan insured benefit ID" }),
   }),
   execute: async (toolCallId, { claim_case_id, insured_certificate_history_id, plan_insured_benefit_id }) => {
+    if (!insured_certificate_history_id || !UUID_RE.test(insured_certificate_history_id)) {
+      return {
+        content: [{ type: "text", text: `ERROR: insured_certificate_history_id is invalid ("${insured_certificate_history_id}"). You must get the correct UUID from the insured tool response: insured_certificates_by_pk.insured_certificate_histories[].id — pick the history whose date range covers the claim's physical_examination_date.` }],
+        details: { error: true },
+        isError: true,
+      };
+    }
     const { data } = await client.query({
       query: graphql(`
         query ClaimInsuredBenefitDetailV2($claimCaseId: UUID!, $planInsuredBenefitId: UUID!, $insuredCertificateHistoryId: UUID!, $gracePeriodStartDate: DateTime) {

@@ -225,10 +225,127 @@ function extractDroneResultFromTracker(tracker: ToolTracker): DroneResult {
 
 const AGENT_TIMEOUT_MS = 600_000; // 10 minutes
 const MAX_TOOL_CALLS = 40; // Safety limit
+const BEDROCK_RETRY_MAX = 3; // Retry up to 2 times on transient Bedrock failures (0 tool calls)
+
+/**
+ * Run the drone agent for a single claim and return the tool tracker + tool call count.
+ * Extracted so the caller can retry on transient Bedrock failures.
+ */
+async function runDroneAgent(
+  claimCode: string,
+  attempt: number,
+  options?: { tier?: 1 | 2 },
+): Promise<{ tracker: ToolTracker; toolCallCount: number }> {
+  const toolTracker: ToolTracker = {
+    calledTools: new Set<string>(),
+    toolErrors: new Map<string, string>(),
+    complianceNotCompliant: false,
+    assessBenefitDenial: false,
+  };
+  let toolCallCount = 0;
+
+  let agent: Awaited<ReturnType<typeof createDroneAgent>> | null = null;
+  let timeoutTimer: ReturnType<typeof setTimeout> | null = null;
+  const overallStart = Date.now();
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutTimer = setTimeout(() => {
+      const elapsed = Math.round((Date.now() - overallStart) / 1000);
+      console.warn(`[Drone] ${claimCode} overall timeout after ${elapsed}s, aborting`);
+      agent?.abort();
+      reject(new Error("DRONE_AGENT_TIMEOUT"));
+    }, AGENT_TIMEOUT_MS);
+  });
+
+  const workPromise = (async () => {
+    const agentStart = Date.now();
+    const tag = attempt > 1 ? ` (retry #${attempt - 1})` : "";
+    console.log(`[Drone] ${claimCode} creating agent...${tag}`);
+    agent = await createDroneAgent(claimCode, { skipCompliance: true, tier: options?.tier });
+    console.log(`[Drone] ${claimCode} agent created in ${Date.now() - agentStart}ms`);
+
+    agent.subscribe((e) => {
+      switch (e.type) {
+        case "tool_execution_start":
+          toolCallCount++;
+          console.log(`[Drone] ${claimCode} tool start [${toolCallCount}/${MAX_TOOL_CALLS}]: ${e.toolName}`);
+          toolTracker.calledTools.add(e.toolName);
+          if (toolCallCount >= MAX_TOOL_CALLS) {
+            console.warn(`[Drone] ${claimCode} exceeded max tool calls (${MAX_TOOL_CALLS}), aborting`);
+            agent!.abort();
+          }
+          break;
+        case "tool_execution_end": {
+          console.log(`[Drone] ${claimCode} tool end: ${e.toolName} (error=${e.isError})`);
+          if (e.isError) {
+            let errMsg = "Tool returned error";
+            try {
+              const res = e.result as any;
+              if (res?.content?.[0]?.text) errMsg = res.content[0].text;
+              else if (res?.message) errMsg = res.message;
+              else if (typeof res === "string") errMsg = res;
+            } catch { /* use default */ }
+            console.error(`[Drone] ${claimCode} tool ${e.toolName} error:`, errMsg);
+            toolTracker.toolErrors.set(e.toolName, errMsg);
+          } else {
+            toolTracker.toolErrors.delete(e.toolName);
+          }
+          if (e.toolName === "invokeComplianceAgent" && !e.isError && e.result) {
+            try {
+              const textContent = (e.result as any)?.content?.find?.((c: any) => c.type === "text");
+              if (textContent?.text) {
+                const parsed = JSON.parse(textContent.text);
+                if (parsed?.compliant === false) {
+                  toolTracker.complianceNotCompliant = true;
+                }
+              }
+            } catch { /* ignore parse errors */ }
+          }
+          if (e.toolName === "assessBenefit" && !e.isError && e.result) {
+            try {
+              const textContent = (e.result as any)?.content?.find?.((c: any) => c.type === "text");
+              if (textContent?.text) {
+                const parsed = JSON.parse(textContent.text);
+                const mutation = parsed?.createUpdateClaimDetail;
+                if (mutation?.error) {
+                  toolTracker.toolErrors.set("assessBenefit", `${mutation.error.code}: ${mutation.error.message}`);
+                }
+                if (mutation?.claimCaseDetailId === null) {
+                  toolTracker.toolErrors.set("assessBenefit", "No claimCaseDetailId returned");
+                }
+              }
+            } catch { /* ignore parse errors */ }
+          }
+          break;
+        }
+      }
+    });
+
+    const promptStart = Date.now();
+    console.log(`[Drone] ${claimCode} running agent.prompt()...`);
+    await agent.prompt(claimCode);
+    console.log(`[Drone] ${claimCode} agent completed in ${Date.now() - promptStart}ms`);
+  })();
+
+  try {
+    await Promise.race([workPromise, timeoutPromise]);
+  } finally {
+    if (timeoutTimer) {
+      clearTimeout(timeoutTimer);
+      timeoutTimer = null;
+    }
+  }
+
+  const elapsed = Math.round((Date.now() - overallStart) / 1000);
+  console.log(`[Drone] ${claimCode} total: ${elapsed}s, tools: ${[...toolTracker.calledTools].join(", ")}`);
+
+  return { tracker: toolTracker, toolCallCount };
+}
 
 export async function processDroneClaim(
   claimCaseId: string,
   claimCode: string,
+  options?: { tier?: 1 | 2 },
 ): Promise<{ status: "success" | "error" | "skipped" | "denied"; message?: string }> {
   // Skip if claim already has human-assessed benefits (don't override human work)
   const { data: detailData } = await getClient().query({
@@ -256,116 +373,46 @@ export async function processDroneClaim(
     return { status: "skipped", message: complianceFail };
   }
 
-  try {
-    // ── Overall timeout covers BOTH agent creation (Gemini pre-analysis) AND agent.prompt() ──
-    const overallStart = Date.now();
-    let agent: Awaited<ReturnType<typeof createDroneAgent>> | null = null;
-    let timeoutTimer: ReturnType<typeof setTimeout> | null = null;
-
-    const toolTracker: ToolTracker = {
-      calledTools: new Set<string>(),
-      toolErrors: new Map<string, string>(),
-      complianceNotCompliant: false,
-      assessBenefitDenial: false,
-    };
-    let toolCallCount = 0;
-
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      timeoutTimer = setTimeout(() => {
-        const elapsed = Math.round((Date.now() - overallStart) / 1000);
-        console.warn(`[Drone] ${claimCode} overall timeout after ${elapsed}s, aborting`);
-        agent?.abort();
-        reject(new Error("DRONE_AGENT_TIMEOUT"));
-      }, AGENT_TIMEOUT_MS);
-    });
-
-    const workPromise = (async () => {
-      // Create drone agent (includes background Gemini pre-analysis)
-      const agentStart = Date.now();
-      console.log(`[Drone] ${claimCode} creating agent...`);
-      agent = await createDroneAgent(claimCode, { skipCompliance: true });
-      console.log(`[Drone] ${claimCode} agent created in ${Date.now() - agentStart}ms`);
-
-      // Subscribe to tool events
-      agent.subscribe((e) => {
-        switch (e.type) {
-          case "tool_execution_start":
-            toolCallCount++;
-            console.log(`[Drone] ${claimCode} tool start [${toolCallCount}/${MAX_TOOL_CALLS}]: ${e.toolName}`);
-            toolTracker.calledTools.add(e.toolName);
-            if (toolCallCount >= MAX_TOOL_CALLS) {
-              console.warn(`[Drone] ${claimCode} exceeded max tool calls (${MAX_TOOL_CALLS}), aborting`);
-              agent!.abort();
+  // ── Check certificate history exists (required for balance & assessBenefit) ──
+  const { data: certData } = await getClient().query({
+    query: graphql(`
+      query DroneCheckCertHistory($claimCaseId: uuid!) {
+        claim_cases(where: { claim_case_id: { _eq: $claimCaseId } }, limit: 1) {
+          insured_certificate {
+            insured_certificate_histories(where: { deleted_at: { _is_null: true } }, limit: 1) {
+              id
             }
-            break;
-          case "tool_execution_end": {
-            console.log(`[Drone] ${claimCode} tool end: ${e.toolName} (error=${e.isError})`);
-            if (e.isError) {
-              let errMsg = "Tool returned error";
-              try {
-                const res = e.result as any;
-                if (res?.content?.[0]?.text) errMsg = res.content[0].text;
-                else if (res?.message) errMsg = res.message;
-                else if (typeof res === "string") errMsg = res;
-              } catch { /* use default */ }
-              console.error(`[Drone] ${claimCode} tool ${e.toolName} error:`, errMsg);
-              toolTracker.toolErrors.set(e.toolName, errMsg);
-            } else {
-              // On success, clear previous errors for same tool (retry succeeded)
-              toolTracker.toolErrors.delete(e.toolName);
-            }
-            if (e.toolName === "invokeComplianceAgent" && !e.isError && e.result) {
-              try {
-                const textContent = (e.result as any)?.content?.find?.((c: any) => c.type === "text");
-                if (textContent?.text) {
-                  const parsed = JSON.parse(textContent.text);
-                  if (parsed?.compliant === false) {
-                    toolTracker.complianceNotCompliant = true;
-                  }
-                }
-              } catch { /* ignore parse errors */ }
-            }
-            if (e.toolName === "assessBenefit" && !e.isError && e.result) {
-              try {
-                const textContent = (e.result as any)?.content?.find?.((c: any) => c.type === "text");
-                if (textContent?.text) {
-                  const parsed = JSON.parse(textContent.text);
-                  const mutation = parsed?.createUpdateClaimDetail;
-                  if (mutation?.error) {
-                    toolTracker.toolErrors.set("assessBenefit", `${mutation.error.code}: ${mutation.error.message}`);
-                  }
-                  if (mutation?.claimCaseDetailId === null) {
-                    toolTracker.toolErrors.set("assessBenefit", "No claimCaseDetailId returned");
-                  }
-                }
-              } catch { /* ignore parse errors */ }
-            }
-            break;
           }
         }
-      });
-
-      // Run agent
-      const promptStart = Date.now();
-      console.log(`[Drone] ${claimCode} running agent.prompt()...`);
-      await agent.prompt(claimCode);
-      console.log(`[Drone] ${claimCode} agent completed in ${Date.now() - promptStart}ms`);
-    })();
-
-    try {
-      await Promise.race([workPromise, timeoutPromise]);
-    } finally {
-      if (timeoutTimer) {
-        clearTimeout(timeoutTimer);
-        timeoutTimer = null;
       }
+    `),
+    variables: { claimCaseId },
+    fetchPolicy: "no-cache",
+  });
+  const histories = certData?.claim_cases?.[0]?.insured_certificate?.insured_certificate_histories ?? [];
+  if (histories.length === 0) {
+    console.log(`[Drone] ${claimCode} skipped: no insured_certificate_histories`);
+    return { status: "skipped", message: "No insured certificate history — cannot assess benefit balance" };
+  }
+
+  try {
+    // Run agent with retry on transient Bedrock failures (0 tool calls = silent stream error)
+    for (let attempt = 1; attempt <= BEDROCK_RETRY_MAX; attempt++) {
+      const { tracker, toolCallCount } = await runDroneAgent(claimCode, attempt, { tier: options?.tier });
+
+      // Transient Bedrock failure: agent completed instantly with 0 tool calls.
+      // Retry once with a fresh agent — the next request usually succeeds.
+      if (toolCallCount === 0 && attempt < BEDROCK_RETRY_MAX) {
+        console.warn(`[Drone] ${claimCode} completed with 0 tool calls (transient Bedrock failure), retrying (${attempt}/${BEDROCK_RETRY_MAX})...`);
+        await new Promise((r) => setTimeout(r, attempt * 3000)); // Increasing backoff
+        continue;
+      }
+
+      return extractDroneResultFromTracker(tracker);
     }
 
-    const elapsed = Math.round((Date.now() - overallStart) / 1000);
-    console.log(`[Drone] ${claimCode} total: ${elapsed}s, tools: ${[...toolTracker.calledTools].join(", ")}`);
-
-    // Determine result from tracked events
-    return extractDroneResultFromTracker(toolTracker);
+    // Should not reach here, but just in case
+    return { status: "error", message: "Exhausted retries" };
   } catch (error) {
     const isTimeout = error instanceof Error && error.message === "DRONE_AGENT_TIMEOUT";
     const msg = isTimeout

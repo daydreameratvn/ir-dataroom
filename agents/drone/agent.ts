@@ -35,7 +35,7 @@ import { invokeComplianceAgentTool } from "../claim-assessor/tools/document-comp
  * - Batched Google search instructions
  * - skipCompliance option (fast pre-check done in runner)
  */
-export async function createDroneAgent(claimCode: string, options?: { skipCompliance?: boolean }) {
+export async function createDroneAgent(claimCode: string, options?: { skipCompliance?: boolean; tier?: 1 | 2 }) {
   const client = getClient();
 
   // 1. Pre-fetch claim documents
@@ -219,8 +219,12 @@ ${skipCompliance
       6. Include compliance findings in the final assessment summary.`}
 
     **Context**:
-      - This claim is a Tier 1 chronic disease case (Hypertension, Diabetes, Dyslipidemia, GERD, Asthma, etc.)
+${(options?.tier ?? 1) === 1
+      ? `      - This claim is a Tier 1 chronic disease case (Hypertension, Diabetes, Dyslipidemia, GERD, Asthma, etc.)
+      - Treatment is drug-only outpatient — no surgery, no procedures.`
+      : `      - This claim is a Tier 2 general outpatient case. It may be acute (respiratory infection, back pain, dermatitis, gastroenteritis, etc.) or chronic.
       - Treatment is drug-only outpatient — no surgery, no procedures.
+      - For acute conditions, verify the treatment matches the diagnosed condition and check drug appropriateness.`}
 
     **Skills**:
     **Assessment** (proceed after compliance check passes):

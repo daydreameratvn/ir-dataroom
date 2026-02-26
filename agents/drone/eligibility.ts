@@ -29,6 +29,59 @@ export const TIER1_ICD_PREFIXES = [
 ] as const;
 
 /**
+ * Tier 2 ICD Prefixes — common acute/general outpatient claims.
+ * Broader than Tier 1: includes acute respiratory, musculoskeletal, dermatology, GI, ENT.
+ * Based on ICD frequency analysis of 1,693 unassessed InProgress OutPatient claims (Feb 2026).
+ */
+export const TIER2_ICD_PREFIXES = [
+  // Acute respiratory
+  "J00", // Acute nasopharyngitis (common cold)
+  "J01", // Acute sinusitis
+  "J02", // Acute pharyngitis
+  "J03", // Acute tonsillitis
+  "J06", // Acute upper respiratory infection
+  "J20", // Acute bronchitis
+  "J21", // Acute bronchiolitis
+  "J34", // Nasal turbinate hypertrophy
+  // Musculoskeletal
+  "M54", // Back pain
+  "M25", // Joint effusion / joint disorders
+  "M17", // Knee osteoarthritis
+  "M47", // Spondylosis (spinal degeneration)
+  "M51", // Intervertebral disc disorders
+  "M65", // Synovitis and tenosynovitis
+  // Digestive / GI
+  "K30", // Functional dyspepsia
+  "K76", // Other liver diseases
+  "K64", // Hemorrhoids
+  "A04", // Bacterial intestinal infections
+  "A09", // Gastroenteritis
+  // Dermatology
+  "L20", // Atopic dermatitis
+  "L23", // Allergic contact dermatitis
+  "L30", // Other dermatitis
+  "L50", // Urticaria (hives)
+  // ENT / Eye / Ear
+  "H81", // Vestibular disorders
+  "H04", // Dry eye syndrome / lacrimal disorders
+  "H60", // Otitis externa
+  "H66", // Otitis media
+  // Other common outpatient
+  "E79", // Hyperuricemia (gout-related)
+  "D50", // Iron deficiency anaemia
+  "R10", // Abdominal pain
+  "R73", // Hyperglycaemia NOS
+] as const;
+
+export type DroneTier = 1 | 2;
+
+/** Returns the ICD prefix list for a given tier. Tier 2 includes Tier 1. */
+export function getIcdPrefixesForTier(tier: DroneTier): readonly string[] {
+  if (tier === 1) return TIER1_ICD_PREFIXES;
+  return [...TIER1_ICD_PREFIXES, ...TIER2_ICD_PREFIXES];
+}
+
+/**
  * Vietnamese keywords indicating surgical/procedural treatments — NOT drug-only.
  */
 const EXCLUSION_KEYWORDS = [
@@ -48,14 +101,16 @@ export interface DroneEligibilityResult {
 }
 
 /**
- * Checks whether a claim's ICD codes match Tier 1 chronic prefixes
+ * Checks whether a claim's ICD codes match the given tier's prefixes
  * and treatment has no excluded keywords.
  */
 export function isClaimDroneEligible(claim: {
   icdCodes: string[];
   treatmentMethod?: string | null;
   insuredBenefitType?: string | null;
-}): DroneEligibilityResult {
+}, tier: DroneTier = 1): DroneEligibilityResult {
+  const prefixes = getIcdPrefixesForTier(tier);
+
   // Must be OutPatient
   if (claim.insuredBenefitType && claim.insuredBenefitType !== "OutPatient") {
     return { eligible: false, reason: `Not OutPatient: ${claim.insuredBenefitType}` };
@@ -66,15 +121,15 @@ export function isClaimDroneEligible(claim: {
     return { eligible: false, reason: "No ICD codes" };
   }
 
-  // All ICD codes must match Tier 1 prefixes
+  // All ICD codes must match the tier's prefixes
   const allMatch = claim.icdCodes.every((code) =>
-    TIER1_ICD_PREFIXES.some((prefix) => code.toUpperCase().startsWith(prefix)),
+    prefixes.some((prefix) => code.toUpperCase().startsWith(prefix)),
   );
   if (!allMatch) {
     const nonMatching = claim.icdCodes.filter(
-      (code) => !TIER1_ICD_PREFIXES.some((prefix) => code.toUpperCase().startsWith(prefix)),
+      (code) => !prefixes.some((prefix) => code.toUpperCase().startsWith(prefix)),
     );
-    return { eligible: false, reason: `Non-Tier1 ICD codes: ${nonMatching.join(", ")}` };
+    return { eligible: false, reason: `Non-Tier${tier} ICD codes: ${nonMatching.join(", ")}` };
   }
 
   // Treatment must not contain exclusion keywords
@@ -86,7 +141,8 @@ export function isClaimDroneEligible(claim: {
     }
   }
 
-  return { eligible: true, reason: "Tier 1 chronic drug-only claim" };
+  const tierLabel = tier === 1 ? "Tier 1 chronic drug-only claim" : "Tier 2 general outpatient claim";
+  return { eligible: true, reason: tierLabel };
 }
 
 // GraphQL query: InProgress + OutPatient + NON_LIFE claims, newest first, over-fetch for post-filtering
@@ -126,17 +182,19 @@ const GetDroneEligibleClaims = graphql(`
 export interface EligibleClaim {
   id: string;
   code: string;
+  benefitType?: string;
+  icdCodes?: string[];
 }
 
 /**
- * Fetches InProgress OutPatient claims and post-filters for Tier 1 eligibility.
- * Over-fetches 10x batchSize (min 50) to account for claims without ICD codes.
+ * Fetches InProgress OutPatient claims and post-filters for eligibility.
+ * Over-fetches 20x batchSize (min 200) to account for claims without ICD codes.
  */
-export async function fetchDroneEligibleClaims(batchSize: number): Promise<EligibleClaim[]> {
+export async function fetchDroneEligibleClaims(batchSize: number, tier: DroneTier = 1): Promise<EligibleClaim[]> {
   const client = getClient();
   const { data } = await client.query({
     query: GetDroneEligibleClaims,
-    variables: { limit: Math.max(batchSize * 10, 50) },
+    variables: { limit: Math.max(batchSize * 20, 200) },
     fetchPolicy: "no-cache",
   });
 
@@ -159,10 +217,15 @@ export async function fetchDroneEligibleClaims(batchSize: number): Promise<Eligi
       icdCodes,
       treatmentMethod: claim.treatment_method,
       insuredBenefitType: claim.insured_benefit_type?.value,
-    });
+    }, tier);
 
     if (result.eligible) {
-      eligible.push({ id: claim.id, code: claim.code });
+      eligible.push({
+        id: claim.id,
+        code: claim.code,
+        benefitType: claim.insured_benefit_type?.value,
+        icdCodes: icdCodes,
+      });
     }
   }
 

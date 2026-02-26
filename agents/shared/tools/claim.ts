@@ -227,6 +227,21 @@ export const assessBenefitTool: AgentTool = {
     }),
   }),
   execute: async (toolCallId, { claim_case_id, claim_code, detail }) => {
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!detail.insured_certificate_history_id || !UUID_RE.test(detail.insured_certificate_history_id)) {
+      return {
+        content: [{ type: "text", text: `ERROR: insured_certificate_history_id is invalid ("${detail.insured_certificate_history_id}"). You must get the correct UUID from the insured tool response: insured_certificates_by_pk.insured_certificate_histories[].id — pick the history whose date range covers the claim's physical_examination_date.` }],
+        details: { error: true },
+        isError: true,
+      };
+    }
+    if (!detail.plan_insured_benefit_id || !UUID_RE.test(detail.plan_insured_benefit_id)) {
+      return {
+        content: [{ type: "text", text: `ERROR: plan_insured_benefit_id is invalid ("${detail.plan_insured_benefit_id}"). You must get the correct UUID from the benefits tool response — pick the benefit that matches the claim's insured_benefit_type (e.g. OutPatient).` }],
+        details: { error: true },
+        isError: true,
+      };
+    }
     const CreateUpdateClaimDetailDocument = graphql(`
       mutation CreateUpdateClaimDetailV2($input: CreateUpdateClaimDetailInput!, $options: CreateUpdateClaimDetailOptions) {
         createUpdateClaimDetail(input: $input, options: $options) {

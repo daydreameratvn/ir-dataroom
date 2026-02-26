@@ -1,21 +1,20 @@
 import { getModel } from "@mariozechner/pi-ai";
 
-// Bedrock models — use US cross-region inference profile IDs.
-// APAC profiles don't include Claude 4.x models in pi-ai's registry,
-// and GLOBAL profiles need separate use-case form approval.
-// US profiles work and are registered in pi-ai.
+// Bedrock models — use GLOBAL cross-region inference profile IDs.
+// APAC profiles don't include Claude 4.6/Opus; global profiles route
+// to the nearest available region from any AWS_REGION endpoint.
 
 export const bedrockOpus = getModel(
   "amazon-bedrock",
-  "us.anthropic.claude-opus-4-6-v1",
+  "global.anthropic.claude-opus-4-6-v1",
 );
 
 export const bedrockSonnet = getModel(
   "amazon-bedrock",
-  "us.anthropic.claude-sonnet-4-6",
+  "global.anthropic.claude-sonnet-4-6",
 );
 
 export const bedrockHaiku = getModel(
   "amazon-bedrock",
-  "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+  "global.anthropic.claude-haiku-4-5-20251001-v1:0",
 );
