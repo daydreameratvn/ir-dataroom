@@ -564,11 +564,14 @@ export default function (pi: ExtensionAPI) {
 |----------|---------|
 | `AWS_PROFILE` or `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` | Bedrock access (Claude LLM) |
 | `AWS_REGION` | Bedrock region (default: `ap-southeast-1`) |
-| `HASURA_GRAPHQL_ENDPOINT` | Hasura API URL |
-| `HASURA_ADMIN_SECRET` | Hasura admin authentication |
+| `HASURA_GRAPHQL_ENDPOINT` | Hasura DDN Cloud API URL |
+| `HASURA_ADMIN_TOKEN` | Pre-signed JWT for DDN Cloud auth (Bearer token) |
+| `HASURA_ADMIN_SECRET` | **Deprecated** — legacy self-hosted auth, falls back if `HASURA_ADMIN_TOKEN` is not set |
 | Additional provider keys | Fallback LLM providers as needed |
 
 **Note**: Do NOT use `ANTHROPIC_API_KEY`. All Claude access goes through Bedrock.
+
+**Hasura auth migration**: DDN Cloud uses Bearer JWT authentication instead of `x-hasura-admin-secret`. Set `HASURA_ADMIN_TOKEN` (the pre-signed JWT from SSM `/banyan/hasura/admin-token`) and update `HASURA_GRAPHQL_ENDPOINT` to the DDN Cloud URL. The client auto-detects which auth method to use.
 
 ---
 
