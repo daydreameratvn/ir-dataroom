@@ -10,6 +10,7 @@ import fatima from "./routes/fatima.ts";
 import admin from "./routes/admin.ts";
 import errorRoutes from "./routes/errors.ts";
 import statusRoutes from "./routes/status.ts";
+import drone from "./routes/drone.ts";
 
 const app = new Hono();
 
@@ -39,6 +40,7 @@ app.route("/auth", fatima);
 app.route("/auth", admin);
 app.route("/auth", errorRoutes);
 app.route("/auth", statusRoutes);
+app.route("/auth", drone);
 
 // Global error handler — auto-reports unhandled errors
 app.onError(async (err, c) => {
