@@ -49,6 +49,9 @@ export const banyanRdsSg = new aws.ec2.SecurityGroup("banyan-prod-rds-sg", {
   description: "Security group for RDS PostgreSQL",
   ingress: [
     {
+      // DDN Cloud (public) uses dynamic egress IPs — no static CIDR ranges available.
+      // Must allow 0.0.0.0/0; RDS auth (user/password + SSL) is the access control layer.
+      // To restrict, upgrade to Private DDN (dedicated or BYOC) for static IPs / VPC peering.
       description: "PostgreSQL from DDN Cloud via NLB",
       fromPort: 5432,
       toPort: 5432,

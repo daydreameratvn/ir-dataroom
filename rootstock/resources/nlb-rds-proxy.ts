@@ -18,7 +18,10 @@ export const banyanNlbSg = new aws.ec2.SecurityGroup("banyan-prod-nlb-sg", {
       fromPort: 5432,
       toPort: 5432,
       protocol: "tcp",
-      cidrBlocks: ["0.0.0.0/0"], // NLB is TCP passthrough; RDS SG provides fine-grained control
+      // DDN Cloud (public) uses dynamic egress IPs with no static CIDR ranges.
+      // Must allow 0.0.0.0/0 — RDS auth (user/password + SSL) is the access control layer.
+      // To restrict, upgrade to Private DDN (dedicated or BYOC) for static IPs / VPC peering.
+      cidrBlocks: ["0.0.0.0/0"],
     },
   ],
   egress: [
@@ -130,5 +133,21 @@ export const banyanNlbEndpointParam = new aws.ssm.Parameter("banyan-prod-nlb-rds
     Name: "banyan-prod-nlb-rds-endpoint",
     Component: "ssm",
     Service: "rds-proxy",
+  }),
+});
+
+// ============================================================
+// SSM Parameter — DDN Cloud GraphQL endpoint for consumers
+// ============================================================
+
+export const banyanDdnEndpointParam = new aws.ssm.Parameter("banyan-prod-ddn-endpoint", {
+  name: "/banyan/hasura/ddn-cloud-endpoint",
+  type: "String",
+  value: "https://banyan-prod.ddn.hasura.app/graphql",
+  description: "DDN Cloud GraphQL API endpoint for agents and frontend",
+  tags: mergeTags({
+    Name: "banyan-prod-ddn-endpoint",
+    Component: "ssm",
+    Service: "ddn-cloud",
   }),
 });
