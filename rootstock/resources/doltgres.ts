@@ -21,6 +21,11 @@ const doltgresReplicatorPassword = new random.RandomPassword("banyan-prod-doltgr
   overrideSpecial: "!#$%&*()-_=+[]{}|:?",
 });
 
+const doltgresRootPassword = new random.RandomPassword("banyan-prod-doltgres-root-password", {
+  length: 32,
+  special: false,
+});
+
 // ============================================================
 // Secrets Manager — Doltgres Credentials
 // ============================================================
@@ -37,16 +42,17 @@ export const banyanDoltgresSecret = new aws.secretsmanager.Secret("banyan-prod-d
 
 new aws.secretsmanager.SecretVersion("banyan-prod-doltgres-secret-version", {
   secretId: banyanDoltgresSecret.id,
-  secretString: pulumi.all([doltgresReplicatorPassword.result, banyanDb.address]).apply(([password, rdsAddress]) =>
+  secretString: pulumi.all([doltgresReplicatorPassword.result, doltgresRootPassword.result, banyanDb.address]).apply(([password, rootPassword, rdsAddress]) =>
     JSON.stringify({
       replicator_username: "doltgres_replicator",
       replicator_password: password,
+      root_password: rootPassword,
       rds_host: rdsAddress,
       rds_port: 5432,
       rds_connection_uri: `postgresql://doltgres_replicator:${encodeURIComponent(password)}@${rdsAddress}:5432/banyan`,
       doltgres_host: "doltgres.ddn.internal",
       doltgres_port: 5432,
-      connection_uri: `postgresql://root:@doltgres.ddn.internal:5432/banyan`,
+      connection_uri: `postgresql://postgres:${encodeURIComponent(rootPassword)}@doltgres.ddn.internal:5432/banyan`,
     }),
   ),
 });
@@ -210,7 +216,7 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
     operatingSystemFamily: "LINUX",
   },
   volumes: [{ name: "doltgres-data", configureAtLaunch: true }],
-  containerDefinitions: pulumi.all([banyanDoltgresLogGroup.name, doltgresConfigYaml]).apply(([logGroupName, configYaml]) =>
+  containerDefinitions: pulumi.all([banyanDoltgresLogGroup.name, doltgresConfigYaml, doltgresRootPassword.result]).apply(([logGroupName, configYaml, rootPassword]) =>
     JSON.stringify([
       {
         name: "init-doltgres-config",
@@ -243,6 +249,10 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
         dependsOn: [{ containerName: "init-doltgres-config", condition: "SUCCESS" }],
         portMappings: [{ containerPort: 5432, protocol: "tcp" }],
         mountPoints: [{ sourceVolume: "doltgres-data", containerPath: "/var/lib/doltgresql" }],
+        environment: [
+          { name: "DOLTGRES_PASSWORD", value: rootPassword },
+          { name: "DOLTGRES_DATABASE", value: "banyan" },
+        ],
         logConfiguration: {
           logDriver: "awslogs",
           options: {

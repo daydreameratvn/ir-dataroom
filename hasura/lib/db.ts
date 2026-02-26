@@ -120,9 +120,10 @@ export function getPgDumpPath(): string | null {
 
   // Check common homebrew locations (macOS)
   const brewPaths = [
-    "/opt/homebrew/opt/postgresql@16/bin/pg_dump",
     "/opt/homebrew/opt/postgresql@17/bin/pg_dump",
+    "/opt/homebrew/opt/postgresql@16/bin/pg_dump",
     "/opt/homebrew/opt/postgresql/bin/pg_dump",
+    "/usr/local/opt/postgresql@17/bin/pg_dump",
     "/usr/local/opt/postgresql@16/bin/pg_dump",
     "/usr/local/opt/postgresql/bin/pg_dump",
   ];

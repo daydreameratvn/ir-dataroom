@@ -6,7 +6,8 @@
 -- Password is managed by Pulumi (Secrets Manager) and set via
 -- ALTER ROLE after this migration runs.
 
-CREATE ROLE doltgres_replicator WITH LOGIN REPLICATION PASSWORD 'PLACEHOLDER_SET_BY_PULUMI';
+CREATE ROLE doltgres_replicator WITH LOGIN PASSWORD 'PLACEHOLDER_SET_BY_PULUMI';
+GRANT rds_replication TO doltgres_replicator;
 
 GRANT CONNECT ON DATABASE banyan TO doltgres_replicator;
 GRANT USAGE ON SCHEMA public TO doltgres_replicator;
