@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 import {
-  Button,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -20,10 +19,10 @@ export default function LanguageSwitcher() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-1.5">
+        <button className="inline-flex items-center gap-1.5 rounded-md px-3 h-8 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground">
           <Globe className="h-4 w-4" />
           <span className="text-xs font-medium">{languageNames[currentLang] ?? 'EN'}</span>
-        </Button>
+        </button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-40 p-1">
         {supportedLanguages.map((lang) => (
