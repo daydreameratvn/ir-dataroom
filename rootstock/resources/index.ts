@@ -10,3 +10,5 @@ export * from "./jwt.ts";
 export * from "./alb.ts";
 export * from "./ecs-ndc-connector.ts";
 export * from "./ecs-engine.ts";
+export * from "./auth-secrets.ts";
+export * from "./ecs-auth.ts";

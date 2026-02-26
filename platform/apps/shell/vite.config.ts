@@ -26,6 +26,8 @@ export default defineConfig({
         'react-router-dom': { singleton: true },
         zustand: { singleton: true },
         '@tanstack/react-query': { singleton: true },
+        i18next: { singleton: true },
+        'react-i18next': { singleton: true },
       },
     }),
   ],

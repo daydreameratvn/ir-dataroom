@@ -1,13 +1,24 @@
 let _baseUrl = '/api';
+let _tokenAccessor: (() => string | null) | null = null;
 
 export function configureApiClient(baseUrl: string) {
   _baseUrl = baseUrl;
 }
 
+export function setTokenAccessor(accessor: () => string | null) {
+  _tokenAccessor = accessor;
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const token = _tokenAccessor?.();
+  const authHeaders: Record<string, string> = token
+    ? { Authorization: `Bearer ${token}` }
+    : {};
+
   const response = await fetch(`${_baseUrl}${path}`, {
     headers: {
       'Content-Type': 'application/json',
+      ...authHeaders,
       ...options?.headers,
     },
     ...options,

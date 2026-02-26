@@ -1,3 +1,3 @@
-export { apiClient, configureApiClient } from './client';
+export { apiClient, configureApiClient, setTokenAccessor } from './client';
 export { claimsApi } from './claims';
 export { fwaApi } from './fwa';

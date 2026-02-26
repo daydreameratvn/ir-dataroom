@@ -84,7 +84,51 @@ export {
   TooltipProvider,
   TooltipTrigger,
 } from './components/ui/tooltip';
+export {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  AvatarBadge,
+  AvatarGroup,
+  AvatarGroupCount,
+} from './components/ui/avatar';
+export {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  BreadcrumbEllipsis,
+} from './components/ui/breadcrumb';
+export { Collapsible, CollapsibleTrigger, CollapsibleContent } from './components/ui/collapsible';
+export {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverAnchor,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverDescription,
+} from './components/ui/popover';
+export { Progress } from './components/ui/progress';
+export { ScrollArea, ScrollBar } from './components/ui/scroll-area';
+export { Separator } from './components/ui/separator';
+export {
+  Sheet,
+  SheetTrigger,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetFooter,
+  SheetTitle,
+  SheetDescription,
+} from './components/ui/sheet';
+export { Skeleton } from './components/ui/skeleton';
 
 // Composites
 export { default as MarkdownRenderer } from './composites/MarkdownRenderer';
 export { default as DataTable } from './composites/DataTable';
+export { default as PageHeader } from './composites/PageHeader';
+export { default as StatCard } from './composites/StatCard';
+export { default as EmptyState } from './composites/EmptyState';
