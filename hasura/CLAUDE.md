@@ -104,10 +104,10 @@ All migrations MUST follow the backward compatibility rules from the root `CLAUD
 ### Permissions
 
 - Permissions are defined in HML files (ModelPermissions, TypePermissions)
-- Role-based access: `admin`, `claims_processor`, `fwa_analyst`, `viewer`
+- Role-based access: `admin`, `executive`, `manager`, `staff`, `viewer` (from `user_level` DB enum)
 - Default deny — every table/column must have explicit permission grants
-- Row-level security uses session variables (`x-hasura-user-id`, `x-hasura-role`)
-- **Note**: Role-based permissions are not yet ported from the old metadata. Currently all authenticated users have full admin access. Permissions will be added as ModelPermissions/TypePermissions in the HML files.
+- Row-level security uses session variables (`x-hasura-user-id`, `x-hasura-tenant-id`, `x-hasura-default-role`)
+- **Current state**: Only `admin` role has permissions (full unrestricted access). Non-admin roles (`executive`, `manager`, `staff`, `viewer`) need ModelPermissions/TypePermissions added with tenant-scoped row-level filters.
 
 ## DDN Cloud
 
