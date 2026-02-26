@@ -193,14 +193,15 @@ listener:
 
 behavior:
   read_only: false
-  autocommit: true
   dolt_transaction_commit: true
 
 postgres_replication:
-  subscriptions:
-    - name: "rds_replica"
-      publication: "doltgres_pub"
-      connection_string: "host=${rdsAddress} port=5432 user=doltgres_replicator password=${password} dbname=banyan sslmode=require"
+  postgres_server_address: "${rdsAddress}"
+  postgres_user: "doltgres_replicator"
+  postgres_password: "${password}"
+  postgres_database: "banyan"
+  postgres_port: 5432
+  slot_name: "doltgres_slot"
 `.trim());
 
 export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-doltgres-task-def", {
@@ -227,12 +228,12 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
           "-c",
           [
             // Initialize doltgres data directory
-            "mkdir -p /var/lib/doltgresql",
+            "mkdir -p /var/lib/doltgres",
             // Write config.yaml
-            `cat > /var/lib/doltgresql/config.yaml << 'DOLTCFG'\n${configYaml}\nDOLTCFG`,
+            `cat > /var/lib/doltgres/config.yaml << 'DOLTCFG'\n${configYaml}\nDOLTCFG`,
           ].join(" && "),
         ],
-        mountPoints: [{ sourceVolume: "doltgres-data", containerPath: "/var/lib/doltgresql" }],
+        mountPoints: [{ sourceVolume: "doltgres-data", containerPath: "/var/lib/doltgres" }],
         logConfiguration: {
           logDriver: "awslogs",
           options: {
@@ -248,10 +249,9 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
         essential: true,
         dependsOn: [{ containerName: "init-doltgres-config", condition: "SUCCESS" }],
         portMappings: [{ containerPort: 5432, protocol: "tcp" }],
-        mountPoints: [{ sourceVolume: "doltgres-data", containerPath: "/var/lib/doltgresql" }],
+        mountPoints: [{ sourceVolume: "doltgres-data", containerPath: "/var/lib/doltgres" }],
         environment: [
           { name: "DOLTGRES_PASSWORD", value: rootPassword },
-          { name: "DOLTGRES_DATABASE", value: "banyan" },
         ],
         logConfiguration: {
           logDriver: "awslogs",
