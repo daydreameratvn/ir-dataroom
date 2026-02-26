@@ -1,7 +1,6 @@
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
 import App from './App';
-import RemoteLoader from './components/RemoteLoader';
 import { ProtectedRoute, LoginPage } from '@papaya/auth';
 
 // Feature pages
@@ -19,8 +18,9 @@ const DesignSystemPage = lazy(() => import('./features/design-system/DesignSyste
 const StatusPage = lazy(() => import('./features/status/StatusPage'));
 const StatusPagePublic = lazy(() => import('./features/status/StatusPagePublic'));
 
-// Remote apps
-const SampleEntry = lazy(() => import('sample/entry'));
+// Remote app routes are injected dynamically in bootstrap.tsx via remotes.tsx.
+// They cannot be statically imported here because Vite and MF would fail to resolve
+// the remote module when the remote app isn't running.
 
 export const routes: RouteObject[] = [
   // Public routes (outside protected layout)
@@ -112,16 +112,6 @@ export const routes: RouteObject[] = [
       {
         path: 'system-status',
         element: <StatusPage />,
-      },
-
-      // Remote apps
-      {
-        path: 'sample/*',
-        element: (
-          <RemoteLoader name="Sample Remote">
-            <SampleEntry basePath="/sample" />
-          </RemoteLoader>
-        ),
       },
     ],
   },

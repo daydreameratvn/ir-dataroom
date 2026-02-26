@@ -27,11 +27,11 @@ interface LocationState {
   from?: { pathname: string };
 }
 
-/* ── Brand icon SVGs with explicit dimensions ── */
+/* ── Brand icon SVGs ── */
 
 function GoogleIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
       <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
       <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
@@ -42,7 +42,7 @@ function GoogleIcon() {
 
 function MicrosoftIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <rect x="1" y="1" width="10" height="10" fill="#F25022" />
       <rect x="13" y="1" width="10" height="10" fill="#7FBA00" />
       <rect x="1" y="13" width="10" height="10" fill="#00A4EF" />
@@ -53,7 +53,7 @@ function MicrosoftIcon() {
 
 function AppleIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
       <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
     </svg>
   );
@@ -61,7 +61,7 @@ function AppleIcon() {
 
 function KeyIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z" />
       <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" />
     </svg>
@@ -78,16 +78,16 @@ function GlobeIcon() {
   );
 }
 
-/* ── Divider with text ── */
+/* ── Divider ── */
 
 function OrDivider({ text }: { text: string }) {
   return (
-    <div className="relative my-7">
+    <div className="relative my-6">
       <div className="absolute inset-0 flex items-center">
-        <div className="w-full h-px bg-border" />
+        <div className="w-full border-t border-papaya-border/60" />
       </div>
       <div className="relative flex justify-center">
-        <span className="bg-white px-3 text-[11px] font-medium uppercase tracking-widest text-papaya-muted/70">
+        <span className="bg-white px-4 text-[11px] font-medium uppercase tracking-[0.15em] text-papaya-muted/50">
           {text}
         </span>
       </div>
@@ -170,9 +170,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen">
-      {/* ── Left: Brand Panel ── */}
-      <div className="hidden lg:flex relative flex-col justify-between overflow-hidden p-12 w-[520px] min-w-[520px] bg-gradient-to-br from-papaya-dark via-papaya-darker to-papaya-darkest">
+    <div className="flex min-h-screen bg-white">
+      {/* ── Left: Brand Panel (desktop) ── */}
+      <div className="hidden lg:flex relative flex-col justify-between overflow-hidden w-[520px] min-w-[520px] bg-papaya-darkest">
+        {/* Gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-br from-papaya-dark/80 via-papaya-darkest to-black/90" />
+
         {/* Topographic contour lines */}
         <svg
           width="100%"
@@ -182,7 +185,7 @@ export default function LoginPage() {
           preserveAspectRatio="xMidYMid slice"
           className="absolute inset-0"
         >
-          <g stroke="rgba(255,255,255,0.05)" strokeWidth="0.75" fill="none">
+          <g stroke="rgba(237,27,85,0.07)" strokeWidth="1" fill="none">
             <circle cx="400" cy="240" r="60" />
             <circle cx="400" cy="240" r="120" />
             <circle cx="400" cy="240" r="190" />
@@ -198,78 +201,81 @@ export default function LoginPage() {
           </g>
         </svg>
 
-        {/* Warm accent orbs */}
-        <div className="absolute top-[20%] -left-15 w-[300px] h-[300px] rounded-full bg-papaya/10 blur-[100px]" />
-        <div className="absolute bottom-[25%] -right-5 w-[250px] h-[250px] rounded-full bg-papaya-light/15 blur-[80px]" />
+        {/* Accent glow */}
+        <div className="absolute top-[15%] -left-20 w-[350px] h-[350px] rounded-full bg-papaya/15 blur-[120px]" />
+        <div className="absolute bottom-[20%] right-0 w-[280px] h-[280px] rounded-full bg-papaya/8 blur-[100px]" />
 
         {/* Top: Logo */}
-        <div className="relative z-10">
-          <h1 className="text-[3.4rem] leading-none text-white tracking-tight">
+        <div className="relative z-10 p-12">
+          <h1 className="text-[3.2rem] leading-none font-bold text-white tracking-tight">
             Oasis
           </h1>
-          <p className="mt-2 text-xs font-[Plus_Jakarta_Sans,system-ui,sans-serif] font-light tracking-[0.2em] uppercase text-white/30">
+          <p className="mt-2.5 text-[11px] font-light tracking-[0.25em] uppercase text-white/30">
             by Papaya
           </p>
         </div>
 
         {/* Middle: Tagline */}
-        <div className="relative z-10">
-          <p className="text-[1.4rem] leading-relaxed text-white/55 font-normal">
+        <div className="relative z-10 px-12">
+          <p className="text-[1.35rem] leading-relaxed text-white/50 font-light">
             Where insurance operations
             <br />
             find clarity.
           </p>
-          <div className="mt-6 h-px w-16 bg-gradient-to-r from-papaya/50 to-transparent" />
+          <div className="mt-6 h-px w-16 bg-gradient-to-r from-papaya/40 to-transparent" />
         </div>
 
-        {/* Bottom: Attribution */}
-        <p className="relative z-10 text-[11px] font-[Plus_Jakarta_Sans,system-ui,sans-serif] font-light tracking-wide text-white/[0.18]">
+        {/* Bottom: Copyright */}
+        <p className="relative z-10 p-12 text-[11px] font-light tracking-wide text-white/15">
           &copy; 2026 Papaya
         </p>
       </div>
 
       {/* ── Right: Form Panel ── */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white font-[Plus_Jakarta_Sans,system-ui,sans-serif] relative">
-        {/* Language switcher — top right */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12 relative">
+        {/* Subtle background texture for the form side */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-papaya-lightest)_0%,_transparent_50%)] opacity-60" />
+
+        {/* Language switcher */}
         <LoginLanguageSwitcher />
 
-        <div className="w-full max-w-[380px]">
+        <div className="relative w-full max-w-[400px]">
           {/* Mobile logo */}
-          <div className="lg:hidden mb-10 text-center">
-            <h1 className="text-3xl font-bold text-papaya">
+          <div className="lg:hidden mb-12 text-center">
+            <h1 className="text-4xl font-bold text-papaya tracking-tight">
               Oasis
             </h1>
-            <p className="mt-1 text-[11px] font-light tracking-[0.15em] uppercase text-papaya-muted">
+            <p className="mt-1.5 text-[11px] font-light tracking-[0.2em] uppercase text-papaya-muted/70">
               by Papaya
             </p>
           </div>
 
           {/* Heading */}
           <div className="mb-8">
-            <h2 className="text-[1.65rem] font-bold text-foreground">
+            <h2 className="text-2xl font-bold tracking-tight text-[#111316]">
               {t('common.welcome')}
             </h2>
-            <p className="mt-1.5 text-[13.5px] text-papaya-muted">
+            <p className="mt-2 text-sm text-papaya-muted">
               Sign in to your account to continue
             </p>
           </div>
 
           {/* Error */}
           {(error || ssoError) && (
-            <div className="mb-5 flex items-start gap-2.5 p-3 rounded-xl border border-destructive/15 bg-destructive/5">
+            <div className="mb-6 flex items-start gap-3 p-3.5 rounded-xl border border-destructive/20 bg-destructive/5">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(0 84% 60%)" strokeWidth="2" className="shrink-0 mt-0.5">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
-              <p className="text-[13px] text-destructive/80">{error || ssoError}</p>
+              <p className="text-[13px] leading-snug text-destructive">{error || ssoError}</p>
             </div>
           )}
 
           {step === 'choose' && (
             <>
               {/* SSO Buttons */}
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col gap-3">
                 <SSOButton href={getSSOUrl('google', tenantId, returnUrl)} icon={<GoogleIcon />} label={t('auth.login.continueWithGoogle')} />
                 <SSOButton href={getSSOUrl('microsoft', tenantId, returnUrl)} icon={<MicrosoftIcon />} label={t('auth.login.continueWithMicrosoft')} />
                 <SSOButton href={getSSOUrl('apple', tenantId, returnUrl)} icon={<AppleIcon />} label={t('auth.login.continueWithApple')} />
@@ -278,19 +284,19 @@ export default function LoginPage() {
               <OrDivider text={t('auth.login.or')} />
 
               {/* OTP Section */}
-              <form onSubmit={(e) => { e.preventDefault(); handleSendOtp(); }} className="flex flex-col gap-3.5">
+              <form onSubmit={(e) => { e.preventDefault(); handleSendOtp(); }} className="flex flex-col gap-3">
                 <Input
                   type="text"
                   placeholder={`${t('auth.login.emailPlaceholder')} / ${t('auth.login.phonePlaceholder')}`}
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
-                  className="h-11 rounded-xl border-papaya-border bg-white text-[13.5px] text-foreground focus-visible:border-papaya/30 focus-visible:ring-papaya/20"
+                  className="h-12 rounded-xl border-papaya-border bg-white px-4 text-sm text-[#111316] placeholder:text-papaya-muted/50 focus-visible:border-papaya/40 focus-visible:ring-papaya/15 focus-visible:ring-2"
                 />
 
                 <Button
                   type="submit"
                   disabled={isSubmitting || !destination}
-                  className="w-full h-11 rounded-xl bg-papaya text-white text-[13.5px] font-semibold hover:bg-papaya/85 disabled:opacity-40"
+                  className="w-full h-12 rounded-xl bg-papaya text-white text-sm font-semibold shadow-[0_1px_2px_rgba(237,27,85,0.2),0_4px_12px_rgba(237,27,85,0.15)] hover:bg-[#d9184e] hover:shadow-[0_1px_2px_rgba(237,27,85,0.25),0_6px_16px_rgba(237,27,85,0.2)] active:scale-[0.99] transition-all disabled:opacity-40 disabled:shadow-none"
                 >
                   {isSubmitting ? t('common.loading') : t('auth.login.sendCode')}
                 </Button>
@@ -306,7 +312,7 @@ export default function LoginPage() {
                     variant="outline"
                     onClick={handlePasskeyLogin}
                     disabled={isSubmitting}
-                    className="w-full h-11 rounded-xl border-papaya-border bg-white text-[13.5px] font-medium text-muted-foreground hover:border-papaya/25 hover:text-foreground"
+                    className="w-full h-12 rounded-xl border-papaya-border bg-white text-sm font-medium text-papaya-muted hover:border-papaya/30 hover:text-[#111316] hover:bg-papaya-lightest/50 transition-all"
                   >
                     <KeyIcon />
                     {t('auth.login.usePasskey')}
@@ -319,8 +325,8 @@ export default function LoginPage() {
           {/* OTP Verify Step */}
           {step === 'otp-verify' && (
             <form onSubmit={(e) => { e.preventDefault(); handleVerifyOtp(); }} className="flex flex-col gap-5">
-              <div className="p-4 rounded-xl border border-papaya-border bg-white">
-                <p className="text-[13px] text-muted-foreground">
+              <div className="p-4 rounded-xl border border-papaya-border/60 bg-papaya-lightest/30">
+                <p className="text-[13px] text-papaya-muted">
                   {t('auth.login.codeSentTo', { destination })}
                 </p>
               </div>
@@ -334,13 +340,13 @@ export default function LoginPage() {
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
                 autoFocus
-                className="h-14 rounded-xl border-papaya-border bg-white text-2xl text-center tracking-[0.5em] text-foreground focus-visible:border-papaya/30 focus-visible:ring-papaya/20"
+                className="h-16 rounded-xl border-papaya-border bg-white text-3xl text-center tracking-[0.5em] text-[#111316] focus-visible:border-papaya/40 focus-visible:ring-papaya/15 focus-visible:ring-2"
               />
 
               <Button
                 type="submit"
                 disabled={isSubmitting || code.length !== 6}
-                className="w-full h-11 rounded-xl bg-papaya text-white text-[13.5px] font-semibold hover:bg-papaya/85 disabled:opacity-40"
+                className="w-full h-12 rounded-xl bg-papaya text-white text-sm font-semibold shadow-[0_1px_2px_rgba(237,27,85,0.2),0_4px_12px_rgba(237,27,85,0.15)] hover:bg-[#d9184e] hover:shadow-[0_1px_2px_rgba(237,27,85,0.25),0_6px_16px_rgba(237,27,85,0.2)] active:scale-[0.99] transition-all disabled:opacity-40 disabled:shadow-none"
               >
                 {isSubmitting ? t('common.loading') : t('auth.login.verify')}
               </Button>
@@ -349,7 +355,7 @@ export default function LoginPage() {
                 type="button"
                 variant="ghost"
                 onClick={() => { setStep('choose'); setCode(''); setOtpSent(false); setError(null); }}
-                className="w-full text-[13px] font-medium text-papaya-muted hover:text-foreground"
+                className="w-full text-[13px] font-medium text-papaya-muted hover:text-[#111316]"
               >
                 &larr; {t('common.back')}
               </Button>
@@ -371,12 +377,13 @@ interface SSOButtonProps {
 
 function SSOButton({ href, icon, label }: SSOButtonProps) {
   return (
-    <Button variant="outline" asChild className="h-auto justify-start gap-3.5 rounded-xl border-papaya-border bg-white px-4 py-3 text-[13.5px] font-medium text-foreground hover:border-papaya/25 hover:bg-white">
-      <a href={href}>
-        {icon}
-        <span>{label}</span>
-      </a>
-    </Button>
+    <a
+      href={href}
+      className="flex items-center gap-4 rounded-xl border border-papaya-border/70 bg-white px-4 py-3.5 text-sm font-medium text-[#111316] shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:border-papaya/25 hover:shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:bg-papaya-lightest/30 active:scale-[0.995] transition-all"
+    >
+      <span className="flex items-center justify-center w-5 h-5 shrink-0">{icon}</span>
+      <span>{label}</span>
+    </a>
   );
 }
 
@@ -387,10 +394,10 @@ function LoginLanguageSwitcher() {
   const currentLang = (i18n.language || 'en') as SupportedLanguage;
 
   return (
-    <div className="absolute top-5 right-6">
+    <div className="absolute top-5 right-6 z-20">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button type="button" className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-medium text-papaya-muted hover:text-foreground hover:bg-accent transition-colors outline-none">
+          <button type="button" className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-medium text-papaya-muted/70 hover:text-papaya-muted hover:bg-papaya-lightest/50 transition-colors outline-none">
             <GlobeIcon />
             {languageNames[currentLang]}
           </button>

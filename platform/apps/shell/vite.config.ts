@@ -52,14 +52,18 @@ export default defineConfig({
       name: 'shell',
       manifest: true,
       remotes: {
-        sample: {
-          type: 'module',
-          name: 'sample',
-          entry:
-            process.env.VITE_SAMPLE_REMOTE_URL ??
-            'http://sample.oasis.localhost:1355/mf-manifest.json',
-          entryGlobalName: 'sample',
-        },
+        // Sample remote is a template — only loaded when explicitly running.
+        // Start it with: VITE_SAMPLE_REMOTE_URL=http://sample.oasis.localhost:1355/mf-manifest.json bun run dev:shell
+        ...(process.env.VITE_SAMPLE_REMOTE_URL
+          ? {
+              sample: {
+                type: 'module',
+                name: 'sample',
+                entry: process.env.VITE_SAMPLE_REMOTE_URL,
+                entryGlobalName: 'sample',
+              },
+            }
+          : {}),
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.0.0' },
@@ -84,8 +88,10 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/auth': {
-        target: 'http://localhost:4000',
+        target: process.env.AUTH_PROXY_TARGET || 'http://localhost:4000',
         changeOrigin: true,
+        // When proxying to HTTPS (deployed), rewrite the origin header
+        ...(process.env.AUTH_PROXY_TARGET?.startsWith('https') ? { secure: true } : {}),
       },
     },
   },

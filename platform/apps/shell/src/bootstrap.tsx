@@ -6,6 +6,7 @@ import { initI18n } from '@papaya/i18n';
 import { setTokenAccessor } from '@papaya/api-client';
 import { AuthProvider, getAccessToken } from '@papaya/auth';
 import { routes } from './routes';
+import { injectRemoteRoutes } from './remotes';
 import TenantProvider from './providers/TenantProvider';
 import ThemeProvider from './providers/ThemeProvider';
 import '@papaya/shared-ui/globals.css';
@@ -22,11 +23,12 @@ const queryClient = new QueryClient({
 // Wire up auth token to API client
 setTokenAccessor(getAccessToken);
 
+// Inject remote app routes (only for remotes registered in vite.config.ts)
+injectRemoteRoutes(routes);
+
 const router = createBrowserRouter(routes);
 
-// Initialize i18n before rendering
-initI18n().then(() => {
-  // Remove the loading skeleton from index.html
+function mount() {
   document.getElementById('app-skeleton')?.remove();
 
   createRoot(document.getElementById('root')!).render(
@@ -42,4 +44,7 @@ initI18n().then(() => {
       </QueryClientProvider>
     </StrictMode>,
   );
-});
+}
+
+// Initialize i18n before rendering — mount even if i18n fails
+initI18n().then(mount, mount);
