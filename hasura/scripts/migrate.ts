@@ -147,7 +147,7 @@ function extractDdl(sql: string): string {
   const upMatch = sql.match(/-- migrate:up\n([\s\S]*?)(?=-- migrate:down|$)/);
   if (!upMatch) return "";
 
-  const upSection = upMatch[1];
+  const upSection = upMatch[1]!;
 
   // Split into statements by semicolon followed by newline or EOF.
   // We rejoin first to normalize, then split on semicolons.

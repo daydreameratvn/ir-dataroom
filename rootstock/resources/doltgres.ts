@@ -272,14 +272,14 @@ export const banyanDoltgresService = new aws.ecs.Service("banyan-prod-doltgres-s
   desiredCount: 1,
   launchType: "FARGATE",
   networkConfiguration: {
-    subnets: [banyanPrivateSubnets[0].id],
+    subnets: [banyanPrivateSubnets[0]!.id],
     securityGroups: [banyanDoltgresSg.id],
     assignPublicIp: false,
   },
   serviceRegistries: {
     registryArn: banyanDoltgresServiceDiscovery.arn,
   },
-  volumeConfigurations: [{
+  volumeConfiguration: {
     name: "doltgres-data",
     managedEbsVolume: {
       roleArn: banyanDoltgresEbsRole.arn,
@@ -288,7 +288,7 @@ export const banyanDoltgresService = new aws.ecs.Service("banyan-prod-doltgres-s
       encrypted: true,
       fileSystemType: "ext4",
     },
-  }],
+  },
   tags: mergeTags({
     Name: "banyan-prod-doltgres-service",
     Component: "ecs",

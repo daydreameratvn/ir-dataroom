@@ -103,7 +103,7 @@ export async function getRdsHost(): Promise<string> {
   const uri: string = secret.connection_uri;
   const match = uri.match(/@([^:]+):\d+\//);
   if (!match) throw new Error("Could not parse RDS host from connection URI");
-  return match[1];
+  return match[1]!;
 }
 
 /**
