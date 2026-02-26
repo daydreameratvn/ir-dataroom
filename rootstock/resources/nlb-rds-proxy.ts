@@ -1,5 +1,4 @@
 import * as aws from "@pulumi/aws";
-import dns from "node:dns/promises";
 import { mergeTags } from "../lib/tags.ts";
 import { banyanDb } from "./rds.ts";
 import { banyanNlbSg } from "./security-groups.ts";
@@ -50,12 +49,18 @@ export const banyanNlbTargetGroup = new aws.lb.TargetGroup("banyan-prod-nlb-rds-
 // ============================================================
 // Target Group Attachment (RDS instance IP)
 // NLB IP target groups require an IPv4 address, not a hostname.
-// Resolve the RDS DNS name to its private IP at deploy time.
+// Look up the RDS ENI's private IP using AWS API (works from
+// outside the VPC, unlike dns.lookup on the RDS hostname).
 // ============================================================
 
-const rdsIp = banyanDb.address.apply(async (hostname) => {
-  const result = await dns.lookup(hostname, { family: 4 });
-  return result.address;
+const rdsIp = banyanDb.address.apply((hostname) => {
+  return aws.ec2.getNetworkInterfaces({
+    filters: [{ name: "private-dns-name", values: [`${hostname}.`] }],
+  }).then((enis) => {
+    const eni = enis.ids[0];
+    if (!eni) throw new Error(`No ENI found for RDS hostname: ${hostname}`);
+    return aws.ec2.getNetworkInterface({ id: eni });
+  }).then((eni) => eni.privateIp);
 });
 
 export const banyanNlbTargetAttachment = new aws.lb.TargetGroupAttachment("banyan-prod-nlb-rds-target", {
