@@ -27,11 +27,11 @@ describe('CommandPalette', () => {
   it('opens with Meta+K', () => {
     renderPalette();
 
-    expect(screen.queryByPlaceholderText('Where do you want to go?')).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText('Type a command or ask Fatima...')).not.toBeInTheDocument();
 
     openPalette();
 
-    expect(screen.getByPlaceholderText('Where do you want to go?')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Type a command or ask Fatima...')).toBeInTheDocument();
   });
 
   it('shows AI Assistant, Quick Actions, and Go to sections', () => {
@@ -43,12 +43,12 @@ describe('CommandPalette', () => {
     expect(screen.getByText('Go to')).toBeInTheDocument();
   });
 
-  it('shows Ask Fatima entry with description', () => {
+  it('shows Open Fatima entry with description', () => {
     renderPalette();
     openPalette();
 
-    expect(screen.getByText('Ask Fatima')).toBeInTheDocument();
-    expect(screen.getByText('Your AI insurance assistant')).toBeInTheDocument();
+    expect(screen.getByText('Open Fatima')).toBeInTheDocument();
+    expect(screen.getByText('Wise woman of the desert')).toBeInTheDocument();
   });
 
   it('shows quick action items', () => {
@@ -75,7 +75,7 @@ describe('CommandPalette', () => {
     renderPalette();
     openPalette();
 
-    const input = screen.getByPlaceholderText('Where do you want to go?');
+    const input = screen.getByPlaceholderText('Type a command or ask Fatima...');
     await user.type(input, 'fraud');
 
     // FWA items should remain visible (they have 'fraud' in keywords)
@@ -91,45 +91,46 @@ describe('CommandPalette', () => {
     renderPalette();
     openPalette();
 
-    const input = screen.getByPlaceholderText('Where do you want to go?');
+    const input = screen.getByPlaceholderText('Type a command or ask Fatima...');
     await user.type(input, 'xyznonexistent');
 
     expect(screen.getByText('No results found.')).toBeInTheDocument();
-    expect(screen.getByText('Ask Fatima instead')).toBeInTheDocument();
+    expect(screen.getByText(/Ask Fatima/)).toBeInTheDocument();
   });
 
-  it('calls onOpenFatima when Ask Fatima is selected', async () => {
+  it('calls onOpenFatima when Open Fatima is selected', async () => {
     const user = userEvent.setup();
     const { onOpenFatima } = renderPalette();
     openPalette();
 
-    const fatimaItem = screen.getByText('Ask Fatima');
+    const fatimaItem = screen.getByText('Open Fatima');
     await user.click(fatimaItem);
 
     expect(onOpenFatima).toHaveBeenCalledOnce();
   });
 
-  it('calls onOpenFatima from empty state fallback', async () => {
+  it('enters inline Fatima mode from empty state fallback', async () => {
     const user = userEvent.setup();
-    const { onOpenFatima } = renderPalette();
+    renderPalette();
     openPalette();
 
-    const input = screen.getByPlaceholderText('Where do you want to go?');
+    const input = screen.getByPlaceholderText('Type a command or ask Fatima...');
     await user.type(input, 'xyznonexistent');
 
-    const fallback = screen.getByText('Ask Fatima instead');
+    const fallback = screen.getByText(/Ask Fatima/);
     await user.click(fallback);
 
-    expect(onOpenFatima).toHaveBeenCalledOnce();
+    // Should switch to Fatima inline mode showing the query
+    expect(screen.getByText('xyznonexistent')).toBeInTheDocument();
   });
 
   it('closes when pressing Meta+K again', () => {
     renderPalette();
 
     openPalette();
-    expect(screen.getByPlaceholderText('Where do you want to go?')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Type a command or ask Fatima...')).toBeInTheDocument();
 
     openPalette();
-    expect(screen.queryByPlaceholderText('Where do you want to go?')).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText('Type a command or ask Fatima...')).not.toBeInTheDocument();
   });
 });

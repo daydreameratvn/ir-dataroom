@@ -90,7 +90,7 @@ export default function FatimaPanel({ open, onClose }: FatimaPanelProps) {
           <div>
             <h2 className="text-sm font-semibold">Fatima</h2>
             <p className="text-[11px] text-muted-foreground">
-              {isStreaming ? 'Thinking...' : 'Insurance AI Assistant'}
+              {isStreaming ? 'Thinking...' : 'Wise woman of the desert'}
             </p>
           </div>
         </div>

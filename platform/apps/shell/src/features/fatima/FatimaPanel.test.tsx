@@ -32,14 +32,14 @@ describe('FatimaPanel', () => {
 
     // "Fatima" appears in multiple places (header + welcome message), use heading
     expect(screen.getByRole('heading', { name: 'Fatima' })).toBeInTheDocument();
-    expect(screen.getByText('Insurance AI Assistant')).toBeInTheDocument();
+    expect(screen.getByText('Wise woman of the desert')).toBeInTheDocument();
   });
 
   it('shows welcome message on first render', () => {
     renderPanel({ open: true });
 
-    // The welcome message contains "Fatima" and mentions capabilities
-    expect(screen.getByText(/your insurance operations assistant/i)).toBeInTheDocument();
+    // The welcome message references The Alchemist
+    expect(screen.getByText(/like the wind that knows every grain of sand/i)).toBeInTheDocument();
   });
 
   it('shows suggestion chips on initial state', () => {

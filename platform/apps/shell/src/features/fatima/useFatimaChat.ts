@@ -4,16 +4,18 @@ import type { FatimaMessage } from './types';
 const WELCOME_MESSAGE: FatimaMessage = {
   id: 'welcome',
   role: 'assistant',
-  content: `Hello! I'm **Fatima**, your insurance operations assistant. I can help you with:
+  content: `Hello! I'm **Fatima** — the wise woman of the desert. Like the wind that knows every grain of sand in the Sahara, I know every claim, every policy, every pattern hidden in your data.
 
-- **Claims** — Look up claim status, find claims by patient or provider, explain adjudication decisions
+I can help you with:
+
+- **Claims** — Look up status, find claims by patient or provider, explain adjudication decisions
 - **Policies** — Search policies, check coverage details, review endorsements
 - **Underwriting** — Assess risk scores, check application status
 - **FWA** — Review fraud alerts, investigate suspicious patterns
 - **Providers** — Find providers, check contract status
 - **Analytics** — Loss ratios, claims trends, KPI summaries
 
-How can I help you today?`,
+What would you like to know?`,
   timestamp: Date.now(),
 };
 
@@ -21,7 +23,7 @@ How can I help you today?`,
  * Simulates streaming response from Fatima agent.
  * In production this will connect to the real agent SSE endpoint.
  */
-function simulateStream(
+export function simulateStream(
   userMessage: string,
   onDelta: (text: string) => void,
   onDone: () => void,

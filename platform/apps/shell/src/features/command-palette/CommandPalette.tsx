@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -13,11 +13,17 @@ import {
   Plus,
   Sparkles,
   ArrowRight,
+  ArrowLeft,
   Search,
+  Square,
+  ExternalLink,
   type LucideIcon,
 } from 'lucide-react';
 import {
-  CommandDialog,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -25,7 +31,9 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
+  MarkdownRenderer,
 } from '@papaya/shared-ui';
+import { simulateStream } from '../fatima/useFatimaChat';
 
 interface CommandAction {
   id: string;
@@ -43,6 +51,13 @@ export interface CommandPaletteProps {
 
 export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [fatimaMode, setFatimaMode] = useState(false);
+  const [fatimaQuery, setFatimaQuery] = useState('');
+  const [fatimaResponse, setFatimaResponse] = useState('');
+  const [fatimaStreaming, setFatimaStreaming] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const responseRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   // Global ⌘K shortcut
@@ -57,13 +72,68 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, []);
 
+  // Auto-scroll response area
+  useEffect(() => {
+    if (responseRef.current) {
+      responseRef.current.scrollTop = responseRef.current.scrollHeight;
+    }
+  }, [fatimaResponse]);
+
   const go = useCallback(
     (path: string) => {
       navigate(path);
-      setOpen(false);
+      handleClose();
     },
     [navigate]
   );
+
+  function askFatima(query: string) {
+    if (!query.trim()) return;
+    setFatimaMode(true);
+    setFatimaQuery(query.trim());
+    setFatimaResponse('');
+    setFatimaStreaming(true);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    simulateStream(
+      query.trim(),
+      (delta) => setFatimaResponse((prev) => prev + delta),
+      () => {
+        setFatimaStreaming(false);
+        abortRef.current = null;
+      },
+      controller.signal
+    );
+  }
+
+  function exitFatimaMode() {
+    abortRef.current?.abort();
+    setFatimaMode(false);
+    setFatimaQuery('');
+    setFatimaResponse('');
+    setFatimaStreaming(false);
+  }
+
+  function handleClose() {
+    exitFatimaMode();
+    setSearch('');
+    setOpen(false);
+  }
+
+  function handleOpenChange(newOpen: boolean) {
+    if (!newOpen) {
+      handleClose();
+    } else {
+      setOpen(true);
+    }
+  }
+
+  function handleContinueInPanel() {
+    handleClose();
+    onOpenFatima();
+  }
 
   const actions: CommandAction[] = useMemo(
     () => [
@@ -312,7 +382,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
         section: 'ai',
         keywords: 'ai assistant help fatima chat question',
         onSelect: () => {
-          setOpen(false);
+          handleClose();
           onOpenFatima();
         },
       },
@@ -322,104 +392,186 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
 
   const navigation = actions.filter((a) => a.section === 'navigation');
   const quickActions = actions.filter((a) => a.section === 'quick-actions');
-  const ai = actions.filter((a) => a.section === 'ai');
 
   return (
-    <CommandDialog open={open} onOpenChange={setOpen} title="Oasis Command Palette">
-      <CommandInput placeholder="Where do you want to go?" />
-      <CommandList>
-        <CommandEmpty>
-          <div className="flex flex-col items-center gap-2 py-4">
-            <Search className="h-10 w-10 text-muted-foreground/40" />
-            <p className="text-muted-foreground">No results found.</p>
-            <button
-              className="mt-1 inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
-              onClick={() => {
-                setOpen(false);
-                onOpenFatima();
-              }}
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent
+        className="overflow-hidden p-0 sm:max-w-2xl"
+        showCloseButton={false}
+      >
+        <DialogTitle className="sr-only">Oasis Command Palette</DialogTitle>
+
+        {fatimaMode ? (
+          /* ── Fatima inline response mode ── */
+          <div className="flex flex-col">
+            {/* Header with query */}
+            <div className="flex items-center gap-2 border-b px-3 py-2.5">
+              <button
+                onClick={exitFatimaMode}
+                className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white">
+                <Sparkles className="h-2.5 w-2.5" />
+              </div>
+              <span className="flex-1 truncate text-sm">{fatimaQuery}</span>
+              {fatimaStreaming && (
+                <button
+                  onClick={() => {
+                    abortRef.current?.abort();
+                    setFatimaStreaming(false);
+                  }}
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  title="Stop"
+                >
+                  <Square className="h-3 w-3 fill-current" />
+                </button>
+              )}
+            </div>
+
+            {/* Streaming response */}
+            <div
+              ref={responseRef}
+              className="max-h-[400px] overflow-y-auto px-4 py-3"
             >
-              <Sparkles className="h-3.5 w-3.5" />
-              Ask Fatima instead
-            </button>
+              {fatimaResponse ? (
+                <MarkdownRenderer content={fatimaResponse} size="sm" />
+              ) : (
+                <div className="flex items-center gap-1.5 py-2 text-muted-foreground">
+                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-violet-500" />
+                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-violet-500 [animation-delay:0.2s]" />
+                  <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-violet-500 [animation-delay:0.4s]" />
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="border-t px-3 py-2">
+              <div className="flex items-center justify-between">
+                <p className="text-[11px] text-muted-foreground/60">
+                  <kbd className="pointer-events-none inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                    Esc
+                  </kbd>
+                  {' '}to go back
+                </p>
+                <button
+                  onClick={handleContinueInPanel}
+                  className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/60 transition-colors hover:text-foreground"
+                >
+                  Open in Fatima
+                  <ExternalLink className="h-3 w-3" />
+                </button>
+              </div>
+            </div>
           </div>
-        </CommandEmpty>
+        ) : (
+          /* ── Normal command palette mode ── */
+          <Command className="[&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
+            <CommandInput
+              placeholder="Type a command or ask Fatima..."
+              value={search}
+              onValueChange={setSearch}
+            />
+            <CommandList>
+              <CommandEmpty>
+                <div className="flex flex-col items-center gap-2 py-4">
+                  <Search className="h-10 w-10 text-muted-foreground/40" />
+                  <p className="text-muted-foreground">No results found.</p>
+                  <button
+                    className="mt-1 inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+                    onClick={() => askFatima(search)}
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Ask Fatima: &ldquo;{search}&rdquo;
+                  </button>
+                </div>
+              </CommandEmpty>
 
-        <CommandGroup heading="AI Assistant">
-          {ai.map((action) => (
-            <CommandItem
-              key={action.id}
-              value={`${action.label} ${action.keywords ?? ''}`}
-              onSelect={action.onSelect}
-              className="gap-3"
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white">
-                <action.icon className="h-4 w-4" />
+              {/* Always show "Ask Fatima" with current query when typing */}
+              <CommandGroup heading="AI Assistant">
+                <CommandItem
+                  value="ask fatima ai assistant help chat question"
+                  onSelect={() => {
+                    if (search.trim()) {
+                      askFatima(search);
+                    } else {
+                      handleClose();
+                      onOpenFatima();
+                    }
+                  }}
+                  className="gap-3"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white">
+                    <Sparkles className="h-4 w-4" />
+                  </div>
+                  <div className="flex flex-1 flex-col">
+                    <span className="font-medium">
+                      {search.trim() ? 'Ask Fatima' : 'Open Fatima'}
+                    </span>
+                    <span className="text-xs text-muted-foreground truncate">
+                      {search.trim()
+                        ? `"${search.trim()}"`
+                        : 'Wise woman of the desert'}
+                    </span>
+                  </div>
+                  <CommandShortcut>
+                    {search.trim() ? '↵' : '⌘J'}
+                  </CommandShortcut>
+                </CommandItem>
+              </CommandGroup>
+
+              <CommandSeparator />
+
+              <CommandGroup heading="Quick Actions">
+                {quickActions.map((action) => (
+                  <CommandItem
+                    key={action.id}
+                    value={`${action.label} ${action.keywords ?? ''}`}
+                    onSelect={action.onSelect}
+                    className="gap-3"
+                  >
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <action.icon className="h-4 w-4" />
+                    </div>
+                    <span>{action.label}</span>
+                    <ArrowRight className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+
+              <CommandSeparator />
+
+              <CommandGroup heading="Go to">
+                {navigation.map((action) => (
+                  <CommandItem
+                    key={action.id}
+                    value={`${action.label} ${action.keywords ?? ''}`}
+                    onSelect={action.onSelect}
+                    className="gap-3"
+                  >
+                    <action.icon className="h-4 w-4 text-muted-foreground" />
+                    <span>{action.label}</span>
+                    {action.shortcut && (
+                      <CommandShortcut>{action.shortcut}</CommandShortcut>
+                    )}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+
+              <div className="border-t px-3 py-2">
+                <p className="text-[11px] text-muted-foreground/60 text-center">
+                  <kbd className="pointer-events-none inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                    <span className="text-xs">⌘</span>K
+                  </kbd>
+                  {' '}to open{' · '}
+                  type anything to ask Fatima
+                </p>
               </div>
-              <div className="flex flex-1 flex-col">
-                <span className="font-medium">{action.label}</span>
-                <span className="text-xs text-muted-foreground">
-                  Your AI insurance assistant
-                </span>
-              </div>
-              {action.shortcut && (
-                <CommandShortcut>{action.shortcut}</CommandShortcut>
-              )}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-
-        <CommandSeparator />
-
-        <CommandGroup heading="Quick Actions">
-          {quickActions.map((action) => (
-            <CommandItem
-              key={action.id}
-              value={`${action.label} ${action.keywords ?? ''}`}
-              onSelect={action.onSelect}
-              className="gap-3"
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <action.icon className="h-4 w-4" />
-              </div>
-              <span>{action.label}</span>
-              <ArrowRight className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
-            </CommandItem>
-          ))}
-        </CommandGroup>
-
-        <CommandSeparator />
-
-        <CommandGroup heading="Go to">
-          {navigation.map((action) => (
-            <CommandItem
-              key={action.id}
-              value={`${action.label} ${action.keywords ?? ''}`}
-              onSelect={action.onSelect}
-              className="gap-3"
-            >
-              <action.icon className="h-4 w-4 text-muted-foreground" />
-              <span>{action.label}</span>
-              {action.shortcut && (
-                <CommandShortcut>{action.shortcut}</CommandShortcut>
-              )}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-
-        <div className="border-t px-3 py-2">
-          <p className="text-[11px] text-muted-foreground/60 text-center">
-            <kbd className="pointer-events-none inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-              <span className="text-xs">⌘</span>K
-            </kbd>
-            {' '}to open{' '}
-            <kbd className="pointer-events-none inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-              <span className="text-xs">⌘</span>J
-            </kbd>
-            {' '}for Fatima
-          </p>
-        </div>
-      </CommandList>
-    </CommandDialog>
+            </CommandList>
+          </Command>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
