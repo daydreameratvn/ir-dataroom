@@ -9,10 +9,10 @@ import { resolve } from "path";
 const region = process.env.AWS_REGION || "ap-southeast-1";
 const client = new BedrockRuntimeClient({ region });
 
-// Claude Haiku 4.5 via APAC cross-region inference — fast and cheap for chat
+// Claude Haiku 4.5 via global cross-region inference — fast and affordable for chat
 const MODEL_ID =
   process.env.FATIMA_MODEL_ID ||
-  "apac.anthropic.claude-haiku-4-5-20251001-v1:0";
+  "global.anthropic.claude-haiku-4-5-20251001-v1:0";
 
 let cachedSystemPrompt: string | null = null;
 
