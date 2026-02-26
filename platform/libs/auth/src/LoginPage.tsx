@@ -82,11 +82,11 @@ export default function LoginPage() {
     setError(null);
     setIsSubmitting(true);
     try {
-      const isPhone = /^\+?\d[\d\s\-()]{6,}$/.test(destination.trim());
-      if (isPhone) {
-        await requestPhoneOtp(destination, tenantId);
-      } else {
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(destination.trim());
+      if (isEmail) {
         await requestEmailOtp(destination, tenantId);
+      } else {
+        await requestPhoneOtp(destination, tenantId);
       }
       setOtpSent(true);
       setStep('otp-verify');
