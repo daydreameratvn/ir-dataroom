@@ -84,10 +84,10 @@ function OrDivider({ text }: { text: string }) {
   return (
     <div className="relative my-7">
       <div className="absolute inset-0 flex items-center">
-        <div className="w-full h-px bg-papaya-border" />
+        <div className="w-full h-px bg-border" />
       </div>
       <div className="relative flex justify-center">
-        <span className="bg-papaya-surface px-3 text-[11px] font-medium uppercase tracking-widest text-papaya-muted/70">
+        <span className="bg-white px-3 text-[11px] font-medium uppercase tracking-widest text-papaya-muted/70">
           {text}
         </span>
       </div>
@@ -172,7 +172,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen">
       {/* ── Left: Brand Panel ── */}
-      <div className="hidden lg:flex relative flex-col justify-between overflow-hidden p-12 w-[520px] min-w-[520px] bg-gradient-to-br from-papaya-bark via-papaya-earth to-papaya-night font-[DM_Serif_Display,Georgia,serif]">
+      <div className="hidden lg:flex relative flex-col justify-between overflow-hidden p-12 w-[520px] min-w-[520px] bg-gradient-to-br from-papaya-dark via-papaya-darker to-papaya-darkest">
         {/* Topographic contour lines */}
         <svg
           width="100%"
@@ -199,8 +199,8 @@ export default function LoginPage() {
         </svg>
 
         {/* Warm accent orbs */}
-        <div className="absolute top-[20%] -left-15 w-[300px] h-[300px] rounded-full bg-papaya-salmon/8 blur-[100px]" />
-        <div className="absolute bottom-[25%] -right-5 w-[250px] h-[250px] rounded-full bg-papaya-peach/10 blur-[80px]" />
+        <div className="absolute top-[20%] -left-15 w-[300px] h-[300px] rounded-full bg-papaya/10 blur-[100px]" />
+        <div className="absolute bottom-[25%] -right-5 w-[250px] h-[250px] rounded-full bg-papaya-light/15 blur-[80px]" />
 
         {/* Top: Logo */}
         <div className="relative z-10">
@@ -219,7 +219,7 @@ export default function LoginPage() {
             <br />
             find clarity.
           </p>
-          <div className="mt-6 h-px w-16 bg-gradient-to-r from-papaya-salmon/50 to-transparent" />
+          <div className="mt-6 h-px w-16 bg-gradient-to-r from-papaya/50 to-transparent" />
         </div>
 
         {/* Bottom: Attribution */}
@@ -229,14 +229,14 @@ export default function LoginPage() {
       </div>
 
       {/* ── Right: Form Panel ── */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-papaya-surface font-[Plus_Jakarta_Sans,system-ui,sans-serif] relative">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white font-[Plus_Jakarta_Sans,system-ui,sans-serif] relative">
         {/* Language switcher — top right */}
         <LoginLanguageSwitcher />
 
         <div className="w-full max-w-[380px]">
           {/* Mobile logo */}
           <div className="lg:hidden mb-10 text-center">
-            <h1 className="text-3xl font-[DM_Serif_Display,Georgia,serif] text-papaya-coral">
+            <h1 className="text-3xl font-bold text-papaya">
               Oasis
             </h1>
             <p className="mt-1 text-[11px] font-light tracking-[0.15em] uppercase text-papaya-muted">
@@ -246,7 +246,7 @@ export default function LoginPage() {
 
           {/* Heading */}
           <div className="mb-8">
-            <h2 className="text-[1.65rem] font-[DM_Serif_Display,Georgia,serif] text-foreground">
+            <h2 className="text-[1.65rem] font-bold text-foreground">
               {t('common.welcome')}
             </h2>
             <p className="mt-1.5 text-[13.5px] text-papaya-muted">
@@ -284,13 +284,13 @@ export default function LoginPage() {
                   placeholder={`${t('auth.login.emailPlaceholder')} / ${t('auth.login.phonePlaceholder')}`}
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
-                  className="h-11 rounded-xl border-papaya-border bg-white text-[13.5px] text-foreground focus-visible:border-papaya-coral/30 focus-visible:ring-papaya-coral/20"
+                  className="h-11 rounded-xl border-papaya-border bg-white text-[13.5px] text-foreground focus-visible:border-papaya/30 focus-visible:ring-papaya/20"
                 />
 
                 <Button
                   type="submit"
                   disabled={isSubmitting || !destination}
-                  className="w-full h-11 rounded-xl bg-papaya-coral text-white text-[13.5px] font-semibold hover:bg-papaya-coral/85 disabled:opacity-40"
+                  className="w-full h-11 rounded-xl bg-papaya text-white text-[13.5px] font-semibold hover:bg-papaya/85 disabled:opacity-40"
                 >
                   {isSubmitting ? t('common.loading') : t('auth.login.sendCode')}
                 </Button>
@@ -306,7 +306,7 @@ export default function LoginPage() {
                     variant="outline"
                     onClick={handlePasskeyLogin}
                     disabled={isSubmitting}
-                    className="w-full h-11 rounded-xl border-papaya-border bg-white text-[13.5px] font-medium text-muted-foreground hover:border-papaya-coral/25 hover:text-foreground"
+                    className="w-full h-11 rounded-xl border-papaya-border bg-white text-[13.5px] font-medium text-muted-foreground hover:border-papaya/25 hover:text-foreground"
                   >
                     <KeyIcon />
                     {t('auth.login.usePasskey')}
@@ -334,13 +334,13 @@ export default function LoginPage() {
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
                 autoFocus
-                className="h-14 rounded-xl border-papaya-border bg-white text-2xl text-center tracking-[0.5em] text-foreground focus-visible:border-papaya-coral/30 focus-visible:ring-papaya-coral/20"
+                className="h-14 rounded-xl border-papaya-border bg-white text-2xl text-center tracking-[0.5em] text-foreground focus-visible:border-papaya/30 focus-visible:ring-papaya/20"
               />
 
               <Button
                 type="submit"
                 disabled={isSubmitting || code.length !== 6}
-                className="w-full h-11 rounded-xl bg-papaya-coral text-white text-[13.5px] font-semibold hover:bg-papaya-coral/85 disabled:opacity-40"
+                className="w-full h-11 rounded-xl bg-papaya text-white text-[13.5px] font-semibold hover:bg-papaya/85 disabled:opacity-40"
               >
                 {isSubmitting ? t('common.loading') : t('auth.login.verify')}
               </Button>
@@ -371,7 +371,7 @@ interface SSOButtonProps {
 
 function SSOButton({ href, icon, label }: SSOButtonProps) {
   return (
-    <Button variant="outline" asChild className="h-auto justify-start gap-3.5 rounded-xl border-papaya-border bg-white px-4 py-3 text-[13.5px] font-medium text-foreground hover:border-papaya-coral/25 hover:bg-white">
+    <Button variant="outline" asChild className="h-auto justify-start gap-3.5 rounded-xl border-papaya-border bg-white px-4 py-3 text-[13.5px] font-medium text-foreground hover:border-papaya/25 hover:bg-white">
       <a href={href}>
         {icon}
         <span>{label}</span>
@@ -402,7 +402,7 @@ function LoginLanguageSwitcher() {
               onClick={() => i18n.changeLanguage(lang)}
               className={cn(
                 'text-[13px] cursor-pointer',
-                currentLang === lang && 'font-semibold text-papaya-coral'
+                currentLang === lang && 'font-semibold text-papaya'
               )}
             >
               {languageNames[lang]}

@@ -15,6 +15,9 @@ const ReportingPage = lazy(() => import('./features/reporting/ReportingPage'));
 const AdminPage = lazy(() => import('./features/admin/AdminPage'));
 const AIAgentsPage = lazy(() => import('./features/ai-agents/AIAgentsPage'));
 const FatimaPage = lazy(() => import('./features/fatima/FatimaPage'));
+const DesignSystemPage = lazy(() => import('./features/design-system/DesignSystemPage'));
+const StatusPage = lazy(() => import('./features/status/StatusPage'));
+const StatusPagePublic = lazy(() => import('./features/status/StatusPagePublic'));
 
 // Remote apps
 const SampleEntry = lazy(() => import('sample/entry'));
@@ -24,6 +27,10 @@ export const routes: RouteObject[] = [
   {
     path: '/login',
     element: <LoginPage />,
+  },
+  {
+    path: '/status',
+    element: <StatusPagePublic />,
   },
 
   // Protected routes
@@ -93,6 +100,18 @@ export const routes: RouteObject[] = [
       {
         path: 'fatima',
         element: <FatimaPage />,
+      },
+
+      // Design System Reference
+      {
+        path: 'design-system',
+        element: <DesignSystemPage />,
+      },
+
+      // System Status (authenticated view)
+      {
+        path: 'system-status',
+        element: <StatusPage />,
       },
 
       // Remote apps

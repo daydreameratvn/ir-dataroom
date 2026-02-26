@@ -192,14 +192,14 @@ export default function AppSidebar({ collapsed, onToggle, onOpenFatima }: AppSid
       <div className={cn('flex h-14 items-center border-b px-3', collapsed ? 'justify-center' : 'justify-between')}>
         {!collapsed && (
           <div className="flex items-center gap-2 overflow-hidden">
-            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-red-400 to-orange-500 text-white font-bold text-sm shadow-sm">
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-papaya text-white font-bold text-sm shadow-sm">
               O
             </div>
-            <span className="truncate text-sm font-semibold">Oasis</span>
+            <span className="truncate text-sm font-semibold">{t('app.name')}</span>
           </div>
         )}
         {collapsed && (
-          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-red-400 to-orange-500 text-white font-bold text-sm shadow-sm">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-papaya text-white font-bold text-sm shadow-sm">
             O
           </div>
         )}
@@ -250,7 +250,7 @@ export default function AppSidebar({ collapsed, onToggle, onOpenFatima }: AppSid
           )}
         >
           <Sparkles className="h-4 w-4 flex-shrink-0" />
-          {!collapsed && <span>Fatima</span>}
+          {!collapsed && <span>{t('fatima.name')}</span>}
         </Link>
       </ScrollArea>
 
@@ -270,7 +270,7 @@ export default function AppSidebar({ collapsed, onToggle, onOpenFatima }: AppSid
           </div>
           {!collapsed && (
             <>
-              <span className="flex-1 text-left">Ask Fatima</span>
+              <span className="flex-1 text-left">{t('fatima.askFatima')}</span>
               <kbd className="inline-flex h-5 items-center gap-0.5 rounded border bg-background/80 px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
                 <span className="text-xs">⌘</span>J
               </kbd>
