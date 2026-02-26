@@ -1,0 +1,126 @@
+import * as aws from "@pulumi/aws";
+import { mergeTags } from "../lib/tags.ts";
+import { banyanDb } from "./rds.ts";
+import { banyanPublicSubnets, banyanVpc } from "./vpc.ts";
+
+// ============================================================
+// NLB Security Group
+// ============================================================
+
+export const banyanNlbSg = new aws.ec2.SecurityGroup("banyan-prod-nlb-sg", {
+  vpcId: banyanVpc.id,
+  name: "banyan-prod-nlb-sg",
+  description: "Security group for NLB RDS proxy (DDN Cloud connectivity)",
+  ingress: [
+    {
+      description: "PostgreSQL from DDN Cloud egress CIDRs",
+      fromPort: 5432,
+      toPort: 5432,
+      protocol: "tcp",
+      cidrBlocks: ["0.0.0.0/0"], // NLB is TCP passthrough; RDS SG provides fine-grained control
+    },
+  ],
+  egress: [
+    {
+      description: "Allow all outbound",
+      fromPort: 0,
+      toPort: 0,
+      protocol: "-1",
+      cidrBlocks: ["0.0.0.0/0"],
+    },
+  ],
+  tags: mergeTags({
+    Name: "banyan-prod-nlb-sg",
+    Component: "security-group",
+    Service: "nlb-rds-proxy",
+  }),
+});
+
+// ============================================================
+// Network Load Balancer (internet-facing, TCP only)
+// ============================================================
+
+export const banyanNlb = new aws.lb.LoadBalancer("banyan-prod-nlb-rds", {
+  name: "banyan-prod-nlb-rds",
+  internal: false,
+  loadBalancerType: "network",
+  securityGroups: [banyanNlbSg.id],
+  subnets: banyanPublicSubnets.map((s) => s.id),
+  tags: mergeTags({
+    Name: "banyan-prod-nlb-rds",
+    Component: "nlb",
+    Service: "rds-proxy",
+  }),
+});
+
+// ============================================================
+// Target Group (IP type, pointing at RDS instance)
+// ============================================================
+
+export const banyanNlbTargetGroup = new aws.lb.TargetGroup("banyan-prod-nlb-rds-tg", {
+  name: "banyan-prod-nlb-rds-tg",
+  port: 5432,
+  protocol: "TCP",
+  targetType: "ip",
+  vpcId: banyanVpc.id,
+  healthCheck: {
+    enabled: true,
+    protocol: "TCP",
+    port: "5432",
+    healthyThreshold: 3,
+    unhealthyThreshold: 3,
+    interval: 30,
+  },
+  tags: mergeTags({
+    Name: "banyan-prod-nlb-rds-tg",
+    Component: "nlb",
+    Service: "rds-proxy",
+  }),
+});
+
+// ============================================================
+// Target Group Attachment (RDS instance IP)
+// ============================================================
+
+export const banyanNlbTargetAttachment = new aws.lb.TargetGroupAttachment("banyan-prod-nlb-rds-target", {
+  targetGroupArn: banyanNlbTargetGroup.arn,
+  targetId: banyanDb.address,
+  port: 5432,
+});
+
+// ============================================================
+// TCP Listener (port 5432)
+// ============================================================
+
+export const banyanNlbListener = new aws.lb.Listener("banyan-prod-nlb-rds-listener", {
+  loadBalancerArn: banyanNlb.arn,
+  port: 5432,
+  protocol: "TCP",
+  defaultActions: [
+    {
+      type: "forward",
+      targetGroupArn: banyanNlbTargetGroup.arn,
+    },
+  ],
+  tags: mergeTags({
+    Name: "banyan-prod-nlb-rds-listener",
+    Component: "nlb",
+    Service: "rds-proxy",
+  }),
+});
+
+// ============================================================
+// SSM Parameter — NLB DNS endpoint for DDN Cloud connector
+// ============================================================
+
+export const banyanNlbEndpointParam = new aws.ssm.Parameter("banyan-prod-nlb-rds-endpoint", {
+  name: "/banyan/hasura/rds-nlb-endpoint",
+  type: "String",
+  value: banyanNlb.dnsName,
+  description: "NLB DNS name for DDN Cloud to reach RDS PostgreSQL",
+  tags: mergeTags({
+    Name: "banyan-prod-nlb-rds-endpoint",
+    Component: "ssm",
+    Service: "rds-proxy",
+  }),
+});

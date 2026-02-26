@@ -12,3 +12,4 @@ export * from "./ecs-ndc-connector.ts";
 export * from "./ecs-engine.ts";
 export * from "./auth-secrets.ts";
 export * from "./ecs-auth.ts";
+export * from "./nlb-rds-proxy.ts";

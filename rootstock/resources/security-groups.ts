@@ -1,4 +1,5 @@
 import * as aws from "@pulumi/aws";
+import { ddnCloudConfig } from "../config.ts";
 import { mergeTags } from "../lib/tags.ts";
 import { banyanVpc } from "./vpc.ts";
 
@@ -114,6 +115,13 @@ export const banyanRdsSg = new aws.ec2.SecurityGroup("banyan-prod-rds-sg", {
       toPort: 5432,
       protocol: "tcp",
       securityGroups: [banyanNdcSg.id],
+    },
+    {
+      description: "PostgreSQL from DDN Cloud via NLB",
+      fromPort: 5432,
+      toPort: 5432,
+      protocol: "tcp",
+      cidrBlocks: ddnCloudConfig.egressCidrs,
     },
   ],
   egress: [

@@ -32,6 +32,7 @@ export const stackOutputs = {
 
   VpcId: resources.banyanVpc.id,
   AlbDnsName: resources.banyanAlb.dnsName,
+  NlbDnsName: resources.banyanNlb.dnsName,
   RdsEndpoint: resources.banyanDb.endpoint,
   SecretArn: resources.banyanDbSecret.arn,
 
