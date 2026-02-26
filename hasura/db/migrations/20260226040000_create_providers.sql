@@ -88,7 +88,7 @@ ALTER TABLE claims
   FOREIGN KEY (provider_id) REFERENCES providers(id)
   ON DELETE RESTRICT ON UPDATE RESTRICT;
 
-CREATE INDEX CONCURRENTLY idx_claims_provider_id ON claims (provider_id);
+CREATE INDEX idx_claims_provider_id ON claims (provider_id);
 
 -- migrate:down
 -- no rollback, write a new migration instead
