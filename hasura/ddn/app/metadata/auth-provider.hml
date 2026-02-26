@@ -1,0 +1,55 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuthProvider
+  fields:
+    - name: value
+      type: String!
+    - name: comment
+      type: String
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: auth_providers
+      fieldMapping:
+        value:
+          column:
+            name: value
+        comment:
+          column:
+            name: comment
+  graphql:
+    typeName: AuthProvider
+---
+kind: Model
+version: v2
+definition:
+  name: AuthProviders
+  objectType: AuthProvider
+  source:
+    dataConnectorName: banyan_pg
+    collection: auth_providers
+  graphql:
+    selectMany:
+      queryRootField: authProviders
+    selectUniques:
+      - queryRootField: authProviderByValue
+        uniqueIdentifier: [value]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuthProviders
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuthProvider
+  permissions:
+    - role: admin
+      output:
+        allowedFields: [value, comment]

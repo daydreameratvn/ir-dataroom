@@ -1,0 +1,255 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Endorsement
+  fields:
+    - name: id
+      type: Uuid!
+    - name: created_at
+      type: Timestamptz!
+    - name: created_by
+      type: Uuid
+    - name: updated_at
+      type: Timestamptz!
+    - name: updated_by
+      type: Uuid
+    - name: deleted_at
+      type: Timestamptz
+    - name: tenant_id
+      type: Uuid!
+    - name: endorsement_number
+      type: String!
+    - name: policy_id
+      type: Uuid!
+    - name: endorsement_type
+      type: String!
+    - name: status
+      type: String!
+    - name: description
+      type: String
+    - name: effective_date
+      type: Timestamptz
+    - name: premium_adjustment
+      type: Numeric
+    - name: requested_by
+      type: Uuid
+    - name: approved_by
+      type: Uuid
+    - name: sum_insured_adjustment
+      type: Numeric
+    - name: rejection_reason
+      type: String
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: endorsements
+      fieldMapping:
+        id:
+          column:
+            name: id
+        created_at:
+          column:
+            name: created_at
+        created_by:
+          column:
+            name: created_by
+        updated_at:
+          column:
+            name: updated_at
+        updated_by:
+          column:
+            name: updated_by
+        deleted_at:
+          column:
+            name: deleted_at
+        tenant_id:
+          column:
+            name: tenant_id
+        endorsement_number:
+          column:
+            name: endorsement_number
+        policy_id:
+          column:
+            name: policy_id
+        endorsement_type:
+          column:
+            name: endorsement_type
+        status:
+          column:
+            name: status
+        description:
+          column:
+            name: description
+        effective_date:
+          column:
+            name: effective_date
+        premium_adjustment:
+          column:
+            name: premium_adjustment
+        requested_by:
+          column:
+            name: requested_by
+        approved_by:
+          column:
+            name: approved_by
+        sum_insured_adjustment:
+          column:
+            name: sum_insured_adjustment
+        rejection_reason:
+          column:
+            name: rejection_reason
+  graphql:
+    typeName: Endorsement
+---
+kind: Model
+version: v2
+definition:
+  name: Endorsements
+  objectType: Endorsement
+  source:
+    dataConnectorName: banyan_pg
+    collection: endorsements
+  graphql:
+    selectMany:
+      queryRootField: endorsements
+    selectUniques:
+      - queryRootField: endorsementById
+        uniqueIdentifier: [id]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Endorsements
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Endorsement
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - created_at
+          - created_by
+          - updated_at
+          - updated_by
+          - deleted_at
+          - tenant_id
+          - endorsement_number
+          - policy_id
+          - endorsement_type
+          - status
+          - description
+          - effective_date
+          - premium_adjustment
+          - requested_by
+          - approved_by
+          - sum_insured_adjustment
+          - rejection_reason
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: Endorsement
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenant_id
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: Endorsement
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policy_id
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: endorsementType
+  sourceType: Endorsement
+  target:
+    model:
+      name: EndorsementTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: endorsement_type
+      target:
+        modelField:
+          - fieldName: value
+---
+kind: Relationship
+version: v1
+definition:
+  name: endorsementStatus
+  sourceType: Endorsement
+  target:
+    model:
+      name: EndorsementStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+---
+kind: Relationship
+version: v1
+definition:
+  name: requestedByUser
+  sourceType: Endorsement
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: requested_by
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: approvedByUser
+  sourceType: Endorsement
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: approved_by
+      target:
+        modelField:
+          - fieldName: id

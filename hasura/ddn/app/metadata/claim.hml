@@ -1,0 +1,428 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Claim
+  fields:
+    - name: id
+      type: Uuid!
+    - name: created_at
+      type: Timestamptz!
+    - name: created_by
+      type: Uuid
+    - name: updated_at
+      type: Timestamptz!
+    - name: updated_by
+      type: Uuid
+    - name: deleted_at
+      type: Timestamptz
+    - name: tenant_id
+      type: Uuid!
+    - name: claim_number
+      type: String!
+    - name: status
+      type: String!
+    - name: policy_id
+      type: Uuid!
+    - name: claimant_name
+      type: String!
+    - name: provider_id
+      type: Uuid
+    - name: provider_name
+      type: String
+    - name: amount_claimed
+      type: Numeric!
+    - name: amount_approved
+      type: Numeric
+    - name: currency
+      type: String!
+    - name: date_of_loss
+      type: Timestamptz
+    - name: date_of_service
+      type: Timestamptz
+    - name: submitted_by
+      type: Uuid
+    - name: assigned_to
+      type: Uuid
+    - name: ai_summary
+      type: String
+    - name: ai_score
+      type: Numeric
+    - name: amount_paid
+      type: Numeric
+    - name: adjudicated_by
+      type: Uuid
+    - name: adjudicated_at
+      type: Timestamptz
+    - name: denial_reason
+      type: String
+    - name: ai_recommendation
+      type: String
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: claims
+      fieldMapping:
+        id:
+          column:
+            name: id
+        created_at:
+          column:
+            name: created_at
+        created_by:
+          column:
+            name: created_by
+        updated_at:
+          column:
+            name: updated_at
+        updated_by:
+          column:
+            name: updated_by
+        deleted_at:
+          column:
+            name: deleted_at
+        tenant_id:
+          column:
+            name: tenant_id
+        claim_number:
+          column:
+            name: claim_number
+        status:
+          column:
+            name: status
+        policy_id:
+          column:
+            name: policy_id
+        claimant_name:
+          column:
+            name: claimant_name
+        provider_id:
+          column:
+            name: provider_id
+        provider_name:
+          column:
+            name: provider_name
+        amount_claimed:
+          column:
+            name: amount_claimed
+        amount_approved:
+          column:
+            name: amount_approved
+        currency:
+          column:
+            name: currency
+        date_of_loss:
+          column:
+            name: date_of_loss
+        date_of_service:
+          column:
+            name: date_of_service
+        submitted_by:
+          column:
+            name: submitted_by
+        assigned_to:
+          column:
+            name: assigned_to
+        ai_summary:
+          column:
+            name: ai_summary
+        ai_score:
+          column:
+            name: ai_score
+        amount_paid:
+          column:
+            name: amount_paid
+        adjudicated_by:
+          column:
+            name: adjudicated_by
+        adjudicated_at:
+          column:
+            name: adjudicated_at
+        denial_reason:
+          column:
+            name: denial_reason
+        ai_recommendation:
+          column:
+            name: ai_recommendation
+  graphql:
+    typeName: Claim
+---
+kind: Model
+version: v2
+definition:
+  name: Claims
+  objectType: Claim
+  source:
+    dataConnectorName: banyan_pg
+    collection: claims
+  graphql:
+    selectMany:
+      queryRootField: claims
+    selectUniques:
+      - queryRootField: claimById
+        uniqueIdentifier: [id]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Claims
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Claim
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - created_at
+          - created_by
+          - updated_at
+          - updated_by
+          - deleted_at
+          - tenant_id
+          - claim_number
+          - status
+          - policy_id
+          - claimant_name
+          - provider_id
+          - provider_name
+          - amount_claimed
+          - amount_approved
+          - currency
+          - date_of_loss
+          - date_of_service
+          - submitted_by
+          - assigned_to
+          - ai_summary
+          - ai_score
+          - amount_paid
+          - adjudicated_by
+          - adjudicated_at
+          - denial_reason
+          - ai_recommendation
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: Claim
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenant_id
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimStatus
+  sourceType: Claim
+  target:
+    model:
+      name: ClaimStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: Claim
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policy_id
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: provider
+  sourceType: Claim
+  target:
+    model:
+      name: Providers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: provider_id
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: submittedByUser
+  sourceType: Claim
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: submitted_by
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: assignedToUser
+  sourceType: Claim
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: assigned_to
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocuments
+  sourceType: Claim
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claim_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimNotes
+  sourceType: Claim
+  target:
+    model:
+      name: ClaimNotes
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claim_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaAlerts
+  sourceType: Claim
+  target:
+    model:
+      name: FwaAlerts
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claim_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: agentSessions
+  sourceType: Claim
+  target:
+    model:
+      name: AgentSessions
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claim_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDiagnoses
+  sourceType: Claim
+  target:
+    model:
+      name: ClaimDiagnoses
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claim_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimProcedures
+  sourceType: Claim
+  target:
+    model:
+      name: ClaimProcedures
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claim_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: adjudicatedByUser
+  sourceType: Claim
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: adjudicated_by
+      target:
+        modelField:
+          - fieldName: id

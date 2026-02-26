@@ -1,0 +1,352 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Tenant
+  fields:
+    - name: id
+      type: Uuid!
+    - name: created_at
+      type: Timestamptz!
+    - name: updated_at
+      type: Timestamptz!
+    - name: name
+      type: String!
+    - name: deleted_at
+      type: Timestamptz
+    - name: national
+      type: String
+    - name: configuration
+      type: Jsonb
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: tenants
+      fieldMapping:
+        id:
+          column:
+            name: id
+        created_at:
+          column:
+            name: created_at
+        updated_at:
+          column:
+            name: updated_at
+        name:
+          column:
+            name: name
+        deleted_at:
+          column:
+            name: deleted_at
+        national:
+          column:
+            name: national
+        configuration:
+          column:
+            name: configuration
+  graphql:
+    typeName: Tenant
+---
+kind: Model
+version: v2
+definition:
+  name: Tenants
+  objectType: Tenant
+  source:
+    dataConnectorName: banyan_pg
+    collection: tenants
+  graphql:
+    selectMany:
+      queryRootField: tenants
+    selectUniques:
+      - queryRootField: tenantById
+        uniqueIdentifier: [id]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Tenants
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Tenant
+  permissions:
+    - role: admin
+      output:
+        allowedFields: [id, created_at, updated_at, name, deleted_at, national, configuration]
+---
+kind: Relationship
+version: v1
+definition:
+  name: nationality
+  sourceType: Tenant
+  target:
+    model:
+      name: Nationalities
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: national
+      target:
+        modelField:
+          - fieldName: value
+---
+kind: Relationship
+version: v1
+definition:
+  name: users
+  sourceType: Tenant
+  target:
+    model:
+      name: Users
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: products
+  sourceType: Tenant
+  target:
+    model:
+      name: Products
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: Tenant
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: endorsements
+  sourceType: Tenant
+  target:
+    model:
+      name: Endorsements
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: claims
+  sourceType: Tenant
+  target:
+    model:
+      name: Claims
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: providers
+  sourceType: Tenant
+  target:
+    model:
+      name: Providers
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: providerContracts
+  sourceType: Tenant
+  target:
+    model:
+      name: ProviderContracts
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaRules
+  sourceType: Tenant
+  target:
+    model:
+      name: FwaRules
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaAlerts
+  sourceType: Tenant
+  target:
+    model:
+      name: FwaAlerts
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: agentSessions
+  sourceType: Tenant
+  target:
+    model:
+      name: AgentSessions
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: agentActions
+  sourceType: Tenant
+  target:
+    model:
+      name: AgentActions
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogs
+  sourceType: Tenant
+  target:
+    model:
+      name: AuditLogs
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDiagnoses
+  sourceType: Tenant
+  target:
+    model:
+      name: ClaimDiagnoses
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimProcedures
+  sourceType: Tenant
+  target:
+    model:
+      name: ClaimProcedures
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogEntries
+  sourceType: Tenant
+  target:
+    model:
+      name: AuditLogEntries
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenant_id

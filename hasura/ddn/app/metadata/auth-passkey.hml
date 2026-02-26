@@ -1,0 +1,146 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuthPasskey
+  fields:
+    - name: id
+      type: Uuid!
+    - name: created_at
+      type: Timestamptz!
+    - name: created_by
+      type: Uuid
+    - name: updated_at
+      type: Timestamptz!
+    - name: updated_by
+      type: Uuid
+    - name: deleted_at
+      type: Timestamptz
+    - name: tenant_id
+      type: Uuid!
+    - name: user_id
+      type: Uuid!
+    - name: credential_id
+      type: String!
+    - name: public_key
+      type: String!
+    - name: sign_count
+      type: Int4!
+    - name: device_name
+      type: String
+    - name: transports
+      type: String
+    - name: last_used_at
+      type: Timestamptz
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: auth_passkeys
+      fieldMapping:
+        id:
+          column:
+            name: id
+        created_at:
+          column:
+            name: created_at
+        created_by:
+          column:
+            name: created_by
+        updated_at:
+          column:
+            name: updated_at
+        updated_by:
+          column:
+            name: updated_by
+        deleted_at:
+          column:
+            name: deleted_at
+        tenant_id:
+          column:
+            name: tenant_id
+        user_id:
+          column:
+            name: user_id
+        credential_id:
+          column:
+            name: credential_id
+        public_key:
+          column:
+            name: public_key
+        sign_count:
+          column:
+            name: sign_count
+        device_name:
+          column:
+            name: device_name
+        transports:
+          column:
+            name: transports
+        last_used_at:
+          column:
+            name: last_used_at
+  graphql:
+    typeName: AuthPasskey
+---
+kind: Model
+version: v2
+definition:
+  name: AuthPasskeys
+  objectType: AuthPasskey
+  source:
+    dataConnectorName: banyan_pg
+    collection: auth_passkeys
+  graphql:
+    selectMany:
+      queryRootField: authPasskeys
+    selectUniques:
+      - queryRootField: authPasskeyById
+        uniqueIdentifier: [id]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuthPasskeys
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuthPasskey
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - created_at
+          - created_by
+          - updated_at
+          - updated_by
+          - deleted_at
+          - tenant_id
+          - user_id
+          - credential_id
+          - public_key
+          - sign_count
+          - device_name
+          - transports
+          - last_used_at
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: AuthPasskey
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: user_id
+      target:
+        modelField:
+          - fieldName: id

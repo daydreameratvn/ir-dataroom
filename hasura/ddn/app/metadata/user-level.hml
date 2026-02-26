@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UserLevel
+  fields:
+    - name: value
+      type: String!
+    - name: comment
+      type: String
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: user_levels
+      fieldMapping:
+        value:
+          column:
+            name: value
+        comment:
+          column:
+            name: comment
+  graphql:
+    typeName: UserLevel
+---
+kind: Model
+version: v2
+definition:
+  name: UserLevels
+  objectType: UserLevel
+  source:
+    dataConnectorName: banyan_pg
+    collection: user_levels
+  graphql:
+    selectMany:
+      queryRootField: userLevels
+    selectUniques:
+      - queryRootField: userLevelByValue
+        uniqueIdentifier: [value]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: UserLevels
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UserLevel
+  permissions:
+    - role: admin
+      output:
+        allowedFields: [value, comment]
+---
+kind: Relationship
+version: v1
+definition:
+  name: users
+  sourceType: UserLevel
+  target:
+    model:
+      name: Users
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: user_level

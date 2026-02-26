@@ -1,0 +1,197 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuditLog
+  fields:
+    - name: id
+      type: Uuid!
+    - name: created_at
+      type: Timestamptz!
+    - name: created_by
+      type: Uuid
+    - name: updated_at
+      type: Timestamptz!
+    - name: updated_by
+      type: Uuid
+    - name: deleted_at
+      type: Timestamptz
+    - name: tenant_id
+      type: Uuid!
+    - name: user_id
+      type: Uuid
+    - name: agent_session_id
+      type: Uuid
+    - name: action
+      type: String!
+    - name: entity_type
+      type: String!
+    - name: entity_id
+      type: Uuid
+    - name: ip_address
+      type: String
+    - name: user_agent
+      type: String
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: audit_logs
+      fieldMapping:
+        id:
+          column:
+            name: id
+        created_at:
+          column:
+            name: created_at
+        created_by:
+          column:
+            name: created_by
+        updated_at:
+          column:
+            name: updated_at
+        updated_by:
+          column:
+            name: updated_by
+        deleted_at:
+          column:
+            name: deleted_at
+        tenant_id:
+          column:
+            name: tenant_id
+        user_id:
+          column:
+            name: user_id
+        agent_session_id:
+          column:
+            name: agent_session_id
+        action:
+          column:
+            name: action
+        entity_type:
+          column:
+            name: entity_type
+        entity_id:
+          column:
+            name: entity_id
+        ip_address:
+          column:
+            name: ip_address
+        user_agent:
+          column:
+            name: user_agent
+  graphql:
+    typeName: AuditLog
+---
+kind: Model
+version: v2
+definition:
+  name: AuditLogs
+  objectType: AuditLog
+  source:
+    dataConnectorName: banyan_pg
+    collection: audit_logs
+  graphql:
+    selectMany:
+      queryRootField: auditLogs
+    selectUniques:
+      - queryRootField: auditLogById
+        uniqueIdentifier: [id]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuditLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuditLog
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - created_at
+          - created_by
+          - updated_at
+          - updated_by
+          - deleted_at
+          - tenant_id
+          - user_id
+          - agent_session_id
+          - action
+          - entity_type
+          - entity_id
+          - ip_address
+          - user_agent
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: AuditLog
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenant_id
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: AuditLog
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: user_id
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: agentSession
+  sourceType: AuditLog
+  target:
+    model:
+      name: AgentSessions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: agent_session_id
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogEntries
+  sourceType: AuditLog
+  target:
+    model:
+      name: AuditLogEntries
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: audit_log_id

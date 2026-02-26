@@ -1,0 +1,436 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: User
+  fields:
+    - name: id
+      type: Uuid!
+    - name: created_at
+      type: Timestamptz!
+    - name: created_by
+      type: Uuid
+    - name: updated_at
+      type: Timestamptz!
+    - name: updated_by
+      type: Uuid
+    - name: deleted_at
+      type: Timestamptz
+    - name: tenant_id
+      type: Uuid!
+    - name: email
+      type: String!
+    - name: name
+      type: String!
+    - name: avatar_url
+      type: String
+    - name: user_type
+      type: String!
+    - name: user_level
+      type: String!
+    - name: title
+      type: String
+    - name: department
+      type: String
+    - name: locale
+      type: String
+    - name: last_login_at
+      type: Timestamptz
+    - name: phone
+      type: String
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: users
+      fieldMapping:
+        id:
+          column:
+            name: id
+        created_at:
+          column:
+            name: created_at
+        created_by:
+          column:
+            name: created_by
+        updated_at:
+          column:
+            name: updated_at
+        updated_by:
+          column:
+            name: updated_by
+        deleted_at:
+          column:
+            name: deleted_at
+        tenant_id:
+          column:
+            name: tenant_id
+        email:
+          column:
+            name: email
+        name:
+          column:
+            name: name
+        avatar_url:
+          column:
+            name: avatar_url
+        user_type:
+          column:
+            name: user_type
+        user_level:
+          column:
+            name: user_level
+        title:
+          column:
+            name: title
+        department:
+          column:
+            name: department
+        locale:
+          column:
+            name: locale
+        last_login_at:
+          column:
+            name: last_login_at
+        phone:
+          column:
+            name: phone
+  graphql:
+    typeName: User
+---
+kind: Model
+version: v2
+definition:
+  name: Users
+  objectType: User
+  source:
+    dataConnectorName: banyan_pg
+    collection: users
+  graphql:
+    selectMany:
+      queryRootField: users
+    selectUniques:
+      - queryRootField: userById
+        uniqueIdentifier: [id]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Users
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: User
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - created_at
+          - created_by
+          - updated_at
+          - updated_by
+          - deleted_at
+          - tenant_id
+          - email
+          - name
+          - avatar_url
+          - user_type
+          - user_level
+          - title
+          - department
+          - locale
+          - last_login_at
+          - phone
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: User
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenant_id
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: userType
+  sourceType: User
+  target:
+    model:
+      name: UserTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: user_type
+      target:
+        modelField:
+          - fieldName: value
+---
+kind: Relationship
+version: v1
+definition:
+  name: userLevel
+  sourceType: User
+  target:
+    model:
+      name: UserLevels
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: user_level
+      target:
+        modelField:
+          - fieldName: value
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogs
+  sourceType: User
+  target:
+    model:
+      name: AuditLogs
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: user_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: issuedPolicies
+  sourceType: User
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: issued_by
+---
+kind: Relationship
+version: v1
+definition:
+  name: requestedEndorsements
+  sourceType: User
+  target:
+    model:
+      name: Endorsements
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: requested_by
+---
+kind: Relationship
+version: v1
+definition:
+  name: approvedEndorsements
+  sourceType: User
+  target:
+    model:
+      name: Endorsements
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: approved_by
+---
+kind: Relationship
+version: v1
+definition:
+  name: submittedClaims
+  sourceType: User
+  target:
+    model:
+      name: Claims
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: submitted_by
+---
+kind: Relationship
+version: v1
+definition:
+  name: assignedClaims
+  sourceType: User
+  target:
+    model:
+      name: Claims
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: assigned_to
+---
+kind: Relationship
+version: v1
+definition:
+  name: uploadedClaimDocuments
+  sourceType: User
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: uploaded_by
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimNotes
+  sourceType: User
+  target:
+    model:
+      name: ClaimNotes
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: author_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: resolvedFwaAlerts
+  sourceType: User
+  target:
+    model:
+      name: FwaAlerts
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: resolved_by
+---
+kind: Relationship
+version: v1
+definition:
+  name: triggeredAgentSessions
+  sourceType: User
+  target:
+    model:
+      name: AgentSessions
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: triggered_by
+---
+kind: Relationship
+version: v1
+definition:
+  name: adjudicatedClaims
+  sourceType: User
+  target:
+    model:
+      name: Claims
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: adjudicated_by
+---
+kind: Relationship
+version: v1
+definition:
+  name: authIdentities
+  sourceType: User
+  target:
+    model:
+      name: AuthIdentities
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: user_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: authSessions
+  sourceType: User
+  target:
+    model:
+      name: AuthSessions
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: user_id
+---
+kind: Relationship
+version: v1
+definition:
+  name: authPasskeys
+  sourceType: User
+  target:
+    model:
+      name: AuthPasskeys
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: user_id

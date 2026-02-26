@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UserType
+  fields:
+    - name: value
+      type: String!
+    - name: comment
+      type: String
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: user_types
+      fieldMapping:
+        value:
+          column:
+            name: value
+        comment:
+          column:
+            name: comment
+  graphql:
+    typeName: UserType
+---
+kind: Model
+version: v2
+definition:
+  name: UserTypes
+  objectType: UserType
+  source:
+    dataConnectorName: banyan_pg
+    collection: user_types
+  graphql:
+    selectMany:
+      queryRootField: userTypes
+    selectUniques:
+      - queryRootField: userTypeByValue
+        uniqueIdentifier: [value]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: UserTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UserType
+  permissions:
+    - role: admin
+      output:
+        allowedFields: [value, comment]
+---
+kind: Relationship
+version: v1
+definition:
+  name: users
+  sourceType: UserType
+  target:
+    model:
+      name: Users
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: user_type

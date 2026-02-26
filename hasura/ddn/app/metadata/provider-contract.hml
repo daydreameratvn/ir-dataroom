@@ -1,0 +1,181 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ProviderContract
+  fields:
+    - name: id
+      type: Uuid!
+    - name: created_at
+      type: Timestamptz!
+    - name: created_by
+      type: Uuid
+    - name: updated_at
+      type: Timestamptz!
+    - name: updated_by
+      type: Uuid
+    - name: deleted_at
+      type: Timestamptz
+    - name: tenant_id
+      type: Uuid!
+    - name: provider_id
+      type: Uuid!
+    - name: contract_number
+      type: String!
+    - name: effective_date
+      type: Timestamptz!
+    - name: expiry_date
+      type: Timestamptz!
+    - name: discount_rate
+      type: Numeric
+    - name: status
+      type: String!
+    - name: payment_terms
+      type: String
+    - name: auto_renewal
+      type: Bool!
+    - name: termination_notice_days
+      type: Int4
+    - name: fee_schedule
+      type: String
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: provider_contracts
+      fieldMapping:
+        id:
+          column:
+            name: id
+        created_at:
+          column:
+            name: created_at
+        created_by:
+          column:
+            name: created_by
+        updated_at:
+          column:
+            name: updated_at
+        updated_by:
+          column:
+            name: updated_by
+        deleted_at:
+          column:
+            name: deleted_at
+        tenant_id:
+          column:
+            name: tenant_id
+        provider_id:
+          column:
+            name: provider_id
+        contract_number:
+          column:
+            name: contract_number
+        effective_date:
+          column:
+            name: effective_date
+        expiry_date:
+          column:
+            name: expiry_date
+        discount_rate:
+          column:
+            name: discount_rate
+        status:
+          column:
+            name: status
+        payment_terms:
+          column:
+            name: payment_terms
+        auto_renewal:
+          column:
+            name: auto_renewal
+        termination_notice_days:
+          column:
+            name: termination_notice_days
+        fee_schedule:
+          column:
+            name: fee_schedule
+  graphql:
+    typeName: ProviderContract
+---
+kind: Model
+version: v2
+definition:
+  name: ProviderContracts
+  objectType: ProviderContract
+  source:
+    dataConnectorName: banyan_pg
+    collection: provider_contracts
+  graphql:
+    selectMany:
+      queryRootField: providerContracts
+    selectUniques:
+      - queryRootField: providerContractById
+        uniqueIdentifier: [id]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ProviderContracts
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ProviderContract
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - created_at
+          - created_by
+          - updated_at
+          - updated_by
+          - deleted_at
+          - tenant_id
+          - provider_id
+          - contract_number
+          - effective_date
+          - expiry_date
+          - discount_rate
+          - status
+          - payment_terms
+          - auto_renewal
+          - termination_notice_days
+          - fee_schedule
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: ProviderContract
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenant_id
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: provider
+  sourceType: ProviderContract
+  target:
+    model:
+      name: Providers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: provider_id
+      target:
+        modelField:
+          - fieldName: id

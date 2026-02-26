@@ -1,0 +1,129 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuthOtpRequest
+  fields:
+    - name: id
+      type: Uuid!
+    - name: created_at
+      type: Timestamptz!
+    - name: created_by
+      type: Uuid
+    - name: updated_at
+      type: Timestamptz!
+    - name: updated_by
+      type: Uuid
+    - name: deleted_at
+      type: Timestamptz
+    - name: tenant_id
+      type: Uuid!
+    - name: provider
+      type: String!
+    - name: destination
+      type: String!
+    - name: code_hash
+      type: String!
+    - name: attempts
+      type: Int4!
+    - name: max_attempts
+      type: Int4!
+    - name: expires_at
+      type: Timestamptz!
+    - name: verified_at
+      type: Timestamptz
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: auth_otp_requests
+      fieldMapping:
+        id:
+          column:
+            name: id
+        created_at:
+          column:
+            name: created_at
+        created_by:
+          column:
+            name: created_by
+        updated_at:
+          column:
+            name: updated_at
+        updated_by:
+          column:
+            name: updated_by
+        deleted_at:
+          column:
+            name: deleted_at
+        tenant_id:
+          column:
+            name: tenant_id
+        provider:
+          column:
+            name: provider
+        destination:
+          column:
+            name: destination
+        code_hash:
+          column:
+            name: code_hash
+        attempts:
+          column:
+            name: attempts
+        max_attempts:
+          column:
+            name: max_attempts
+        expires_at:
+          column:
+            name: expires_at
+        verified_at:
+          column:
+            name: verified_at
+  graphql:
+    typeName: AuthOtpRequest
+---
+kind: Model
+version: v2
+definition:
+  name: AuthOtpRequests
+  objectType: AuthOtpRequest
+  source:
+    dataConnectorName: banyan_pg
+    collection: auth_otp_requests
+  graphql:
+    selectMany:
+      queryRootField: authOtpRequests
+    selectUniques:
+      - queryRootField: authOtpRequestById
+        uniqueIdentifier: [id]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuthOtpRequests
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuthOtpRequest
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - created_at
+          - created_by
+          - updated_at
+          - updated_by
+          - deleted_at
+          - tenant_id
+          - provider
+          - destination
+          - code_hash
+          - attempts
+          - max_attempts
+          - expires_at
+          - verified_at

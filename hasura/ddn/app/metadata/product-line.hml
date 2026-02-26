@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ProductLine
+  fields:
+    - name: value
+      type: String!
+    - name: comment
+      type: String
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: product_lines
+      fieldMapping:
+        value:
+          column:
+            name: value
+        comment:
+          column:
+            name: comment
+  graphql:
+    typeName: ProductLine
+---
+kind: Model
+version: v2
+definition:
+  name: ProductLines
+  objectType: ProductLine
+  source:
+    dataConnectorName: banyan_pg
+    collection: product_lines
+  graphql:
+    selectMany:
+      queryRootField: productLines
+    selectUniques:
+      - queryRootField: productLineByValue
+        uniqueIdentifier: [value]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ProductLines
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ProductLine
+  permissions:
+    - role: admin
+      output:
+        allowedFields: [value, comment]
+---
+kind: Relationship
+version: v1
+definition:
+  name: products
+  sourceType: ProductLine
+  target:
+    model:
+      name: Products
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: product_line

@@ -1,0 +1,163 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimProcedure
+  fields:
+    - name: id
+      type: Uuid!
+    - name: created_at
+      type: Timestamptz!
+    - name: created_by
+      type: Uuid
+    - name: updated_at
+      type: Timestamptz!
+    - name: updated_by
+      type: Uuid
+    - name: deleted_at
+      type: Timestamptz
+    - name: claim_id
+      type: Uuid!
+    - name: tenant_id
+      type: Uuid!
+    - name: code
+      type: String!
+    - name: description
+      type: String
+    - name: sequence_number
+      type: Int4!
+    - name: quantity
+      type: Int4!
+    - name: unit_cost
+      type: Numeric
+    - name: total_cost
+      type: Numeric
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: claim_procedures
+      fieldMapping:
+        id:
+          column:
+            name: id
+        created_at:
+          column:
+            name: created_at
+        created_by:
+          column:
+            name: created_by
+        updated_at:
+          column:
+            name: updated_at
+        updated_by:
+          column:
+            name: updated_by
+        deleted_at:
+          column:
+            name: deleted_at
+        claim_id:
+          column:
+            name: claim_id
+        tenant_id:
+          column:
+            name: tenant_id
+        code:
+          column:
+            name: code
+        description:
+          column:
+            name: description
+        sequence_number:
+          column:
+            name: sequence_number
+        quantity:
+          column:
+            name: quantity
+        unit_cost:
+          column:
+            name: unit_cost
+        total_cost:
+          column:
+            name: total_cost
+  graphql:
+    typeName: ClaimProcedure
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimProcedures
+  objectType: ClaimProcedure
+  source:
+    dataConnectorName: banyan_pg
+    collection: claim_procedures
+  graphql:
+    selectMany:
+      queryRootField: claimProcedures
+    selectUniques:
+      - queryRootField: claimProcedureById
+        uniqueIdentifier: [id]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimProcedures
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimProcedure
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - created_at
+          - created_by
+          - updated_at
+          - updated_by
+          - deleted_at
+          - claim_id
+          - tenant_id
+          - code
+          - description
+          - sequence_number
+          - quantity
+          - unit_cost
+          - total_cost
+---
+kind: Relationship
+version: v1
+definition:
+  name: claim
+  sourceType: ClaimProcedure
+  target:
+    model:
+      name: Claims
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claim_id
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: ClaimProcedure
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenant_id
+      target:
+        modelField:
+          - fieldName: id

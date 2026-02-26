@@ -1,0 +1,198 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Product
+  fields:
+    - name: id
+      type: Uuid!
+    - name: created_at
+      type: Timestamptz!
+    - name: created_by
+      type: Uuid
+    - name: updated_at
+      type: Timestamptz!
+    - name: updated_by
+      type: Uuid
+    - name: deleted_at
+      type: Timestamptz
+    - name: tenant_id
+      type: Uuid!
+    - name: code
+      type: String!
+    - name: name
+      type: String!
+    - name: product_line
+      type: String!
+    - name: description
+      type: String
+    - name: active
+      type: Bool!
+    - name: max_coverage_amount
+      type: Numeric
+    - name: min_premium
+      type: Numeric
+    - name: max_premium
+      type: Numeric
+    - name: waiting_period_days
+      type: Int4
+    - name: coverage_term_months
+      type: Int4
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: products
+      fieldMapping:
+        id:
+          column:
+            name: id
+        created_at:
+          column:
+            name: created_at
+        created_by:
+          column:
+            name: created_by
+        updated_at:
+          column:
+            name: updated_at
+        updated_by:
+          column:
+            name: updated_by
+        deleted_at:
+          column:
+            name: deleted_at
+        tenant_id:
+          column:
+            name: tenant_id
+        code:
+          column:
+            name: code
+        name:
+          column:
+            name: name
+        product_line:
+          column:
+            name: product_line
+        description:
+          column:
+            name: description
+        active:
+          column:
+            name: active
+        max_coverage_amount:
+          column:
+            name: max_coverage_amount
+        min_premium:
+          column:
+            name: min_premium
+        max_premium:
+          column:
+            name: max_premium
+        waiting_period_days:
+          column:
+            name: waiting_period_days
+        coverage_term_months:
+          column:
+            name: coverage_term_months
+  graphql:
+    typeName: Product
+---
+kind: Model
+version: v2
+definition:
+  name: Products
+  objectType: Product
+  source:
+    dataConnectorName: banyan_pg
+    collection: products
+  graphql:
+    selectMany:
+      queryRootField: products
+    selectUniques:
+      - queryRootField: productById
+        uniqueIdentifier: [id]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Products
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Product
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - created_at
+          - created_by
+          - updated_at
+          - updated_by
+          - deleted_at
+          - tenant_id
+          - code
+          - name
+          - product_line
+          - description
+          - active
+          - max_coverage_amount
+          - min_premium
+          - max_premium
+          - waiting_period_days
+          - coverage_term_months
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: Product
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenant_id
+      target:
+        modelField:
+          - fieldName: id
+---
+kind: Relationship
+version: v1
+definition:
+  name: productLine
+  sourceType: Product
+  target:
+    model:
+      name: ProductLines
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: product_line
+      target:
+        modelField:
+          - fieldName: value
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: Product
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: product_id

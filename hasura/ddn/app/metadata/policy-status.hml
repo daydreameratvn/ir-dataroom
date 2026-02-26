@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyStatus
+  fields:
+    - name: value
+      type: String!
+    - name: comment
+      type: String
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: policy_statuses
+      fieldMapping:
+        value:
+          column:
+            name: value
+        comment:
+          column:
+            name: comment
+  graphql:
+    typeName: PolicyStatus
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyStatuses
+  objectType: PolicyStatus
+  source:
+    dataConnectorName: banyan_pg
+    collection: policy_statuses
+  graphql:
+    selectMany:
+      queryRootField: policyStatuses
+    selectUniques:
+      - queryRootField: policyStatusByValue
+        uniqueIdentifier: [value]
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyStatus
+  permissions:
+    - role: admin
+      output:
+        allowedFields: [value, comment]
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: PolicyStatus
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
