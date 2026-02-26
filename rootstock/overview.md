@@ -55,7 +55,7 @@ No CIDR blocks for internal traffic — use Security Group referencing exclusive
 | SG | Inbound Rule | Source |
 |----|-------------|--------|
 | `banyan-prod-alb-sg` | TCP 80, 443 | 0.0.0.0/0 |
-| `banyan-prod-rds-sg` | TCP 5432 | DDN Cloud egress CIDRs, Bastion SG, Auth SG, Doltgres SG |
+| `banyan-prod-rds-sg` | TCP 5432 | NLB SG, Bastion SG, Auth SG, Doltgres SG |
 | `banyan-prod-bastion-sg` | (none — SSM only) | — |
 | `banyan-prod-auth-sg` | TCP 4000 | ALB SG |
 | `banyan-prod-nlb-sg` | TCP 5432 | 0.0.0.0/0 |
@@ -240,7 +240,6 @@ new aws.Provider("banyan-aws-provider", {
 | `dbAllocatedStorage` | no | `50` | RDS storage in GB |
 | `dbName` | no | `banyan` | PostgreSQL database name |
 | `domainName` | yes | — | Domain for the ALB |
-| `ddnCloudEgressCidrs` | no | `[]` | DDN Cloud egress CIDRs for RDS SG |
 | `doltgresCpu` | no | `1024` | Doltgres task CPU units |
 | `doltgresMemory` | no | `2048` | Doltgres task memory (MB) |
 | `doltgresDataVolumeSize` | no | `50` | Doltgres EBS data volume size (GB) |
@@ -279,19 +278,19 @@ rootstock/
 └── resources/
     ├── index.ts                 # Re-exports all resource modules
     ├── vpc.ts                   # VPC, IGW, NAT, subnets, route tables
-    ├── security-groups.ts       # 5 SGs in zero-trust chain
+    ├── security-groups.ts       # NLB SG, ALB SG, RDS SG, Doltgres SG
     ├── bastion.ts               # SSM bastion (t4g.nano, IAM, SG)
     ├── rds.ts                   # Random password, Secrets Manager, RDS instance, parameter group
     ├── ecs-cluster.ts           # ECS cluster
     ├── ecs-iam.ts               # Execution role, task role, policies
-    ├── cloud-map.ts             # Private DNS namespace (ddn.internal)
+    ├── cloud-map.ts             # Cloud Map DNS namespace (ddn.internal) — Doltgres services
     ├── acm.ts                   # ACM certificate + DNS validation
     ├── jwt.ts                   # JWT HMAC key, Secrets Manager, admin token, SSM
     ├── alb.ts                   # ALB, HTTP redirect, HTTPS listener (404 default)
     ├── auth-secrets.ts          # OAuth SSM parameters
     ├── ecs-auth.ts              # Auth service task def + ECS service
     ├── nlb-rds-proxy.ts         # NLB, target group, listener, SSM param
-    ├── cloud-map.ts             # Cloud Map DNS namespace (ddn.internal) — Doltgres services
+    ├── github-oidc.ts           # GitHub Actions OIDC provider and deploy role
     ├── doltgres.ts              # Doltgres Fargate + EBS + SG + Secrets + Cloud Map
     └── ecs-ndc-doltgres.ts      # NDC Doltgres connector task def + service
 ```

@@ -26,10 +26,6 @@ export const domainConfig = {
   domainName: config.require("domainName"),
 };
 
-export const ddnCloudConfig = {
-  egressCidrs: config.getObject<string[]>("ddnCloudEgressCidrs") || [],
-};
-
 export const doltgresConfig = {
   cpu: Number(config.get("doltgresCpu") || "1024"),
   memory: Number(config.get("doltgresMemory") || "2048"),
