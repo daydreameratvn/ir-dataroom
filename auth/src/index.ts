@@ -6,6 +6,7 @@ import sso from "./routes/sso.ts";
 import otp from "./routes/otp.ts";
 import passkey from "./routes/passkey.ts";
 import token from "./routes/token.ts";
+import fatima from "./routes/fatima.ts";
 
 const app = new Hono();
 
@@ -31,6 +32,7 @@ app.route("/auth", sso);
 app.route("/auth", otp);
 app.route("/auth", passkey);
 app.route("/auth", token);
+app.route("/auth", fatima);
 
 console.log(`Auth service starting on port ${authConfig.port}`);
 

@@ -1,11 +1,37 @@
-import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestWrapper, { ensureI18n } from '@/test/wrapper';
 import FatimaPanel from './FatimaPanel';
 
+function mockSSEResponse(text: string): Response {
+  const chunks = [
+    `data: ${JSON.stringify({ type: 'delta', text })}\n\n`,
+    `data: ${JSON.stringify({ type: 'done' })}\n\n`,
+  ];
+  const stream = new ReadableStream({
+    start(controller) {
+      for (const chunk of chunks) {
+        controller.enqueue(new TextEncoder().encode(chunk));
+      }
+      controller.close();
+    },
+  });
+  return new Response(stream, {
+    status: 200,
+    headers: { 'Content-Type': 'text/event-stream' },
+  });
+}
+
 beforeAll(async () => {
   await ensureI18n();
+});
+
+beforeEach(() => {
+  vi.restoreAllMocks();
+  vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
+    return mockSSEResponse('I found several claims. Here are the details with CLM-2024-001.');
+  });
 });
 
 function renderPanel(props: { open?: boolean; onClose?: () => void } = {}) {
@@ -83,8 +109,13 @@ describe('FatimaPanel', () => {
 
     await user.click(screen.getByText('Any fraud alerts?'));
 
-    // Streaming should start — header shows "Thinking..."
-    expect(screen.getByText('Thinking...')).toBeInTheDocument();
+    // The suggestion was sent — wait for API response to arrive
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        '/auth/fatima/chat',
+        expect.objectContaining({ method: 'POST' })
+      );
+    });
   });
 
   it('streams response after sending a message', async () => {
@@ -94,7 +125,7 @@ describe('FatimaPanel', () => {
     const input = screen.getByPlaceholderText('Ask Fatima anything...');
     await user.type(input, 'Show recent claims{Enter}');
 
-    // Wait for the streamed response to include expected content
+    // Wait for the streamed response to appear
     await waitFor(() => {
       expect(screen.getByText(/CLM-2024-001/)).toBeInTheDocument();
     }, { timeout: 5000 });
