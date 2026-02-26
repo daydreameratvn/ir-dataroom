@@ -82,18 +82,8 @@ export const banyanRdsSg = new aws.ec2.SecurityGroup("banyan-prod-rds-sg", {
   vpcId: banyanVpc.id,
   name: "banyan-prod-rds-sg",
   description: "Security group for RDS PostgreSQL",
-  ingress: [
-    {
-      // Only the NLB security group can reach RDS — not the open internet.
-      // The NLB itself allows 0.0.0.0/0 (DDN Cloud has no static egress IPs),
-      // but this SG ensures RDS only accepts traffic forwarded through the NLB.
-      description: "PostgreSQL from NLB only",
-      fromPort: 5432,
-      toPort: 5432,
-      protocol: "tcp",
-      securityGroups: [banyanNlbSg.id],
-    },
-  ],
+  // No inline ingress — all rules managed as standalone SecurityGroupIngressRule
+  // resources to avoid Pulumi's authoritative inline block clobbering standalone rules.
   egress: [
     {
       description: "Allow all outbound",
@@ -104,4 +94,15 @@ export const banyanRdsSg = new aws.ec2.SecurityGroup("banyan-prod-rds-sg", {
     },
   ],
   tags: mergeTags({ Name: "banyan-prod-rds-sg", Component: "security-group" }),
+});
+
+// NLB → RDS ingress (standalone rule — not inline to avoid clobbering other rules)
+new aws.vpc.SecurityGroupIngressRule("banyan-prod-rds-from-nlb", {
+  securityGroupId: banyanRdsSg.id,
+  referencedSecurityGroupId: banyanNlbSg.id,
+  fromPort: 5432,
+  toPort: 5432,
+  ipProtocol: "tcp",
+  description: "PostgreSQL from NLB (DDN Cloud)",
+  tags: mergeTags({ Name: "rds-from-nlb", Component: "security-group" }),
 });
