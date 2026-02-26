@@ -1,4 +1,5 @@
 import * as aws from "@pulumi/aws";
+import dns from "node:dns/promises";
 import { mergeTags } from "../lib/tags.ts";
 import { banyanDb } from "./rds.ts";
 import { banyanPublicSubnets, banyanVpc } from "./vpc.ts";
@@ -80,11 +81,18 @@ export const banyanNlbTargetGroup = new aws.lb.TargetGroup("banyan-prod-nlb-rds-
 
 // ============================================================
 // Target Group Attachment (RDS instance IP)
+// NLB IP target groups require an IPv4 address, not a hostname.
+// Resolve the RDS DNS name to its private IP at deploy time.
 // ============================================================
+
+const rdsIp = banyanDb.address.apply(async (hostname) => {
+  const result = await dns.lookup(hostname, { family: 4 });
+  return result.address;
+});
 
 export const banyanNlbTargetAttachment = new aws.lb.TargetGroupAttachment("banyan-prod-nlb-rds-target", {
   targetGroupArn: banyanNlbTargetGroup.arn,
-  targetId: banyanDb.address,
+  targetId: rdsIp,
   port: 5432,
 });
 
