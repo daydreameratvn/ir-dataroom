@@ -104,7 +104,96 @@ fi
 echo ""
 
 # ----------------------------------------------------------
-# 6. Root dependencies (bun)
+# 6. AWS CLI & Profile
+# ----------------------------------------------------------
+echo "Checking AWS..."
+
+if command -v aws &>/dev/null; then
+  AWS_VERSION=$(aws --version 2>&1 | awk '{print $1}' | sed 's/aws-cli\///')
+  ok "AWS CLI v${AWS_VERSION}"
+
+  if aws configure list --profile banyan &>/dev/null; then
+    ok "AWS profile 'banyan' configured"
+  else
+    warn "AWS profile 'banyan' not found — run: aws configure sso --profile banyan"
+  fi
+
+  if command -v session-manager-plugin &>/dev/null; then
+    ok "Session Manager plugin"
+  else
+    warn "Session Manager plugin not found — install: brew install --cask session-manager-plugin"
+  fi
+
+  AWS_ACCOUNT=$(AWS_PROFILE=banyan aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "")
+  if [ "$AWS_ACCOUNT" = "812652266901" ]; then
+    ok "AWS session active (account 812652266901)"
+  elif [ -n "$AWS_ACCOUNT" ]; then
+    fail "Wrong AWS account: ${AWS_ACCOUNT} — expected 812652266901. Check your 'banyan' profile."
+  else
+    warn "AWS session expired or not authenticated — run: aws login --profile banyan"
+  fi
+else
+  fail "AWS CLI not found — install: brew install awscli"
+fi
+
+echo ""
+
+# ----------------------------------------------------------
+# 7. GCP CLI (optional)
+# ----------------------------------------------------------
+echo "Checking GCP..."
+
+if command -v gcloud &>/dev/null; then
+  GCLOUD_VERSION=$(gcloud --version 2>/dev/null | head -1 | sed 's/Google Cloud SDK //')
+  ok "gcloud CLI v${GCLOUD_VERSION}"
+
+  if gcloud auth print-access-token &>/dev/null 2>&1; then
+    ok "GCP authenticated"
+  else
+    warn "GCP not authenticated — run: gcloud auth login"
+  fi
+else
+  warn "gcloud CLI not found — install: brew install --cask google-cloud-sdk"
+fi
+
+echo ""
+
+# ----------------------------------------------------------
+# 8. Database tools
+# ----------------------------------------------------------
+echo "Checking database tools..."
+
+if command -v dbmate &>/dev/null; then
+  DBMATE_VERSION=$(dbmate --version 2>/dev/null | sed 's/dbmate version //')
+  ok "dbmate v${DBMATE_VERSION}"
+else
+  warn "dbmate not found — install: brew install dbmate (needed for database migrations)"
+fi
+
+if command -v pg_dump &>/dev/null; then
+  PGDUMP_VERSION=$(pg_dump --version | awk '{print $NF}')
+  ok "pg_dump v${PGDUMP_VERSION}"
+else
+  PGDUMP_FOUND=""
+  for p in /opt/homebrew/opt/postgresql@16/bin/pg_dump \
+           /opt/homebrew/opt/postgresql@17/bin/pg_dump \
+           /opt/homebrew/opt/postgresql/bin/pg_dump; do
+    if [ -f "$p" ]; then
+      PGDUMP_VERSION=$("$p" --version | awk '{print $NF}')
+      ok "pg_dump v${PGDUMP_VERSION} (at $p, not in PATH)"
+      PGDUMP_FOUND="yes"
+      break
+    fi
+  done
+  if [ -z "$PGDUMP_FOUND" ]; then
+    info "pg_dump not found — install: brew install postgresql@16 (needed for schema dumps)"
+  fi
+fi
+
+echo ""
+
+# ----------------------------------------------------------
+# 9. Root dependencies (bun)
 # ----------------------------------------------------------
 echo "Checking dependencies..."
 
@@ -117,7 +206,7 @@ else
 fi
 
 # ----------------------------------------------------------
-# 7. Platform dependencies (bun)
+# 10. Platform dependencies (bun)
 # ----------------------------------------------------------
 PLATFORM_DIR="$ROOT_DIR/platform"
 if [ -d "$PLATFORM_DIR" ]; then
@@ -137,7 +226,7 @@ else
 fi
 
 # ----------------------------------------------------------
-# 8. Mobile dependencies (bun)
+# 11. Mobile dependencies (bun)
 # ----------------------------------------------------------
 MOBILE_DIR="$ROOT_DIR/mobile"
 if [ -d "$MOBILE_DIR" ] && [ -f "$MOBILE_DIR/package.json" ]; then
@@ -155,7 +244,7 @@ if [ -d "$MOBILE_DIR" ] && [ -f "$MOBILE_DIR/package.json" ]; then
 fi
 
 # ----------------------------------------------------------
-# 9. Mobile-specific tools (optional)
+# 12. Mobile-specific tools (optional)
 # ----------------------------------------------------------
 if [ -d "$MOBILE_DIR" ]; then
   echo ""
@@ -191,7 +280,7 @@ fi
 echo ""
 
 # ----------------------------------------------------------
-# 10. TypeScript compilation check
+# 13. TypeScript compilation check
 # ----------------------------------------------------------
 echo "Checking compilation..."
 
