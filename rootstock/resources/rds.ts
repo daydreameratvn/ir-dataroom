@@ -80,6 +80,7 @@ export const banyanDb = new aws.rds.Instance("banyan-prod-db", {
   skipFinalSnapshot: false,
   finalSnapshotIdentifier: "banyan-prod-db-final-snapshot",
   backupRetentionPeriod: 7,
+  allowMajorVersionUpgrade: true,
   deletionProtection: true,
   tags: mergeTags({ Name: "banyan-prod-db", Component: "rds" }),
 });
