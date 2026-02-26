@@ -12,8 +12,7 @@ import {
   verifyPasskeyLogin,
 } from './auth-client';
 
-type OtpMode = 'email' | 'phone';
-type LoginStep = 'choose' | 'otp-input' | 'otp-verify';
+type LoginStep = 'choose' | 'otp-verify';
 
 interface LocationState {
   from?: { pathname: string };
@@ -67,7 +66,6 @@ export default function LoginPage() {
   const { signIn } = useAuth();
 
   const [step, setStep] = useState<LoginStep>('choose');
-  const [otpMode, setOtpMode] = useState<OtpMode>('email');
   const [destination, setDestination] = useState('');
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -84,10 +82,11 @@ export default function LoginPage() {
     setError(null);
     setIsSubmitting(true);
     try {
-      if (otpMode === 'email') {
-        await requestEmailOtp(destination, tenantId);
-      } else {
+      const isPhone = /^\+?\d[\d\s\-()]{6,}$/.test(destination.trim());
+      if (isPhone) {
         await requestPhoneOtp(destination, tenantId);
+      } else {
+        await requestEmailOtp(destination, tenantId);
       }
       setOtpSent(true);
       setStep('otp-verify');
@@ -286,37 +285,9 @@ export default function LoginPage() {
 
                 {/* OTP Section */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                  {/* Email / Phone Toggle */}
-                  <div style={{ display: 'flex', borderRadius: 8, background: '#EDEBE6', padding: 2 }}>
-                    <button
-                      type="button"
-                      onClick={() => { setOtpMode('email'); setDestination(''); }}
-                      style={{
-                        flex: 1, padding: '8px 16px', borderRadius: 6, fontSize: 13, fontWeight: 500, border: 'none', cursor: 'pointer', transition: 'all 0.2s',
-                        background: otpMode === 'email' ? '#fff' : 'transparent',
-                        color: otpMode === 'email' ? '#1A1A1A' : '#8B8178',
-                        boxShadow: otpMode === 'email' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-                      }}
-                    >
-                      {t('auth.login.email')}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setOtpMode('phone'); setDestination(''); }}
-                      style={{
-                        flex: 1, padding: '8px 16px', borderRadius: 6, fontSize: 13, fontWeight: 500, border: 'none', cursor: 'pointer', transition: 'all 0.2s',
-                        background: otpMode === 'phone' ? '#fff' : 'transparent',
-                        color: otpMode === 'phone' ? '#1A1A1A' : '#8B8178',
-                        boxShadow: otpMode === 'phone' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-                      }}
-                    >
-                      {t('auth.login.phone')}
-                    </button>
-                  </div>
-
                   <input
-                    type={otpMode === 'email' ? 'email' : 'tel'}
-                    placeholder={otpMode === 'email' ? t('auth.login.emailPlaceholder') : t('auth.login.phonePlaceholder')}
+                    type="text"
+                    placeholder={`${t('auth.login.emailPlaceholder')} / ${t('auth.login.phonePlaceholder')}`}
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
                     style={{
