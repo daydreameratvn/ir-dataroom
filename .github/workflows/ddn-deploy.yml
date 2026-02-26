@@ -1,0 +1,31 @@
+name: DDN Cloud Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "hasura/ddn/**"
+      - "hasura/db/migrations/**"
+
+jobs:
+  deploy:
+    name: Build & Deploy to DDN Cloud
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install DDN CLI
+        run: curl -L https://graphql-engine-cdn.hasura.io/ddn/cli/v4/get.sh | bash
+
+      - name: Authenticate DDN CLI
+        env:
+          DDN_PAT: ${{ secrets.HASURA_DDN_PAT }}
+        run: ddn auth login --pat "$DDN_PAT"
+
+      - name: Build & Apply Supergraph
+        working-directory: hasura/ddn
+        run: ddn supergraph build create --apply

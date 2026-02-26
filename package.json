@@ -4,14 +4,16 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "hasura:start": "bun run hasura/scripts/start.ts",
+    "hasura:start": "cd hasura/ddn && ddn run docker-start",
     "hasura:tunnel": "bun run hasura/scripts/tunnel.ts",
     "hasura:migrate": "bun run hasura/scripts/migrate.ts",
     "hasura:migrate:new": "bun run hasura/scripts/migrate.ts new",
     "hasura:migrate:status": "bun run hasura/scripts/migrate.ts status",
-    "hasura:introspect": "bun run hasura/scripts/introspect.ts",
-    "hasura:deploy": "bun run hasura/scripts/deploy.ts",
-    "hasura:setup-hosts": "sudo bun run hasura/scripts/setup-hosts.ts"
+    "hasura:introspect": "cd hasura/ddn && ddn connector introspect banyan_pg",
+    "hasura:deploy": "cd hasura/ddn && ddn supergraph build create --apply",
+    "hasura:console": "cd hasura/ddn && ddn console",
+    "hasura:convert": "bun run hasura/scripts/convert-permissions.ts",
+    "hasura:validate": "bun run hasura/scripts/validate-migration.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.0",

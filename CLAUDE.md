@@ -22,7 +22,8 @@ This checks for required tools, correct versions, installed dependencies, and th
 - **Package Manager**: Bun (all sub-apps including platform/)
 - **Server Runtime**: Node.js
 - **Cloud Provider**: AWS, GCP
-- **IaC**: Pulumi for permanent infrastructure (VPC, subnets, RDS); SST for application (agent) deployment
+- **GraphQL**: Hasura DDN Cloud (managed v3) — see `hasura/CLAUDE.md`
+- **IaC**: Pulumi for permanent infrastructure (VPC, subnets, RDS, NLB); SST for application (agent) deployment
 - **AI Agents**: [pi-mono](https://github.com/badlogic/pi-mono) (`pi-ai` + `pi-agent-core` + `pi-coding-agent`), Claude via AWS Bedrock — see `agents/CLAUDE.md`
 - **Frontend**: React + Vite micro frontend platform — see `platform/CLAUDE.md`
 - **Mobile**: React Native + Expo — see `mobile/CLAUDE.md`
@@ -37,8 +38,8 @@ This checks for required tools, correct versions, installed dependencies, and th
 ├── .github/workflows      # CI/CD (GitHub Actions)
 ├── .claude/               # Claude Code settings
 ├── agents/                # Backend AI agents — see agents/CLAUDE.md
-├── rootstock/             # Pulumi: VPC, RDS (PostgreSQL), IAM, S3
-├── hasura/                # Hasura DDN (v3) — see hasura/CLAUDE.md
+├── rootstock/             # Pulumi: VPC, RDS, NLB, ALB, ECS (auth), IAM
+├── hasura/                # Hasura DDN Cloud (v3) — see hasura/CLAUDE.md
 ├── platform/              # Web frontend (micro frontend) — see platform/CLAUDE.md
 ├── mobile/                # React Native + Expo mobile app — see mobile/CLAUDE.md
 ├── sdks/                  # Partner SDKs (Node, React, RN, iOS, Android) — see sdks/CLAUDE.md

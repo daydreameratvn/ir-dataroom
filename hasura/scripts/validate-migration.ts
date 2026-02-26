@@ -46,7 +46,7 @@ async function gqlQuery(
     },
     body: JSON.stringify({ query, variables }),
   });
-  return res.json();
+  return res.json() as Promise<{ data?: unknown; errors?: Array<{ message: string }> }>;
 }
 
 async function introspect(endpoint: string): Promise<Record<string, unknown>> {

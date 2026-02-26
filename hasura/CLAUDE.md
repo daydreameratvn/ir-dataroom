@@ -1,24 +1,67 @@
-# Hasura — DDN (v3) Configuration
+# Hasura — DDN Cloud (v3)
 
 ## Overview
 
-This folder contains the Hasura DDN (v3) metadata and migrations for Papaya's PostgreSQL database. Hasura provides the GraphQL API layer consumed by both the agents and the platform frontend.
+This folder contains the Hasura DDN Cloud metadata (HML files) and database migrations for Papaya's PostgreSQL database. Hasura provides the GraphQL API layer consumed by both the agents and the platform frontend.
+
+The GraphQL engine and NDC PostgreSQL connector run on **DDN Cloud** (Hasura's managed service). The database remains on **Amazon RDS** in `ap-southeast-1`, accessible to DDN Cloud via an NLB proxy.
 
 ## Tech Stack
 
-- **Hasura**: DDN v3
-- **Database**: PostgreSQL (managed via Pulumi in `rootstock/`)
-- **Schema Management**: Hasura CLI migrations
+- **Hasura**: DDN Cloud (managed v3)
+- **Database**: PostgreSQL 16 (Amazon RDS, managed via Pulumi in `rootstock/`)
+- **Metadata**: HML (YAML) files in `ddn/app/metadata/`
+- **CLI**: `ddn` CLI for build, deploy, introspect, and local dev
+- **RDS Connectivity**: NLB in public subnets proxies TCP 5432 to RDS
 
 ## Folder Structure
 
 ```
 hasura/
 ├── CLAUDE.md
-├── metadata/              # Hasura DDN metadata (models, permissions, relationships)
-├── migrations/            # SQL migration files
-└── seeds/                 # Seed data for development
+├── .env.example              # SSM parameter reference
+├── ddn/                      # DDN Cloud project
+│   ├── hasura.yaml           # DDN project config
+│   ├── supergraph.yaml       # Supergraph definition
+│   ├── .env                  # Non-sensitive config only
+│   ├── .gitignore
+│   └── app/
+│       ├── metadata/         # HML files (models, permissions, relationships)
+│       │   ├── auth-config.hml
+│       │   ├── data-connector-link.hml
+│       │   ├── scalar-types.hml
+│       │   ├── tenant.hml    # ObjectType + Model + Permissions + Relationships
+│       │   ├── claim.hml
+│       │   └── ...           # One file per type (34 total)
+│       └── connector/
+│           └── banyan_pg/
+│               ├── connector.yaml
+│               └── configuration.json
+├── db/
+│   └── migrations/           # SQL migrations using dbmate
+├── lib/
+│   ├── db.ts                 # Database connection helpers
+│   └── ssm.ts                # AWS SSM Parameter Store client
+├── scripts/
+│   ├── migrate.ts            # Database migration runner (dbmate)
+│   ├── tunnel.ts             # SSM port-forwarding to RDS
+│   ├── convert-permissions.ts # JSON→HML converter (one-time use)
+│   └── validate-migration.ts # Migration validation queries
+└── console/
+    └── index.html            # GraphiQL template (legacy, use ddn console)
 ```
+
+## Commands
+
+| Command | Purpose |
+|---------|---------|
+| `bun run hasura:deploy` | Build and deploy supergraph to DDN Cloud |
+| `bun run hasura:start` | Start local DDN dev environment |
+| `bun run hasura:introspect` | Introspect database and update connector schema |
+| `bun run hasura:console` | Open DDN Cloud console |
+| `bun run hasura:tunnel` | SSM tunnel to RDS (localhost:15432) |
+| `bun run hasura:migrate` | Run database migrations (dbmate) |
+| `bun run hasura:migrate:new` | Create new migration file |
 
 ## Migration Rules (Critical)
 
@@ -41,20 +84,30 @@ All migrations MUST follow the backward compatibility rules from the root `CLAUD
 - Add NOT NULL to existing columns without a default
 - Drop indexes that are actively queried
 
-### Migration Workflow
+### Adding a New Table
 
-1. Create migration: `hasura migrate create <name>`
-2. Write forward-only SQL (no destructive changes)
-3. Update Hasura metadata if new models/relationships are added
-4. Test migration locally against a snapshot of production data
-5. Deploy migration before deploying code that depends on the new schema
+1. **Create migration**: `bun run hasura:migrate:new create_<table_name>`
+2. **Write SQL**: Forward-only, additive changes
+3. **Introspect**: `bun run hasura:introspect` to update connector schema
+4. **Add models**: `cd hasura/ddn && ddn model add banyan_pg "<table>"` (or create HML manually)
+5. **Deploy**: `bun run hasura:deploy`
 
 ### Permissions
 
-- All Hasura permissions are defined in metadata, not in SQL
+- All permissions are defined in HML files (ModelPermissions, TypePermissions)
 - Role-based access: `admin`, `claims_processor`, `fwa_analyst`, `viewer`
 - Default deny — every table/column must have explicit permission grants
 - Row-level security uses session variables (`x-hasura-user-id`, `x-hasura-role`)
+
+## Secrets
+
+- **DDN Cloud secrets** (set via DDN Console or `ddn` CLI):
+  - `CONNECTION_URI` — RDS connection string via NLB endpoint
+  - `JWT_SECRET_KEY` — HMAC key from Secrets Manager `banyan-prod-jwt-secret`
+- **AWS SSM** (`/banyan/hasura/`):
+  - `admin-token` — Pre-signed JWT for admin access
+  - `db-connection-uri` — Direct RDS connection string (for migrations/tunnel)
+  - `rds-nlb-endpoint` — NLB DNS name
 
 ## Work Scope
 
