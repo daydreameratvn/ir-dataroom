@@ -13,10 +13,13 @@
 
 Unlike Hasura v2, Hasura DDN (v3) has a distributed architecture and **does not require a Postgres metadata database**. The architecture consists of two distinct components that communicate over HTTP:
 
-1. **The Engine (`ghcr.io/hasura/v3-engine`):** Orchestrates GraphQL queries and routing. Exposed to the public via an Application Load Balancer. Health endpoint: `/health`.
-2. **The Native Data Connector (`ghcr.io/hasura/ndc-postgres`):** The agent that translates engine requests into SQL. Talks directly to the PostgreSQL database.
-
-> **Note:** Both Hasura images are hosted on GitHub Container Registry (`ghcr.io`), not Docker Hub. They are distroless (no shell), so configuration files must be injected via init containers using shared ephemeral volumes.
+1. **RDS PostgreSQL 17** — the database, in isolated subnets
+2. **Doltgres** — logical replication subscriber for audit and version control (Fargate + EBS)
+3. **NLB (Network Load Balancer)** — internet-facing TCP proxy allowing DDN Cloud connectors to reach RDS
+4. **ALB (Application Load Balancer)** — public-facing HTTPS for the auth service
+5. **ECS Fargate** — runs the auth API service and Doltgres services
+6. **Bastion** — SSM tunnel for database access (migrations, debugging)
+7. **Secrets** — JWT key, DB credentials, OAuth secrets, Doltgres replicator credentials
 
 ---
 
@@ -31,18 +34,19 @@ Create a multi-AZ network foundation spanning 2 Availability Zones (`ap-southeas
 
 | Subnet | CIDR | AZ | Type | Purpose |
 |--------|------|----|------|---------|
-| banyan-prod-public-1a | 10.68.0.0/24 | 1a | Public | ALB, NAT Gateway |
-| banyan-prod-public-1b | 10.68.1.0/24 | 1b | Public | ALB |
-| banyan-prod-private-1a | 10.68.10.0/24 | 1a | Private | ECS Fargate |
-| banyan-prod-private-1b | 10.68.11.0/24 | 1b | Private | ECS Fargate |
+| banyan-prod-public-1a | 10.68.0.0/24 | 1a | Public | ALB, NLB, NAT Gateway |
+| banyan-prod-public-1b | 10.68.1.0/24 | 1b | Public | ALB, NLB |
+| banyan-prod-private-1a | 10.68.10.0/24 | 1a | Private | ECS Fargate (auth, Doltgres) |
+| banyan-prod-private-1b | 10.68.11.0/24 | 1b | Private | ECS Fargate (auth) |
 | banyan-prod-isolated-1a | 10.68.20.0/24 | 1a | Isolated | RDS |
 | banyan-prod-isolated-1b | 10.68.21.0/24 | 1b | Isolated | RDS |
 
 * **NAT Gateway:** Single NAT Gateway in `public-1a` (cost optimization, ~$43/month savings vs. 2 NAT Gateways). Both private subnets route through it.
 * **Internet Gateway:** Attached to VPC for public subnet internet access.
 * **Isolated Subnets:** No internet route whatsoever — RDS only.
-
-* **Service Discovery:** AWS Cloud Map with a private DNS namespace `ddn.internal`. The Engine communicates with the NDC Connector at `ndc-banyan-postgres.ddn.internal:8080`, avoiding the ALB for internal traffic.
+* **Service Discovery:** AWS Cloud Map with a private DNS namespace `ddn.internal`. Used for Doltgres internal service discovery:
+  * `doltgres.ddn.internal:5432` — Doltgres logical replica
+  * `ndc-doltgres.ddn.internal:8080` — NDC Postgres connector (Doltgres)
 
 ### 2.2 Security Groups (Zero-Trust Referencing)
 
@@ -51,29 +55,47 @@ No CIDR blocks for internal traffic — use Security Group referencing exclusive
 | SG | Inbound Rule | Source |
 |----|-------------|--------|
 | `banyan-prod-alb-sg` | TCP 80, 443 | 0.0.0.0/0 |
-| `banyan-prod-engine-sg` | TCP 3000 | ALB SG |
-| `banyan-prod-ndc-sg` | TCP 8080 | Engine SG |
-| `banyan-prod-rds-sg` | TCP 5432 | NDC SG, Bastion SG |
+| `banyan-prod-rds-sg` | TCP 5432 | DDN Cloud egress CIDRs, Bastion SG, Auth SG, Doltgres SG |
 | `banyan-prod-bastion-sg` | (none — SSM only) | — |
+| `banyan-prod-auth-sg` | TCP 4000 | ALB SG |
+| `banyan-prod-nlb-sg` | TCP 5432 | 0.0.0.0/0 |
+| `banyan-prod-doltgres-sg` | TCP 5432 | NDC Doltgres SG, Bastion SG |
+| `banyan-prod-ndc-doltgres-sg` | TCP 8080 | (internal only) |
 
 All security groups allow all outbound traffic (required for NAT, ECR image pulls, DNS, SSM).
 
 ### 2.3 Bastion Host (SSM Tunnel)
 
-* **Purpose:** SSM port-forwarding tunnel to reach RDS in isolated subnets (for migrations, manual queries).
-* **Instance:** `t4g.nano` (ARM64, Amazon Linux 2023 standard AMI with SSM agent pre-installed).
+* **Purpose:** Allow DDN Cloud connectors to reach RDS PostgreSQL in isolated subnets.
+* **Type:** Network Load Balancer, internet-facing, TCP only.
+* **Placement:** Public subnets.
+* **Target Group:** IP type, port 5432, pointing at RDS instance address.
+* **Listener:** TCP port 5432, forwarding to target group.
+* **SSM Parameter:** NLB DNS name stored at `/banyan/hasura/rds-nlb-endpoint`.
+* **Security:** NLB SG allows TCP 5432; RDS SG allows DDN Cloud egress CIDRs.
+
+### 2.4 Bastion Host (SSM Tunnel)
+
+* **Purpose:** SSM port-forwarding tunnel to reach RDS and Doltgres in private/isolated subnets.
+* **Instance:** `t4g.nano` (ARM64, Amazon Linux 2023).
 * **Placement:** Private subnet (`banyan-prod-private-1a`).
 * **Security Group:** `banyan-prod-bastion-sg` — no inbound rules, all outbound (SSM via NAT + RDS).
 * **IAM:** Instance profile with `AmazonSSMManagedInstanceCore` managed policy.
 * **Access:** No SSH — access exclusively via AWS SSM Session Manager.
-* **Tunnel command:** `AWS_PROFILE=banyan bun run hasura:tunnel` (forwards `localhost:15432` to RDS port `5432`).
+* **Tunnel commands:**
+  * `AWS_PROFILE=banyan bun run hasura:tunnel` (forwards `localhost:15432` to RDS port `5432`)
+  * `AWS_PROFILE=banyan bun run doltgres:tunnel` (forwards `localhost:25432` to `doltgres.ddn.internal:5432`)
 
 ### 2.4 Database Layer (Amazon RDS)
 
-* **Engine:** Amazon RDS for PostgreSQL 16.
-* **Instance Class:** `db.t4g.medium` (ARM/Graviton, cost-effective).
-* **Deployment:** Single-AZ (cost optimization; can enable Multi-AZ later for HA).
+* **Engine:** Amazon RDS for PostgreSQL 17.
+* **Instance Class:** `db.t4g.medium` (ARM/Graviton).
+* **Deployment:** Single-AZ.
 * **Storage:** 50 GB `gp3` with encryption enabled (AWS-managed KMS key).
+* **Parameter Group:** Custom `banyan-prod-db-param-group` (family `postgres17`) with logical replication enabled:
+  * `rds.logical_replication = 1`
+  * `max_replication_slots = 4`
+  * `max_wal_senders = 4`
 * **Backup:** 7-day retention, deletion protection enabled.
 * **Credentials:** Random 32-character password generated via `@pulumi/random`. Connection details stored in **AWS Secrets Manager** as JSON:
 
@@ -94,84 +116,38 @@ All security groups allow all outbound traffic (required for NAT, ECR image pull
 
 ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatch log groups with 30-day retention: `/ecs/banyan-prod/engine` and `/ecs/banyan-prod/ndc`.
 
-#### Init Container Pattern
+#### Doltgres Logical Replica
 
-Both Hasura images are distroless (no shell). Configuration files are injected using init containers with shared ephemeral volumes:
+* **Image:** `dolthub/doltgresql:latest`
+* **Resources:** 1024 CPU / 2048 MB memory (x86_64 only — Doltgres image is amd64).
+* **Desired Count:** 1 task.
+* **Placement:** Private Subnet (`private-1a`, pinned for EBS AZ).
+* **Port:** Container port `5432`.
+* **Cloud Map:** Registered as `doltgres.ddn.internal`.
+* **Storage:** 50 GB managed EBS volume (`gp3`, encrypted, `ext4`). Ephemeral — deleted when task exits. Doltgres is a replica; recovery means re-sync from RDS.
+* **IAM:** Dedicated EBS volume role (`banyan-prod-doltgres-ebs-role`) with `AmazonECSInfrastructureRolePolicyForVolumes`.
+* **Init Container** (`busybox`): Writes `config.yaml` with replication subscription settings to the shared EBS volume.
+* **Replication Config:**
+  * Subscribes to `doltgres_pub` publication on RDS
+  * Connection via `doltgres_replicator` user with SSL
+  * Every replicated transaction creates a Dolt commit (enables `dolt_log`, `dolt_diff`, time-travel queries)
+* **Secrets:** Replicator credentials stored in Secrets Manager (`banyan-prod-doltgres-credentials`) with:
+  * `replicator_username`, `replicator_password` — for RDS logical replication
+  * `rds_connection_uri` — replicator connection to RDS
+  * `connection_uri` — NDC connector connection to Doltgres (`root@doltgres.ddn.internal:5432/banyan`)
 
-* **NDC Connector:** Uses `busybox` to write config, then `ndc-postgres-cli` to introspect the database.
-* **Engine:** Uses `aws-cli` to write auth config (with JWT secret injection via `sed`) and download metadata from S3.
-* Main containers read from the mounted volume via `dependsOn` with `condition: "SUCCESS"`.
-
-#### Service A: Hasura NDC Postgres Connector
+#### NDC Doltgres Connector
 
 * **Image:** `ghcr.io/hasura/ndc-postgres:v3.0.0`
 * **Resources:** 256 CPU / 512 MB memory.
-* **Desired Count:** 2 tasks.
+* **Desired Count:** 1 task.
 * **Placement:** Private Subnets.
 * **Port:** Container port `8080`.
-* **Cloud Map:** Registered as `ndc-banyan-postgres.ddn.internal`.
-* **Init Container Chain (3 containers):**
-  1. **`init-ndc-config`** (`busybox`): Writes `/etc/connector/configuration.json`:
+* **Cloud Map:** Registered as `ndc-doltgres.ddn.internal`.
+* **Init Container Chain:** 3-container pattern (busybox → introspect → serve), using the Doltgres secret `CONNECTION_URI`.
+* **Purpose:** Provides GraphQL access to Dolt version control tables (`dolt_log`, `dolt_diff_*`, `dolt_commit_ancestors`) via Hasura DDN Cloud.
 
-     ```json
-     {
-       "version": "5",
-       "connectionSettings": {
-         "connectionUri": { "variable": "CONNECTION_URI" }
-       }
-     }
-     ```
-
-  2. **`init-ndc-introspect`** (`ghcr.io/hasura/ndc-postgres:v3.0.0`): Runs `ndc-postgres-cli update` to introspect the live database and generate `/etc/connector/metadata.json`. This ensures the NDC connector has an up-to-date schema snapshot on every deployment. Uses entrypoint `/bin/ndc-postgres-cli` with command `["update"]`.
-  3. **`ndc-postgres`** (main): Starts the connector, depends on `init-ndc-introspect` completing successfully.
-* **Secrets:** `CONNECTION_URI` injected from Secrets Manager ARN (`<secretArn>:connection_uri::`) — used by both the introspect init container and the main container.
-
-#### Service B: Hasura v3 Engine
-
-* **Image:** `ghcr.io/hasura/v3-engine:latest`
-* **Resources:** 512 CPU / 1024 MB memory.
-* **Desired Count:** 2 tasks.
-* **Placement:** Private Subnets.
-* **Port:** Container port `3000`.
-* **Load Balancing:** Attached to the public ALB target group.
-* **Init Container** (`public.ecr.aws/aws-cli/aws-cli:latest`): Writes `auth_config.json` with JWT secret injection and downloads metadata files from S3:
-  1. Writes `auth_config.json` — JWT mode (HS256, v2 format) with `__JWT_SECRET_KEY__` placeholder, then uses `sed` to replace with the actual key from Secrets Manager:
-
-     ```json
-     {
-       "version": "v2",
-       "definition": {
-         "mode": {
-           "jwt": {
-             "claimsConfig": {
-               "namespace": {
-                 "claimsFormat": "Json",
-                 "location": "/https:~1~1hasura.io~1jwt~1claims"
-               }
-             },
-             "key": { "fixed": { "algorithm": "HS256", "key": "<injected at deploy>" } },
-             "tokenLocation": { "type": "BearerAuthorization" }
-           }
-         }
-       }
-     }
-     ```
-
-  2. Downloads `open_dd.json` from `s3://banyan-hasura-metadata/open_dd.json` — the OpenDD supergraph metadata (DataConnectorLink, Models, Relationships, Permissions, etc.).
-  3. Downloads `metadata.json` from `s3://banyan-hasura-metadata/metadata.json` — the NDC introspection metadata.
-* **Secrets:** `JWT_SECRET_KEY` injected from Secrets Manager ARN (`<jwtSecretArn>:key::`).
-* **CLI Arguments:**
-
-  ```
-  --metadata-path /md/open_dd.json
-  --authn-config-path /md/auth_config.json
-  --otlp-endpoint http://0.0.0.0:4318
-  --port 3000
-  ```
-
-* **Environment:** `ENABLE_CORS=true`.
-
-### 2.6 Application Load Balancer
+### 2.7 Application Load Balancer
 
 * **Type:** Public-facing, application load balancer in public subnets.
 * **Domain:** `prod.banyan.services.papaya.asia` (DNS managed in a separate AWS account).
@@ -227,11 +203,9 @@ Both Hasura images are distroless (no shell). Configuration files are injected u
 
 ## 3. IAM Roles
 
-* **Execution Role (`banyan-prod-ecs-exec-role`):** Assumed by ECS agent. Permissions:
-  * `AmazonECSTaskExecutionRolePolicy` (managed policy for ECR pulls, CloudWatch logs).
-  * Inline policy for Secrets Manager read access (`secretsmanager:GetSecretValue`) scoped to the DB secret ARN and JWT secret ARN.
-* **Task Role (`banyan-prod-ecs-task-role`):** Assumed by the running containers. Permissions:
-  * S3 read access (`s3:GetObject`) scoped to `arn:aws:s3:::banyan-hasura-metadata/*` — allows the engine init container to download metadata files from S3.
+* **Execution Role (`banyan-prod-ecs-exec-role`):** ECS agent. Permissions: ECR pulls, CloudWatch logs, Secrets Manager read (DB, JWT, Doltgres secrets).
+* **Task Role (`banyan-prod-ecs-task-role`):** Running containers. Permissions: SES, SNS, SSM (auth service).
+* **Doltgres EBS Role (`banyan-prod-doltgres-ebs-role`):** EBS volume management for Fargate tasks.
 
 ---
 
@@ -265,25 +239,24 @@ new aws.Provider("banyan-aws-provider", {
 | `dbInstanceClass` | no | `db.t4g.medium` | RDS instance class |
 | `dbAllocatedStorage` | no | `50` | RDS storage in GB |
 | `dbName` | no | `banyan` | PostgreSQL database name |
-| `ecsEngineCpu` | no | `512` | Engine task CPU units |
-| `ecsEngineMemory` | no | `1024` | Engine task memory (MB) |
-| `ecsNdcCpu` | no | `256` | NDC task CPU units |
-| `ecsNdcMemory` | no | `512` | NDC task memory (MB) |
-| `metadataBucket` | yes | — | S3 bucket for Hasura metadata (`banyan-hasura-metadata`) |
-| `domainName` | yes | — | Domain for the engine ALB (`prod.banyan.services.papaya.asia`) |
+| `domainName` | yes | — | Domain for the ALB |
+| `ddnCloudEgressCidrs` | no | `[]` | DDN Cloud egress CIDRs for RDS SG |
+| `doltgresCpu` | no | `1024` | Doltgres task CPU units |
+| `doltgresMemory` | no | `2048` | Doltgres task memory (MB) |
+| `doltgresDataVolumeSize` | no | `50` | Doltgres EBS data volume size (GB) |
 
 ### 4.4 Stack Outputs
 
-Upon successful `pulumi up`, the stack exports:
-
-* `VpcId`: The ID of the created VPC.
-* `AlbDnsName`: The public DNS name to access the Hasura v3 Engine.
-* `RdsEndpoint`: The private endpoint of the PostgreSQL database.
-* `SecretArn`: The ARN of the Secrets Manager secret holding the DB credentials.
-* `BastionInstanceId`: The EC2 instance ID of the SSM bastion host.
-* `DomainName`: The domain name for the Hasura engine (`prod.banyan.services.papaya.asia`).
-* `CertificateArn`: The ARN of the ACM certificate.
-* `CertValidationCname`: The DNS CNAME record(s) needed for certificate validation.
+* `VpcId`: VPC ID
+* `AlbDnsName`: Public ALB DNS name (auth service)
+* `NlbDnsName`: NLB DNS name (DDN Cloud → RDS)
+* `RdsEndpoint`: RDS private endpoint
+* `SecretArn`: Secrets Manager ARN for DB credentials
+* `BastionInstanceId`: EC2 instance ID for SSM tunnel
+* `DoltgresServiceArn`: ARN of the Doltgres ECS service
+* `DomainName`: Domain name
+* `CertificateArn`: ACM certificate ARN
+* `CertValidationCname`: DNS CNAME records for cert validation
 
 ---
 
@@ -294,10 +267,9 @@ rootstock/
 ├── index.ts                     # Entry point, stack outputs
 ├── config.ts                    # Centralized pulumi.Config
 ├── Pulumi.yaml                  # S3 backend config
-├── Pulumi.prod.yaml             # Stack config values (aws:profile: banyan)
-├── AGENTS.md                    # Agent instructions
-├── CLAUDE.md                    # Points to AGENTS.md
-├── requirement.md               # This file
+├── Pulumi.prod.yaml             # Stack config values
+├── CLAUDE.md                    # Agent instructions
+├── overview.md                  # This file — infrastructure overview
 ├── providers/
 │   └── aws.ts                   # AWS provider (profile: banyan)
 ├── lib/
@@ -309,32 +281,37 @@ rootstock/
     ├── vpc.ts                   # VPC, IGW, NAT, subnets, route tables
     ├── security-groups.ts       # 5 SGs in zero-trust chain
     ├── bastion.ts               # SSM bastion (t4g.nano, IAM, SG)
-    ├── rds.ts                   # Random password, Secrets Manager, RDS instance
-    ├── ecs-cluster.ts           # ECS cluster, CloudWatch log groups
+    ├── rds.ts                   # Random password, Secrets Manager, RDS instance, parameter group
+    ├── ecs-cluster.ts           # ECS cluster
     ├── ecs-iam.ts               # Execution role, task role, policies
     ├── cloud-map.ts             # Private DNS namespace (ddn.internal)
     ├── acm.ts                   # ACM certificate + DNS validation
     ├── jwt.ts                   # JWT HMAC key, Secrets Manager, admin token, SSM
-    ├── alb.ts                   # ALB, target group, HTTP redirect, HTTPS listener
-    ├── ecs-ndc-connector.ts     # NDC task def + service + Cloud Map
-    └── ecs-engine.ts            # Engine task def + service + ALB + JWT injection
+    ├── alb.ts                   # ALB, HTTP redirect, HTTPS listener (404 default)
+    ├── auth-secrets.ts          # OAuth SSM parameters
+    ├── ecs-auth.ts              # Auth service task def + ECS service
+    ├── nlb-rds-proxy.ts         # NLB, target group, listener, SSM param
+    ├── cloud-map.ts             # Cloud Map DNS namespace (ddn.internal) — Doltgres services
+    ├── doltgres.ts              # Doltgres Fargate + EBS + SG + Secrets + Cloud Map
+    └── ecs-ndc-doltgres.ts      # NDC Doltgres connector task def + service
 ```
 
 ---
 
-## 6. Cost Estimate (~$221/month)
+## 6. Cost Estimate (~$230/month)
 
 | Component | Monthly | % of Total |
 |-----------|---------|-----------|
-| RDS PostgreSQL (db.t4g.medium + 50GB gp3) | $81.36 | 37% |
-| ECS Fargate (4 tasks: 2 engine + 2 ndc) | $67.47 | 31% |
+| RDS PostgreSQL 17 (db.t4g.medium + 50GB gp3) | $81.36 | 35% |
 | NAT Gateway (1 NAT + ~10GB data) | $43.66 | 19% |
+| Doltgres Fargate (1 task: 1024 CPU / 2048 MB, x86_64) | $37.18 | 16% |
 | ALB (hourly + ~1 LCU) | $24.24 | 11% |
+| NLB (RDS proxy for DDN Cloud) | $20.00 | 9% |
+| NDC Doltgres Fargate (1 task: 256 CPU / 512 MB) | $9.30 | 4% |
+| Doltgres EBS (50 GB gp3) | $4.80 | 2% |
 | Bastion (t4g.nano, on-demand) | $3.07 | 1% |
 | ACM Certificate | $0.00 | 0% |
-| Other (Secrets Manager, Cloud Map, CloudWatch, SSM) | $1.80 | <1% |
-| **Total** | **~$221/mo** | |
-
-**Exclusions:** Data transfer, RDS backup beyond free tier.
+| Other (Secrets Manager, Cloud Map, CloudWatch, SSM) | $2.50 | <1% |
+| **Total** | **~$230/mo** | |
 
 **Cost optimization paths:** RDS Reserved Instance (~30-40% savings), Fargate Savings Plans (~20%), reduce to 1 task per service (~50% Fargate savings).

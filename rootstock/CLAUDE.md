@@ -17,10 +17,10 @@ This file contains instructions for AI agents working in the `rootstock` directo
   - `package.json`
   - `tsconfig.json`
 
-## Requirement Documentation
+## Infrastructure Overview
 
-- **File**: `rootstock/requirement.md` is the single source of truth for what is deployed.
-- **Keep in sync**: Whenever you make changes to the infrastructure — adding resources, modifying configuration, changing requirements, updating images, adjusting sizing, adding features, etc. — you **must** also update `requirement.md` to reflect those changes.
+- **File**: `rootstock/overview.md` is the single source of truth for what is deployed.
+- **Keep in sync**: Whenever you make changes to the infrastructure — adding resources, modifying configuration, changing requirements, updating images, adjusting sizing, adding features, etc. — you **must** also update `overview.md` to reflect those changes.
 - **What to update**: Resource specs, CIDR ranges, instance types, container images/tags, ECS sizing, security group rules, IAM policies, cost estimates, file structure, stack outputs, and any other details that affect the deployed state.
 
 ## Configuration Management

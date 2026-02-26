@@ -43,6 +43,22 @@ const banyanDbSubnetGroup = new aws.rds.SubnetGroup("banyan-prod-db-subnet-group
 });
 
 // ============================================================
+// RDS Parameter Group (logical replication for Doltgres)
+// ============================================================
+
+const banyanDbParamGroup = new aws.rds.ParameterGroup("banyan-prod-db-param-group", {
+  name: "banyan-prod-db-param-group",
+  family: "postgres17",
+  description: "PostgreSQL 17 with logical replication enabled for Doltgres",
+  parameters: [
+    { name: "rds.logical_replication", value: "1", applyMethod: "pending-reboot" },
+    { name: "max_replication_slots", value: "4", applyMethod: "pending-reboot" },
+    { name: "max_wal_senders", value: "4", applyMethod: "pending-reboot" },
+  ],
+  tags: mergeTags({ Name: "banyan-prod-db-param-group", Component: "rds" }),
+});
+
+// ============================================================
 // RDS PostgreSQL Instance
 // ============================================================
 
@@ -55,6 +71,7 @@ export const banyanDb = new aws.rds.Instance("banyan-prod-db", {
   storageType: "gp3",
   storageEncrypted: true,
   multiAz: false,
+  parameterGroupName: banyanDbParamGroup.name,
   dbSubnetGroupName: banyanDbSubnetGroup.name,
   vpcSecurityGroupIds: [banyanRdsSg.id],
   username: "banyan_admin",

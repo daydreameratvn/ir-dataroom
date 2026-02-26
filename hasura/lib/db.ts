@@ -21,8 +21,10 @@ import { statSync } from "fs";
 
 const REGION = "ap-southeast-1";
 const SECRET_ID = "banyan-prod-db-credentials";
+const DOLTGRES_SECRET_ID = "banyan-prod-doltgres-credentials";
 
 export const TUNNEL_PORT = 15432;
+export const DOLTGRES_TUNNEL_PORT = 25432;
 
 /**
  * Fetch the database connection URI from Secrets Manager.
@@ -54,6 +56,33 @@ export async function getDbUrl(opts?: { tunnel?: boolean }): Promise<string> {
   if (!uri.includes("sslmode=")) {
     uri += uri.includes("?") ? "&sslmode=require" : "?sslmode=require";
   }
+
+  return uri;
+}
+
+/**
+ * Fetch the Doltgres connection URI from Secrets Manager.
+ *
+ * Options:
+ * - tunnel: rewrite host:port to localhost:DOLTGRES_TUNNEL_PORT
+ */
+export async function getDoltgresUrl(opts?: { tunnel?: boolean }): Promise<string> {
+  const client = new SecretsManagerClient({ region: REGION });
+  const resp = await client.send(
+    new GetSecretValueCommand({ SecretId: DOLTGRES_SECRET_ID }),
+  );
+  if (!resp.SecretString) {
+    throw new Error(`Secret ${DOLTGRES_SECRET_ID} has no string value`);
+  }
+  const secret = JSON.parse(resp.SecretString);
+  let uri: string = secret.connection_uri;
+
+  // Rewrite for SSM tunnel
+  if (opts?.tunnel) {
+    uri = uri.replace(/@[^:]+:\d+\//, `@localhost:${DOLTGRES_TUNNEL_PORT}/`);
+  }
+
+  // Doltgres does not require SSL — no sslmode appended
 
   return uri;
 }

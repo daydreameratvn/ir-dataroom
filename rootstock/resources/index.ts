@@ -13,3 +13,6 @@ export * from "./ecr.ts";
 export * from "./ecs-auth.ts";
 export * from "./frontend.ts";
 export * from "./github-oidc.ts";
+export * from "./cloud-map.ts";
+export * from "./doltgres.ts";
+export * from "./ecs-ndc-doltgres.ts";
