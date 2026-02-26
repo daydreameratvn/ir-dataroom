@@ -49,4 +49,12 @@ export const stackOutputs = {
         type: o.resourceRecordType,
       })),
   ),
+
+  // Frontend
+  FrontendBucketName: resources.banyanFrontendBucket.bucket,
+  CloudFrontDistributionId: resources.banyanCloudFront.id,
+  CloudFrontDomainName: resources.banyanCloudFront.domainName,
+
+  // ECR
+  AuthEcrRepoUrl: resources.banyanAuthEcrRepo.repositoryUrl,
 };

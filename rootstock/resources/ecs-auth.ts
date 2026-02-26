@@ -4,6 +4,7 @@ import { domainConfig } from "../config.ts";
 import { mergeTags } from "../lib/tags.ts";
 import { banyanAlbListener } from "./alb.ts";
 import { banyanCluster } from "./ecs-cluster.ts";
+import { banyanAuthEcrRepo } from "./ecr.ts";
 import { banyanExecRole, banyanTaskRole } from "./ecs-iam.ts";
 import { banyanJwtSecret } from "./jwt.ts";
 import { banyanDbSecret } from "./rds.ts";
@@ -154,6 +155,14 @@ const banyanAuthTaskPolicy = new aws.iam.Policy("banyan-prod-auth-task-policy", 
         Action: ["ssm:GetParameter"],
         Resource: `arn:aws:ssm:ap-southeast-1:*:parameter/banyan/auth/*`,
       },
+      {
+        Effect: "Allow",
+        Action: [
+          "bedrock:InvokeModel",
+          "bedrock:InvokeModelWithResponseStream",
+        ],
+        Resource: "*",
+      },
     ],
   }),
   tags: mergeTags({
@@ -181,12 +190,12 @@ export const banyanAuthTaskDef = new aws.ecs.TaskDefinition("banyan-prod-auth-ta
   executionRoleArn: banyanExecRole.arn,
   taskRoleArn: banyanTaskRole.arn,
   containerDefinitions: pulumi
-    .all([banyanAuthLogGroup.name, banyanDbSecret.arn, banyanJwtSecret.arn])
-    .apply(([logGroupName, dbSecretArn, jwtSecretArn]) =>
+    .all([banyanAuthLogGroup.name, banyanDbSecret.arn, banyanJwtSecret.arn, banyanAuthEcrRepo.repositoryUrl])
+    .apply(([logGroupName, dbSecretArn, jwtSecretArn, ecrUrl]) =>
       JSON.stringify([
         {
           name: "auth",
-          image: "auth-service:latest", // Replace with ECR image after first push
+          image: `${ecrUrl}:latest`,
           essential: true,
           portMappings: [{ containerPort: 4000, protocol: "tcp" }],
           secrets: [

@@ -21,7 +21,7 @@ export const banyanAlb = new aws.lb.LoadBalancer("banyan-prod-alb", {
 // HTTP Listener (port 80) — redirect to HTTPS
 // ============================================================
 
-const banyanAlbListenerHttp = new aws.lb.Listener("banyan-prod-alb-listener-http", {
+export const banyanAlbListenerHttp = new aws.lb.Listener("banyan-prod-alb-listener-http", {
   loadBalancerArn: banyanAlb.arn,
   port: 80,
   protocol: "HTTP",
