@@ -61,6 +61,10 @@ Every database table MUST include these 6 audit columns: `created_at`, `updated_
 
 When working in a particular sub-app folder, do not read code in other folders. Only the root `tsconfig.json` or `package.json` may be relevant. Each sub-app's `CLAUDE.md` is self-contained for its domain.
 
+### Runtime & Package Commands
+
+Always use `bun` / `bunx` instead of `npm` / `npx` / `node`. This applies to running scripts, installing packages, and executing CLI tools.
+
 ### Shared Configuration
 
 Sub-apps use the root `tsconfig.json` and `package.json` instead of maintaining their own — **except for `platform/`**, which is a bun workspace monorepo with its own package management. The platform folder is self-contained.
