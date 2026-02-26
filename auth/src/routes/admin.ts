@@ -240,7 +240,7 @@ admin.get("/admin/tenants", async (c) => {
   }
 
   const tenants = await listTenants();
-  return c.json({ tenants });
+  return c.json({ data: tenants });
 });
 
 // PUT /auth/admin/users/:id/impersonatable — Toggle impersonatable flag (super admin only)

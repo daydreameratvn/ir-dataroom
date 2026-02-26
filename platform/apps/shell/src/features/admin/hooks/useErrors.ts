@@ -24,7 +24,7 @@ interface UseErrorsReturn {
 }
 
 export default function useErrors(params: UseErrorsParams): UseErrorsReturn {
-  const [data, setData] = useState<{ errors: ErrorReport[]; total: number; page: number; limit: number } | null>(null);
+  const [data, setData] = useState<{ data: ErrorReport[]; total: number; page: number; pageSize: number; hasMore: boolean } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(params.page ?? 1);
@@ -89,14 +89,12 @@ export default function useErrors(params: UseErrorsParams): UseErrorsReturn {
     fetchKey,
   ]);
 
-  const pageSize = params.limit ?? 20;
-
   return {
-    errors: data?.errors ?? [],
+    errors: data?.data ?? [],
     total: data?.total ?? 0,
     page: data?.page ?? page,
-    pageSize,
-    hasMore: data ? (data.page * data.limit) < data.total : false,
+    pageSize: data?.pageSize ?? (params.limit ?? 20),
+    hasMore: data?.hasMore ?? false,
     isLoading,
     error,
     refetch,

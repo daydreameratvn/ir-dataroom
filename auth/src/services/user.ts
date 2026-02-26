@@ -180,10 +180,11 @@ export interface ListUsersOptions {
 }
 
 export interface ListUsersResult {
-  users: AdminUserView[];
+  data: AdminUserView[];
   total: number;
   page: number;
-  limit: number;
+  pageSize: number;
+  hasMore: boolean;
 }
 
 interface AdminUserRow extends UserRow {
@@ -251,11 +252,14 @@ export async function listUsers(opts: ListUsersOptions): Promise<ListUsersResult
     [...params, limit, offset]
   );
 
+  const users = dataResult.rows.map(rowToAdminUser);
+
   return {
-    users: dataResult.rows.map(rowToAdminUser),
+    data: users,
     total,
     page,
-    limit,
+    pageSize: limit,
+    hasMore: page * limit < total,
   };
 }
 

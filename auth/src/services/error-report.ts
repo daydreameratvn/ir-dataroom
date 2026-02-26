@@ -179,7 +179,7 @@ const VALID_SORT_COLUMNS: Record<string, string> = {
 
 export async function listErrorReports(
   params: ListErrorReportsParams
-): Promise<{ errors: ErrorReport[]; total: number; page: number; limit: number }> {
+): Promise<{ data: ErrorReport[]; total: number; page: number; pageSize: number; hasMore: boolean }> {
   const page = params.page ?? 1;
   const limit = Math.min(params.limit ?? 20, 100);
   const offset = (page - 1) * limit;
@@ -237,11 +237,14 @@ export async function listErrorReports(
     [...values, limit, offset]
   );
 
+  const errors = dataResult.rows.map(rowToErrorReport);
+
   return {
-    errors: dataResult.rows.map(rowToErrorReport),
+    data: errors,
     total,
     page,
-    limit,
+    pageSize: limit,
+    hasMore: page * limit < total,
   };
 }
 

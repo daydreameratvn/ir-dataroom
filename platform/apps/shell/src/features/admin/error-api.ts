@@ -58,10 +58,11 @@ export interface ListErrorsParams {
 }
 
 export interface ListErrorsResult {
-  errors: ErrorReport[];
+  data: ErrorReport[];
   total: number;
   page: number;
-  limit: number;
+  pageSize: number;
+  hasMore: boolean;
 }
 
 // ── API functions ──
