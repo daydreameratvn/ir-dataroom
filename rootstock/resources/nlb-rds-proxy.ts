@@ -2,43 +2,8 @@ import * as aws from "@pulumi/aws";
 import dns from "node:dns/promises";
 import { mergeTags } from "../lib/tags.ts";
 import { banyanDb } from "./rds.ts";
+import { banyanNlbSg } from "./security-groups.ts";
 import { banyanPublicSubnets, banyanVpc } from "./vpc.ts";
-
-// ============================================================
-// NLB Security Group
-// ============================================================
-
-export const banyanNlbSg = new aws.ec2.SecurityGroup("banyan-prod-nlb-sg", {
-  vpcId: banyanVpc.id,
-  name: "banyan-prod-nlb-sg",
-  description: "Security group for NLB RDS proxy (DDN Cloud connectivity)",
-  ingress: [
-    {
-      description: "PostgreSQL from DDN Cloud egress CIDRs",
-      fromPort: 5432,
-      toPort: 5432,
-      protocol: "tcp",
-      // DDN Cloud (public) uses dynamic egress IPs with no static CIDR ranges.
-      // Must allow 0.0.0.0/0 — RDS auth (user/password + SSL) is the access control layer.
-      // To restrict, upgrade to Private DDN (dedicated or BYOC) for static IPs / VPC peering.
-      cidrBlocks: ["0.0.0.0/0"],
-    },
-  ],
-  egress: [
-    {
-      description: "Allow all outbound",
-      fromPort: 0,
-      toPort: 0,
-      protocol: "-1",
-      cidrBlocks: ["0.0.0.0/0"],
-    },
-  ],
-  tags: mergeTags({
-    Name: "banyan-prod-nlb-sg",
-    Component: "security-group",
-    Service: "nlb-rds-proxy",
-  }),
-});
 
 // ============================================================
 // Network Load Balancer (internet-facing, TCP only)

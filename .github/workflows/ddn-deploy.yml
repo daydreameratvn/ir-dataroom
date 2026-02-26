@@ -29,6 +29,8 @@ jobs:
         run: |
           CONNECTION_URI=$(aws ssm get-parameter --name /banyan/hasura/ddn-connection-uri --with-decryption --query Parameter.Value --output text)
           JWT_SECRET_KEY=$(aws ssm get-parameter --name /banyan/hasura/jwt-secret-key --with-decryption --query Parameter.Value --output text)
+          echo "::add-mask::${CONNECTION_URI}"
+          echo "::add-mask::${JWT_SECRET_KEY}"
           cat > hasura/ddn/.env.cloud <<EOF
           APP_BANYAN_PG_CONNECTION_URI="${CONNECTION_URI}"
           JWT_SECRET_KEY="${JWT_SECRET_KEY}"
@@ -45,3 +47,7 @@ jobs:
       - name: Build & Apply Supergraph
         working-directory: hasura/ddn
         run: ddn supergraph build create --apply
+
+      - name: Clean up secrets
+        if: always()
+        run: rm -f hasura/ddn/.env.cloud

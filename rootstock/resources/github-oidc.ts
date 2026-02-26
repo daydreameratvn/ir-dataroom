@@ -44,7 +44,7 @@ export const githubActionsDeployRole = new aws.iam.Role(
               },
               StringLike: {
                 "token.actions.githubusercontent.com:sub":
-                  "repo:papaya-insurtech/banyan:*",
+                  "repo:papaya-insurtech/banyan:ref:refs/heads/main",
               },
             },
           },
