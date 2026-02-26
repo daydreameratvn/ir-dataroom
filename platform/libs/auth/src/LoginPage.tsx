@@ -278,7 +278,7 @@ export default function LoginPage() {
               <OrDivider text={t('auth.login.or')} />
 
               {/* OTP Section */}
-              <div className="flex flex-col gap-3.5">
+              <form onSubmit={(e) => { e.preventDefault(); handleSendOtp(); }} className="flex flex-col gap-3.5">
                 <Input
                   type="text"
                   placeholder={`${t('auth.login.emailPlaceholder')} / ${t('auth.login.phonePlaceholder')}`}
@@ -288,14 +288,13 @@ export default function LoginPage() {
                 />
 
                 <Button
-                  type="button"
-                  onClick={handleSendOtp}
+                  type="submit"
                   disabled={isSubmitting || !destination}
                   className="w-full h-11 rounded-xl bg-papaya-coral text-white text-[13.5px] font-semibold hover:bg-papaya-coral/85 disabled:opacity-40"
                 >
                   {isSubmitting ? t('common.loading') : t('auth.login.sendCode')}
                 </Button>
-              </div>
+              </form>
 
               {/* Passkey */}
               {typeof window !== 'undefined' && window.PublicKeyCredential && (
@@ -319,7 +318,7 @@ export default function LoginPage() {
 
           {/* OTP Verify Step */}
           {step === 'otp-verify' && (
-            <div className="flex flex-col gap-5">
+            <form onSubmit={(e) => { e.preventDefault(); handleVerifyOtp(); }} className="flex flex-col gap-5">
               <div className="p-4 rounded-xl border border-papaya-border bg-white">
                 <p className="text-[13px] text-muted-foreground">
                   {t('auth.login.codeSentTo', { destination })}
@@ -339,8 +338,7 @@ export default function LoginPage() {
               />
 
               <Button
-                type="button"
-                onClick={handleVerifyOtp}
+                type="submit"
                 disabled={isSubmitting || code.length !== 6}
                 className="w-full h-11 rounded-xl bg-papaya-coral text-white text-[13.5px] font-semibold hover:bg-papaya-coral/85 disabled:opacity-40"
               >
@@ -355,7 +353,7 @@ export default function LoginPage() {
               >
                 &larr; {t('common.back')}
               </Button>
-            </div>
+            </form>
           )}
         </div>
       </div>
