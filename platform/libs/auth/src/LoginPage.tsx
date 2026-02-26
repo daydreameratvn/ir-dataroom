@@ -392,10 +392,10 @@ function LoginLanguageSwitcher() {
     <div className="absolute top-5 right-6">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="gap-1.5 text-[13px] font-medium text-papaya-muted hover:text-foreground">
+          <button type="button" className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-medium text-papaya-muted hover:text-foreground hover:bg-accent transition-colors outline-none">
             <GlobeIcon />
             {languageNames[currentLang]}
-          </Button>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-[140px]">
           {supportedLanguages.map((lang) => (
