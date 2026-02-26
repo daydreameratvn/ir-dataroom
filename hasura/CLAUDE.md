@@ -79,9 +79,28 @@ hasura/
 
 All migrations MUST follow the backward compatibility rules from the root `CLAUDE.md`. Database changes are the highest-risk area for zero-downtime deployments.
 
+### Table Convention — Audit Columns (Mandatory)
+
+Every table MUST include these 6 audit columns:
+
+```sql
+created_at   timestamptz NOT NULL DEFAULT now(),
+updated_at   timestamptz NOT NULL DEFAULT now(),
+deleted_at   timestamptz,
+created_by   uuid        REFERENCES users(id),
+updated_by   uuid        REFERENCES users(id),
+deleted_by   uuid        REFERENCES users(id)
+```
+
+- `created_at` / `updated_at` — auto-set via `DEFAULT now()`, `updated_at` refreshed on every write
+- `deleted_at` — soft-delete marker (non-null = deleted), always filter `WHERE deleted_at IS NULL`
+- `created_by` / `updated_by` / `deleted_by` — FK to `users.id`, nullable for system-generated rows
+- Never hard-delete rows. Always soft-delete by setting `deleted_at` + `deleted_by`.
+- Add index on `deleted_at` for every table: `CREATE INDEX idx_<table>_deleted_at ON <table> (deleted_at);`
+
 ### Allowed
 
-- Add new tables
+- Add new tables (must include all 6 audit columns above)
 - Add new columns (with defaults or nullable)
 - Add new indexes
 - Add new views

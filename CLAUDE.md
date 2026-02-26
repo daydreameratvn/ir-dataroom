@@ -53,6 +53,10 @@ Each major folder has its own `CLAUDE.md` with domain-specific rules. Always rea
 
 ## Universal Rules
 
+### Database Tables — Audit Columns (Mandatory)
+
+Every database table MUST include these 6 audit columns: `created_at`, `updated_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`. See `hasura/CLAUDE.md` for the exact column definitions. Never hard-delete rows — always soft-delete.
+
 ### Work Scope
 
 When working in a particular sub-app folder, do not read code in other folders. Only the root `tsconfig.json` or `package.json` may be relevant. Each sub-app's `CLAUDE.md` is self-contained for its domain.

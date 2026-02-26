@@ -108,7 +108,7 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
 
-  const tenantId = 'papaya-demo';
+  const tenantId = '00000000-0000-0000-0000-000000000001';
   const returnUrl = (location.state as LocationState)?.from?.pathname || '/';
 
   const searchParams = new URLSearchParams(location.search);
