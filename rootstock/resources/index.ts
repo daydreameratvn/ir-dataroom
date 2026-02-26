@@ -10,3 +10,4 @@ export * from "./alb.ts";
 export * from "./auth-secrets.ts";
 export * from "./ecs-auth.ts";
 export * from "./nlb-rds-proxy.ts";
+export * from "./github-oidc.ts";
