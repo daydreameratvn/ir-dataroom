@@ -94,8 +94,8 @@ All security groups allow all outbound traffic (required for NAT, ECR image pull
 * **Storage:** 50 GB `gp3` with encryption enabled (AWS-managed KMS key).
 * **Parameter Group:** Custom `banyan-prod-db-param-group` (family `postgres17`) with logical replication enabled:
   * `rds.logical_replication = 1`
-  * `max_replication_slots = 4`
-  * `max_wal_senders = 4`
+  * `max_replication_slots = 5`
+  * `max_wal_senders = 5`
 * **Backup:** 7-day retention, deletion protection enabled.
 * **Credentials:** Random 32-character password generated via `@pulumi/random`. Connection details stored in **AWS Secrets Manager** as JSON:
 

@@ -52,8 +52,8 @@ const banyanDbParamGroup = new aws.rds.ParameterGroup("banyan-prod-db-param-grou
   description: "PostgreSQL 17 with logical replication enabled for Doltgres",
   parameters: [
     { name: "rds.logical_replication", value: "1", applyMethod: "pending-reboot" },
-    { name: "max_replication_slots", value: "4", applyMethod: "pending-reboot" },
-    { name: "max_wal_senders", value: "4", applyMethod: "pending-reboot" },
+    { name: "max_replication_slots", value: "5", applyMethod: "pending-reboot" },
+    { name: "max_wal_senders", value: "5", applyMethod: "pending-reboot" },
   ],
   tags: mergeTags({ Name: "banyan-prod-db-param-group", Component: "rds" }),
 });
