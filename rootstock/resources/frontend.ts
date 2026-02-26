@@ -172,7 +172,9 @@ export const banyanCloudFront = new aws.cloudfront.Distribution(
       },
     ],
 
-    // No custom domain yet — using CloudFront default domain
+    // Custom domain: oasis.papaya.asia
+    // ACM cert must be in us-east-1 for CloudFront (AWS hard requirement)
+    aliases: ["oasis.papaya.asia"],
     restrictions: {
       geoRestriction: {
         restrictionType: "none",
@@ -180,7 +182,10 @@ export const banyanCloudFront = new aws.cloudfront.Distribution(
     },
 
     viewerCertificate: {
-      cloudfrontDefaultCertificate: true,
+      acmCertificateArn:
+        "arn:aws:acm:us-east-1:812652266901:certificate/f446a33f-1c60-4fc8-8049-fd7d67af67a3",
+      sslSupportMethod: "sni-only",
+      minimumProtocolVersion: "TLSv1.2_2021",
     },
 
     tags: mergeTags({
