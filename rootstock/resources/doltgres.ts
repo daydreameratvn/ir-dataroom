@@ -209,7 +209,7 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
     cpuArchitecture: "X86_64",
     operatingSystemFamily: "LINUX",
   },
-  volumes: [{ name: "doltgres-data" }],
+  volumes: [{ name: "doltgres-data", configureAtLaunch: true }],
   containerDefinitions: pulumi.all([banyanDoltgresLogGroup.name, doltgresConfigYaml]).apply(([logGroupName, configYaml]) =>
     JSON.stringify([
       {
