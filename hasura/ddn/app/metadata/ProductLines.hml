@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ProductLines
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ProductLines
+    inputTypeName: ProductLinesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: product_lines
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ProductLines
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ProductLinesAggExp
+  operand:
+    object:
+      aggregatedType: ProductLines
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ProductLinesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ProductLinesOrderByExp
+  operand:
+    object:
+      orderedType: ProductLines
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ProductLinesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ProductLines
+  objectType: ProductLines
+  source:
+    dataConnectorName: banyan_pg
+    collection: product_lines
+  filterExpressionType: ProductLinesBoolExp
+  aggregateExpression: ProductLinesAggExp
+  orderByExpression: ProductLinesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: productLines
+      subscription:
+        rootField: productLines
+    selectUniques:
+      - queryRootField: productLinesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: productLinesByValue
+    filterInputTypeName: ProductLinesFilterInput
+    aggregate:
+      queryRootField: productLinesAggregate
+      subscription:
+        rootField: productLinesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ProductLines
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: products
+  sourceType: ProductLines
+  target:
+    model:
+      name: Products
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ProductsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: productLine
+  graphql:
+    aggregateFieldName: productsAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProductLinesBoolExp
+  operand:
+    object:
+      type: ProductLines
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: products
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProductLinesBoolExp
+

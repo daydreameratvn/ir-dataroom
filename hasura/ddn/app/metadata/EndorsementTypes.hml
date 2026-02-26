@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: EndorsementTypes
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: EndorsementTypes
+    inputTypeName: EndorsementTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: endorsement_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: EndorsementTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: EndorsementTypesAggExp
+  operand:
+    object:
+      aggregatedType: EndorsementTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: EndorsementTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: EndorsementTypesOrderByExp
+  operand:
+    object:
+      orderedType: EndorsementTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: EndorsementTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: EndorsementTypes
+  objectType: EndorsementTypes
+  source:
+    dataConnectorName: banyan_pg
+    collection: endorsement_types
+  filterExpressionType: EndorsementTypesBoolExp
+  aggregateExpression: EndorsementTypesAggExp
+  orderByExpression: EndorsementTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: endorsementTypes
+      subscription:
+        rootField: endorsementTypes
+    selectUniques:
+      - queryRootField: endorsementTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: endorsementTypesByValue
+    filterInputTypeName: EndorsementTypesFilterInput
+    aggregate:
+      queryRootField: endorsementTypesAggregate
+      subscription:
+        rootField: endorsementTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: EndorsementTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: endorsements
+  sourceType: EndorsementTypes
+  target:
+    model:
+      name: Endorsements
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: EndorsementsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: endorsementType
+  graphql:
+    aggregateFieldName: endorsementsAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: EndorsementTypesBoolExp
+  operand:
+    object:
+      type: EndorsementTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: endorsements
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: EndorsementTypesBoolExp
+

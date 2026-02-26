@@ -1,0 +1,329 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AgentActions
+  fields:
+    - name: actionName
+      type: String_1!
+    - name: actionType
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: durationMs
+      type: Int32
+    - name: id
+      type: Uuid!
+    - name: inputText
+      type: String_1
+    - name: outputText
+      type: String_1
+    - name: resultText
+      type: String_1
+    - name: sequenceNumber
+      type: Int32!
+    - name: sessionId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: AgentActions
+    inputTypeName: AgentActionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: agent_actions
+      fieldMapping:
+        actionName:
+          column:
+            name: action_name
+        actionType:
+          column:
+            name: action_type
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        durationMs:
+          column:
+            name: duration_ms
+        id:
+          column:
+            name: id
+        inputText:
+          column:
+            name: input_text
+        outputText:
+          column:
+            name: output_text
+        resultText:
+          column:
+            name: result_text
+        sequenceNumber:
+          column:
+            name: sequence_number
+        sessionId:
+          column:
+            name: session_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AgentActions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actionName
+          - actionType
+          - createdAt
+          - createdBy
+          - deletedAt
+          - durationMs
+          - id
+          - inputText
+          - outputText
+          - resultText
+          - sequenceNumber
+          - sessionId
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AgentActionsAggExp
+  operand:
+    object:
+      aggregatedType: AgentActions
+      aggregatableFields:
+        - fieldName: actionName
+          aggregateExpression: TextAggExp
+        - fieldName: actionType
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: durationMs
+          aggregateExpression: Int4AggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: inputText
+          aggregateExpression: TextAggExp
+        - fieldName: outputText
+          aggregateExpression: TextAggExp
+        - fieldName: resultText
+          aggregateExpression: TextAggExp
+        - fieldName: sequenceNumber
+          aggregateExpression: Int4AggExp
+        - fieldName: sessionId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AgentActionsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AgentActions
+  objectType: AgentActions
+  source:
+    dataConnectorName: banyan_pg
+    collection: agent_actions
+  filterExpressionType: AgentActionsBoolExp
+  aggregateExpression: AgentActionsAggExp
+  orderByExpression: AgentActionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: agentActions
+      subscription:
+        rootField: agentActions
+    selectUniques:
+      - queryRootField: agentActionsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: agentActionsById
+    filterInputTypeName: AgentActionsFilterInput
+    aggregate:
+      queryRootField: agentActionsAggregate
+      subscription:
+        rootField: agentActionsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AgentActions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: agentSession
+  sourceType: AgentActions
+  target:
+    model:
+      name: AgentSessions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: sessionId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: AgentActions
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AgentActionsBoolExp
+  operand:
+    object:
+      type: AgentActions
+      comparableFields:
+        - fieldName: actionName
+          booleanExpressionType: TextBoolExp
+        - fieldName: actionType
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: durationMs
+          booleanExpressionType: Int4BoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: inputText
+          booleanExpressionType: TextBoolExp
+        - fieldName: outputText
+          booleanExpressionType: TextBoolExp
+        - fieldName: resultText
+          booleanExpressionType: TextBoolExp
+        - fieldName: sequenceNumber
+          booleanExpressionType: Int4BoolExp
+        - fieldName: sessionId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: agentSession
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AgentActionsBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AgentActionsOrderByExp
+  operand:
+    object:
+      orderedType: AgentActions
+      orderableFields:
+        - fieldName: actionName
+          orderByExpression: String1OrderByExp
+        - fieldName: actionType
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: durationMs
+          orderByExpression: Int32OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: inputText
+          orderByExpression: String1OrderByExp
+        - fieldName: outputText
+          orderByExpression: String1OrderByExp
+        - fieldName: resultText
+          orderByExpression: String1OrderByExp
+        - fieldName: sequenceNumber
+          orderByExpression: Int32OrderByExp
+        - fieldName: sessionId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: agentSession
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: AgentActionsOrderByExp
+

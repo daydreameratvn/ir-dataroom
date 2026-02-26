@@ -1,0 +1,216 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwaAlertsObject
+  fields:
+    - name: aiAnalysis
+      type: String_1
+    - name: alertNumber
+      type: String_1!
+    - name: claimId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: policyId
+      type: Uuid
+    - name: providerId
+      type: Uuid
+    - name: resolutionNotes
+      type: String_1
+    - name: resolvedAt
+      type: Timestamptz
+    - name: resolvedBy
+      type: Uuid
+    - name: ruleId
+      type: Uuid
+    - name: score
+      type: Bigdecimal
+    - name: severity
+      type: String_1
+    - name: status
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertFwaAlertsObject
+    inputTypeName: InsertFwaAlertsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_fwa_alerts_object
+      fieldMapping:
+        aiAnalysis:
+          column:
+            name: ai_analysis
+        alertNumber:
+          column:
+            name: alert_number
+        claimId:
+          column:
+            name: claim_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        providerId:
+          column:
+            name: provider_id
+        resolutionNotes:
+          column:
+            name: resolution_notes
+        resolvedAt:
+          column:
+            name: resolved_at
+        resolvedBy:
+          column:
+            name: resolved_by
+        ruleId:
+          column:
+            name: rule_id
+        score:
+          column:
+            name: score
+        severity:
+          column:
+            name: severity
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwaAlertsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - aiAnalysis
+          - alertNumber
+          - claimId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - id
+          - policyId
+          - providerId
+          - resolutionNotes
+          - resolvedAt
+          - resolvedBy
+          - ruleId
+          - score
+          - severity
+          - status
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwaAlertsResponse
+  description: Responses from the 'insert_fwa_alerts' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwaAlerts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwaAlertsResponse
+    inputTypeName: InsertFwaAlertsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_fwa_alerts_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwaAlertsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwaAlerts
+  outputType: InsertFwaAlertsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwaAlertsObject!]!"
+    - name: postCheck
+      type: FwaAlertsBoolExp
+      description: Insert permission predicate over the 'fwa_alerts' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_fwa_alerts
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwaAlerts
+    rootFieldKind: Mutation
+  description: Insert into the fwa_alerts table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwaAlerts
+  permissions:
+    - role: admin
+      allowExecution: true
+

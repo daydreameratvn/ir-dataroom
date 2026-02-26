@@ -1,0 +1,281 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuditLogEntries
+  fields:
+    - name: auditLogId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: fieldName
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: newValue
+      type: String_1
+    - name: oldValue
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: AuditLogEntries
+    inputTypeName: AuditLogEntriesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: audit_log_entries
+      fieldMapping:
+        auditLogId:
+          column:
+            name: audit_log_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        fieldName:
+          column:
+            name: field_name
+        id:
+          column:
+            name: id
+        newValue:
+          column:
+            name: new_value
+        oldValue:
+          column:
+            name: old_value
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuditLogEntries
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - auditLogId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - fieldName
+          - id
+          - newValue
+          - oldValue
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AuditLogEntriesAggExp
+  operand:
+    object:
+      aggregatedType: AuditLogEntries
+      aggregatableFields:
+        - fieldName: auditLogId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fieldName
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: newValue
+          aggregateExpression: TextAggExp
+        - fieldName: oldValue
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AuditLogEntriesAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AuditLogEntries
+  objectType: AuditLogEntries
+  source:
+    dataConnectorName: banyan_pg
+    collection: audit_log_entries
+  filterExpressionType: AuditLogEntriesBoolExp
+  aggregateExpression: AuditLogEntriesAggExp
+  orderByExpression: AuditLogEntriesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: auditLogEntries
+      subscription:
+        rootField: auditLogEntries
+    selectUniques:
+      - queryRootField: auditLogEntriesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: auditLogEntriesById
+    filterInputTypeName: AuditLogEntriesFilterInput
+    aggregate:
+      queryRootField: auditLogEntriesAggregate
+      subscription:
+        rootField: auditLogEntriesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuditLogEntries
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLog
+  sourceType: AuditLogEntries
+  target:
+    model:
+      name: AuditLogs
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: auditLogId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: AuditLogEntries
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AuditLogEntriesBoolExp
+  operand:
+    object:
+      type: AuditLogEntries
+      comparableFields:
+        - fieldName: auditLogId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fieldName
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: newValue
+          booleanExpressionType: TextBoolExp
+        - fieldName: oldValue
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: auditLog
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AuditLogEntriesBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AuditLogEntriesOrderByExp
+  operand:
+    object:
+      orderedType: AuditLogEntries
+      orderableFields:
+        - fieldName: auditLogId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fieldName
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: newValue
+          orderByExpression: String1OrderByExp
+        - fieldName: oldValue
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: auditLog
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: AuditLogEntriesOrderByExp
+

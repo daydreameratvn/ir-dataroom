@@ -1,0 +1,289 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuthIdentities
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: provider
+      type: String_1!
+    - name: providerUserId
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: AuthIdentities
+    inputTypeName: AuthIdentitiesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: auth_identities
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        provider:
+          column:
+            name: provider
+        providerUserId:
+          column:
+            name: provider_user_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuthIdentities
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - provider
+          - providerUserId
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - userId
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AuthIdentitiesAggExp
+  operand:
+    object:
+      aggregatedType: AuthIdentities
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: provider
+          aggregateExpression: TextAggExp
+        - fieldName: providerUserId
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AuthIdentitiesAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AuthIdentities
+  objectType: AuthIdentities
+  source:
+    dataConnectorName: banyan_pg
+    collection: auth_identities
+  filterExpressionType: AuthIdentitiesBoolExp
+  aggregateExpression: AuthIdentitiesAggExp
+  orderByExpression: AuthIdentitiesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: authIdentities
+      subscription:
+        rootField: authIdentities
+    selectUniques:
+      - queryRootField: authIdentitiesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: authIdentitiesById
+    filterInputTypeName: AuthIdentitiesFilterInput
+    aggregate:
+      queryRootField: authIdentitiesAggregate
+      subscription:
+        rootField: authIdentitiesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuthIdentities
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authProvider
+  sourceType: AuthIdentities
+  target:
+    model:
+      name: AuthProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: provider
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: AuthIdentities
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: AuthIdentities
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AuthIdentitiesBoolExp
+  operand:
+    object:
+      type: AuthIdentities
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: provider
+          booleanExpressionType: TextBoolExp
+        - fieldName: providerUserId
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: authProvider
+        - relationshipName: tenant
+        - relationshipName: user
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AuthIdentitiesBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AuthIdentitiesOrderByExp
+  operand:
+    object:
+      orderedType: AuthIdentities
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: provider
+          orderByExpression: String1OrderByExp
+        - fieldName: providerUserId
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: authProvider
+        - relationshipName: tenant
+        - relationshipName: user
+  graphql:
+    expressionTypeName: AuthIdentitiesOrderByExp
+

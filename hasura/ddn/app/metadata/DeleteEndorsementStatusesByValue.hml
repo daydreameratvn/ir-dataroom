@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteEndorsementStatusesByValueResponse
+  description: Responses from the 'delete_endorsement_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[EndorsementStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteEndorsementStatusesByValueResponse
+    inputTypeName: DeleteEndorsementStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: delete_endorsement_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteEndorsementStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteEndorsementStatusesByValue
+  outputType: DeleteEndorsementStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: EndorsementStatusesBoolExp
+      description: Delete permission predicate over the 'endorsement_statuses' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: delete_endorsement_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteEndorsementStatusesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'endorsement_statuses' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteEndorsementStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

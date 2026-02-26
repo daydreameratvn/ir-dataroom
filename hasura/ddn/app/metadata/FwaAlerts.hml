@@ -1,0 +1,489 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwaAlerts
+  fields:
+    - name: aiAnalysis
+      type: String_1
+    - name: alertNumber
+      type: String_1!
+    - name: claimId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: policyId
+      type: Uuid
+    - name: providerId
+      type: Uuid
+    - name: resolutionNotes
+      type: String_1
+    - name: resolvedAt
+      type: Timestamptz
+    - name: resolvedBy
+      type: Uuid
+    - name: ruleId
+      type: Uuid
+    - name: score
+      type: Bigdecimal
+    - name: severity
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: FwaAlerts
+    inputTypeName: FwaAlertsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: fwa_alerts
+      fieldMapping:
+        aiAnalysis:
+          column:
+            name: ai_analysis
+        alertNumber:
+          column:
+            name: alert_number
+        claimId:
+          column:
+            name: claim_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        providerId:
+          column:
+            name: provider_id
+        resolutionNotes:
+          column:
+            name: resolution_notes
+        resolvedAt:
+          column:
+            name: resolved_at
+        resolvedBy:
+          column:
+            name: resolved_by
+        ruleId:
+          column:
+            name: rule_id
+        score:
+          column:
+            name: score
+        severity:
+          column:
+            name: severity
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwaAlerts
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - aiAnalysis
+          - alertNumber
+          - claimId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - id
+          - policyId
+          - providerId
+          - resolutionNotes
+          - resolvedAt
+          - resolvedBy
+          - ruleId
+          - score
+          - severity
+          - status
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwaAlertsAggExp
+  operand:
+    object:
+      aggregatedType: FwaAlerts
+      aggregatableFields:
+        - fieldName: aiAnalysis
+          aggregateExpression: TextAggExp
+        - fieldName: alertNumber
+          aggregateExpression: TextAggExp
+        - fieldName: claimId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: providerId
+          aggregateExpression: UuidAggExp
+        - fieldName: resolutionNotes
+          aggregateExpression: TextAggExp
+        - fieldName: resolvedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: resolvedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: ruleId
+          aggregateExpression: UuidAggExp
+        - fieldName: score
+          aggregateExpression: NumericAggExp
+        - fieldName: severity
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwaAlertsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwaAlerts
+  objectType: FwaAlerts
+  source:
+    dataConnectorName: banyan_pg
+    collection: fwa_alerts
+  filterExpressionType: FwaAlertsBoolExp
+  aggregateExpression: FwaAlertsAggExp
+  orderByExpression: FwaAlertsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwaAlerts
+      subscription:
+        rootField: fwaAlerts
+    selectUniques:
+      - queryRootField: fwaAlertsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: fwaAlertsById
+    filterInputTypeName: FwaAlertsFilterInput
+    aggregate:
+      queryRootField: fwaAlertsAggregate
+      subscription:
+        rootField: fwaAlertsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwaAlerts
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claim
+  sourceType: FwaAlerts
+  target:
+    model:
+      name: Claims
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: FwaAlerts
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: provider
+  sourceType: FwaAlerts
+  target:
+    model:
+      name: Providers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: providerId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: FwaAlerts
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: resolvedBy
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaRule
+  sourceType: FwaAlerts
+  target:
+    model:
+      name: FwaRules
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ruleId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaSeverity
+  sourceType: FwaAlerts
+  target:
+    model:
+      name: FwaSeverities
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: severity
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: FwaAlerts
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwaAlertsBoolExp
+  operand:
+    object:
+      type: FwaAlerts
+      comparableFields:
+        - fieldName: aiAnalysis
+          booleanExpressionType: TextBoolExp
+        - fieldName: alertNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: claimId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: providerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: resolutionNotes
+          booleanExpressionType: TextBoolExp
+        - fieldName: resolvedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: resolvedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: ruleId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: score
+          booleanExpressionType: NumericBoolExp
+        - fieldName: severity
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claim
+        - relationshipName: policy
+        - relationshipName: provider
+        - relationshipName: user
+        - relationshipName: fwaRule
+        - relationshipName: fwaSeverity
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwaAlertsBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwaAlertsOrderByExp
+  operand:
+    object:
+      orderedType: FwaAlerts
+      orderableFields:
+        - fieldName: aiAnalysis
+          orderByExpression: String1OrderByExp
+        - fieldName: alertNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: claimId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: providerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: resolutionNotes
+          orderByExpression: String1OrderByExp
+        - fieldName: resolvedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: resolvedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: ruleId
+          orderByExpression: UuidOrderByExp
+        - fieldName: score
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: severity
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claim
+        - relationshipName: policy
+        - relationshipName: provider
+        - relationshipName: user
+        - relationshipName: fwaRule
+        - relationshipName: fwaSeverity
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: FwaAlertsOrderByExp
+

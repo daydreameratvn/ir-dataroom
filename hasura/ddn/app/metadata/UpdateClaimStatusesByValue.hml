@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnClaimStatusesComment
+  description: Update the 'comment' column in the 'claim_statuses' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnClaimStatusesComment
+    inputTypeName: UpdateColumnClaimStatusesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_column_claim_statuses_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnClaimStatusesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnClaimStatusesValue
+  description: Update the 'value' column in the 'claim_statuses' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnClaimStatusesValue
+    inputTypeName: UpdateColumnClaimStatusesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_column_claim_statuses_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnClaimStatusesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimStatusesByValueUpdateColumns
+  description: Update the columns of the 'claim_statuses' collection
+  fields:
+    - name: comment
+      type: UpdateColumnClaimStatusesComment
+      description: Update the 'comment' column in the 'claim_statuses' collection.
+    - name: value
+      type: UpdateColumnClaimStatusesValue
+      description: Update the 'value' column in the 'claim_statuses' collection.
+  graphql:
+    typeName: UpdateClaimStatusesByValueUpdateColumns
+    inputTypeName: UpdateClaimStatusesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_claim_statuses_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimStatusesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimStatusesByValueResponse
+  description: Responses from the 'update_claim_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateClaimStatusesByValueResponse
+    inputTypeName: UpdateClaimStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_claim_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateClaimStatusesByValue
+  outputType: UpdateClaimStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: ClaimStatusesBoolExp
+      description: Update permission post-condition predicate over the
+        'claim_statuses' collection
+    - name: preCheck
+      type: ClaimStatusesBoolExp
+      description: Update permission pre-condition predicate over the 'claim_statuses'
+        collection
+    - name: updateColumns
+      type: UpdateClaimStatusesByValueUpdateColumns!
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: update_claim_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateClaimStatusesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'claim_statuses' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateClaimStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

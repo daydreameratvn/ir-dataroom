@@ -1,0 +1,325 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimNotes
+  fields:
+    - name: agentName
+      type: String_1
+    - name: authorId
+      type: Uuid
+    - name: claimId
+      type: Uuid!
+    - name: content
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: noteType
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: visibility
+      type: String_1!
+  graphql:
+    typeName: ClaimNotes
+    inputTypeName: ClaimNotesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: claim_notes
+      fieldMapping:
+        agentName:
+          column:
+            name: agent_name
+        authorId:
+          column:
+            name: author_id
+        claimId:
+          column:
+            name: claim_id
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        noteType:
+          column:
+            name: note_type
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        visibility:
+          column:
+            name: visibility
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimNotes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - agentName
+          - authorId
+          - claimId
+          - content
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - noteType
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - visibility
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimNotesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimNotes
+      aggregatableFields:
+        - fieldName: agentName
+          aggregateExpression: TextAggExp
+        - fieldName: authorId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimId
+          aggregateExpression: UuidAggExp
+        - fieldName: content
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: noteType
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: visibility
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimNotesAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimNotes
+  objectType: ClaimNotes
+  source:
+    dataConnectorName: banyan_pg
+    collection: claim_notes
+  filterExpressionType: ClaimNotesBoolExp
+  aggregateExpression: ClaimNotesAggExp
+  orderByExpression: ClaimNotesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimNotes
+      subscription:
+        rootField: claimNotes
+    selectUniques:
+      - queryRootField: claimNotesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimNotesById
+    filterInputTypeName: ClaimNotesFilterInput
+    aggregate:
+      queryRootField: claimNotesAggregate
+      subscription:
+        rootField: claimNotesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimNotes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: ClaimNotes
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: authorId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claim
+  sourceType: ClaimNotes
+  target:
+    model:
+      name: Claims
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: ClaimNotes
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimNotesBoolExp
+  operand:
+    object:
+      type: ClaimNotes
+      comparableFields:
+        - fieldName: agentName
+          booleanExpressionType: TextBoolExp
+        - fieldName: authorId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: content
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: noteType
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: visibility
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: user
+        - relationshipName: claim
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimNotesBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimNotesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimNotes
+      orderableFields:
+        - fieldName: agentName
+          orderByExpression: String1OrderByExp
+        - fieldName: authorId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimId
+          orderByExpression: UuidOrderByExp
+        - fieldName: content
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: noteType
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: visibility
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: user
+        - relationshipName: claim
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: ClaimNotesOrderByExp
+

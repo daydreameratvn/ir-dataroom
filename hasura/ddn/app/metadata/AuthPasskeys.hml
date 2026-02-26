@@ -1,0 +1,317 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuthPasskeys
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: credentialId
+      type: String_1!
+    - name: deletedAt
+      type: Timestamptz
+    - name: deviceName
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: lastUsedAt
+      type: Timestamptz
+    - name: publicKey
+      type: String_1!
+    - name: signCount
+      type: Int32!
+    - name: tenantId
+      type: Uuid!
+    - name: transports
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: AuthPasskeys
+    inputTypeName: AuthPasskeysInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: auth_passkeys
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        credentialId:
+          column:
+            name: credential_id
+        deletedAt:
+          column:
+            name: deleted_at
+        deviceName:
+          column:
+            name: device_name
+        id:
+          column:
+            name: id
+        lastUsedAt:
+          column:
+            name: last_used_at
+        publicKey:
+          column:
+            name: public_key
+        signCount:
+          column:
+            name: sign_count
+        tenantId:
+          column:
+            name: tenant_id
+        transports:
+          column:
+            name: transports
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuthPasskeys
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - credentialId
+          - deletedAt
+          - deviceName
+          - id
+          - lastUsedAt
+          - publicKey
+          - signCount
+          - tenantId
+          - transports
+          - updatedAt
+          - updatedBy
+          - userId
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AuthPasskeysAggExp
+  operand:
+    object:
+      aggregatedType: AuthPasskeys
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: credentialId
+          aggregateExpression: TextAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deviceName
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: lastUsedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: publicKey
+          aggregateExpression: TextAggExp
+        - fieldName: signCount
+          aggregateExpression: Int4AggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: transports
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AuthPasskeysAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AuthPasskeys
+  objectType: AuthPasskeys
+  source:
+    dataConnectorName: banyan_pg
+    collection: auth_passkeys
+  filterExpressionType: AuthPasskeysBoolExp
+  aggregateExpression: AuthPasskeysAggExp
+  orderByExpression: AuthPasskeysOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: authPasskeys
+      subscription:
+        rootField: authPasskeys
+    selectUniques:
+      - queryRootField: authPasskeysById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: authPasskeysById
+    filterInputTypeName: AuthPasskeysFilterInput
+    aggregate:
+      queryRootField: authPasskeysAggregate
+      subscription:
+        rootField: authPasskeysAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuthPasskeys
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: AuthPasskeys
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: AuthPasskeys
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AuthPasskeysBoolExp
+  operand:
+    object:
+      type: AuthPasskeys
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: credentialId
+          booleanExpressionType: TextBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deviceName
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: lastUsedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: publicKey
+          booleanExpressionType: TextBoolExp
+        - fieldName: signCount
+          booleanExpressionType: Int4BoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: transports
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: tenant
+        - relationshipName: user
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AuthPasskeysBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AuthPasskeysOrderByExp
+  operand:
+    object:
+      orderedType: AuthPasskeys
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: credentialId
+          orderByExpression: String1OrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deviceName
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: lastUsedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: publicKey
+          orderByExpression: String1OrderByExp
+        - fieldName: signCount
+          orderByExpression: Int32OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: transports
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: tenant
+        - relationshipName: user
+  graphql:
+    expressionTypeName: AuthPasskeysOrderByExp
+

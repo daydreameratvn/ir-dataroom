@@ -1,0 +1,502 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Providers
+  fields:
+    - name: active
+      type: Boolean_1!
+    - name: address
+      type: String_1
+    - name: city
+      type: String_1
+    - name: country
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: email
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: licenseNumber
+      type: String_1
+    - name: name
+      type: String_1!
+    - name: networkStatus
+      type: String_1!
+    - name: phone
+      type: String_1
+    - name: postalCode
+      type: String_1
+    - name: providerCode
+      type: String_1!
+    - name: rating
+      type: Bigdecimal
+    - name: specialty
+      type: String_1
+    - name: stateProvince
+      type: String_1
+    - name: taxId
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: Providers
+    inputTypeName: ProvidersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: providers
+      fieldMapping:
+        active:
+          column:
+            name: active
+        address:
+          column:
+            name: address
+        city:
+          column:
+            name: city
+        country:
+          column:
+            name: country
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        email:
+          column:
+            name: email
+        id:
+          column:
+            name: id
+        licenseNumber:
+          column:
+            name: license_number
+        name:
+          column:
+            name: name
+        networkStatus:
+          column:
+            name: network_status
+        phone:
+          column:
+            name: phone
+        postalCode:
+          column:
+            name: postal_code
+        providerCode:
+          column:
+            name: provider_code
+        rating:
+          column:
+            name: rating
+        specialty:
+          column:
+            name: specialty
+        stateProvince:
+          column:
+            name: state_province
+        taxId:
+          column:
+            name: tax_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Providers
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - active
+          - address
+          - city
+          - country
+          - createdAt
+          - createdBy
+          - deletedAt
+          - email
+          - id
+          - licenseNumber
+          - name
+          - networkStatus
+          - phone
+          - postalCode
+          - providerCode
+          - rating
+          - specialty
+          - stateProvince
+          - taxId
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ProvidersAggExp
+  operand:
+    object:
+      aggregatedType: Providers
+      aggregatableFields:
+        - fieldName: active
+          aggregateExpression: BoolAggExp
+        - fieldName: address
+          aggregateExpression: TextAggExp
+        - fieldName: city
+          aggregateExpression: TextAggExp
+        - fieldName: country
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: email
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: licenseNumber
+          aggregateExpression: TextAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: networkStatus
+          aggregateExpression: TextAggExp
+        - fieldName: phone
+          aggregateExpression: TextAggExp
+        - fieldName: postalCode
+          aggregateExpression: TextAggExp
+        - fieldName: providerCode
+          aggregateExpression: TextAggExp
+        - fieldName: rating
+          aggregateExpression: NumericAggExp
+        - fieldName: specialty
+          aggregateExpression: TextAggExp
+        - fieldName: stateProvince
+          aggregateExpression: TextAggExp
+        - fieldName: taxId
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ProvidersAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Providers
+  objectType: Providers
+  source:
+    dataConnectorName: banyan_pg
+    collection: providers
+  filterExpressionType: ProvidersBoolExp
+  aggregateExpression: ProvidersAggExp
+  orderByExpression: ProvidersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: providers
+      subscription:
+        rootField: providers
+    selectUniques:
+      - queryRootField: providersById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: providersById
+    filterInputTypeName: ProvidersFilterInput
+    aggregate:
+      queryRootField: providersAggregate
+      subscription:
+        rootField: providersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Providers
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claims
+  sourceType: Providers
+  target:
+    model:
+      name: Claims
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: providerId
+  graphql:
+    aggregateFieldName: claimsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaAlerts
+  sourceType: Providers
+  target:
+    model:
+      name: FwaAlerts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaAlertsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: providerId
+  graphql:
+    aggregateFieldName: fwaAlertsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: providerContracts
+  sourceType: Providers
+  target:
+    model:
+      name: ProviderContracts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ProviderContractsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: providerId
+  graphql:
+    aggregateFieldName: providerContractsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: nationality
+  sourceType: Providers
+  target:
+    model:
+      name: Nationalities
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: country
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: providerSpecialty
+  sourceType: Providers
+  target:
+    model:
+      name: ProviderSpecialties
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: specialty
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: Providers
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProvidersBoolExp
+  operand:
+    object:
+      type: Providers
+      comparableFields:
+        - fieldName: active
+          booleanExpressionType: BoolBoolExp
+        - fieldName: address
+          booleanExpressionType: TextBoolExp
+        - fieldName: city
+          booleanExpressionType: TextBoolExp
+        - fieldName: country
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: email
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: licenseNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: networkStatus
+          booleanExpressionType: TextBoolExp
+        - fieldName: phone
+          booleanExpressionType: TextBoolExp
+        - fieldName: postalCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: providerCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: rating
+          booleanExpressionType: NumericBoolExp
+        - fieldName: specialty
+          booleanExpressionType: TextBoolExp
+        - fieldName: stateProvince
+          booleanExpressionType: TextBoolExp
+        - fieldName: taxId
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claims
+        - relationshipName: fwaAlerts
+        - relationshipName: providerContracts
+        - relationshipName: nationality
+        - relationshipName: providerSpecialty
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProvidersBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ProvidersOrderByExp
+  operand:
+    object:
+      orderedType: Providers
+      orderableFields:
+        - fieldName: active
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: address
+          orderByExpression: String1OrderByExp
+        - fieldName: city
+          orderByExpression: String1OrderByExp
+        - fieldName: country
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: email
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: licenseNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: networkStatus
+          orderByExpression: String1OrderByExp
+        - fieldName: phone
+          orderByExpression: String1OrderByExp
+        - fieldName: postalCode
+          orderByExpression: String1OrderByExp
+        - fieldName: providerCode
+          orderByExpression: String1OrderByExp
+        - fieldName: rating
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: specialty
+          orderByExpression: String1OrderByExp
+        - fieldName: stateProvince
+          orderByExpression: String1OrderByExp
+        - fieldName: taxId
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: nationality
+        - relationshipName: providerSpecialty
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: ProvidersOrderByExp
+

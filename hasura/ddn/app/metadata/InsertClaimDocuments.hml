@@ -1,0 +1,204 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimDocumentsObject
+  fields:
+    - name: claimId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: documentType
+      type: String_1
+    - name: extractedAmount
+      type: Bigdecimal
+    - name: extractedDate
+      type: Timestamptz
+    - name: extractedText
+      type: String_1
+    - name: extractionConfidence
+      type: Bigdecimal
+    - name: fileName
+      type: String_1!
+    - name: fileSizeBytes
+      type: Int64
+    - name: fileType
+      type: String_1
+    - name: fileUrl
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: uploadedBy
+      type: Uuid
+  graphql:
+    typeName: InsertClaimDocumentsObject
+    inputTypeName: InsertClaimDocumentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_claim_documents_object
+      fieldMapping:
+        claimId:
+          column:
+            name: claim_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        documentType:
+          column:
+            name: document_type
+        extractedAmount:
+          column:
+            name: extracted_amount
+        extractedDate:
+          column:
+            name: extracted_date
+        extractedText:
+          column:
+            name: extracted_text
+        extractionConfidence:
+          column:
+            name: extraction_confidence
+        fileName:
+          column:
+            name: file_name
+        fileSizeBytes:
+          column:
+            name: file_size_bytes
+        fileType:
+          column:
+            name: file_type
+        fileUrl:
+          column:
+            name: file_url
+        id:
+          column:
+            name: id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        uploadedBy:
+          column:
+            name: uploaded_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimDocumentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - documentType
+          - extractedAmount
+          - extractedDate
+          - extractedText
+          - extractionConfidence
+          - fileName
+          - fileSizeBytes
+          - fileType
+          - fileUrl
+          - id
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - uploadedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimDocumentsResponse
+  description: Responses from the 'insert_claim_documents' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimDocuments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimDocumentsResponse
+    inputTypeName: InsertClaimDocumentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_claim_documents_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimDocumentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimDocuments
+  outputType: InsertClaimDocumentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimDocumentsObject!]!"
+    - name: postCheck
+      type: ClaimDocumentsBoolExp
+      description: Insert permission predicate over the 'claim_documents' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_claim_documents
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimDocuments
+    rootFieldKind: Mutation
+  description: Insert into the claim_documents table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimDocuments
+  permissions:
+    - role: admin
+      allowExecution: true
+

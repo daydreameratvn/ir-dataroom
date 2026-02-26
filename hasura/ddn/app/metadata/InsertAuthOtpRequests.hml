@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuthOtpRequestsObject
+  fields:
+    - name: attempts
+      type: Int32
+    - name: codeHash
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: destination
+      type: String_1!
+    - name: expiresAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid
+    - name: maxAttempts
+      type: Int32
+    - name: provider
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: verifiedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertAuthOtpRequestsObject
+    inputTypeName: InsertAuthOtpRequestsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_auth_otp_requests_object
+      fieldMapping:
+        attempts:
+          column:
+            name: attempts
+        codeHash:
+          column:
+            name: code_hash
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        destination:
+          column:
+            name: destination
+        expiresAt:
+          column:
+            name: expires_at
+        id:
+          column:
+            name: id
+        maxAttempts:
+          column:
+            name: max_attempts
+        provider:
+          column:
+            name: provider
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        verifiedAt:
+          column:
+            name: verified_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuthOtpRequestsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - attempts
+          - codeHash
+          - createdAt
+          - createdBy
+          - deletedAt
+          - destination
+          - expiresAt
+          - id
+          - maxAttempts
+          - provider
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - verifiedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuthOtpRequestsResponse
+  description: Responses from the 'insert_auth_otp_requests' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuthOtpRequests!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertAuthOtpRequestsResponse
+    inputTypeName: InsertAuthOtpRequestsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_auth_otp_requests_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuthOtpRequestsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertAuthOtpRequests
+  outputType: InsertAuthOtpRequestsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertAuthOtpRequestsObject!]!"
+    - name: postCheck
+      type: AuthOtpRequestsBoolExp
+      description: Insert permission predicate over the 'auth_otp_requests' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_auth_otp_requests
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertAuthOtpRequests
+    rootFieldKind: Mutation
+  description: Insert into the auth_otp_requests table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertAuthOtpRequests
+  permissions:
+    - role: admin
+      allowExecution: true
+

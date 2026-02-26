@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimProceduresObject
+  fields:
+    - name: claimId
+      type: Uuid!
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: quantity
+      type: Int32
+    - name: sequenceNumber
+      type: Int32
+    - name: tenantId
+      type: Uuid!
+    - name: totalCost
+      type: Bigdecimal
+    - name: unitCost
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertClaimProceduresObject
+    inputTypeName: InsertClaimProceduresObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_claim_procedures_object
+      fieldMapping:
+        claimId:
+          column:
+            name: claim_id
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        quantity:
+          column:
+            name: quantity
+        sequenceNumber:
+          column:
+            name: sequence_number
+        tenantId:
+          column:
+            name: tenant_id
+        totalCost:
+          column:
+            name: total_cost
+        unitCost:
+          column:
+            name: unit_cost
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimProceduresObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimId
+          - code
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - id
+          - quantity
+          - sequenceNumber
+          - tenantId
+          - totalCost
+          - unitCost
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimProceduresResponse
+  description: Responses from the 'insert_claim_procedures' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimProcedures!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimProceduresResponse
+    inputTypeName: InsertClaimProceduresResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_claim_procedures_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimProceduresResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimProcedures
+  outputType: InsertClaimProceduresResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimProceduresObject!]!"
+    - name: postCheck
+      type: ClaimProceduresBoolExp
+      description: Insert permission predicate over the 'claim_procedures' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_claim_procedures
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimProcedures
+    rootFieldKind: Mutation
+  description: Insert into the claim_procedures table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimProcedures
+  permissions:
+    - role: admin
+      allowExecution: true
+

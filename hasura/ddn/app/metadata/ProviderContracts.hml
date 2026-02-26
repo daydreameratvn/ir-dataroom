@@ -1,0 +1,353 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ProviderContracts
+  fields:
+    - name: autoRenewal
+      type: Boolean_1!
+    - name: contractNumber
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: discountRate
+      type: Bigdecimal
+    - name: effectiveDate
+      type: Timestamptz!
+    - name: expiryDate
+      type: Timestamptz!
+    - name: feeSchedule
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: paymentTerms
+      type: String_1
+    - name: providerId
+      type: Uuid
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: terminationNoticeDays
+      type: Int32
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: ProviderContracts
+    inputTypeName: ProviderContractsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: provider_contracts
+      fieldMapping:
+        autoRenewal:
+          column:
+            name: auto_renewal
+        contractNumber:
+          column:
+            name: contract_number
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        discountRate:
+          column:
+            name: discount_rate
+        effectiveDate:
+          column:
+            name: effective_date
+        expiryDate:
+          column:
+            name: expiry_date
+        feeSchedule:
+          column:
+            name: fee_schedule
+        id:
+          column:
+            name: id
+        paymentTerms:
+          column:
+            name: payment_terms
+        providerId:
+          column:
+            name: provider_id
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        terminationNoticeDays:
+          column:
+            name: termination_notice_days
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ProviderContracts
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoRenewal
+          - contractNumber
+          - createdAt
+          - createdBy
+          - deletedAt
+          - discountRate
+          - effectiveDate
+          - expiryDate
+          - feeSchedule
+          - id
+          - paymentTerms
+          - providerId
+          - status
+          - tenantId
+          - terminationNoticeDays
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ProviderContractsAggExp
+  operand:
+    object:
+      aggregatedType: ProviderContracts
+      aggregatableFields:
+        - fieldName: autoRenewal
+          aggregateExpression: BoolAggExp
+        - fieldName: contractNumber
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: discountRate
+          aggregateExpression: NumericAggExp
+        - fieldName: effectiveDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: expiryDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: feeSchedule
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: paymentTerms
+          aggregateExpression: TextAggExp
+        - fieldName: providerId
+          aggregateExpression: UuidAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: terminationNoticeDays
+          aggregateExpression: Int4AggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ProviderContractsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ProviderContracts
+  objectType: ProviderContracts
+  source:
+    dataConnectorName: banyan_pg
+    collection: provider_contracts
+  filterExpressionType: ProviderContractsBoolExp
+  aggregateExpression: ProviderContractsAggExp
+  orderByExpression: ProviderContractsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: providerContracts
+      subscription:
+        rootField: providerContracts
+    selectUniques:
+      - queryRootField: providerContractsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: providerContractsById
+    filterInputTypeName: ProviderContractsFilterInput
+    aggregate:
+      queryRootField: providerContractsAggregate
+      subscription:
+        rootField: providerContractsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ProviderContracts
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: provider
+  sourceType: ProviderContracts
+  target:
+    model:
+      name: Providers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: providerId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: ProviderContracts
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProviderContractsBoolExp
+  operand:
+    object:
+      type: ProviderContracts
+      comparableFields:
+        - fieldName: autoRenewal
+          booleanExpressionType: BoolBoolExp
+        - fieldName: contractNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: discountRate
+          booleanExpressionType: NumericBoolExp
+        - fieldName: effectiveDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: expiryDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: feeSchedule
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paymentTerms
+          booleanExpressionType: TextBoolExp
+        - fieldName: providerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: terminationNoticeDays
+          booleanExpressionType: Int4BoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: provider
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProviderContractsBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ProviderContractsOrderByExp
+  operand:
+    object:
+      orderedType: ProviderContracts
+      orderableFields:
+        - fieldName: autoRenewal
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: contractNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: discountRate
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: effectiveDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: expiryDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: feeSchedule
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: paymentTerms
+          orderByExpression: String1OrderByExp
+        - fieldName: providerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: terminationNoticeDays
+          orderByExpression: Int32OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: provider
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: ProviderContractsOrderByExp
+

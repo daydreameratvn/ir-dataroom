@@ -1,0 +1,195 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuthProviders
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: AuthProviders
+    inputTypeName: AuthProvidersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: auth_providers
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuthProviders
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AuthProvidersAggExp
+  operand:
+    object:
+      aggregatedType: AuthProviders
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AuthProvidersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AuthProvidersOrderByExp
+  operand:
+    object:
+      orderedType: AuthProviders
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: AuthProvidersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AuthProviders
+  objectType: AuthProviders
+  source:
+    dataConnectorName: banyan_pg
+    collection: auth_providers
+  filterExpressionType: AuthProvidersBoolExp
+  aggregateExpression: AuthProvidersAggExp
+  orderByExpression: AuthProvidersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: authProviders
+      subscription:
+        rootField: authProviders
+    selectUniques:
+      - queryRootField: authProvidersByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: authProvidersByValue
+    filterInputTypeName: AuthProvidersFilterInput
+    aggregate:
+      queryRootField: authProvidersAggregate
+      subscription:
+        rootField: authProvidersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuthProviders
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authIdentities
+  sourceType: AuthProviders
+  target:
+    model:
+      name: AuthIdentities
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuthIdentitiesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: provider
+  graphql:
+    aggregateFieldName: authIdentitiesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authLoginAttempts
+  sourceType: AuthProviders
+  target:
+    model:
+      name: AuthLoginAttempts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuthLoginAttemptsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: provider
+  graphql:
+    aggregateFieldName: authLoginAttemptsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authOtpRequests
+  sourceType: AuthProviders
+  target:
+    model:
+      name: AuthOtpRequests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuthOtpRequestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: provider
+  graphql:
+    aggregateFieldName: authOtpRequestsAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AuthProvidersBoolExp
+  operand:
+    object:
+      type: AuthProviders
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: authIdentities
+        - relationshipName: authLoginAttempts
+        - relationshipName: authOtpRequests
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AuthProvidersBoolExp
+

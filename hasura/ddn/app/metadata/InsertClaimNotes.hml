@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimNotesObject
+  fields:
+    - name: agentName
+      type: String_1
+    - name: authorId
+      type: Uuid
+    - name: claimId
+      type: Uuid!
+    - name: content
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: noteType
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: visibility
+      type: String_1
+  graphql:
+    typeName: InsertClaimNotesObject
+    inputTypeName: InsertClaimNotesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_claim_notes_object
+      fieldMapping:
+        agentName:
+          column:
+            name: agent_name
+        authorId:
+          column:
+            name: author_id
+        claimId:
+          column:
+            name: claim_id
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        noteType:
+          column:
+            name: note_type
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        visibility:
+          column:
+            name: visibility
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimNotesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - agentName
+          - authorId
+          - claimId
+          - content
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - noteType
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - visibility
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimNotesResponse
+  description: Responses from the 'insert_claim_notes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimNotes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimNotesResponse
+    inputTypeName: InsertClaimNotesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_claim_notes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimNotesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimNotes
+  outputType: InsertClaimNotesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimNotesObject!]!"
+    - name: postCheck
+      type: ClaimNotesBoolExp
+      description: Insert permission predicate over the 'claim_notes' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_claim_notes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimNotes
+    rootFieldKind: Mutation
+  description: Insert into the claim_notes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimNotes
+  permissions:
+    - role: admin
+      allowExecution: true
+

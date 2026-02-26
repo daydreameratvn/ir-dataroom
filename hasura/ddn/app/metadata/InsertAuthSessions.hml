@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuthSessionsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: expiresAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid
+    - name: ipAddress
+      type: String_1
+    - name: revokedAt
+      type: Timestamptz
+    - name: tenantId
+      type: Uuid!
+    - name: tokenHash
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: userAgent
+      type: String_1
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: InsertAuthSessionsObject
+    inputTypeName: InsertAuthSessionsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_auth_sessions_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        expiresAt:
+          column:
+            name: expires_at
+        id:
+          column:
+            name: id
+        ipAddress:
+          column:
+            name: ip_address
+        revokedAt:
+          column:
+            name: revoked_at
+        tenantId:
+          column:
+            name: tenant_id
+        tokenHash:
+          column:
+            name: token_hash
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userAgent:
+          column:
+            name: user_agent
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuthSessionsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - expiresAt
+          - id
+          - ipAddress
+          - revokedAt
+          - tenantId
+          - tokenHash
+          - updatedAt
+          - updatedBy
+          - userAgent
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuthSessionsResponse
+  description: Responses from the 'insert_auth_sessions' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuthSessions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertAuthSessionsResponse
+    inputTypeName: InsertAuthSessionsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_auth_sessions_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuthSessionsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertAuthSessions
+  outputType: InsertAuthSessionsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertAuthSessionsObject!]!"
+    - name: postCheck
+      type: AuthSessionsBoolExp
+      description: Insert permission predicate over the 'auth_sessions' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_auth_sessions
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertAuthSessions
+    rootFieldKind: Mutation
+  description: Insert into the auth_sessions table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertAuthSessions
+  permissions:
+    - role: admin
+      allowExecution: true
+

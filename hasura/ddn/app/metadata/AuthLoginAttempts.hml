@@ -1,0 +1,325 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuthLoginAttempts
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: failureReason
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: ipAddress
+      type: String_1
+    - name: provider
+      type: String_1!
+    - name: success
+      type: Boolean_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: userAgent
+      type: String_1
+    - name: userId
+      type: Uuid
+  graphql:
+    typeName: AuthLoginAttempts
+    inputTypeName: AuthLoginAttemptsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: auth_login_attempts
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        failureReason:
+          column:
+            name: failure_reason
+        id:
+          column:
+            name: id
+        ipAddress:
+          column:
+            name: ip_address
+        provider:
+          column:
+            name: provider
+        success:
+          column:
+            name: success
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userAgent:
+          column:
+            name: user_agent
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuthLoginAttempts
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - failureReason
+          - id
+          - ipAddress
+          - provider
+          - success
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - userAgent
+          - userId
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AuthLoginAttemptsAggExp
+  operand:
+    object:
+      aggregatedType: AuthLoginAttempts
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: failureReason
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: ipAddress
+          aggregateExpression: TextAggExp
+        - fieldName: provider
+          aggregateExpression: TextAggExp
+        - fieldName: success
+          aggregateExpression: BoolAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: userAgent
+          aggregateExpression: TextAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AuthLoginAttemptsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AuthLoginAttempts
+  objectType: AuthLoginAttempts
+  source:
+    dataConnectorName: banyan_pg
+    collection: auth_login_attempts
+  filterExpressionType: AuthLoginAttemptsBoolExp
+  aggregateExpression: AuthLoginAttemptsAggExp
+  orderByExpression: AuthLoginAttemptsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: authLoginAttempts
+      subscription:
+        rootField: authLoginAttempts
+    selectUniques:
+      - queryRootField: authLoginAttemptsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: authLoginAttemptsById
+    filterInputTypeName: AuthLoginAttemptsFilterInput
+    aggregate:
+      queryRootField: authLoginAttemptsAggregate
+      subscription:
+        rootField: authLoginAttemptsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuthLoginAttempts
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authProvider
+  sourceType: AuthLoginAttempts
+  target:
+    model:
+      name: AuthProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: provider
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: AuthLoginAttempts
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: AuthLoginAttempts
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AuthLoginAttemptsBoolExp
+  operand:
+    object:
+      type: AuthLoginAttempts
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: failureReason
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: ipAddress
+          booleanExpressionType: TextBoolExp
+        - fieldName: provider
+          booleanExpressionType: TextBoolExp
+        - fieldName: success
+          booleanExpressionType: BoolBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userAgent
+          booleanExpressionType: TextBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: authProvider
+        - relationshipName: tenant
+        - relationshipName: user
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AuthLoginAttemptsBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AuthLoginAttemptsOrderByExp
+  operand:
+    object:
+      orderedType: AuthLoginAttempts
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: failureReason
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: ipAddress
+          orderByExpression: String1OrderByExp
+        - fieldName: provider
+          orderByExpression: String1OrderByExp
+        - fieldName: success
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: userAgent
+          orderByExpression: String1OrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: authProvider
+        - relationshipName: tenant
+        - relationshipName: user
+  graphql:
+    expressionTypeName: AuthLoginAttemptsOrderByExp
+

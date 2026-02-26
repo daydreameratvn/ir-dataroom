@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwaSeverities
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: FwaSeverities
+    inputTypeName: FwaSeveritiesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: fwa_severities
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwaSeverities
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwaSeveritiesAggExp
+  operand:
+    object:
+      aggregatedType: FwaSeverities
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwaSeveritiesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwaSeveritiesOrderByExp
+  operand:
+    object:
+      orderedType: FwaSeverities
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: FwaSeveritiesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwaSeverities
+  objectType: FwaSeverities
+  source:
+    dataConnectorName: banyan_pg
+    collection: fwa_severities
+  filterExpressionType: FwaSeveritiesBoolExp
+  aggregateExpression: FwaSeveritiesAggExp
+  orderByExpression: FwaSeveritiesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwaSeverities
+      subscription:
+        rootField: fwaSeverities
+    selectUniques:
+      - queryRootField: fwaSeveritiesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: fwaSeveritiesByValue
+    filterInputTypeName: FwaSeveritiesFilterInput
+    aggregate:
+      queryRootField: fwaSeveritiesAggregate
+      subscription:
+        rootField: fwaSeveritiesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwaSeverities
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaAlerts
+  sourceType: FwaSeverities
+  target:
+    model:
+      name: FwaAlerts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaAlertsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: severity
+  graphql:
+    aggregateFieldName: fwaAlertsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaRules
+  sourceType: FwaSeverities
+  target:
+    model:
+      name: FwaRules
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaRulesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: severity
+  graphql:
+    aggregateFieldName: fwaRulesAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwaSeveritiesBoolExp
+  operand:
+    object:
+      type: FwaSeverities
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: fwaAlerts
+        - relationshipName: fwaRules
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwaSeveritiesBoolExp
+

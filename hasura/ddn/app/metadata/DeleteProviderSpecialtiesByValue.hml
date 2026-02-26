@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteProviderSpecialtiesByValueResponse
+  description: Responses from the 'delete_provider_specialties_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ProviderSpecialties!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteProviderSpecialtiesByValueResponse
+    inputTypeName: DeleteProviderSpecialtiesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: delete_provider_specialties_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteProviderSpecialtiesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteProviderSpecialtiesByValue
+  outputType: DeleteProviderSpecialtiesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: ProviderSpecialtiesBoolExp
+      description: Delete permission predicate over the 'provider_specialties' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: delete_provider_specialties_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteProviderSpecialtiesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'provider_specialties' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteProviderSpecialtiesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuthLoginAttemptsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: failureReason
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: ipAddress
+      type: String_1
+    - name: provider
+      type: String_1!
+    - name: success
+      type: Boolean_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: userAgent
+      type: String_1
+    - name: userId
+      type: Uuid
+  graphql:
+    typeName: InsertAuthLoginAttemptsObject
+    inputTypeName: InsertAuthLoginAttemptsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_auth_login_attempts_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        failureReason:
+          column:
+            name: failure_reason
+        id:
+          column:
+            name: id
+        ipAddress:
+          column:
+            name: ip_address
+        provider:
+          column:
+            name: provider
+        success:
+          column:
+            name: success
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userAgent:
+          column:
+            name: user_agent
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuthLoginAttemptsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - failureReason
+          - id
+          - ipAddress
+          - provider
+          - success
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - userAgent
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuthLoginAttemptsResponse
+  description: Responses from the 'insert_auth_login_attempts' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuthLoginAttempts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertAuthLoginAttemptsResponse
+    inputTypeName: InsertAuthLoginAttemptsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_auth_login_attempts_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuthLoginAttemptsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertAuthLoginAttempts
+  outputType: InsertAuthLoginAttemptsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertAuthLoginAttemptsObject!]!"
+    - name: postCheck
+      type: AuthLoginAttemptsBoolExp
+      description: Insert permission predicate over the 'auth_login_attempts' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_auth_login_attempts
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertAuthLoginAttempts
+    rootFieldKind: Mutation
+  description: Insert into the auth_login_attempts table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertAuthLoginAttempts
+  permissions:
+    - role: admin
+      allowExecution: true
+

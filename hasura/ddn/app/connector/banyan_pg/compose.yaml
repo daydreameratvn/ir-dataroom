@@ -1,0 +1,14 @@
+services:
+  app_banyan_pg:
+    build:
+      context: .
+      dockerfile: .hasura-connector/Dockerfile.banyan_pg
+    environment:
+      CONNECTION_URI: $APP_BANYAN_PG_CONNECTION_URI
+      HASURA_SERVICE_TOKEN_SECRET: $APP_BANYAN_PG_HASURA_SERVICE_TOKEN_SECRET
+      OTEL_EXPORTER_OTLP_ENDPOINT: $APP_BANYAN_PG_OTEL_EXPORTER_OTLP_ENDPOINT
+      OTEL_SERVICE_NAME: $APP_BANYAN_PG_OTEL_SERVICE_NAME
+    extra_hosts:
+      - local.hasura.dev:host-gateway
+    ports:
+      - 7892:8080

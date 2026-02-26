@@ -1,0 +1,204 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertEndorsementsObject
+  fields:
+    - name: approvedBy
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: effectiveDate
+      type: Timestamptz
+    - name: endorsementNumber
+      type: String_1!
+    - name: endorsementType
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: policyId
+      type: Uuid
+    - name: premiumAdjustment
+      type: Bigdecimal
+    - name: rejectionReason
+      type: String_1
+    - name: requestedBy
+      type: Uuid
+    - name: status
+      type: String_1
+    - name: sumInsuredAdjustment
+      type: Bigdecimal
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertEndorsementsObject
+    inputTypeName: InsertEndorsementsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_endorsements_object
+      fieldMapping:
+        approvedBy:
+          column:
+            name: approved_by
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        effectiveDate:
+          column:
+            name: effective_date
+        endorsementNumber:
+          column:
+            name: endorsement_number
+        endorsementType:
+          column:
+            name: endorsement_type
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        premiumAdjustment:
+          column:
+            name: premium_adjustment
+        rejectionReason:
+          column:
+            name: rejection_reason
+        requestedBy:
+          column:
+            name: requested_by
+        status:
+          column:
+            name: status
+        sumInsuredAdjustment:
+          column:
+            name: sum_insured_adjustment
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertEndorsementsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - approvedBy
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - effectiveDate
+          - endorsementNumber
+          - endorsementType
+          - id
+          - policyId
+          - premiumAdjustment
+          - rejectionReason
+          - requestedBy
+          - status
+          - sumInsuredAdjustment
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertEndorsementsResponse
+  description: Responses from the 'insert_endorsements' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Endorsements!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertEndorsementsResponse
+    inputTypeName: InsertEndorsementsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_endorsements_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertEndorsementsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertEndorsements
+  outputType: InsertEndorsementsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertEndorsementsObject!]!"
+    - name: postCheck
+      type: EndorsementsBoolExp
+      description: Insert permission predicate over the 'endorsements' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_endorsements
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertEndorsements
+    rootFieldKind: Mutation
+  description: Insert into the endorsements table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertEndorsements
+  permissions:
+    - role: admin
+      allowExecution: true
+

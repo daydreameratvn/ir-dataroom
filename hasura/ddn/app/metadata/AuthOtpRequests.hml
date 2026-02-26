@@ -1,0 +1,317 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuthOtpRequests
+  fields:
+    - name: attempts
+      type: Int32!
+    - name: codeHash
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: destination
+      type: String_1!
+    - name: expiresAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: maxAttempts
+      type: Int32!
+    - name: provider
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: verifiedAt
+      type: Timestamptz
+  graphql:
+    typeName: AuthOtpRequests
+    inputTypeName: AuthOtpRequestsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: auth_otp_requests
+      fieldMapping:
+        attempts:
+          column:
+            name: attempts
+        codeHash:
+          column:
+            name: code_hash
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        destination:
+          column:
+            name: destination
+        expiresAt:
+          column:
+            name: expires_at
+        id:
+          column:
+            name: id
+        maxAttempts:
+          column:
+            name: max_attempts
+        provider:
+          column:
+            name: provider
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        verifiedAt:
+          column:
+            name: verified_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuthOtpRequests
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - attempts
+          - codeHash
+          - createdAt
+          - createdBy
+          - deletedAt
+          - destination
+          - expiresAt
+          - id
+          - maxAttempts
+          - provider
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - verifiedAt
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AuthOtpRequestsAggExp
+  operand:
+    object:
+      aggregatedType: AuthOtpRequests
+      aggregatableFields:
+        - fieldName: attempts
+          aggregateExpression: Int4AggExp
+        - fieldName: codeHash
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: destination
+          aggregateExpression: TextAggExp
+        - fieldName: expiresAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: maxAttempts
+          aggregateExpression: Int4AggExp
+        - fieldName: provider
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: verifiedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AuthOtpRequestsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AuthOtpRequests
+  objectType: AuthOtpRequests
+  source:
+    dataConnectorName: banyan_pg
+    collection: auth_otp_requests
+  filterExpressionType: AuthOtpRequestsBoolExp
+  aggregateExpression: AuthOtpRequestsAggExp
+  orderByExpression: AuthOtpRequestsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: authOtpRequests
+      subscription:
+        rootField: authOtpRequests
+    selectUniques:
+      - queryRootField: authOtpRequestsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: authOtpRequestsById
+    filterInputTypeName: AuthOtpRequestsFilterInput
+    aggregate:
+      queryRootField: authOtpRequestsAggregate
+      subscription:
+        rootField: authOtpRequestsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuthOtpRequests
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authProvider
+  sourceType: AuthOtpRequests
+  target:
+    model:
+      name: AuthProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: provider
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: AuthOtpRequests
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AuthOtpRequestsBoolExp
+  operand:
+    object:
+      type: AuthOtpRequests
+      comparableFields:
+        - fieldName: attempts
+          booleanExpressionType: Int4BoolExp
+        - fieldName: codeHash
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: destination
+          booleanExpressionType: TextBoolExp
+        - fieldName: expiresAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: maxAttempts
+          booleanExpressionType: Int4BoolExp
+        - fieldName: provider
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: verifiedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: authProvider
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AuthOtpRequestsBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AuthOtpRequestsOrderByExp
+  operand:
+    object:
+      orderedType: AuthOtpRequests
+      orderableFields:
+        - fieldName: attempts
+          orderByExpression: Int32OrderByExp
+        - fieldName: codeHash
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: destination
+          orderByExpression: String1OrderByExp
+        - fieldName: expiresAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: maxAttempts
+          orderByExpression: Int32OrderByExp
+        - fieldName: provider
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: verifiedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: authProvider
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: AuthOtpRequestsOrderByExp
+

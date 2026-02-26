@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteAuthProvidersByValueResponse
+  description: Responses from the 'delete_auth_providers_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuthProviders!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteAuthProvidersByValueResponse
+    inputTypeName: DeleteAuthProvidersByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: delete_auth_providers_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteAuthProvidersByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteAuthProvidersByValue
+  outputType: DeleteAuthProvidersByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: AuthProvidersBoolExp
+      description: Delete permission predicate over the 'auth_providers' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: delete_auth_providers_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteAuthProvidersByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'auth_providers' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteAuthProvidersByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

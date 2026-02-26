@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertProviderSpecialtiesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertProviderSpecialtiesObject
+    inputTypeName: InsertProviderSpecialtiesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_provider_specialties_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertProviderSpecialtiesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertProviderSpecialtiesResponse
+  description: Responses from the 'insert_provider_specialties' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ProviderSpecialties!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertProviderSpecialtiesResponse
+    inputTypeName: InsertProviderSpecialtiesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_provider_specialties_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertProviderSpecialtiesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertProviderSpecialties
+  outputType: InsertProviderSpecialtiesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertProviderSpecialtiesObject!]!"
+    - name: postCheck
+      type: ProviderSpecialtiesBoolExp
+      description: Insert permission predicate over the 'provider_specialties' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_provider_specialties
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertProviderSpecialties
+    rootFieldKind: Mutation
+  description: Insert into the provider_specialties table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertProviderSpecialties
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,376 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Products
+  fields:
+    - name: active
+      type: Boolean_1!
+    - name: code
+      type: String_1!
+    - name: coverageTermMonths
+      type: Int32
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: maxCoverageAmount
+      type: Bigdecimal
+    - name: maxPremium
+      type: Bigdecimal
+    - name: minPremium
+      type: Bigdecimal
+    - name: name
+      type: String_1!
+    - name: productLine
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: waitingPeriodDays
+      type: Int32
+  graphql:
+    typeName: Products
+    inputTypeName: ProductsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: products
+      fieldMapping:
+        active:
+          column:
+            name: active
+        code:
+          column:
+            name: code
+        coverageTermMonths:
+          column:
+            name: coverage_term_months
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        maxCoverageAmount:
+          column:
+            name: max_coverage_amount
+        maxPremium:
+          column:
+            name: max_premium
+        minPremium:
+          column:
+            name: min_premium
+        name:
+          column:
+            name: name
+        productLine:
+          column:
+            name: product_line
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        waitingPeriodDays:
+          column:
+            name: waiting_period_days
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Products
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - active
+          - code
+          - coverageTermMonths
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - id
+          - maxCoverageAmount
+          - maxPremium
+          - minPremium
+          - name
+          - productLine
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - waitingPeriodDays
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ProductsAggExp
+  operand:
+    object:
+      aggregatedType: Products
+      aggregatableFields:
+        - fieldName: active
+          aggregateExpression: BoolAggExp
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: coverageTermMonths
+          aggregateExpression: Int4AggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: maxCoverageAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: maxPremium
+          aggregateExpression: NumericAggExp
+        - fieldName: minPremium
+          aggregateExpression: NumericAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: productLine
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: waitingPeriodDays
+          aggregateExpression: Int4AggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ProductsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Products
+  objectType: Products
+  source:
+    dataConnectorName: banyan_pg
+    collection: products
+  filterExpressionType: ProductsBoolExp
+  aggregateExpression: ProductsAggExp
+  orderByExpression: ProductsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: products
+      subscription:
+        rootField: products
+    selectUniques:
+      - queryRootField: productsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: productsById
+    filterInputTypeName: ProductsFilterInput
+    aggregate:
+      queryRootField: productsAggregate
+      subscription:
+        rootField: productsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Products
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: Products
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: productId
+  graphql:
+    aggregateFieldName: policiesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: productLineByProductLine
+  sourceType: Products
+  target:
+    model:
+      name: ProductLines
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: productLine
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: Products
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProductsBoolExp
+  operand:
+    object:
+      type: Products
+      comparableFields:
+        - fieldName: active
+          booleanExpressionType: BoolBoolExp
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: coverageTermMonths
+          booleanExpressionType: Int4BoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: maxCoverageAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: maxPremium
+          booleanExpressionType: NumericBoolExp
+        - fieldName: minPremium
+          booleanExpressionType: NumericBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: productLine
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: waitingPeriodDays
+          booleanExpressionType: Int4BoolExp
+      comparableRelationships:
+        - relationshipName: policies
+        - relationshipName: productLineByProductLine
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProductsBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ProductsOrderByExp
+  operand:
+    object:
+      orderedType: Products
+      orderableFields:
+        - fieldName: active
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: coverageTermMonths
+          orderByExpression: Int32OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: maxCoverageAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: maxPremium
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: minPremium
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: productLine
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: waitingPeriodDays
+          orderByExpression: Int32OrderByExp
+      orderableRelationships:
+        - relationshipName: productLineByProductLine
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: ProductsOrderByExp
+

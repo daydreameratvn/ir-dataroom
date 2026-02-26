@@ -1,0 +1,198 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertProviderContractsObject
+  fields:
+    - name: autoRenewal
+      type: Boolean_1
+    - name: contractNumber
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: discountRate
+      type: Bigdecimal
+    - name: effectiveDate
+      type: Timestamptz!
+    - name: expiryDate
+      type: Timestamptz!
+    - name: feeSchedule
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: paymentTerms
+      type: String_1
+    - name: providerId
+      type: Uuid
+    - name: status
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: terminationNoticeDays
+      type: Int32
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertProviderContractsObject
+    inputTypeName: InsertProviderContractsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_provider_contracts_object
+      fieldMapping:
+        autoRenewal:
+          column:
+            name: auto_renewal
+        contractNumber:
+          column:
+            name: contract_number
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        discountRate:
+          column:
+            name: discount_rate
+        effectiveDate:
+          column:
+            name: effective_date
+        expiryDate:
+          column:
+            name: expiry_date
+        feeSchedule:
+          column:
+            name: fee_schedule
+        id:
+          column:
+            name: id
+        paymentTerms:
+          column:
+            name: payment_terms
+        providerId:
+          column:
+            name: provider_id
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        terminationNoticeDays:
+          column:
+            name: termination_notice_days
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertProviderContractsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoRenewal
+          - contractNumber
+          - createdAt
+          - createdBy
+          - deletedAt
+          - discountRate
+          - effectiveDate
+          - expiryDate
+          - feeSchedule
+          - id
+          - paymentTerms
+          - providerId
+          - status
+          - tenantId
+          - terminationNoticeDays
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertProviderContractsResponse
+  description: Responses from the 'insert_provider_contracts' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ProviderContracts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertProviderContractsResponse
+    inputTypeName: InsertProviderContractsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_provider_contracts_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertProviderContractsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertProviderContracts
+  outputType: InsertProviderContractsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertProviderContractsObject!]!"
+    - name: postCheck
+      type: ProviderContractsBoolExp
+      description: Insert permission predicate over the 'provider_contracts' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_provider_contracts
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertProviderContracts
+    rootFieldKind: Mutation
+  description: Insert into the provider_contracts table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertProviderContracts
+  permissions:
+    - role: admin
+      allowExecution: true
+

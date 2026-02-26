@@ -1,0 +1,117 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SchemaMigrations
+  fields:
+    - name: version
+      type: String_1!
+  graphql:
+    typeName: SchemaMigrations
+    inputTypeName: SchemaMigrationsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: schema_migrations
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SchemaMigrations
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - version
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SchemaMigrationsBoolExp
+  operand:
+    object:
+      type: SchemaMigrations
+      comparableFields:
+        - fieldName: version
+          booleanExpressionType: VarcharBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SchemaMigrationsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SchemaMigrationsAggExp
+  operand:
+    object:
+      aggregatedType: SchemaMigrations
+      aggregatableFields:
+        - fieldName: version
+          aggregateExpression: VarcharAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SchemaMigrationsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SchemaMigrationsOrderByExp
+  operand:
+    object:
+      orderedType: SchemaMigrations
+      orderableFields:
+        - fieldName: version
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: SchemaMigrationsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SchemaMigrations
+  objectType: SchemaMigrations
+  source:
+    dataConnectorName: banyan_pg
+    collection: schema_migrations
+  filterExpressionType: SchemaMigrationsBoolExp
+  aggregateExpression: SchemaMigrationsAggExp
+  orderByExpression: SchemaMigrationsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: schemaMigrations
+      subscription:
+        rootField: schemaMigrations
+    selectUniques:
+      - queryRootField: schemaMigrationsByVersion
+        uniqueIdentifier:
+          - version
+        subscription:
+          rootField: schemaMigrationsByVersion
+    filterInputTypeName: SchemaMigrationsFilterInput
+    aggregate:
+      queryRootField: schemaMigrationsAggregate
+      subscription:
+        rootField: schemaMigrationsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SchemaMigrations
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

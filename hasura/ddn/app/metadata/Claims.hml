@@ -1,0 +1,711 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Claims
+  fields:
+    - name: adjudicatedAt
+      type: Timestamptz
+    - name: adjudicatedBy
+      type: Uuid
+    - name: aiRecommendation
+      type: String_1
+    - name: aiScore
+      type: Bigdecimal
+    - name: aiSummary
+      type: String_1
+    - name: amountApproved
+      type: Bigdecimal
+    - name: amountClaimed
+      type: Bigdecimal!
+    - name: amountPaid
+      type: Bigdecimal
+    - name: assignedTo
+      type: Uuid
+    - name: claimNumber
+      type: String_1!
+    - name: claimantName
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: currency
+      type: String_1!
+    - name: dateOfLoss
+      type: Timestamptz
+    - name: dateOfService
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: denialReason
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: policyId
+      type: Uuid
+    - name: providerId
+      type: Uuid
+    - name: providerName
+      type: String_1
+    - name: status
+      type: String_1
+    - name: submittedBy
+      type: Uuid
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: Claims
+    inputTypeName: ClaimsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: claims
+      fieldMapping:
+        adjudicatedAt:
+          column:
+            name: adjudicated_at
+        adjudicatedBy:
+          column:
+            name: adjudicated_by
+        aiRecommendation:
+          column:
+            name: ai_recommendation
+        aiScore:
+          column:
+            name: ai_score
+        aiSummary:
+          column:
+            name: ai_summary
+        amountApproved:
+          column:
+            name: amount_approved
+        amountClaimed:
+          column:
+            name: amount_claimed
+        amountPaid:
+          column:
+            name: amount_paid
+        assignedTo:
+          column:
+            name: assigned_to
+        claimNumber:
+          column:
+            name: claim_number
+        claimantName:
+          column:
+            name: claimant_name
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        currency:
+          column:
+            name: currency
+        dateOfLoss:
+          column:
+            name: date_of_loss
+        dateOfService:
+          column:
+            name: date_of_service
+        deletedAt:
+          column:
+            name: deleted_at
+        denialReason:
+          column:
+            name: denial_reason
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        providerId:
+          column:
+            name: provider_id
+        providerName:
+          column:
+            name: provider_name
+        status:
+          column:
+            name: status
+        submittedBy:
+          column:
+            name: submitted_by
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Claims
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - adjudicatedAt
+          - adjudicatedBy
+          - aiRecommendation
+          - aiScore
+          - aiSummary
+          - amountApproved
+          - amountClaimed
+          - amountPaid
+          - assignedTo
+          - claimNumber
+          - claimantName
+          - createdAt
+          - createdBy
+          - currency
+          - dateOfLoss
+          - dateOfService
+          - deletedAt
+          - denialReason
+          - id
+          - policyId
+          - providerId
+          - providerName
+          - status
+          - submittedBy
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimsAggExp
+  operand:
+    object:
+      aggregatedType: Claims
+      aggregatableFields:
+        - fieldName: adjudicatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: adjudicatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: aiRecommendation
+          aggregateExpression: TextAggExp
+        - fieldName: aiScore
+          aggregateExpression: NumericAggExp
+        - fieldName: aiSummary
+          aggregateExpression: TextAggExp
+        - fieldName: amountApproved
+          aggregateExpression: NumericAggExp
+        - fieldName: amountClaimed
+          aggregateExpression: NumericAggExp
+        - fieldName: amountPaid
+          aggregateExpression: NumericAggExp
+        - fieldName: assignedTo
+          aggregateExpression: UuidAggExp
+        - fieldName: claimNumber
+          aggregateExpression: TextAggExp
+        - fieldName: claimantName
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: currency
+          aggregateExpression: TextAggExp
+        - fieldName: dateOfLoss
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: dateOfService
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: denialReason
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: providerId
+          aggregateExpression: UuidAggExp
+        - fieldName: providerName
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: submittedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Claims
+  objectType: Claims
+  source:
+    dataConnectorName: banyan_pg
+    collection: claims
+  filterExpressionType: ClaimsBoolExp
+  aggregateExpression: ClaimsAggExp
+  orderByExpression: ClaimsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claims
+      subscription:
+        rootField: claims
+    selectUniques:
+      - queryRootField: claimsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimsById
+    filterInputTypeName: ClaimsFilterInput
+    aggregate:
+      queryRootField: claimsAggregate
+      subscription:
+        rootField: claimsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Claims
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: agentSessions
+  sourceType: Claims
+  target:
+    model:
+      name: AgentSessions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AgentSessionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claimId
+  graphql:
+    aggregateFieldName: agentSessionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDiagnoses
+  sourceType: Claims
+  target:
+    model:
+      name: ClaimDiagnoses
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimDiagnosesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claimId
+  graphql:
+    aggregateFieldName: claimDiagnosesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocuments
+  sourceType: Claims
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claimId
+  graphql:
+    aggregateFieldName: claimDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimNotes
+  sourceType: Claims
+  target:
+    model:
+      name: ClaimNotes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimNotesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claimId
+  graphql:
+    aggregateFieldName: claimNotesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimProcedures
+  sourceType: Claims
+  target:
+    model:
+      name: ClaimProcedures
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimProceduresAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claimId
+  graphql:
+    aggregateFieldName: claimProceduresAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: Claims
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: adjudicatedBy
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: userByAssignedTo
+  sourceType: Claims
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: assignedTo
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: Claims
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: provider
+  sourceType: Claims
+  target:
+    model:
+      name: Providers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: providerId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimStatus
+  sourceType: Claims
+  target:
+    model:
+      name: ClaimStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: userBySubmittedBy
+  sourceType: Claims
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: submittedBy
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: Claims
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimsOrderByExp
+  operand:
+    object:
+      orderedType: Claims
+      orderableFields:
+        - fieldName: adjudicatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: adjudicatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: aiRecommendation
+          orderByExpression: String1OrderByExp
+        - fieldName: aiScore
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: aiSummary
+          orderByExpression: String1OrderByExp
+        - fieldName: amountApproved
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: amountClaimed
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: amountPaid
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: assignedTo
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: claimantName
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: currency
+          orderByExpression: String1OrderByExp
+        - fieldName: dateOfLoss
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: dateOfService
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: denialReason
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: providerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: providerName
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: submittedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: user
+        - relationshipName: userByAssignedTo
+        - relationshipName: policy
+        - relationshipName: provider
+        - relationshipName: claimStatus
+        - relationshipName: userBySubmittedBy
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: ClaimsOrderByExp
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaAlerts
+  sourceType: Claims
+  target:
+    model:
+      name: FwaAlerts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaAlertsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claimId
+  graphql:
+    aggregateFieldName: fwaAlertsAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimsBoolExp
+  operand:
+    object:
+      type: Claims
+      comparableFields:
+        - fieldName: adjudicatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: adjudicatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: aiRecommendation
+          booleanExpressionType: TextBoolExp
+        - fieldName: aiScore
+          booleanExpressionType: NumericBoolExp
+        - fieldName: aiSummary
+          booleanExpressionType: TextBoolExp
+        - fieldName: amountApproved
+          booleanExpressionType: NumericBoolExp
+        - fieldName: amountClaimed
+          booleanExpressionType: NumericBoolExp
+        - fieldName: amountPaid
+          booleanExpressionType: NumericBoolExp
+        - fieldName: assignedTo
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: claimantName
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: currency
+          booleanExpressionType: TextBoolExp
+        - fieldName: dateOfLoss
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: dateOfService
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: denialReason
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: providerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: providerName
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: submittedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: agentSessions
+        - relationshipName: claimDiagnoses
+        - relationshipName: claimDocuments
+        - relationshipName: claimNotes
+        - relationshipName: claimProcedures
+        - relationshipName: user
+        - relationshipName: userByAssignedTo
+        - relationshipName: policy
+        - relationshipName: provider
+        - relationshipName: claimStatus
+        - relationshipName: userBySubmittedBy
+        - relationshipName: tenant
+        - relationshipName: fwaAlerts
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimsBoolExp
+

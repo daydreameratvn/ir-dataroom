@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteSchemaMigrationsByVersionResponse
+  description: Responses from the 'delete_schema_migrations_by_version' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SchemaMigrations!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteSchemaMigrationsByVersionResponse
+    inputTypeName: DeleteSchemaMigrationsByVersionResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: delete_schema_migrations_by_version_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteSchemaMigrationsByVersionResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteSchemaMigrationsByVersion
+  outputType: DeleteSchemaMigrationsByVersionResponse!
+  arguments:
+    - name: keyVersion
+      type: String_1!
+    - name: preCheck
+      type: SchemaMigrationsBoolExp
+      description: Delete permission predicate over the 'schema_migrations' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: delete_schema_migrations_by_version
+    argumentMapping:
+      keyVersion: key_version
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteSchemaMigrationsByVersion
+    rootFieldKind: Mutation
+  description: Delete any row on the 'schema_migrations' collection using the 'version' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteSchemaMigrationsByVersion
+  permissions:
+    - role: admin
+      allowExecution: true
+

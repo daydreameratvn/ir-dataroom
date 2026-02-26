@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnProductLinesComment
+  description: Update the 'comment' column in the 'product_lines' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnProductLinesComment
+    inputTypeName: UpdateColumnProductLinesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_column_product_lines_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnProductLinesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnProductLinesValue
+  description: Update the 'value' column in the 'product_lines' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnProductLinesValue
+    inputTypeName: UpdateColumnProductLinesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_column_product_lines_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnProductLinesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateProductLinesByValueUpdateColumns
+  description: Update the columns of the 'product_lines' collection
+  fields:
+    - name: comment
+      type: UpdateColumnProductLinesComment
+      description: Update the 'comment' column in the 'product_lines' collection.
+    - name: value
+      type: UpdateColumnProductLinesValue
+      description: Update the 'value' column in the 'product_lines' collection.
+  graphql:
+    typeName: UpdateProductLinesByValueUpdateColumns
+    inputTypeName: UpdateProductLinesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_product_lines_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateProductLinesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateProductLinesByValueResponse
+  description: Responses from the 'update_product_lines_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ProductLines!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateProductLinesByValueResponse
+    inputTypeName: UpdateProductLinesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_product_lines_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateProductLinesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateProductLinesByValue
+  outputType: UpdateProductLinesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: ProductLinesBoolExp
+      description: Update permission post-condition predicate over the 'product_lines'
+        collection
+    - name: preCheck
+      type: ProductLinesBoolExp
+      description: Update permission pre-condition predicate over the 'product_lines'
+        collection
+    - name: updateColumns
+      type: UpdateProductLinesByValueUpdateColumns!
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: update_product_lines_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateProductLinesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'product_lines' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateProductLinesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwaSeveritiesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertFwaSeveritiesObject
+    inputTypeName: InsertFwaSeveritiesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_fwa_severities_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwaSeveritiesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwaSeveritiesResponse
+  description: Responses from the 'insert_fwa_severities' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwaSeverities!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwaSeveritiesResponse
+    inputTypeName: InsertFwaSeveritiesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_fwa_severities_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwaSeveritiesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwaSeverities
+  outputType: InsertFwaSeveritiesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwaSeveritiesObject!]!"
+    - name: postCheck
+      type: FwaSeveritiesBoolExp
+      description: Insert permission predicate over the 'fwa_severities' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_fwa_severities
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwaSeverities
+    rootFieldKind: Mutation
+  description: Insert into the fwa_severities table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwaSeverities
+  permissions:
+    - role: admin
+      allowExecution: true
+

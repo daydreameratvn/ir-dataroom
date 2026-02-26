@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPolicyStatusesComment
+  description: Update the 'comment' column in the 'policy_statuses' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPolicyStatusesComment
+    inputTypeName: UpdateColumnPolicyStatusesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_column_policy_statuses_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPolicyStatusesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPolicyStatusesValue
+  description: Update the 'value' column in the 'policy_statuses' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPolicyStatusesValue
+    inputTypeName: UpdateColumnPolicyStatusesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_column_policy_statuses_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPolicyStatusesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePolicyStatusesByValueUpdateColumns
+  description: Update the columns of the 'policy_statuses' collection
+  fields:
+    - name: comment
+      type: UpdateColumnPolicyStatusesComment
+      description: Update the 'comment' column in the 'policy_statuses' collection.
+    - name: value
+      type: UpdateColumnPolicyStatusesValue
+      description: Update the 'value' column in the 'policy_statuses' collection.
+  graphql:
+    typeName: UpdatePolicyStatusesByValueUpdateColumns
+    inputTypeName: UpdatePolicyStatusesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_policy_statuses_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePolicyStatusesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePolicyStatusesByValueResponse
+  description: Responses from the 'update_policy_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePolicyStatusesByValueResponse
+    inputTypeName: UpdatePolicyStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_policy_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePolicyStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePolicyStatusesByValue
+  outputType: UpdatePolicyStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: PolicyStatusesBoolExp
+      description: Update permission post-condition predicate over the
+        'policy_statuses' collection
+    - name: preCheck
+      type: PolicyStatusesBoolExp
+      description: Update permission pre-condition predicate over the
+        'policy_statuses' collection
+    - name: updateColumns
+      type: UpdatePolicyStatusesByValueUpdateColumns!
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: update_policy_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePolicyStatusesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'policy_statuses' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePolicyStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

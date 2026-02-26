@@ -1,0 +1,156 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuthIdentitiesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: provider
+      type: String_1!
+    - name: providerUserId
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: InsertAuthIdentitiesObject
+    inputTypeName: InsertAuthIdentitiesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_auth_identities_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        provider:
+          column:
+            name: provider
+        providerUserId:
+          column:
+            name: provider_user_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuthIdentitiesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - provider
+          - providerUserId
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuthIdentitiesResponse
+  description: Responses from the 'insert_auth_identities' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuthIdentities!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertAuthIdentitiesResponse
+    inputTypeName: InsertAuthIdentitiesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_auth_identities_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuthIdentitiesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertAuthIdentities
+  outputType: InsertAuthIdentitiesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertAuthIdentitiesObject!]!"
+    - name: postCheck
+      type: AuthIdentitiesBoolExp
+      description: Insert permission predicate over the 'auth_identities' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_auth_identities
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertAuthIdentities
+    rootFieldKind: Mutation
+  description: Insert into the auth_identities table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertAuthIdentities
+  permissions:
+    - role: admin
+      allowExecution: true
+

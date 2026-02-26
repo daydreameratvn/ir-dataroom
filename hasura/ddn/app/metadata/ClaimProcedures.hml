@@ -1,0 +1,317 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimProcedures
+  fields:
+    - name: claimId
+      type: Uuid!
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: quantity
+      type: Int32!
+    - name: sequenceNumber
+      type: Int32!
+    - name: tenantId
+      type: Uuid!
+    - name: totalCost
+      type: Bigdecimal
+    - name: unitCost
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: ClaimProcedures
+    inputTypeName: ClaimProceduresInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: claim_procedures
+      fieldMapping:
+        claimId:
+          column:
+            name: claim_id
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        quantity:
+          column:
+            name: quantity
+        sequenceNumber:
+          column:
+            name: sequence_number
+        tenantId:
+          column:
+            name: tenant_id
+        totalCost:
+          column:
+            name: total_cost
+        unitCost:
+          column:
+            name: unit_cost
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimProcedures
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimId
+          - code
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - id
+          - quantity
+          - sequenceNumber
+          - tenantId
+          - totalCost
+          - unitCost
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimProceduresAggExp
+  operand:
+    object:
+      aggregatedType: ClaimProcedures
+      aggregatableFields:
+        - fieldName: claimId
+          aggregateExpression: UuidAggExp
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: quantity
+          aggregateExpression: Int4AggExp
+        - fieldName: sequenceNumber
+          aggregateExpression: Int4AggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: totalCost
+          aggregateExpression: NumericAggExp
+        - fieldName: unitCost
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimProceduresAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimProcedures
+  objectType: ClaimProcedures
+  source:
+    dataConnectorName: banyan_pg
+    collection: claim_procedures
+  filterExpressionType: ClaimProceduresBoolExp
+  aggregateExpression: ClaimProceduresAggExp
+  orderByExpression: ClaimProceduresOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimProcedures
+      subscription:
+        rootField: claimProcedures
+    selectUniques:
+      - queryRootField: claimProceduresById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimProceduresById
+    filterInputTypeName: ClaimProceduresFilterInput
+    aggregate:
+      queryRootField: claimProceduresAggregate
+      subscription:
+        rootField: claimProceduresAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimProcedures
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claim
+  sourceType: ClaimProcedures
+  target:
+    model:
+      name: Claims
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: ClaimProcedures
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimProceduresBoolExp
+  operand:
+    object:
+      type: ClaimProcedures
+      comparableFields:
+        - fieldName: claimId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: quantity
+          booleanExpressionType: Int4BoolExp
+        - fieldName: sequenceNumber
+          booleanExpressionType: Int4BoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: totalCost
+          booleanExpressionType: NumericBoolExp
+        - fieldName: unitCost
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claim
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimProceduresBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimProceduresOrderByExp
+  operand:
+    object:
+      orderedType: ClaimProcedures
+      orderableFields:
+        - fieldName: claimId
+          orderByExpression: UuidOrderByExp
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: quantity
+          orderByExpression: Int32OrderByExp
+        - fieldName: sequenceNumber
+          orderByExpression: Int32OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: totalCost
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: unitCost
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claim
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: ClaimProceduresOrderByExp
+

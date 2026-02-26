@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteAgentActionsByIdResponse
+  description: Responses from the 'delete_agent_actions_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AgentActions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteAgentActionsByIdResponse
+    inputTypeName: DeleteAgentActionsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: delete_agent_actions_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteAgentActionsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteAgentActionsById
+  outputType: DeleteAgentActionsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: AgentActionsBoolExp
+      description: Delete permission predicate over the 'agent_actions' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: delete_agent_actions_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteAgentActionsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'agent_actions' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteAgentActionsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

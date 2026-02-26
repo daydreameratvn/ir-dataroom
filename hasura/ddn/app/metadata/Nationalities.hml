@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Nationalities
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: Nationalities
+    inputTypeName: NationalitiesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: nationalities
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Nationalities
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: NationalitiesAggExp
+  operand:
+    object:
+      aggregatedType: Nationalities
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: NationalitiesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: NationalitiesOrderByExp
+  operand:
+    object:
+      orderedType: Nationalities
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: NationalitiesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Nationalities
+  objectType: Nationalities
+  source:
+    dataConnectorName: banyan_pg
+    collection: nationalities
+  filterExpressionType: NationalitiesBoolExp
+  aggregateExpression: NationalitiesAggExp
+  orderByExpression: NationalitiesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: nationalities
+      subscription:
+        rootField: nationalities
+    selectUniques:
+      - queryRootField: nationalitiesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: nationalitiesByValue
+    filterInputTypeName: NationalitiesFilterInput
+    aggregate:
+      queryRootField: nationalitiesAggregate
+      subscription:
+        rootField: nationalitiesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Nationalities
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: providers
+  sourceType: Nationalities
+  target:
+    model:
+      name: Providers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ProvidersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: country
+  graphql:
+    aggregateFieldName: providersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenants
+  sourceType: Nationalities
+  target:
+    model:
+      name: Tenants
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: TenantsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: national
+  graphql:
+    aggregateFieldName: tenantsAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NationalitiesBoolExp
+  operand:
+    object:
+      type: Nationalities
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: providers
+        - relationshipName: tenants
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NationalitiesBoolExp
+

@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuthPasskeysObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: credentialId
+      type: String_1!
+    - name: deletedAt
+      type: Timestamptz
+    - name: deviceName
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: lastUsedAt
+      type: Timestamptz
+    - name: publicKey
+      type: String_1!
+    - name: signCount
+      type: Int32
+    - name: tenantId
+      type: Uuid!
+    - name: transports
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: InsertAuthPasskeysObject
+    inputTypeName: InsertAuthPasskeysObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_auth_passkeys_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        credentialId:
+          column:
+            name: credential_id
+        deletedAt:
+          column:
+            name: deleted_at
+        deviceName:
+          column:
+            name: device_name
+        id:
+          column:
+            name: id
+        lastUsedAt:
+          column:
+            name: last_used_at
+        publicKey:
+          column:
+            name: public_key
+        signCount:
+          column:
+            name: sign_count
+        tenantId:
+          column:
+            name: tenant_id
+        transports:
+          column:
+            name: transports
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuthPasskeysObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - credentialId
+          - deletedAt
+          - deviceName
+          - id
+          - lastUsedAt
+          - publicKey
+          - signCount
+          - tenantId
+          - transports
+          - updatedAt
+          - updatedBy
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuthPasskeysResponse
+  description: Responses from the 'insert_auth_passkeys' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuthPasskeys!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertAuthPasskeysResponse
+    inputTypeName: InsertAuthPasskeysResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_auth_passkeys_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuthPasskeysResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertAuthPasskeys
+  outputType: InsertAuthPasskeysResponse!
+  arguments:
+    - name: objects
+      type: "[InsertAuthPasskeysObject!]!"
+    - name: postCheck
+      type: AuthPasskeysBoolExp
+      description: Insert permission predicate over the 'auth_passkeys' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_auth_passkeys
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertAuthPasskeys
+    rootFieldKind: Mutation
+  description: Insert into the auth_passkeys table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertAuthPasskeys
+  permissions:
+    - role: admin
+      allowExecution: true
+

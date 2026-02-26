@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteEndorsementsByIdResponse
+  description: Responses from the 'delete_endorsements_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Endorsements!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteEndorsementsByIdResponse
+    inputTypeName: DeleteEndorsementsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: delete_endorsements_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteEndorsementsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteEndorsementsById
+  outputType: DeleteEndorsementsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: EndorsementsBoolExp
+      description: Delete permission predicate over the 'endorsements' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: delete_endorsements_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteEndorsementsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'endorsements' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteEndorsementsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

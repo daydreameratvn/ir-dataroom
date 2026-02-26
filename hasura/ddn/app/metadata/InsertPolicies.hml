@@ -1,0 +1,252 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPoliciesObject
+  fields:
+    - name: copayPercentage
+      type: Bigdecimal
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: currency
+      type: String_1
+    - name: deductible
+      type: Bigdecimal
+    - name: deletedAt
+      type: Timestamptz
+    - name: effectiveDate
+      type: Timestamptz!
+    - name: expiryDate
+      type: Timestamptz!
+    - name: id
+      type: Uuid
+    - name: insuredAddress
+      type: String_1
+    - name: insuredDateOfBirth
+      type: Timestamptz
+    - name: insuredEmail
+      type: String_1
+    - name: insuredIdNumber
+      type: String_1
+    - name: insuredName
+      type: String_1!
+    - name: insuredPhone
+      type: String_1
+    - name: issuedBy
+      type: Uuid
+    - name: notes
+      type: String_1
+    - name: policyNumber
+      type: String_1!
+    - name: premium
+      type: Bigdecimal
+    - name: productId
+      type: Uuid
+    - name: renewalOf
+      type: Uuid
+    - name: status
+      type: String_1
+    - name: sumInsured
+      type: Bigdecimal
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertPoliciesObject
+    inputTypeName: InsertPoliciesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_policies_object
+      fieldMapping:
+        copayPercentage:
+          column:
+            name: copay_percentage
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        currency:
+          column:
+            name: currency
+        deductible:
+          column:
+            name: deductible
+        deletedAt:
+          column:
+            name: deleted_at
+        effectiveDate:
+          column:
+            name: effective_date
+        expiryDate:
+          column:
+            name: expiry_date
+        id:
+          column:
+            name: id
+        insuredAddress:
+          column:
+            name: insured_address
+        insuredDateOfBirth:
+          column:
+            name: insured_date_of_birth
+        insuredEmail:
+          column:
+            name: insured_email
+        insuredIdNumber:
+          column:
+            name: insured_id_number
+        insuredName:
+          column:
+            name: insured_name
+        insuredPhone:
+          column:
+            name: insured_phone
+        issuedBy:
+          column:
+            name: issued_by
+        notes:
+          column:
+            name: notes
+        policyNumber:
+          column:
+            name: policy_number
+        premium:
+          column:
+            name: premium
+        productId:
+          column:
+            name: product_id
+        renewalOf:
+          column:
+            name: renewal_of
+        status:
+          column:
+            name: status
+        sumInsured:
+          column:
+            name: sum_insured
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPoliciesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - copayPercentage
+          - createdAt
+          - createdBy
+          - currency
+          - deductible
+          - deletedAt
+          - effectiveDate
+          - expiryDate
+          - id
+          - insuredAddress
+          - insuredDateOfBirth
+          - insuredEmail
+          - insuredIdNumber
+          - insuredName
+          - insuredPhone
+          - issuedBy
+          - notes
+          - policyNumber
+          - premium
+          - productId
+          - renewalOf
+          - status
+          - sumInsured
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPoliciesResponse
+  description: Responses from the 'insert_policies' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Policies!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPoliciesResponse
+    inputTypeName: InsertPoliciesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_policies_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPoliciesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicies
+  outputType: InsertPoliciesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPoliciesObject!]!"
+    - name: postCheck
+      type: PoliciesBoolExp
+      description: Insert permission predicate over the 'policies' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_policies
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicies
+    rootFieldKind: Mutation
+  description: Insert into the policies table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicies
+  permissions:
+    - role: admin
+      allowExecution: true
+

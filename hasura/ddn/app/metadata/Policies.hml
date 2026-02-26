@@ -1,0 +1,636 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Policies
+  fields:
+    - name: copayPercentage
+      type: Bigdecimal
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: currency
+      type: String_1!
+    - name: deductible
+      type: Bigdecimal
+    - name: deletedAt
+      type: Timestamptz
+    - name: effectiveDate
+      type: Timestamptz!
+    - name: expiryDate
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: insuredAddress
+      type: String_1
+    - name: insuredDateOfBirth
+      type: Timestamptz
+    - name: insuredEmail
+      type: String_1
+    - name: insuredIdNumber
+      type: String_1
+    - name: insuredName
+      type: String_1!
+    - name: insuredPhone
+      type: String_1
+    - name: issuedBy
+      type: Uuid
+    - name: notes
+      type: String_1
+    - name: policyNumber
+      type: String_1!
+    - name: premium
+      type: Bigdecimal!
+    - name: productId
+      type: Uuid
+    - name: renewalOf
+      type: Uuid
+    - name: status
+      type: String_1
+    - name: sumInsured
+      type: Bigdecimal!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: Policies
+    inputTypeName: PoliciesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: policies
+      fieldMapping:
+        copayPercentage:
+          column:
+            name: copay_percentage
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        currency:
+          column:
+            name: currency
+        deductible:
+          column:
+            name: deductible
+        deletedAt:
+          column:
+            name: deleted_at
+        effectiveDate:
+          column:
+            name: effective_date
+        expiryDate:
+          column:
+            name: expiry_date
+        id:
+          column:
+            name: id
+        insuredAddress:
+          column:
+            name: insured_address
+        insuredDateOfBirth:
+          column:
+            name: insured_date_of_birth
+        insuredEmail:
+          column:
+            name: insured_email
+        insuredIdNumber:
+          column:
+            name: insured_id_number
+        insuredName:
+          column:
+            name: insured_name
+        insuredPhone:
+          column:
+            name: insured_phone
+        issuedBy:
+          column:
+            name: issued_by
+        notes:
+          column:
+            name: notes
+        policyNumber:
+          column:
+            name: policy_number
+        premium:
+          column:
+            name: premium
+        productId:
+          column:
+            name: product_id
+        renewalOf:
+          column:
+            name: renewal_of
+        status:
+          column:
+            name: status
+        sumInsured:
+          column:
+            name: sum_insured
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Policies
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - copayPercentage
+          - createdAt
+          - createdBy
+          - currency
+          - deductible
+          - deletedAt
+          - effectiveDate
+          - expiryDate
+          - id
+          - insuredAddress
+          - insuredDateOfBirth
+          - insuredEmail
+          - insuredIdNumber
+          - insuredName
+          - insuredPhone
+          - issuedBy
+          - notes
+          - policyNumber
+          - premium
+          - productId
+          - renewalOf
+          - status
+          - sumInsured
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PoliciesAggExp
+  operand:
+    object:
+      aggregatedType: Policies
+      aggregatableFields:
+        - fieldName: copayPercentage
+          aggregateExpression: NumericAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: currency
+          aggregateExpression: TextAggExp
+        - fieldName: deductible
+          aggregateExpression: NumericAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: effectiveDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: expiryDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredAddress
+          aggregateExpression: TextAggExp
+        - fieldName: insuredDateOfBirth
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: insuredEmail
+          aggregateExpression: TextAggExp
+        - fieldName: insuredIdNumber
+          aggregateExpression: TextAggExp
+        - fieldName: insuredName
+          aggregateExpression: TextAggExp
+        - fieldName: insuredPhone
+          aggregateExpression: TextAggExp
+        - fieldName: issuedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: notes
+          aggregateExpression: TextAggExp
+        - fieldName: policyNumber
+          aggregateExpression: TextAggExp
+        - fieldName: premium
+          aggregateExpression: NumericAggExp
+        - fieldName: productId
+          aggregateExpression: UuidAggExp
+        - fieldName: renewalOf
+          aggregateExpression: UuidAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: sumInsured
+          aggregateExpression: NumericAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PoliciesAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Policies
+  objectType: Policies
+  source:
+    dataConnectorName: banyan_pg
+    collection: policies
+  filterExpressionType: PoliciesBoolExp
+  aggregateExpression: PoliciesAggExp
+  orderByExpression: PoliciesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policies
+      subscription:
+        rootField: policies
+    selectUniques:
+      - queryRootField: policiesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: policiesById
+    filterInputTypeName: PoliciesFilterInput
+    aggregate:
+      queryRootField: policiesAggregate
+      subscription:
+        rootField: policiesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Policies
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: agentSessions
+  sourceType: Policies
+  target:
+    model:
+      name: AgentSessions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AgentSessionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: policyId
+  graphql:
+    aggregateFieldName: agentSessionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claims
+  sourceType: Policies
+  target:
+    model:
+      name: Claims
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: policyId
+  graphql:
+    aggregateFieldName: claimsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: endorsements
+  sourceType: Policies
+  target:
+    model:
+      name: Endorsements
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: EndorsementsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: policyId
+  graphql:
+    aggregateFieldName: endorsementsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaAlerts
+  sourceType: Policies
+  target:
+    model:
+      name: FwaAlerts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaAlertsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: policyId
+  graphql:
+    aggregateFieldName: fwaAlertsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: Policies
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: issuedBy
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: product
+  sourceType: Policies
+  target:
+    model:
+      name: Products
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: productId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: Policies
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: renewalOf
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: Policies
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: renewalOf
+  graphql:
+    aggregateFieldName: policiesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyStatus
+  sourceType: Policies
+  target:
+    model:
+      name: PolicyStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: Policies
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PoliciesBoolExp
+  operand:
+    object:
+      type: Policies
+      comparableFields:
+        - fieldName: copayPercentage
+          booleanExpressionType: NumericBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: currency
+          booleanExpressionType: TextBoolExp
+        - fieldName: deductible
+          booleanExpressionType: NumericBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: effectiveDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: expiryDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredAddress
+          booleanExpressionType: TextBoolExp
+        - fieldName: insuredDateOfBirth
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: insuredEmail
+          booleanExpressionType: TextBoolExp
+        - fieldName: insuredIdNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: insuredName
+          booleanExpressionType: TextBoolExp
+        - fieldName: insuredPhone
+          booleanExpressionType: TextBoolExp
+        - fieldName: issuedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: notes
+          booleanExpressionType: TextBoolExp
+        - fieldName: policyNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: premium
+          booleanExpressionType: NumericBoolExp
+        - fieldName: productId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: renewalOf
+          booleanExpressionType: UuidBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: sumInsured
+          booleanExpressionType: NumericBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: agentSessions
+        - relationshipName: claims
+        - relationshipName: endorsements
+        - relationshipName: fwaAlerts
+        - relationshipName: user
+        - relationshipName: product
+        - relationshipName: policy
+        - relationshipName: policies
+        - relationshipName: policyStatus
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PoliciesBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PoliciesOrderByExp
+  operand:
+    object:
+      orderedType: Policies
+      orderableFields:
+        - fieldName: copayPercentage
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: currency
+          orderByExpression: String1OrderByExp
+        - fieldName: deductible
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: effectiveDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: expiryDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredAddress
+          orderByExpression: String1OrderByExp
+        - fieldName: insuredDateOfBirth
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: insuredEmail
+          orderByExpression: String1OrderByExp
+        - fieldName: insuredIdNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: insuredName
+          orderByExpression: String1OrderByExp
+        - fieldName: insuredPhone
+          orderByExpression: String1OrderByExp
+        - fieldName: issuedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: notes
+          orderByExpression: String1OrderByExp
+        - fieldName: policyNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: premium
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: productId
+          orderByExpression: UuidOrderByExp
+        - fieldName: renewalOf
+          orderByExpression: UuidOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: sumInsured
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: user
+        - relationshipName: product
+        - relationshipName: policy
+        - relationshipName: policyStatus
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: PoliciesOrderByExp
+

@@ -1,0 +1,293 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimDiagnoses
+  fields:
+    - name: claimId
+      type: Uuid!
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: isPrimary
+      type: Boolean_1!
+    - name: sequenceNumber
+      type: Int32!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: ClaimDiagnoses
+    inputTypeName: ClaimDiagnosesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: claim_diagnoses
+      fieldMapping:
+        claimId:
+          column:
+            name: claim_id
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        isPrimary:
+          column:
+            name: is_primary
+        sequenceNumber:
+          column:
+            name: sequence_number
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimDiagnoses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimId
+          - code
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - id
+          - isPrimary
+          - sequenceNumber
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimDiagnosesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimDiagnoses
+      aggregatableFields:
+        - fieldName: claimId
+          aggregateExpression: UuidAggExp
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isPrimary
+          aggregateExpression: BoolAggExp
+        - fieldName: sequenceNumber
+          aggregateExpression: Int4AggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimDiagnosesAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimDiagnoses
+  objectType: ClaimDiagnoses
+  source:
+    dataConnectorName: banyan_pg
+    collection: claim_diagnoses
+  filterExpressionType: ClaimDiagnosesBoolExp
+  aggregateExpression: ClaimDiagnosesAggExp
+  orderByExpression: ClaimDiagnosesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimDiagnoses
+      subscription:
+        rootField: claimDiagnoses
+    selectUniques:
+      - queryRootField: claimDiagnosesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimDiagnosesById
+    filterInputTypeName: ClaimDiagnosesFilterInput
+    aggregate:
+      queryRootField: claimDiagnosesAggregate
+      subscription:
+        rootField: claimDiagnosesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimDiagnoses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claim
+  sourceType: ClaimDiagnoses
+  target:
+    model:
+      name: Claims
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: ClaimDiagnoses
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimDiagnosesBoolExp
+  operand:
+    object:
+      type: ClaimDiagnoses
+      comparableFields:
+        - fieldName: claimId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isPrimary
+          booleanExpressionType: BoolBoolExp
+        - fieldName: sequenceNumber
+          booleanExpressionType: Int4BoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claim
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimDiagnosesBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimDiagnosesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimDiagnoses
+      orderableFields:
+        - fieldName: claimId
+          orderByExpression: UuidOrderByExp
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isPrimary
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: sequenceNumber
+          orderByExpression: Int32OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claim
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: ClaimDiagnosesOrderByExp
+

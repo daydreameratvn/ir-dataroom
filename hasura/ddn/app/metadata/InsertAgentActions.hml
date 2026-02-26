@@ -1,0 +1,186 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAgentActionsObject
+  fields:
+    - name: actionName
+      type: String_1!
+    - name: actionType
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: durationMs
+      type: Int32
+    - name: id
+      type: Uuid
+    - name: inputText
+      type: String_1
+    - name: outputText
+      type: String_1
+    - name: resultText
+      type: String_1
+    - name: sequenceNumber
+      type: Int32
+    - name: sessionId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertAgentActionsObject
+    inputTypeName: InsertAgentActionsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_agent_actions_object
+      fieldMapping:
+        actionName:
+          column:
+            name: action_name
+        actionType:
+          column:
+            name: action_type
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        durationMs:
+          column:
+            name: duration_ms
+        id:
+          column:
+            name: id
+        inputText:
+          column:
+            name: input_text
+        outputText:
+          column:
+            name: output_text
+        resultText:
+          column:
+            name: result_text
+        sequenceNumber:
+          column:
+            name: sequence_number
+        sessionId:
+          column:
+            name: session_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAgentActionsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actionName
+          - actionType
+          - createdAt
+          - createdBy
+          - deletedAt
+          - durationMs
+          - id
+          - inputText
+          - outputText
+          - resultText
+          - sequenceNumber
+          - sessionId
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAgentActionsResponse
+  description: Responses from the 'insert_agent_actions' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AgentActions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertAgentActionsResponse
+    inputTypeName: InsertAgentActionsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_agent_actions_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAgentActionsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertAgentActions
+  outputType: InsertAgentActionsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertAgentActionsObject!]!"
+    - name: postCheck
+      type: AgentActionsBoolExp
+      description: Insert permission predicate over the 'agent_actions' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_agent_actions
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertAgentActions
+    rootFieldKind: Mutation
+  description: Insert into the agent_actions table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertAgentActions
+  permissions:
+    - role: admin
+      allowExecution: true
+

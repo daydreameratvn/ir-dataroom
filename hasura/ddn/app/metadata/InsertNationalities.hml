@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertNationalitiesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertNationalitiesObject
+    inputTypeName: InsertNationalitiesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_nationalities_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertNationalitiesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertNationalitiesResponse
+  description: Responses from the 'insert_nationalities' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Nationalities!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertNationalitiesResponse
+    inputTypeName: InsertNationalitiesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_nationalities_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertNationalitiesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertNationalities
+  outputType: InsertNationalitiesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertNationalitiesObject!]!"
+    - name: postCheck
+      type: NationalitiesBoolExp
+      description: Insert permission predicate over the 'nationalities' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_nationalities
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertNationalities
+    rootFieldKind: Mutation
+  description: Insert into the nationalities table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertNationalities
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,258 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimsObject
+  fields:
+    - name: adjudicatedAt
+      type: Timestamptz
+    - name: adjudicatedBy
+      type: Uuid
+    - name: aiRecommendation
+      type: String_1
+    - name: aiScore
+      type: Bigdecimal
+    - name: aiSummary
+      type: String_1
+    - name: amountApproved
+      type: Bigdecimal
+    - name: amountClaimed
+      type: Bigdecimal
+    - name: amountPaid
+      type: Bigdecimal
+    - name: assignedTo
+      type: Uuid
+    - name: claimNumber
+      type: String_1!
+    - name: claimantName
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: currency
+      type: String_1
+    - name: dateOfLoss
+      type: Timestamptz
+    - name: dateOfService
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: denialReason
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: policyId
+      type: Uuid
+    - name: providerId
+      type: Uuid
+    - name: providerName
+      type: String_1
+    - name: status
+      type: String_1
+    - name: submittedBy
+      type: Uuid
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertClaimsObject
+    inputTypeName: InsertClaimsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_claims_object
+      fieldMapping:
+        adjudicatedAt:
+          column:
+            name: adjudicated_at
+        adjudicatedBy:
+          column:
+            name: adjudicated_by
+        aiRecommendation:
+          column:
+            name: ai_recommendation
+        aiScore:
+          column:
+            name: ai_score
+        aiSummary:
+          column:
+            name: ai_summary
+        amountApproved:
+          column:
+            name: amount_approved
+        amountClaimed:
+          column:
+            name: amount_claimed
+        amountPaid:
+          column:
+            name: amount_paid
+        assignedTo:
+          column:
+            name: assigned_to
+        claimNumber:
+          column:
+            name: claim_number
+        claimantName:
+          column:
+            name: claimant_name
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        currency:
+          column:
+            name: currency
+        dateOfLoss:
+          column:
+            name: date_of_loss
+        dateOfService:
+          column:
+            name: date_of_service
+        deletedAt:
+          column:
+            name: deleted_at
+        denialReason:
+          column:
+            name: denial_reason
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        providerId:
+          column:
+            name: provider_id
+        providerName:
+          column:
+            name: provider_name
+        status:
+          column:
+            name: status
+        submittedBy:
+          column:
+            name: submitted_by
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - adjudicatedAt
+          - adjudicatedBy
+          - aiRecommendation
+          - aiScore
+          - aiSummary
+          - amountApproved
+          - amountClaimed
+          - amountPaid
+          - assignedTo
+          - claimNumber
+          - claimantName
+          - createdAt
+          - createdBy
+          - currency
+          - dateOfLoss
+          - dateOfService
+          - deletedAt
+          - denialReason
+          - id
+          - policyId
+          - providerId
+          - providerName
+          - status
+          - submittedBy
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimsResponse
+  description: Responses from the 'insert_claims' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Claims!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimsResponse
+    inputTypeName: InsertClaimsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_claims_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaims
+  outputType: InsertClaimsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimsObject!]!"
+    - name: postCheck
+      type: ClaimsBoolExp
+      description: Insert permission predicate over the 'claims' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_claims
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaims
+    rootFieldKind: Mutation
+  description: Insert into the claims table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaims
+  permissions:
+    - role: admin
+      allowExecution: true
+

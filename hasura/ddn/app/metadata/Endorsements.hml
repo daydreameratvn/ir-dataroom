@@ -1,0 +1,445 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Endorsements
+  fields:
+    - name: approvedBy
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: effectiveDate
+      type: Timestamptz
+    - name: endorsementNumber
+      type: String_1!
+    - name: endorsementType
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: policyId
+      type: Uuid
+    - name: premiumAdjustment
+      type: Bigdecimal
+    - name: rejectionReason
+      type: String_1
+    - name: requestedBy
+      type: Uuid
+    - name: status
+      type: String_1
+    - name: sumInsuredAdjustment
+      type: Bigdecimal
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: Endorsements
+    inputTypeName: EndorsementsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: endorsements
+      fieldMapping:
+        approvedBy:
+          column:
+            name: approved_by
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        effectiveDate:
+          column:
+            name: effective_date
+        endorsementNumber:
+          column:
+            name: endorsement_number
+        endorsementType:
+          column:
+            name: endorsement_type
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        premiumAdjustment:
+          column:
+            name: premium_adjustment
+        rejectionReason:
+          column:
+            name: rejection_reason
+        requestedBy:
+          column:
+            name: requested_by
+        status:
+          column:
+            name: status
+        sumInsuredAdjustment:
+          column:
+            name: sum_insured_adjustment
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Endorsements
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - approvedBy
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - effectiveDate
+          - endorsementNumber
+          - endorsementType
+          - id
+          - policyId
+          - premiumAdjustment
+          - rejectionReason
+          - requestedBy
+          - status
+          - sumInsuredAdjustment
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: EndorsementsAggExp
+  operand:
+    object:
+      aggregatedType: Endorsements
+      aggregatableFields:
+        - fieldName: approvedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: effectiveDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: endorsementNumber
+          aggregateExpression: TextAggExp
+        - fieldName: endorsementType
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: premiumAdjustment
+          aggregateExpression: NumericAggExp
+        - fieldName: rejectionReason
+          aggregateExpression: TextAggExp
+        - fieldName: requestedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: sumInsuredAdjustment
+          aggregateExpression: NumericAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: EndorsementsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Endorsements
+  objectType: Endorsements
+  source:
+    dataConnectorName: banyan_pg
+    collection: endorsements
+  filterExpressionType: EndorsementsBoolExp
+  aggregateExpression: EndorsementsAggExp
+  orderByExpression: EndorsementsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: endorsements
+      subscription:
+        rootField: endorsements
+    selectUniques:
+      - queryRootField: endorsementsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: endorsementsById
+    filterInputTypeName: EndorsementsFilterInput
+    aggregate:
+      queryRootField: endorsementsAggregate
+      subscription:
+        rootField: endorsementsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Endorsements
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: Endorsements
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: approvedBy
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: endorsementTypeByEndorsementType
+  sourceType: Endorsements
+  target:
+    model:
+      name: EndorsementTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: endorsementType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: Endorsements
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: userByRequestedBy
+  sourceType: Endorsements
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: requestedBy
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: endorsementStatus
+  sourceType: Endorsements
+  target:
+    model:
+      name: EndorsementStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: Endorsements
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: EndorsementsBoolExp
+  operand:
+    object:
+      type: Endorsements
+      comparableFields:
+        - fieldName: approvedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: effectiveDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: endorsementNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: endorsementType
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: premiumAdjustment
+          booleanExpressionType: NumericBoolExp
+        - fieldName: rejectionReason
+          booleanExpressionType: TextBoolExp
+        - fieldName: requestedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: sumInsuredAdjustment
+          booleanExpressionType: NumericBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: user
+        - relationshipName: endorsementTypeByEndorsementType
+        - relationshipName: policy
+        - relationshipName: userByRequestedBy
+        - relationshipName: endorsementStatus
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: EndorsementsBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: EndorsementsOrderByExp
+  operand:
+    object:
+      orderedType: Endorsements
+      orderableFields:
+        - fieldName: approvedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: effectiveDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: endorsementNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: endorsementType
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: premiumAdjustment
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: rejectionReason
+          orderByExpression: String1OrderByExp
+        - fieldName: requestedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: sumInsuredAdjustment
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: user
+        - relationshipName: endorsementTypeByEndorsementType
+        - relationshipName: policy
+        - relationshipName: userByRequestedBy
+        - relationshipName: endorsementStatus
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: EndorsementsOrderByExp
+

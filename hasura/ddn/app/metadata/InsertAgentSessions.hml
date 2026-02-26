@@ -1,0 +1,228 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAgentSessionsObject
+  fields:
+    - name: agentType
+      type: String_1!
+    - name: claimId
+      type: Uuid
+    - name: completedAt
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: durationMs
+      type: Int32
+    - name: error
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: inputSummary
+      type: String_1
+    - name: outputSummary
+      type: String_1
+    - name: policyId
+      type: Uuid
+    - name: recommendation
+      type: String_1
+    - name: result
+      type: String_1
+    - name: startedAt
+      type: Timestamptz
+    - name: status
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: tokensUsed
+      type: Int32
+    - name: triggerType
+      type: String_1
+    - name: triggeredBy
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertAgentSessionsObject
+    inputTypeName: InsertAgentSessionsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_agent_sessions_object
+      fieldMapping:
+        agentType:
+          column:
+            name: agent_type
+        claimId:
+          column:
+            name: claim_id
+        completedAt:
+          column:
+            name: completed_at
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        durationMs:
+          column:
+            name: duration_ms
+        error:
+          column:
+            name: error
+        id:
+          column:
+            name: id
+        inputSummary:
+          column:
+            name: input_summary
+        outputSummary:
+          column:
+            name: output_summary
+        policyId:
+          column:
+            name: policy_id
+        recommendation:
+          column:
+            name: recommendation
+        result:
+          column:
+            name: result
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        tokensUsed:
+          column:
+            name: tokens_used
+        triggerType:
+          column:
+            name: trigger_type
+        triggeredBy:
+          column:
+            name: triggered_by
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAgentSessionsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - agentType
+          - claimId
+          - completedAt
+          - createdAt
+          - createdBy
+          - deletedAt
+          - durationMs
+          - error
+          - id
+          - inputSummary
+          - outputSummary
+          - policyId
+          - recommendation
+          - result
+          - startedAt
+          - status
+          - tenantId
+          - tokensUsed
+          - triggerType
+          - triggeredBy
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAgentSessionsResponse
+  description: Responses from the 'insert_agent_sessions' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AgentSessions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertAgentSessionsResponse
+    inputTypeName: InsertAgentSessionsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_agent_sessions_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAgentSessionsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertAgentSessions
+  outputType: InsertAgentSessionsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertAgentSessionsObject!]!"
+    - name: postCheck
+      type: AgentSessionsBoolExp
+      description: Insert permission predicate over the 'agent_sessions' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_agent_sessions
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertAgentSessions
+    rootFieldKind: Mutation
+  description: Insert into the agent_sessions table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertAgentSessions
+  permissions:
+    - role: admin
+      allowExecution: true
+

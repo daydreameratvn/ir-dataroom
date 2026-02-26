@@ -1,0 +1,719 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Tenants
+  fields:
+    - name: configuration
+      type: Json
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: national
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: Tenants
+    inputTypeName: TenantsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: tenants
+      fieldMapping:
+        configuration:
+          column:
+            name: configuration
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        national:
+          column:
+            name: national
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Tenants
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - configuration
+          - createdAt
+          - deletedAt
+          - id
+          - name
+          - national
+          - updatedAt
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: TenantsAggExp
+  operand:
+    object:
+      aggregatedType: Tenants
+      aggregatableFields:
+        - fieldName: configuration
+          aggregateExpression: JsonbAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: national
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: TenantsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Tenants
+  objectType: Tenants
+  source:
+    dataConnectorName: banyan_pg
+    collection: tenants
+  filterExpressionType: TenantsBoolExp
+  aggregateExpression: TenantsAggExp
+  orderByExpression: TenantsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: tenants
+      subscription:
+        rootField: tenants
+    selectUniques:
+      - queryRootField: tenantsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: tenantsById
+    filterInputTypeName: TenantsFilterInput
+    aggregate:
+      queryRootField: tenantsAggregate
+      subscription:
+        rootField: tenantsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Tenants
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: agentActions
+  sourceType: Tenants
+  target:
+    model:
+      name: AgentActions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AgentActionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: agentActionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: agentSessions
+  sourceType: Tenants
+  target:
+    model:
+      name: AgentSessions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AgentSessionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: agentSessionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogEntries
+  sourceType: Tenants
+  target:
+    model:
+      name: AuditLogEntries
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuditLogEntriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: auditLogEntriesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogs
+  sourceType: Tenants
+  target:
+    model:
+      name: AuditLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuditLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: auditLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authIdentities
+  sourceType: Tenants
+  target:
+    model:
+      name: AuthIdentities
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuthIdentitiesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: authIdentitiesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authLoginAttempts
+  sourceType: Tenants
+  target:
+    model:
+      name: AuthLoginAttempts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuthLoginAttemptsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: authLoginAttemptsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authOtpRequests
+  sourceType: Tenants
+  target:
+    model:
+      name: AuthOtpRequests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuthOtpRequestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: authOtpRequestsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authPasskeys
+  sourceType: Tenants
+  target:
+    model:
+      name: AuthPasskeys
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuthPasskeysAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: authPasskeysAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authSessions
+  sourceType: Tenants
+  target:
+    model:
+      name: AuthSessions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuthSessionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: authSessionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDiagnoses
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimDiagnoses
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimDiagnosesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimDiagnosesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocuments
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimNotes
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimNotes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimNotesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimNotesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimProcedures
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimProcedures
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimProceduresAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimProceduresAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claims
+  sourceType: Tenants
+  target:
+    model:
+      name: Claims
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: endorsements
+  sourceType: Tenants
+  target:
+    model:
+      name: Endorsements
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: EndorsementsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: endorsementsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaAlerts
+  sourceType: Tenants
+  target:
+    model:
+      name: FwaAlerts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaAlertsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: fwaAlertsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaRules
+  sourceType: Tenants
+  target:
+    model:
+      name: FwaRules
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaRulesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: fwaRulesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: Tenants
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: policiesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: products
+  sourceType: Tenants
+  target:
+    model:
+      name: Products
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ProductsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: productsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: providerContracts
+  sourceType: Tenants
+  target:
+    model:
+      name: ProviderContracts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ProviderContractsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: providerContractsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: providers
+  sourceType: Tenants
+  target:
+    model:
+      name: Providers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ProvidersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: providersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: nationality
+  sourceType: Tenants
+  target:
+    model:
+      name: Nationalities
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: national
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: TenantsOrderByExp
+  operand:
+    object:
+      orderedType: Tenants
+      orderableFields:
+        - fieldName: configuration
+          orderByExpression: JsonOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: national
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: nationality
+  graphql:
+    expressionTypeName: TenantsOrderByExp
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: users
+  sourceType: Tenants
+  target:
+    model:
+      name: Users
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: UsersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: usersAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: TenantsBoolExp
+  operand:
+    object:
+      type: Tenants
+      comparableFields:
+        - fieldName: configuration
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: national
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: agentActions
+        - relationshipName: agentSessions
+        - relationshipName: auditLogEntries
+        - relationshipName: auditLogs
+        - relationshipName: authIdentities
+        - relationshipName: authLoginAttempts
+        - relationshipName: authOtpRequests
+        - relationshipName: authPasskeys
+        - relationshipName: authSessions
+        - relationshipName: claimDiagnoses
+        - relationshipName: claimDocuments
+        - relationshipName: claimNotes
+        - relationshipName: claimProcedures
+        - relationshipName: claims
+        - relationshipName: endorsements
+        - relationshipName: fwaAlerts
+        - relationshipName: fwaRules
+        - relationshipName: policies
+        - relationshipName: products
+        - relationshipName: providerContracts
+        - relationshipName: providers
+        - relationshipName: nationality
+        - relationshipName: users
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: TenantsBoolExp
+

@@ -1,0 +1,385 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimDocuments
+  fields:
+    - name: claimId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: documentType
+      type: String_1
+    - name: extractedAmount
+      type: Bigdecimal
+    - name: extractedDate
+      type: Timestamptz
+    - name: extractedText
+      type: String_1
+    - name: extractionConfidence
+      type: Bigdecimal
+    - name: fileName
+      type: String_1!
+    - name: fileSizeBytes
+      type: Int64
+    - name: fileType
+      type: String_1
+    - name: fileUrl
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: uploadedBy
+      type: Uuid
+  graphql:
+    typeName: ClaimDocuments
+    inputTypeName: ClaimDocumentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: claim_documents
+      fieldMapping:
+        claimId:
+          column:
+            name: claim_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        documentType:
+          column:
+            name: document_type
+        extractedAmount:
+          column:
+            name: extracted_amount
+        extractedDate:
+          column:
+            name: extracted_date
+        extractedText:
+          column:
+            name: extracted_text
+        extractionConfidence:
+          column:
+            name: extraction_confidence
+        fileName:
+          column:
+            name: file_name
+        fileSizeBytes:
+          column:
+            name: file_size_bytes
+        fileType:
+          column:
+            name: file_type
+        fileUrl:
+          column:
+            name: file_url
+        id:
+          column:
+            name: id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        uploadedBy:
+          column:
+            name: uploaded_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimDocuments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - documentType
+          - extractedAmount
+          - extractedDate
+          - extractedText
+          - extractionConfidence
+          - fileName
+          - fileSizeBytes
+          - fileType
+          - fileUrl
+          - id
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - uploadedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimDocumentsAggExp
+  operand:
+    object:
+      aggregatedType: ClaimDocuments
+      aggregatableFields:
+        - fieldName: claimId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: documentType
+          aggregateExpression: TextAggExp
+        - fieldName: extractedAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: extractedDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: extractedText
+          aggregateExpression: TextAggExp
+        - fieldName: extractionConfidence
+          aggregateExpression: NumericAggExp
+        - fieldName: fileName
+          aggregateExpression: TextAggExp
+        - fieldName: fileSizeBytes
+          aggregateExpression: Int8AggExp
+        - fieldName: fileType
+          aggregateExpression: TextAggExp
+        - fieldName: fileUrl
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: uploadedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimDocumentsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimDocuments
+  objectType: ClaimDocuments
+  source:
+    dataConnectorName: banyan_pg
+    collection: claim_documents
+  filterExpressionType: ClaimDocumentsBoolExp
+  aggregateExpression: ClaimDocumentsAggExp
+  orderByExpression: ClaimDocumentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimDocuments
+      subscription:
+        rootField: claimDocuments
+    selectUniques:
+      - queryRootField: claimDocumentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimDocumentsById
+    filterInputTypeName: ClaimDocumentsFilterInput
+    aggregate:
+      queryRootField: claimDocumentsAggregate
+      subscription:
+        rootField: claimDocumentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimDocuments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claim
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: Claims
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: uploadedBy
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimDocumentsBoolExp
+  operand:
+    object:
+      type: ClaimDocuments
+      comparableFields:
+        - fieldName: claimId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: documentType
+          booleanExpressionType: TextBoolExp
+        - fieldName: extractedAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: extractedDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: extractedText
+          booleanExpressionType: TextBoolExp
+        - fieldName: extractionConfidence
+          booleanExpressionType: NumericBoolExp
+        - fieldName: fileName
+          booleanExpressionType: TextBoolExp
+        - fieldName: fileSizeBytes
+          booleanExpressionType: Int8BoolExp
+        - fieldName: fileType
+          booleanExpressionType: TextBoolExp
+        - fieldName: fileUrl
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: uploadedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claim
+        - relationshipName: tenant
+        - relationshipName: user
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimDocumentsBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimDocumentsOrderByExp
+  operand:
+    object:
+      orderedType: ClaimDocuments
+      orderableFields:
+        - fieldName: claimId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: documentType
+          orderByExpression: String1OrderByExp
+        - fieldName: extractedAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: extractedDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: extractedText
+          orderByExpression: String1OrderByExp
+        - fieldName: extractionConfidence
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: fileName
+          orderByExpression: String1OrderByExp
+        - fieldName: fileSizeBytes
+          orderByExpression: Int64OrderByExp
+        - fieldName: fileType
+          orderByExpression: String1OrderByExp
+        - fieldName: fileUrl
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: uploadedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claim
+        - relationshipName: tenant
+        - relationshipName: user
+  graphql:
+    expressionTypeName: ClaimDocumentsOrderByExp
+

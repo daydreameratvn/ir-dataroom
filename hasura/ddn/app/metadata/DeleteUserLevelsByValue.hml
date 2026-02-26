@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteUserLevelsByValueResponse
+  description: Responses from the 'delete_user_levels_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[UserLevels!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteUserLevelsByValueResponse
+    inputTypeName: DeleteUserLevelsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: delete_user_levels_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteUserLevelsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteUserLevelsByValue
+  outputType: DeleteUserLevelsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: UserLevelsBoolExp
+      description: Delete permission predicate over the 'user_levels' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: delete_user_levels_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteUserLevelsByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'user_levels' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteUserLevelsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

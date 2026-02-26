@@ -1,0 +1,305 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuthSessions
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: expiresAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: ipAddress
+      type: String_1
+    - name: revokedAt
+      type: Timestamptz
+    - name: tenantId
+      type: Uuid!
+    - name: tokenHash
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: userAgent
+      type: String_1
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: AuthSessions
+    inputTypeName: AuthSessionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: auth_sessions
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        expiresAt:
+          column:
+            name: expires_at
+        id:
+          column:
+            name: id
+        ipAddress:
+          column:
+            name: ip_address
+        revokedAt:
+          column:
+            name: revoked_at
+        tenantId:
+          column:
+            name: tenant_id
+        tokenHash:
+          column:
+            name: token_hash
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userAgent:
+          column:
+            name: user_agent
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuthSessions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - expiresAt
+          - id
+          - ipAddress
+          - revokedAt
+          - tenantId
+          - tokenHash
+          - updatedAt
+          - updatedBy
+          - userAgent
+          - userId
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AuthSessionsAggExp
+  operand:
+    object:
+      aggregatedType: AuthSessions
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: expiresAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: ipAddress
+          aggregateExpression: TextAggExp
+        - fieldName: revokedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: tokenHash
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: userAgent
+          aggregateExpression: TextAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AuthSessionsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AuthSessions
+  objectType: AuthSessions
+  source:
+    dataConnectorName: banyan_pg
+    collection: auth_sessions
+  filterExpressionType: AuthSessionsBoolExp
+  aggregateExpression: AuthSessionsAggExp
+  orderByExpression: AuthSessionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: authSessions
+      subscription:
+        rootField: authSessions
+    selectUniques:
+      - queryRootField: authSessionsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: authSessionsById
+    filterInputTypeName: AuthSessionsFilterInput
+    aggregate:
+      queryRootField: authSessionsAggregate
+      subscription:
+        rootField: authSessionsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuthSessions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: AuthSessions
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: AuthSessions
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AuthSessionsBoolExp
+  operand:
+    object:
+      type: AuthSessions
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: expiresAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: ipAddress
+          booleanExpressionType: TextBoolExp
+        - fieldName: revokedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tokenHash
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userAgent
+          booleanExpressionType: TextBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: tenant
+        - relationshipName: user
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AuthSessionsBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AuthSessionsOrderByExp
+  operand:
+    object:
+      orderedType: AuthSessions
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: expiresAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: ipAddress
+          orderByExpression: String1OrderByExp
+        - fieldName: revokedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tokenHash
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: userAgent
+          orderByExpression: String1OrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: tenant
+        - relationshipName: user
+  graphql:
+    expressionTypeName: AuthSessionsOrderByExp
+

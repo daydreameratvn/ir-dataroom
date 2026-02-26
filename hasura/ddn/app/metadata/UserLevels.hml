@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UserLevels
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: UserLevels
+    inputTypeName: UserLevelsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: user_levels
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UserLevels
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: UserLevelsAggExp
+  operand:
+    object:
+      aggregatedType: UserLevels
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: UserLevelsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: UserLevelsOrderByExp
+  operand:
+    object:
+      orderedType: UserLevels
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: UserLevelsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: UserLevels
+  objectType: UserLevels
+  source:
+    dataConnectorName: banyan_pg
+    collection: user_levels
+  filterExpressionType: UserLevelsBoolExp
+  aggregateExpression: UserLevelsAggExp
+  orderByExpression: UserLevelsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: userLevels
+      subscription:
+        rootField: userLevels
+    selectUniques:
+      - queryRootField: userLevelsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: userLevelsByValue
+    filterInputTypeName: UserLevelsFilterInput
+    aggregate:
+      queryRootField: userLevelsAggregate
+      subscription:
+        rootField: userLevelsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: UserLevels
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: users
+  sourceType: UserLevels
+  target:
+    model:
+      name: Users
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: UsersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: userLevel
+  graphql:
+    aggregateFieldName: usersAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: UserLevelsBoolExp
+  operand:
+    object:
+      type: UserLevels
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: users
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: UserLevelsBoolExp
+

@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimStatuses
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimStatuses
+    inputTypeName: ClaimStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: claim_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimStatusesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimStatusesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimStatuses
+  objectType: ClaimStatuses
+  source:
+    dataConnectorName: banyan_pg
+    collection: claim_statuses
+  filterExpressionType: ClaimStatusesBoolExp
+  aggregateExpression: ClaimStatusesAggExp
+  orderByExpression: ClaimStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimStatuses
+      subscription:
+        rootField: claimStatuses
+    selectUniques:
+      - queryRootField: claimStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimStatusesByValue
+    filterInputTypeName: ClaimStatusesFilterInput
+    aggregate:
+      queryRootField: claimStatusesAggregate
+      subscription:
+        rootField: claimStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claims
+  sourceType: ClaimStatuses
+  target:
+    model:
+      name: Claims
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: claimsAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimStatusesBoolExp
+  operand:
+    object:
+      type: ClaimStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claims
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimStatusesBoolExp
+

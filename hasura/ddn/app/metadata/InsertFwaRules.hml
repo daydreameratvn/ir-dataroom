@@ -1,0 +1,204 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwaRulesObject
+  fields:
+    - name: active
+      type: Boolean_1
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: name
+      type: String_1!
+    - name: pattern
+      type: String_1
+    - name: ruleCode
+      type: String_1!
+    - name: ruleType
+      type: String_1
+    - name: severity
+      type: String_1
+    - name: targetEntity
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: thresholdAmount
+      type: Bigdecimal
+    - name: thresholdCount
+      type: Int32
+    - name: timeWindowDays
+      type: Int32
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertFwaRulesObject
+    inputTypeName: InsertFwaRulesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_fwa_rules_object
+      fieldMapping:
+        active:
+          column:
+            name: active
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        pattern:
+          column:
+            name: pattern
+        ruleCode:
+          column:
+            name: rule_code
+        ruleType:
+          column:
+            name: rule_type
+        severity:
+          column:
+            name: severity
+        targetEntity:
+          column:
+            name: target_entity
+        tenantId:
+          column:
+            name: tenant_id
+        thresholdAmount:
+          column:
+            name: threshold_amount
+        thresholdCount:
+          column:
+            name: threshold_count
+        timeWindowDays:
+          column:
+            name: time_window_days
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwaRulesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - active
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - id
+          - name
+          - pattern
+          - ruleCode
+          - ruleType
+          - severity
+          - targetEntity
+          - tenantId
+          - thresholdAmount
+          - thresholdCount
+          - timeWindowDays
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwaRulesResponse
+  description: Responses from the 'insert_fwa_rules' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwaRules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwaRulesResponse
+    inputTypeName: InsertFwaRulesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_fwa_rules_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwaRulesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwaRules
+  outputType: InsertFwaRulesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwaRulesObject!]!"
+    - name: postCheck
+      type: FwaRulesBoolExp
+      description: Insert permission predicate over the 'fwa_rules' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_fwa_rules
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwaRules
+    rootFieldKind: Mutation
+  description: Insert into the fwa_rules table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwaRules
+  permissions:
+    - role: admin
+      allowExecution: true
+

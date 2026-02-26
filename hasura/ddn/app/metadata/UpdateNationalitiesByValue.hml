@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnNationalitiesComment
+  description: Update the 'comment' column in the 'nationalities' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnNationalitiesComment
+    inputTypeName: UpdateColumnNationalitiesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_column_nationalities_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnNationalitiesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnNationalitiesValue
+  description: Update the 'value' column in the 'nationalities' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnNationalitiesValue
+    inputTypeName: UpdateColumnNationalitiesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_column_nationalities_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnNationalitiesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateNationalitiesByValueUpdateColumns
+  description: Update the columns of the 'nationalities' collection
+  fields:
+    - name: comment
+      type: UpdateColumnNationalitiesComment
+      description: Update the 'comment' column in the 'nationalities' collection.
+    - name: value
+      type: UpdateColumnNationalitiesValue
+      description: Update the 'value' column in the 'nationalities' collection.
+  graphql:
+    typeName: UpdateNationalitiesByValueUpdateColumns
+    inputTypeName: UpdateNationalitiesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_nationalities_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateNationalitiesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateNationalitiesByValueResponse
+  description: Responses from the 'update_nationalities_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Nationalities!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateNationalitiesByValueResponse
+    inputTypeName: UpdateNationalitiesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_nationalities_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateNationalitiesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateNationalitiesByValue
+  outputType: UpdateNationalitiesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: NationalitiesBoolExp
+      description: Update permission post-condition predicate over the 'nationalities'
+        collection
+    - name: preCheck
+      type: NationalitiesBoolExp
+      description: Update permission pre-condition predicate over the 'nationalities'
+        collection
+    - name: updateColumns
+      type: UpdateNationalitiesByValueUpdateColumns!
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: update_nationalities_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateNationalitiesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'nationalities' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateNationalitiesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

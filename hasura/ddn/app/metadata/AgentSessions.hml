@@ -1,0 +1,499 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AgentSessions
+  fields:
+    - name: agentType
+      type: String_1!
+    - name: claimId
+      type: Uuid
+    - name: completedAt
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: durationMs
+      type: Int32
+    - name: error
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: inputSummary
+      type: String_1
+    - name: outputSummary
+      type: String_1
+    - name: policyId
+      type: Uuid
+    - name: recommendation
+      type: String_1
+    - name: result
+      type: String_1
+    - name: startedAt
+      type: Timestamptz!
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: tokensUsed
+      type: Int32
+    - name: triggerType
+      type: String_1!
+    - name: triggeredBy
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: AgentSessions
+    inputTypeName: AgentSessionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: agent_sessions
+      fieldMapping:
+        agentType:
+          column:
+            name: agent_type
+        claimId:
+          column:
+            name: claim_id
+        completedAt:
+          column:
+            name: completed_at
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        durationMs:
+          column:
+            name: duration_ms
+        error:
+          column:
+            name: error
+        id:
+          column:
+            name: id
+        inputSummary:
+          column:
+            name: input_summary
+        outputSummary:
+          column:
+            name: output_summary
+        policyId:
+          column:
+            name: policy_id
+        recommendation:
+          column:
+            name: recommendation
+        result:
+          column:
+            name: result
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        tokensUsed:
+          column:
+            name: tokens_used
+        triggerType:
+          column:
+            name: trigger_type
+        triggeredBy:
+          column:
+            name: triggered_by
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AgentSessions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - agentType
+          - claimId
+          - completedAt
+          - createdAt
+          - createdBy
+          - deletedAt
+          - durationMs
+          - error
+          - id
+          - inputSummary
+          - outputSummary
+          - policyId
+          - recommendation
+          - result
+          - startedAt
+          - status
+          - tenantId
+          - tokensUsed
+          - triggerType
+          - triggeredBy
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AgentSessionsAggExp
+  operand:
+    object:
+      aggregatedType: AgentSessions
+      aggregatableFields:
+        - fieldName: agentType
+          aggregateExpression: TextAggExp
+        - fieldName: claimId
+          aggregateExpression: UuidAggExp
+        - fieldName: completedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: durationMs
+          aggregateExpression: Int4AggExp
+        - fieldName: error
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: inputSummary
+          aggregateExpression: TextAggExp
+        - fieldName: outputSummary
+          aggregateExpression: TextAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: recommendation
+          aggregateExpression: TextAggExp
+        - fieldName: result
+          aggregateExpression: TextAggExp
+        - fieldName: startedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: tokensUsed
+          aggregateExpression: Int4AggExp
+        - fieldName: triggerType
+          aggregateExpression: TextAggExp
+        - fieldName: triggeredBy
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AgentSessionsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AgentSessions
+  objectType: AgentSessions
+  source:
+    dataConnectorName: banyan_pg
+    collection: agent_sessions
+  filterExpressionType: AgentSessionsBoolExp
+  aggregateExpression: AgentSessionsAggExp
+  orderByExpression: AgentSessionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: agentSessions
+      subscription:
+        rootField: agentSessions
+    selectUniques:
+      - queryRootField: agentSessionsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: agentSessionsById
+    filterInputTypeName: AgentSessionsFilterInput
+    aggregate:
+      queryRootField: agentSessionsAggregate
+      subscription:
+        rootField: agentSessionsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AgentSessions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: agentActions
+  sourceType: AgentSessions
+  target:
+    model:
+      name: AgentActions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AgentActionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: sessionId
+  graphql:
+    aggregateFieldName: agentActionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claim
+  sourceType: AgentSessions
+  target:
+    model:
+      name: Claims
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: AgentSessions
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: AgentSessions
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: AgentSessions
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: triggeredBy
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AgentSessionsOrderByExp
+  operand:
+    object:
+      orderedType: AgentSessions
+      orderableFields:
+        - fieldName: agentType
+          orderByExpression: String1OrderByExp
+        - fieldName: claimId
+          orderByExpression: UuidOrderByExp
+        - fieldName: completedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: durationMs
+          orderByExpression: Int32OrderByExp
+        - fieldName: error
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: inputSummary
+          orderByExpression: String1OrderByExp
+        - fieldName: outputSummary
+          orderByExpression: String1OrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: recommendation
+          orderByExpression: String1OrderByExp
+        - fieldName: result
+          orderByExpression: String1OrderByExp
+        - fieldName: startedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tokensUsed
+          orderByExpression: Int32OrderByExp
+        - fieldName: triggerType
+          orderByExpression: String1OrderByExp
+        - fieldName: triggeredBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claim
+        - relationshipName: policy
+        - relationshipName: tenant
+        - relationshipName: user
+  graphql:
+    expressionTypeName: AgentSessionsOrderByExp
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogs
+  sourceType: AgentSessions
+  target:
+    model:
+      name: AuditLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuditLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: agentSessionId
+  graphql:
+    aggregateFieldName: auditLogsAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AgentSessionsBoolExp
+  operand:
+    object:
+      type: AgentSessions
+      comparableFields:
+        - fieldName: agentType
+          booleanExpressionType: TextBoolExp
+        - fieldName: claimId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: completedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: durationMs
+          booleanExpressionType: Int4BoolExp
+        - fieldName: error
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: inputSummary
+          booleanExpressionType: TextBoolExp
+        - fieldName: outputSummary
+          booleanExpressionType: TextBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: recommendation
+          booleanExpressionType: TextBoolExp
+        - fieldName: result
+          booleanExpressionType: TextBoolExp
+        - fieldName: startedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tokensUsed
+          booleanExpressionType: Int4BoolExp
+        - fieldName: triggerType
+          booleanExpressionType: TextBoolExp
+        - fieldName: triggeredBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: agentActions
+        - relationshipName: claim
+        - relationshipName: policy
+        - relationshipName: tenant
+        - relationshipName: user
+        - relationshipName: auditLogs
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AgentSessionsBoolExp
+

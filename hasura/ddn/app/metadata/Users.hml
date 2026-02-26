@@ -1,0 +1,718 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Users
+  fields:
+    - name: avatarUrl
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: department
+      type: String_1
+    - name: email
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: lastLoginAt
+      type: Timestamptz
+    - name: locale
+      type: String_1
+    - name: name
+      type: String_1!
+    - name: phone
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: title
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: userLevel
+      type: String_1!
+    - name: userType
+      type: String_1!
+  graphql:
+    typeName: Users
+    inputTypeName: UsersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: users
+      fieldMapping:
+        avatarUrl:
+          column:
+            name: avatar_url
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        department:
+          column:
+            name: department
+        email:
+          column:
+            name: email
+        id:
+          column:
+            name: id
+        lastLoginAt:
+          column:
+            name: last_login_at
+        locale:
+          column:
+            name: locale
+        name:
+          column:
+            name: name
+        phone:
+          column:
+            name: phone
+        tenantId:
+          column:
+            name: tenant_id
+        title:
+          column:
+            name: title
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userLevel:
+          column:
+            name: user_level
+        userType:
+          column:
+            name: user_type
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Users
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - avatarUrl
+          - createdAt
+          - createdBy
+          - deletedAt
+          - department
+          - email
+          - id
+          - lastLoginAt
+          - locale
+          - name
+          - phone
+          - tenantId
+          - title
+          - updatedAt
+          - updatedBy
+          - userLevel
+          - userType
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: UsersAggExp
+  operand:
+    object:
+      aggregatedType: Users
+      aggregatableFields:
+        - fieldName: avatarUrl
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: department
+          aggregateExpression: TextAggExp
+        - fieldName: email
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: lastLoginAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: locale
+          aggregateExpression: TextAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: phone
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: title
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: userLevel
+          aggregateExpression: TextAggExp
+        - fieldName: userType
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: UsersAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Users
+  objectType: Users
+  source:
+    dataConnectorName: banyan_pg
+    collection: users
+  filterExpressionType: UsersBoolExp
+  aggregateExpression: UsersAggExp
+  orderByExpression: UsersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: users
+      subscription:
+        rootField: users
+    selectUniques:
+      - queryRootField: usersById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: usersById
+    filterInputTypeName: UsersFilterInput
+    aggregate:
+      queryRootField: usersAggregate
+      subscription:
+        rootField: usersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Users
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: agentSessions
+  sourceType: Users
+  target:
+    model:
+      name: AgentSessions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AgentSessionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: triggeredBy
+  graphql:
+    aggregateFieldName: agentSessionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogs
+  sourceType: Users
+  target:
+    model:
+      name: AuditLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuditLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: userId
+  graphql:
+    aggregateFieldName: auditLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authIdentities
+  sourceType: Users
+  target:
+    model:
+      name: AuthIdentities
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuthIdentitiesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: userId
+  graphql:
+    aggregateFieldName: authIdentitiesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authLoginAttempts
+  sourceType: Users
+  target:
+    model:
+      name: AuthLoginAttempts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuthLoginAttemptsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: userId
+  graphql:
+    aggregateFieldName: authLoginAttemptsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authPasskeys
+  sourceType: Users
+  target:
+    model:
+      name: AuthPasskeys
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuthPasskeysAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: userId
+  graphql:
+    aggregateFieldName: authPasskeysAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: authSessions
+  sourceType: Users
+  target:
+    model:
+      name: AuthSessions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuthSessionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: userId
+  graphql:
+    aggregateFieldName: authSessionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocuments
+  sourceType: Users
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: uploadedBy
+  graphql:
+    aggregateFieldName: claimDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimNotes
+  sourceType: Users
+  target:
+    model:
+      name: ClaimNotes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimNotesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: authorId
+  graphql:
+    aggregateFieldName: claimNotesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claims
+  sourceType: Users
+  target:
+    model:
+      name: Claims
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: adjudicatedBy
+  graphql:
+    aggregateFieldName: claimsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimsByAssignedTo
+  sourceType: Users
+  target:
+    model:
+      name: Claims
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: assignedTo
+  graphql:
+    aggregateFieldName: claimsByAssignedToAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimsBySubmittedBy
+  sourceType: Users
+  target:
+    model:
+      name: Claims
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: submittedBy
+  graphql:
+    aggregateFieldName: claimsBySubmittedByAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: endorsements
+  sourceType: Users
+  target:
+    model:
+      name: Endorsements
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: EndorsementsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: approvedBy
+  graphql:
+    aggregateFieldName: endorsementsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: endorsementsByRequestedBy
+  sourceType: Users
+  target:
+    model:
+      name: Endorsements
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: EndorsementsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: requestedBy
+  graphql:
+    aggregateFieldName: endorsementsByRequestedByAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaAlerts
+  sourceType: Users
+  target:
+    model:
+      name: FwaAlerts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaAlertsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: resolvedBy
+  graphql:
+    aggregateFieldName: fwaAlertsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: Users
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: issuedBy
+  graphql:
+    aggregateFieldName: policiesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: Users
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: userLevelByUserLevel
+  sourceType: Users
+  target:
+    model:
+      name: UserLevels
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userLevel
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: userTypeByUserType
+  sourceType: Users
+  target:
+    model:
+      name: UserTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: UsersBoolExp
+  operand:
+    object:
+      type: Users
+      comparableFields:
+        - fieldName: avatarUrl
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: department
+          booleanExpressionType: TextBoolExp
+        - fieldName: email
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: lastLoginAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: locale
+          booleanExpressionType: TextBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: phone
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: title
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userLevel
+          booleanExpressionType: TextBoolExp
+        - fieldName: userType
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: agentSessions
+        - relationshipName: auditLogs
+        - relationshipName: authIdentities
+        - relationshipName: authLoginAttempts
+        - relationshipName: authPasskeys
+        - relationshipName: authSessions
+        - relationshipName: claimDocuments
+        - relationshipName: claimNotes
+        - relationshipName: claims
+        - relationshipName: claimsByAssignedTo
+        - relationshipName: claimsBySubmittedBy
+        - relationshipName: endorsements
+        - relationshipName: endorsementsByRequestedBy
+        - relationshipName: fwaAlerts
+        - relationshipName: policies
+        - relationshipName: tenant
+        - relationshipName: userLevelByUserLevel
+        - relationshipName: userTypeByUserType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: UsersBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: UsersOrderByExp
+  operand:
+    object:
+      orderedType: Users
+      orderableFields:
+        - fieldName: avatarUrl
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: department
+          orderByExpression: String1OrderByExp
+        - fieldName: email
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: lastLoginAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: locale
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: phone
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: title
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: userLevel
+          orderByExpression: String1OrderByExp
+        - fieldName: userType
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: tenant
+        - relationshipName: userLevelByUserLevel
+        - relationshipName: userTypeByUserType
+  graphql:
+    expressionTypeName: UsersOrderByExp
+

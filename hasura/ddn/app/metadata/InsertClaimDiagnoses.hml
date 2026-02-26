@@ -1,0 +1,168 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimDiagnosesObject
+  fields:
+    - name: claimId
+      type: Uuid!
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: isPrimary
+      type: Boolean_1
+    - name: sequenceNumber
+      type: Int32
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertClaimDiagnosesObject
+    inputTypeName: InsertClaimDiagnosesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_claim_diagnoses_object
+      fieldMapping:
+        claimId:
+          column:
+            name: claim_id
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        isPrimary:
+          column:
+            name: is_primary
+        sequenceNumber:
+          column:
+            name: sequence_number
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimDiagnosesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimId
+          - code
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - id
+          - isPrimary
+          - sequenceNumber
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimDiagnosesResponse
+  description: Responses from the 'insert_claim_diagnoses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimDiagnoses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimDiagnosesResponse
+    inputTypeName: InsertClaimDiagnosesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_claim_diagnoses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimDiagnosesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimDiagnoses
+  outputType: InsertClaimDiagnosesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimDiagnosesObject!]!"
+    - name: postCheck
+      type: ClaimDiagnosesBoolExp
+      description: Insert permission predicate over the 'claim_diagnoses' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_claim_diagnoses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimDiagnoses
+    rootFieldKind: Mutation
+  description: Insert into the claim_diagnoses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimDiagnoses
+  permissions:
+    - role: admin
+      allowExecution: true
+

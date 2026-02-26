@@ -1,0 +1,162 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuditLogEntriesObject
+  fields:
+    - name: auditLogId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: fieldName
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: newValue
+      type: String_1
+    - name: oldValue
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertAuditLogEntriesObject
+    inputTypeName: InsertAuditLogEntriesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_audit_log_entries_object
+      fieldMapping:
+        auditLogId:
+          column:
+            name: audit_log_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        fieldName:
+          column:
+            name: field_name
+        id:
+          column:
+            name: id
+        newValue:
+          column:
+            name: new_value
+        oldValue:
+          column:
+            name: old_value
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuditLogEntriesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - auditLogId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - fieldName
+          - id
+          - newValue
+          - oldValue
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuditLogEntriesResponse
+  description: Responses from the 'insert_audit_log_entries' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuditLogEntries!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertAuditLogEntriesResponse
+    inputTypeName: InsertAuditLogEntriesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_audit_log_entries_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuditLogEntriesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertAuditLogEntries
+  outputType: InsertAuditLogEntriesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertAuditLogEntriesObject!]!"
+    - name: postCheck
+      type: AuditLogEntriesBoolExp
+      description: Insert permission predicate over the 'audit_log_entries' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_audit_log_entries
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertAuditLogEntries
+    rootFieldKind: Mutation
+  description: Insert into the audit_log_entries table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertAuditLogEntries
+  permissions:
+    - role: admin
+      allowExecution: true
+

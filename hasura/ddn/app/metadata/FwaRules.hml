@@ -1,0 +1,388 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwaRules
+  fields:
+    - name: active
+      type: Boolean_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: pattern
+      type: String_1
+    - name: ruleCode
+      type: String_1!
+    - name: ruleType
+      type: String_1!
+    - name: severity
+      type: String_1
+    - name: targetEntity
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: thresholdAmount
+      type: Bigdecimal
+    - name: thresholdCount
+      type: Int32
+    - name: timeWindowDays
+      type: Int32
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: FwaRules
+    inputTypeName: FwaRulesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: fwa_rules
+      fieldMapping:
+        active:
+          column:
+            name: active
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        pattern:
+          column:
+            name: pattern
+        ruleCode:
+          column:
+            name: rule_code
+        ruleType:
+          column:
+            name: rule_type
+        severity:
+          column:
+            name: severity
+        targetEntity:
+          column:
+            name: target_entity
+        tenantId:
+          column:
+            name: tenant_id
+        thresholdAmount:
+          column:
+            name: threshold_amount
+        thresholdCount:
+          column:
+            name: threshold_count
+        timeWindowDays:
+          column:
+            name: time_window_days
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwaRules
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - active
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - id
+          - name
+          - pattern
+          - ruleCode
+          - ruleType
+          - severity
+          - targetEntity
+          - tenantId
+          - thresholdAmount
+          - thresholdCount
+          - timeWindowDays
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwaRulesAggExp
+  operand:
+    object:
+      aggregatedType: FwaRules
+      aggregatableFields:
+        - fieldName: active
+          aggregateExpression: BoolAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: pattern
+          aggregateExpression: TextAggExp
+        - fieldName: ruleCode
+          aggregateExpression: TextAggExp
+        - fieldName: ruleType
+          aggregateExpression: TextAggExp
+        - fieldName: severity
+          aggregateExpression: TextAggExp
+        - fieldName: targetEntity
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: thresholdAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: thresholdCount
+          aggregateExpression: Int4AggExp
+        - fieldName: timeWindowDays
+          aggregateExpression: Int4AggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwaRulesAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwaRules
+  objectType: FwaRules
+  source:
+    dataConnectorName: banyan_pg
+    collection: fwa_rules
+  filterExpressionType: FwaRulesBoolExp
+  aggregateExpression: FwaRulesAggExp
+  orderByExpression: FwaRulesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwaRules
+      subscription:
+        rootField: fwaRules
+    selectUniques:
+      - queryRootField: fwaRulesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: fwaRulesById
+    filterInputTypeName: FwaRulesFilterInput
+    aggregate:
+      queryRootField: fwaRulesAggregate
+      subscription:
+        rootField: fwaRulesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwaRules
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaAlerts
+  sourceType: FwaRules
+  target:
+    model:
+      name: FwaAlerts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaAlertsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: ruleId
+  graphql:
+    aggregateFieldName: fwaAlertsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaSeverity
+  sourceType: FwaRules
+  target:
+    model:
+      name: FwaSeverities
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: severity
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: FwaRules
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwaRulesBoolExp
+  operand:
+    object:
+      type: FwaRules
+      comparableFields:
+        - fieldName: active
+          booleanExpressionType: BoolBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: pattern
+          booleanExpressionType: TextBoolExp
+        - fieldName: ruleCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: ruleType
+          booleanExpressionType: TextBoolExp
+        - fieldName: severity
+          booleanExpressionType: TextBoolExp
+        - fieldName: targetEntity
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: thresholdAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: thresholdCount
+          booleanExpressionType: Int4BoolExp
+        - fieldName: timeWindowDays
+          booleanExpressionType: Int4BoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: fwaAlerts
+        - relationshipName: fwaSeverity
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwaRulesBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwaRulesOrderByExp
+  operand:
+    object:
+      orderedType: FwaRules
+      orderableFields:
+        - fieldName: active
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: pattern
+          orderByExpression: String1OrderByExp
+        - fieldName: ruleCode
+          orderByExpression: String1OrderByExp
+        - fieldName: ruleType
+          orderByExpression: String1OrderByExp
+        - fieldName: severity
+          orderByExpression: String1OrderByExp
+        - fieldName: targetEntity
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: thresholdAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: thresholdCount
+          orderByExpression: Int32OrderByExp
+        - fieldName: timeWindowDays
+          orderByExpression: Int32OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: fwaSeverity
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: FwaRulesOrderByExp
+
