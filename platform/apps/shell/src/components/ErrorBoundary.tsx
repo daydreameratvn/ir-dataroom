@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { reportError } from '@papaya/auth';
 
 interface ErrorBoundaryProps {
   fallback?: ReactNode;
@@ -22,6 +23,14 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
 
   override componentDidCatch(error: Error, info: ErrorInfo) {
     console.error('ErrorBoundary caught:', error, info);
+    reportError({
+      source: 'frontend_boundary',
+      message: error.message,
+      stackTrace: error.stack,
+      componentStack: info.componentStack ?? undefined,
+      url: window.location.href,
+      severity: 'error',
+    });
   }
 
   override render() {

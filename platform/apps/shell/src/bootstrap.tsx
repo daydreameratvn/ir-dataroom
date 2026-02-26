@@ -4,7 +4,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { initI18n } from '@papaya/i18n';
 import { setTokenAccessor } from '@papaya/api-client';
-import { AuthProvider, getAccessToken } from '@papaya/auth';
+import { AuthProvider, getAccessToken, reportError } from '@papaya/auth';
 import { routes } from './routes';
 import { injectRemoteRoutes } from './remotes';
 import TenantProvider from './providers/TenantProvider';
@@ -45,6 +45,30 @@ function mount() {
     </StrictMode>,
   );
 }
+
+// Global error listeners — report uncaught errors to backend
+window.addEventListener('error', (event) => {
+  reportError({
+    source: 'frontend_unhandled',
+    message: event.message,
+    stackTrace: event.error?.stack,
+    url: window.location.href,
+    severity: 'error',
+    metadata: { filename: event.filename, lineno: event.lineno, colno: event.colno },
+  });
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  const err = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
+  reportError({
+    source: 'frontend_unhandled',
+    message: err.message,
+    stackTrace: err.stack,
+    url: window.location.href,
+    severity: 'error',
+    metadata: { type: 'unhandledrejection' },
+  });
+});
 
 // Initialize i18n before rendering — mount even if i18n fails
 initI18n().then(mount, mount);

@@ -13,6 +13,7 @@ export interface User {
   title?: string;
   department?: string;
   locale?: string;
+  isImpersonatable?: boolean;
 }
 
 export interface AuthSession {
@@ -20,4 +21,8 @@ export interface AuthSession {
   accessToken: string;
   refreshToken?: string;
   expiresAt: string;
+  impersonation?: {
+    impersonatorId: string;
+    impersonatorName: string;
+  };
 }

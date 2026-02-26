@@ -11,6 +11,8 @@ import type { User, AuthSession } from '@papaya/shared-types';
 import {
   refreshAccessToken,
   revokeToken,
+  startImpersonation as startImpersonationApi,
+  endImpersonation as endImpersonationApi,
 } from './auth-client';
 import {
   getAccessToken,
@@ -25,8 +27,12 @@ interface AuthContextValue {
   session: AuthSession | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isImpersonating: boolean;
+  impersonation: { impersonatorId: string; impersonatorName: string } | null;
   signIn: (user: User, accessToken: string, expiresAt: string) => void;
   signOut: () => Promise<void>;
+  startImpersonation: (userId: string) => Promise<void>;
+  endImpersonation: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -45,6 +51,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const originalSessionRef = useRef<AuthSession | null>(null);
 
   const scheduleRefresh = useCallback((expiresAt: string) => {
     if (refreshTimerRef.current) {
@@ -61,12 +68,14 @@ export default function AuthProvider({ children }: AuthProviderProps) {
           user: result.user,
           accessToken: result.accessToken,
           expiresAt: result.expiresAt,
+          impersonation: result.impersonation,
         });
         scheduleRefresh(result.expiresAt);
       } catch {
         // Refresh failed — user needs to re-login
         clearAccessToken();
         setSession(null);
+        originalSessionRef.current = null;
       }
     }, delay);
   }, []);
@@ -91,10 +100,72 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
     clearAccessToken();
     setSession(null);
+    originalSessionRef.current = null;
     if (refreshTimerRef.current) {
       clearTimeout(refreshTimerRef.current);
     }
   }, []);
+
+  const startImpersonation = useCallback(
+    async (userId: string) => {
+      const token = getAccessToken();
+      if (!token || !session) return;
+
+      // Save the admin's current session before impersonating
+      originalSessionRef.current = session;
+
+      const result = await startImpersonationApi(userId, token);
+      setAccessToken(result.accessToken, result.expiresAt);
+      setSession({
+        user: result.user,
+        accessToken: result.accessToken,
+        expiresAt: result.expiresAt,
+        impersonation: result.impersonation,
+      });
+      scheduleRefresh(result.expiresAt);
+    },
+    [session, scheduleRefresh],
+  );
+
+  const endImpersonation = useCallback(async () => {
+    const token = getAccessToken();
+    if (token) {
+      try {
+        await endImpersonationApi(token);
+      } catch {
+        // Best effort
+      }
+    }
+
+    // Restore the admin's original session
+    const original = originalSessionRef.current;
+    originalSessionRef.current = null;
+
+    if (original) {
+      // Refresh the admin's session to get a fresh token
+      try {
+        const result = await refreshAccessToken();
+        setAccessToken(result.accessToken, result.expiresAt);
+        setSession({
+          user: result.user,
+          accessToken: result.accessToken,
+          expiresAt: result.expiresAt,
+        });
+        scheduleRefresh(result.expiresAt);
+      } catch {
+        // Fallback: restore from saved session
+        setAccessToken(original.accessToken, original.expiresAt);
+        setSession(original);
+        scheduleRefresh(original.expiresAt);
+      }
+    } else {
+      clearAccessToken();
+      setSession(null);
+    }
+  }, [scheduleRefresh]);
+
+  const isImpersonating = originalSessionRef.current !== null || (session?.impersonation != null);
+  const impersonation = session?.impersonation ?? null;
 
   // Bootstrap: check for token in URL fragment (SSO redirect) or try refresh
   useEffect(() => {
@@ -110,6 +181,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
             user: result.user,
             accessToken: result.accessToken,
             expiresAt: result.expiresAt,
+            impersonation: result.impersonation,
           });
           scheduleRefresh(result.expiresAt);
         } catch {
@@ -119,7 +191,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
 
-      // Try to refresh using httpOnly cookie
+      // Try to refresh using httpOnly cookie (may be impersonation or regular)
       try {
         const result = await refreshAccessToken();
         setAccessToken(result.accessToken, result.expiresAt);
@@ -127,6 +199,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
           user: result.user,
           accessToken: result.accessToken,
           expiresAt: result.expiresAt,
+          impersonation: result.impersonation,
         });
         scheduleRefresh(result.expiresAt);
       } catch {
@@ -151,8 +224,12 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         session,
         isLoading,
         isAuthenticated: session !== null,
+        isImpersonating,
+        impersonation,
         signIn,
         signOut,
+        startImpersonation,
+        endImpersonation,
       }}
     >
       {children}

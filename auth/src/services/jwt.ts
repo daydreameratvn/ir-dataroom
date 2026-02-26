@@ -17,6 +17,7 @@ export interface TokenPayload {
   userType: string;
   role: string;
   allowedRoles: string[];
+  impersonatorId?: string;
 }
 
 let cachedSecret: Uint8Array | null = null;
@@ -38,12 +39,18 @@ export async function signAccessToken(payload: TokenPayload): Promise<string> {
     "x-hasura-tenant-id": payload.tenantId,
   };
 
-  return new SignJWT({
+  const claims: Record<string, unknown> = {
     "https://hasura.io/jwt/claims": hasuraClaims,
     email: payload.email,
     name: payload.name,
     userType: payload.userType,
-  })
+  };
+
+  if (payload.impersonatorId) {
+    claims.impersonatorId = payload.impersonatorId;
+  }
+
+  return new SignJWT(claims)
     .setProtectedHeader({ alg: "HS256", typ: "JWT" })
     .setSubject(payload.sub)
     .setIssuedAt()
@@ -61,6 +68,8 @@ export async function verifyAccessToken(
       "https://hasura.io/jwt/claims"
     ] as HasuraClaims;
 
+    const impersonatorId = (payload as Record<string, unknown>).impersonatorId as string | undefined;
+
     return {
       sub: payload.sub!,
       email: (payload as Record<string, unknown>).email as string,
@@ -69,6 +78,7 @@ export async function verifyAccessToken(
       userType: (payload as Record<string, unknown>).userType as string,
       role: claims["x-hasura-default-role"],
       allowedRoles: claims["x-hasura-allowed-roles"],
+      ...(impersonatorId ? { impersonatorId } : {}),
     };
   } catch {
     return null;

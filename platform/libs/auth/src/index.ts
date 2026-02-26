@@ -2,7 +2,11 @@ export { default as AuthProvider, useAuth } from './AuthProvider';
 export type { AuthProviderProps } from './AuthProvider';
 export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as LoginPage } from './LoginPage';
-export { configureAuthClient } from './auth-client';
+export {
+  configureAuthClient,
+  startImpersonation,
+  endImpersonation,
+} from './auth-client';
 export {
   getAccessToken,
   setAccessToken,
@@ -10,3 +14,4 @@ export {
   isTokenValid,
   onTokenChange,
 } from './token-store';
+export { reportError } from './error-reporter';

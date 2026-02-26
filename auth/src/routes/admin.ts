@@ -4,17 +4,30 @@ import {
   requireAdmin,
   isSuperAdmin,
   getEffectiveTenantId,
+  getClientInfo,
 } from "../middleware.ts";
 import {
   listUsers,
   findAdminUserById,
+  findAdminUserByIdAnyTenant,
   createUser,
   updateUser,
   softDeleteUser,
   findUserByEmail,
   listTenants,
+  setImpersonatable,
+  getUserRoles,
 } from "../services/user.ts";
 import type { TokenPayload } from "../services/jwt.ts";
+import { signAccessToken } from "../services/jwt.ts";
+import {
+  createSession,
+  generateRefreshToken,
+  revokeSession,
+  validateRefreshToken,
+} from "../services/session.ts";
+import { logImpersonation } from "../services/impersonation.ts";
+import { getCookie } from "hono/cookie";
 
 const admin = new Hono();
 
@@ -228,6 +241,160 @@ admin.get("/admin/tenants", async (c) => {
 
   const tenants = await listTenants();
   return c.json({ tenants });
+});
+
+// PUT /auth/admin/users/:id/impersonatable — Toggle impersonatable flag (super admin only)
+admin.put("/admin/users/:id/impersonatable", async (c) => {
+  const user = c.get("user");
+
+  if (!isSuperAdmin(user)) {
+    return c.json({ error: "Super admin access required" }, 403);
+  }
+
+  const userId = c.req.param("id");
+  const body = await c.req.json<{ impersonatable: boolean }>();
+
+  if (typeof body.impersonatable !== "boolean") {
+    return c.json({ error: "impersonatable (boolean) is required" }, 400);
+  }
+
+  const tenantId = getEffectiveTenantId(c);
+  const updated = await setImpersonatable(userId, tenantId, body.impersonatable, user.sub);
+
+  if (!updated) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  return c.json({ success: true });
+});
+
+// POST /auth/admin/impersonate/:userId — Start impersonation (super admin only)
+admin.post("/admin/impersonate/:userId", async (c) => {
+  const actor = c.get("user");
+
+  if (!isSuperAdmin(actor)) {
+    return c.json({ error: "Super admin access required" }, 403);
+  }
+
+  const targetUserId = c.req.param("userId");
+
+  // Prevent self-impersonation
+  if (targetUserId === actor.sub) {
+    return c.json({ error: "Cannot impersonate yourself" }, 400);
+  }
+
+  // Load target user (any tenant — super admin can impersonate across tenants)
+  const target = await findAdminUserByIdAnyTenant(targetUserId);
+  if (!target) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  if (!target.isImpersonatable) {
+    return c.json({ error: "User is not impersonatable" }, 403);
+  }
+
+  const { userAgent, ipAddress } = getClientInfo(c);
+
+  // Sign access token for target user with impersonatorId claim
+  const roles = getUserRoles(target);
+  const accessToken = await signAccessToken({
+    sub: target.id,
+    email: target.email,
+    name: target.name,
+    tenantId: target.tenantId,
+    userType: target.userType,
+    role: roles.role,
+    allowedRoles: roles.allowedRoles,
+    impersonatorId: actor.sub,
+  });
+
+  // Create impersonation session with 4-hour TTL
+  const refreshToken = generateRefreshToken();
+  const fourHoursMs = 4 * 60 * 60 * 1000;
+  const session = await createSession({
+    tenantId: target.tenantId,
+    userId: target.id,
+    refreshToken,
+    userAgent,
+    ipAddress,
+    impersonatorId: actor.sub,
+    ttlMs: fourHoursMs,
+  });
+
+  // Log impersonation start
+  await logImpersonation({
+    tenantId: target.tenantId,
+    impersonatorId: actor.sub,
+    targetUserId: target.id,
+    sessionId: session.id,
+    action: "start",
+    ipAddress,
+    userAgent,
+  });
+
+  // Set impersonation refresh token cookie (4hr TTL)
+  c.header(
+    "Set-Cookie",
+    `impersonation_refresh_token=${refreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=${4 * 60 * 60}`
+  );
+
+  // Load impersonator name for the banner
+  const impersonator = await findAdminUserByIdAnyTenant(actor.sub);
+
+  return c.json({
+    accessToken,
+    expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+    user: {
+      id: target.id,
+      email: target.email,
+      name: target.name,
+      tenantId: target.tenantId,
+      userType: target.userType,
+      userLevel: target.userLevel,
+      isImpersonatable: target.isImpersonatable,
+    },
+    impersonation: {
+      impersonatorId: actor.sub,
+      impersonatorName: impersonator?.name ?? actor.name,
+    },
+  });
+});
+
+// POST /auth/admin/impersonate/end — End impersonation
+admin.post("/admin/impersonate/end", async (c) => {
+  const actor = c.get("user");
+
+  if (!actor.impersonatorId) {
+    return c.json({ error: "Not currently impersonating" }, 400);
+  }
+
+  // Revoke the impersonation session
+  const impersonationToken = getCookie(c, "impersonation_refresh_token");
+  if (impersonationToken) {
+    const session = await validateRefreshToken(impersonationToken);
+    if (session) {
+      await revokeSession(session.sessionId);
+
+      const { userAgent, ipAddress } = getClientInfo(c);
+      await logImpersonation({
+        tenantId: session.tenantId,
+        impersonatorId: actor.impersonatorId,
+        targetUserId: actor.sub,
+        sessionId: session.sessionId,
+        action: "end",
+        ipAddress,
+        userAgent,
+      });
+    }
+  }
+
+  // Clear the impersonation refresh token cookie
+  c.header(
+    "Set-Cookie",
+    "impersonation_refresh_token=; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=0"
+  );
+
+  return c.json({ success: true });
 });
 
 export default admin;

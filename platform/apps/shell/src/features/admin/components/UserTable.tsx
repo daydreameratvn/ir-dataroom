@@ -10,6 +10,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  Eye,
+  ShieldCheck,
+  ShieldOff,
 } from 'lucide-react';
 import type { UserType, UserLevel } from '@papaya/shared-types';
 import {
@@ -26,6 +29,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Avatar,
   AvatarFallback,
@@ -43,7 +47,7 @@ import {
 } from '@papaya/shared-ui';
 import { useAuth } from '@papaya/auth';
 import useUsers from '../hooks/useUsers';
-import { deleteUser, type AdminUser } from '../api';
+import { deleteUser, setUserImpersonatable, type AdminUser } from '../api';
 import UserDialog from './UserDialog';
 import TenantFilter from './TenantFilter';
 
@@ -105,7 +109,7 @@ function formatRelativeTime(dateString: string | undefined): string {
 
 export default function UserTable() {
   const { t } = useTranslation();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, startImpersonation } = useAuth();
 
   const isSuperAdmin =
     currentUser?.userType === 'papaya' && currentUser?.userLevel === 'admin';
@@ -196,6 +200,23 @@ export default function UserTable() {
     }
   }
 
+  async function handleImpersonate(user: AdminUser) {
+    try {
+      await startImpersonation(user.id);
+    } catch {
+      // Error handling could be improved with a toast
+    }
+  }
+
+  async function handleToggleImpersonatable(user: AdminUser) {
+    try {
+      await setUserImpersonatable(user.id, !user.isImpersonatable);
+      refetch();
+    } catch {
+      // Error handling could be improved with a toast
+    }
+  }
+
   // ── Table columns ──
 
   const columns = useMemo<ColumnDef<AdminUser, unknown>[]>(
@@ -276,6 +297,31 @@ export default function UserTable() {
                   <Pencil className="mr-2 h-4 w-4" />
                   Edit
                 </DropdownMenuItem>
+                {isSuperAdmin && !isSelf && user.isImpersonatable && (
+                  <DropdownMenuItem onClick={() => handleImpersonate(user)}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    Impersonate
+                  </DropdownMenuItem>
+                )}
+                {isSuperAdmin && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => handleToggleImpersonatable(user)}>
+                      {user.isImpersonatable ? (
+                        <>
+                          <ShieldOff className="mr-2 h-4 w-4" />
+                          Disallow Impersonation
+                        </>
+                      ) : (
+                        <>
+                          <ShieldCheck className="mr-2 h-4 w-4" />
+                          Allow Impersonation
+                        </>
+                      )}
+                    </DropdownMenuItem>
+                  </>
+                )}
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => handleDeleteClick(user)}
                   disabled={isSelf}
@@ -290,7 +336,7 @@ export default function UserTable() {
         },
       },
     ],
-    [currentUser?.id],
+    [currentUser?.id, isSuperAdmin],
   );
 
   // ── Pagination info ──

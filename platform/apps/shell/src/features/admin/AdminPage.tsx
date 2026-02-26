@@ -10,6 +10,7 @@ import {
   TabsTrigger,
 } from '@papaya/shared-ui';
 import UserTable from './components/UserTable';
+import ErrorTracker from './components/ErrorTracker';
 
 export default function AdminPage() {
   const { t } = useTranslation();
@@ -25,6 +26,7 @@ export default function AdminPage() {
           <TabsTrigger value="users">{t('nav.adminUsers')}</TabsTrigger>
           <TabsTrigger value="settings">{t('nav.adminSettings')}</TabsTrigger>
           <TabsTrigger value="audit">{t('nav.adminAudit')}</TabsTrigger>
+          <TabsTrigger value="errors">Errors</TabsTrigger>
         </TabsList>
         <TabsContent value="users" className="mt-4">
           <UserTable />
@@ -44,6 +46,9 @@ export default function AdminPage() {
             description={t('admin.auditDesc')}
             action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
+        </TabsContent>
+        <TabsContent value="errors" className="mt-4">
+          <ErrorTracker />
         </TabsContent>
       </Tabs>
     </div>

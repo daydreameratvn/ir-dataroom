@@ -121,3 +121,16 @@ export async function listTenants(): Promise<Tenant[]> {
   const result = await handleResponse<{ data: Tenant[] }>(response);
   return result.data;
 }
+
+export async function setUserImpersonatable(userId: string, impersonatable: boolean): Promise<void> {
+  const response = await fetch(`${BASE}/users/${userId}/impersonatable`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify({ impersonatable }),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const message = (body as Record<string, unknown>).error ?? response.statusText;
+    throw new Error(String(message));
+  }
+}

@@ -44,8 +44,9 @@ export class AuthError extends Error {
 }
 
 // SSO
-export function getSSOUrl(provider: string, tenantId: string, returnUrl = '/'): string {
-  return `${_authBaseUrl}/sso/${provider}?tenant_id=${encodeURIComponent(tenantId)}&return_url=${encodeURIComponent(returnUrl)}`;
+export function getSSOUrl(provider: string, tenantId: string, returnUrl?: string): string {
+  const url = returnUrl ?? `${window.location.origin}/`;
+  return `${_authBaseUrl}/sso/${provider}?tenant_id=${encodeURIComponent(tenantId)}&return_url=${encodeURIComponent(url)}`;
 }
 
 // OTP
@@ -127,8 +128,12 @@ export async function verifyPasskeyRegister(
 }
 
 // Token
-export async function refreshAccessToken(): Promise<AuthResponse> {
-  return authRequest<AuthResponse>('/token/refresh', {
+interface RefreshResponse extends AuthResponse {
+  impersonation?: { impersonatorId: string; impersonatorName: string };
+}
+
+export async function refreshAccessToken(): Promise<RefreshResponse> {
+  return authRequest<RefreshResponse>('/token/refresh', {
     method: 'POST',
   });
 }
@@ -137,5 +142,35 @@ export async function revokeToken(accessToken: string): Promise<void> {
   await authRequest('/token/revoke', {
     method: 'POST',
     headers: { Authorization: `Bearer ${accessToken}` },
+  });
+}
+
+// Impersonation
+export async function startImpersonation(
+  userId: string,
+  token: string,
+): Promise<{
+  accessToken: string;
+  expiresAt: string;
+  user: User;
+  impersonation: { impersonatorId: string; impersonatorName: string };
+}> {
+  const res = await fetch(`${_authBaseUrl}/admin/impersonate/${userId}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error((body as Record<string, string>).error || 'Impersonation failed');
+  }
+  return res.json();
+}
+
+export async function endImpersonation(token: string): Promise<void> {
+  await fetch(`${_authBaseUrl}/admin/impersonate/end`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    credentials: 'include',
   });
 }

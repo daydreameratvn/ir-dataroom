@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Building2 } from 'lucide-react';
 import type { Tenant } from '@papaya/shared-types';
 import {
@@ -16,6 +17,7 @@ interface TenantFilterProps {
 }
 
 export default function TenantFilter({ value, onChange }: TenantFilterProps) {
+  const { t } = useTranslation();
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -53,10 +55,10 @@ export default function TenantFilter({ value, onChange }: TenantFilterProps) {
         disabled={isLoading}
       >
         <SelectTrigger className="w-[220px]">
-          <SelectValue placeholder="Select tenant" />
+          <SelectValue placeholder={t('admin.form.selectTenant')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="__all__">All tenants</SelectItem>
+          <SelectItem value="__all__">{t('admin.form.allTenants')}</SelectItem>
           {tenants.map((tenant) => (
             <SelectItem key={tenant.id} value={tenant.id}>
               {tenant.name}

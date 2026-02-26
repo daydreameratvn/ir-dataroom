@@ -7,15 +7,20 @@ import {
   revokeSession,
   generateRefreshToken,
 } from "../services/session.ts";
-import { findUserById, getUserRoles } from "../services/user.ts";
+import { findUserById, findAdminUserByIdAnyTenant, getUserRoles } from "../services/user.ts";
 import { signAccessToken } from "../services/jwt.ts";
 
 const token = new Hono();
 
 // POST /auth/token/refresh — exchange refresh token for new access token
 token.post("/token/refresh", async (c) => {
-  // Try cookie first, then body
-  let refreshToken = getCookie(c, "refresh_token");
+  // Check for impersonation refresh token first, then standard refresh token
+  let refreshToken = getCookie(c, "impersonation_refresh_token");
+  const isImpersonationRefresh = !!refreshToken;
+
+  if (!refreshToken) {
+    refreshToken = getCookie(c, "refresh_token");
+  }
 
   if (!refreshToken) {
     try {
@@ -33,9 +38,10 @@ token.post("/token/refresh", async (c) => {
   const session = await validateRefreshToken(refreshToken);
   if (!session) {
     // Clear the invalid cookie
+    const cookieName = isImpersonationRefresh ? "impersonation_refresh_token" : "refresh_token";
     c.header(
       "Set-Cookie",
-      "refresh_token=; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=0"
+      `${cookieName}=; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=0`
     );
     return c.json({ error: "Invalid or expired refresh token" }, 401);
   }
@@ -49,6 +55,7 @@ token.post("/token/refresh", async (c) => {
 
   // Rotate: revoke old session, create new one
   const newRefreshToken = generateRefreshToken();
+  const fourHoursMs = 4 * 60 * 60 * 1000;
   await rotateSession({
     oldSessionId: session.sessionId,
     tenantId: session.tenantId,
@@ -56,6 +63,8 @@ token.post("/token/refresh", async (c) => {
     newRefreshToken,
     userAgent,
     ipAddress,
+    impersonatorId: session.impersonatorId,
+    ttlMs: session.impersonatorId ? fourHoursMs : undefined,
   });
 
   const roles = getUserRoles(user);
@@ -67,14 +76,23 @@ token.post("/token/refresh", async (c) => {
     userType: user.userType,
     role: roles.role,
     allowedRoles: roles.allowedRoles,
+    impersonatorId: session.impersonatorId,
   });
 
-  c.header(
-    "Set-Cookie",
-    `refresh_token=${newRefreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=${30 * 24 * 60 * 60}`
-  );
+  // Set the appropriate cookie
+  if (session.impersonatorId) {
+    c.header(
+      "Set-Cookie",
+      `impersonation_refresh_token=${newRefreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=${4 * 60 * 60}`
+    );
+  } else {
+    c.header(
+      "Set-Cookie",
+      `refresh_token=${newRefreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=${30 * 24 * 60 * 60}`
+    );
+  }
 
-  return c.json({
+  const response: Record<string, unknown> = {
     accessToken,
     expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
     user: {
@@ -85,7 +103,18 @@ token.post("/token/refresh", async (c) => {
       userType: user.userType,
       userLevel: user.userLevel,
     },
-  });
+  };
+
+  // Include impersonation info if this is an impersonation session
+  if (session.impersonatorId) {
+    const impersonator = await findAdminUserByIdAnyTenant(session.impersonatorId);
+    response.impersonation = {
+      impersonatorId: session.impersonatorId,
+      impersonatorName: impersonator?.name ?? "Admin",
+    };
+  }
+
+  return c.json(response);
 });
 
 // POST /auth/token/revoke — revoke current session

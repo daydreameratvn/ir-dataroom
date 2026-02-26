@@ -16,17 +16,18 @@ export async function createSession(opts: {
   refreshToken: string;
   userAgent?: string;
   ipAddress?: string;
+  impersonatorId?: string;
+  ttlMs?: number;
 }): Promise<{ id: string; expiresAt: Date }> {
   const tokenHash = hashToken(opts.refreshToken);
-  const expiresAt = new Date(
-    Date.now() + authConfig.refreshTokenDays * 24 * 60 * 60 * 1000
-  );
+  const ttl = opts.ttlMs ?? authConfig.refreshTokenDays * 24 * 60 * 60 * 1000;
+  const expiresAt = new Date(Date.now() + ttl);
 
   const result = await query<{ id: string }>(
-    `INSERT INTO auth_sessions (tenant_id, user_id, token_hash, expires_at, user_agent, ip_address)
-     VALUES ($1, $2, $3, $4, $5, $6)
+    `INSERT INTO auth_sessions (tenant_id, user_id, token_hash, expires_at, user_agent, ip_address, impersonator_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
      RETURNING id`,
-    [opts.tenantId, opts.userId, tokenHash, expiresAt, opts.userAgent, opts.ipAddress]
+    [opts.tenantId, opts.userId, tokenHash, expiresAt, opts.userAgent, opts.ipAddress, opts.impersonatorId ?? null]
   );
 
   return { id: result.rows[0]!.id, expiresAt };
@@ -34,15 +35,16 @@ export async function createSession(opts: {
 
 export async function validateRefreshToken(
   refreshToken: string
-): Promise<{ userId: string; tenantId: string; sessionId: string } | null> {
+): Promise<{ userId: string; tenantId: string; sessionId: string; impersonatorId?: string } | null> {
   const tokenHash = hashToken(refreshToken);
 
   const result = await query<{
     id: string;
     user_id: string;
     tenant_id: string;
+    impersonator_id: string | null;
   }>(
-    `SELECT id, user_id, tenant_id FROM auth_sessions
+    `SELECT id, user_id, tenant_id, impersonator_id FROM auth_sessions
      WHERE token_hash = $1
        AND expires_at > now()
        AND revoked_at IS NULL
@@ -57,6 +59,7 @@ export async function validateRefreshToken(
     sessionId: row.id,
     userId: row.user_id,
     tenantId: row.tenant_id,
+    ...(row.impersonator_id ? { impersonatorId: row.impersonator_id } : {}),
   };
 }
 
@@ -67,6 +70,8 @@ export async function rotateSession(opts: {
   newRefreshToken: string;
   userAgent?: string;
   ipAddress?: string;
+  impersonatorId?: string;
+  ttlMs?: number;
 }): Promise<{ id: string; expiresAt: Date }> {
   // Revoke old session
   await query(
@@ -82,6 +87,8 @@ export async function rotateSession(opts: {
     refreshToken: opts.newRefreshToken,
     userAgent: opts.userAgent,
     ipAddress: opts.ipAddress,
+    impersonatorId: opts.impersonatorId,
+    ttlMs: opts.ttlMs,
   });
 }
 
