@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Sparkles,
   Send,
@@ -22,6 +23,7 @@ export interface FatimaPanelProps {
 }
 
 export default function FatimaPanel({ open, onClose }: FatimaPanelProps) {
+  const { t } = useTranslation();
   const { messages, isStreaming, send, stop, clear } = useFatimaChat();
   const [input, setInput] = useState('');
   const [expanded, setExpanded] = useState(false);
@@ -70,6 +72,13 @@ export default function FatimaPanel({ open, onClose }: FatimaPanelProps) {
     }
   }
 
+  const suggestions = [
+    t('fatima.suggestions.recentClaims'),
+    t('fatima.suggestions.fraudAlerts'),
+    t('fatima.suggestions.capabilities'),
+    t('fatima.suggestions.lossRatio'),
+  ];
+
   if (!open) return null;
 
   return (
@@ -88,9 +97,9 @@ export default function FatimaPanel({ open, onClose }: FatimaPanelProps) {
             <Sparkles className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold">Fatima</h2>
+            <h2 className="text-sm font-semibold">{t('fatima.name')}</h2>
             <p className="text-[11px] text-muted-foreground">
-              {isStreaming ? 'Thinking...' : 'Wise woman of the desert'}
+              {isStreaming ? t('fatima.thinking') : t('fatima.subtitle')}
             </p>
           </div>
         </div>
@@ -100,7 +109,7 @@ export default function FatimaPanel({ open, onClose }: FatimaPanelProps) {
             size="icon"
             className="h-7 w-7"
             onClick={clear}
-            title="New conversation"
+            title={t('common.newConversation')}
           >
             <RotateCcw className="h-3.5 w-3.5" />
           </Button>
@@ -109,7 +118,7 @@ export default function FatimaPanel({ open, onClose }: FatimaPanelProps) {
             size="icon"
             className="h-7 w-7 hidden sm:flex"
             onClick={() => setExpanded((prev) => !prev)}
-            title={expanded ? 'Collapse' : 'Expand'}
+            title={expanded ? t('common.collapse') : t('common.expand')}
           >
             {expanded ? (
               <Minimize2 className="h-3.5 w-3.5" />
@@ -150,14 +159,9 @@ export default function FatimaPanel({ open, onClose }: FatimaPanelProps) {
       {/* Suggestions (shown when few messages) */}
       {messages.length <= 1 && (
         <div className="border-t px-4 py-3">
-          <p className="mb-2 text-xs font-medium text-muted-foreground">Try asking</p>
+          <p className="mb-2 text-xs font-medium text-muted-foreground">{t('fatima.tryAsking')}</p>
           <div className="flex flex-wrap gap-1.5">
-            {[
-              'Show recent claims',
-              'Any fraud alerts?',
-              'What can you do?',
-              'Loss ratio this month',
-            ].map((suggestion) => (
+            {suggestions.map((suggestion) => (
               <button
                 key={suggestion}
                 className="rounded-full border bg-background px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
@@ -178,7 +182,7 @@ export default function FatimaPanel({ open, onClose }: FatimaPanelProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Fatima anything..."
+            placeholder={t('fatima.placeholder')}
             className="max-h-32 min-h-[20px] flex-1 resize-none bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
             rows={1}
             disabled={isStreaming}
@@ -204,7 +208,7 @@ export default function FatimaPanel({ open, onClose }: FatimaPanelProps) {
           )}
         </div>
         <p className="mt-1.5 text-center text-[10px] text-muted-foreground/50">
-          Fatima can make mistakes. Verify important information.
+          {t('fatima.disclaimer')}
         </p>
       </div>
     </div>

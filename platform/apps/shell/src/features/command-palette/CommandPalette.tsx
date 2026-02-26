@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
   FileText,
@@ -50,6 +51,7 @@ export interface CommandPaletteProps {
 }
 
 export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [fatimaMode, setFatimaMode] = useState(false);
@@ -140,7 +142,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       // Navigation
       {
         id: 'nav-dashboard',
-        label: 'Dashboard',
+        label: t('nav.dashboard'),
         icon: LayoutDashboard,
         section: 'navigation',
         keywords: 'home overview kpi',
@@ -148,7 +150,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-claims-intake',
-        label: 'Claims Intake',
+        label: t('nav.claimsIntake'),
         icon: FileText,
         section: 'navigation',
         keywords: 'new claim submit file',
@@ -156,7 +158,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-claims-review',
-        label: 'Claims Review Queue',
+        label: t('nav.claimsReview'),
         icon: FileText,
         section: 'navigation',
         keywords: 'pending review queue',
@@ -164,7 +166,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-claims-adjudication',
-        label: 'Claims Adjudication',
+        label: t('nav.claimsAdjudication'),
         icon: FileText,
         section: 'navigation',
         keywords: 'assess adjudicate decide',
@@ -172,7 +174,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-claims-history',
-        label: 'Claims History',
+        label: t('nav.claimsHistory'),
         icon: FileText,
         section: 'navigation',
         keywords: 'past claims log archive',
@@ -180,7 +182,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-policies-browse',
-        label: 'Browse Policies',
+        label: t('nav.policiesBrowse'),
         icon: Shield,
         section: 'navigation',
         keywords: 'policy list search',
@@ -188,7 +190,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-policies-endorsements',
-        label: 'Policy Endorsements',
+        label: t('nav.policiesEndorsements'),
         icon: Shield,
         section: 'navigation',
         keywords: 'endorsement modify amend',
@@ -196,7 +198,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-policies-renewals',
-        label: 'Policy Renewals',
+        label: t('nav.policiesRenewals'),
         icon: Shield,
         section: 'navigation',
         keywords: 'renew renewal expiring',
@@ -204,7 +206,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-policies-servicing',
-        label: 'Policy Servicing',
+        label: t('nav.policiesServicing'),
         icon: Shield,
         section: 'navigation',
         keywords: 'service maintain update',
@@ -212,7 +214,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-underwriting-applications',
-        label: 'Underwriting Applications',
+        label: t('nav.underwritingApplications'),
         icon: ClipboardCheck,
         section: 'navigation',
         keywords: 'application apply new policy',
@@ -220,7 +222,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-underwriting-risk',
-        label: 'Risk Assessment',
+        label: t('nav.underwritingRisk'),
         icon: ClipboardCheck,
         section: 'navigation',
         keywords: 'risk score evaluate',
@@ -228,7 +230,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-underwriting-pricing',
-        label: 'Pricing',
+        label: t('nav.underwritingPricing'),
         icon: ClipboardCheck,
         section: 'navigation',
         keywords: 'premium price quote',
@@ -236,7 +238,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-fwa-alerts',
-        label: 'FWA Alerts',
+        label: t('nav.fwaAlerts'),
         icon: ShieldAlert,
         section: 'navigation',
         keywords: 'fraud waste abuse alert',
@@ -244,7 +246,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-fwa-investigations',
-        label: 'FWA Investigations',
+        label: t('nav.fwaInvestigations'),
         icon: ShieldAlert,
         section: 'navigation',
         keywords: 'investigate fraud case',
@@ -252,7 +254,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-fwa-rules',
-        label: 'FWA Rules Engine',
+        label: t('nav.fwaRules'),
         icon: ShieldAlert,
         section: 'navigation',
         keywords: 'rules engine configure',
@@ -260,7 +262,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-reporting-dashboards',
-        label: 'Reporting Dashboards',
+        label: t('nav.reportingDashboards'),
         icon: BarChart3,
         section: 'navigation',
         keywords: 'dashboard chart analytics',
@@ -268,7 +270,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-reporting-reports',
-        label: 'Reports',
+        label: t('nav.reportingReports'),
         icon: BarChart3,
         section: 'navigation',
         keywords: 'report generate export',
@@ -276,7 +278,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-reporting-analytics',
-        label: 'Analytics',
+        label: t('nav.reportingAnalytics'),
         icon: BarChart3,
         section: 'navigation',
         keywords: 'analytics insights data',
@@ -284,7 +286,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-reporting-loss',
-        label: 'Loss Management',
+        label: t('nav.reportingLoss'),
         icon: BarChart3,
         section: 'navigation',
         keywords: 'loss ratio management',
@@ -292,7 +294,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-providers-directory',
-        label: 'Provider Directory',
+        label: t('nav.providersDirectory'),
         icon: Building2,
         section: 'navigation',
         keywords: 'hospital clinic doctor provider',
@@ -300,7 +302,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-providers-contracts',
-        label: 'Provider Contracts',
+        label: t('nav.providersContracts'),
         icon: Building2,
         section: 'navigation',
         keywords: 'contract agreement',
@@ -308,7 +310,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-providers-performance',
-        label: 'Provider Performance',
+        label: t('nav.providersPerformance'),
         icon: Building2,
         section: 'navigation',
         keywords: 'performance metrics kpi',
@@ -316,7 +318,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-admin-users',
-        label: 'Users & Roles',
+        label: t('nav.adminUsers'),
         icon: Settings,
         section: 'navigation',
         keywords: 'user role permission',
@@ -324,7 +326,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-admin-settings',
-        label: 'System Settings',
+        label: t('nav.adminSettings'),
         icon: Settings,
         section: 'navigation',
         keywords: 'settings configuration',
@@ -332,7 +334,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-admin-audit',
-        label: 'Audit Log',
+        label: t('nav.adminAudit'),
         icon: Settings,
         section: 'navigation',
         keywords: 'audit log trail history',
@@ -340,7 +342,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'nav-ai-agents',
-        label: 'AI Agents',
+        label: t('nav.aiAgents'),
         icon: Bot,
         section: 'navigation',
         keywords: 'ai agent monitor',
@@ -350,7 +352,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       // Quick Actions
       {
         id: 'action-new-claim',
-        label: 'New Claim',
+        label: t('dashboard.newClaim'),
         icon: Plus,
         section: 'quick-actions',
         keywords: 'create new claim submit',
@@ -358,7 +360,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'action-new-policy',
-        label: 'New Policy',
+        label: t('dashboard.newPolicy'),
         icon: Plus,
         section: 'quick-actions',
         keywords: 'create new policy',
@@ -366,7 +368,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       },
       {
         id: 'action-new-application',
-        label: 'New Underwriting Application',
+        label: t('underwriting.newApplication'),
         icon: Plus,
         section: 'quick-actions',
         keywords: 'apply new application underwriting',
@@ -376,9 +378,9 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
       // AI
       {
         id: 'ai-fatima',
-        label: 'Ask Fatima',
+        label: t('fatima.askFatima'),
         icon: Sparkles,
-        shortcut: '⌘J',
+        shortcut: '\u2318J',
         section: 'ai',
         keywords: 'ai assistant help fatima chat question',
         onSelect: () => {
@@ -387,7 +389,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
         },
       },
     ],
-    [go, onOpenFatima]
+    [go, onOpenFatima, t]
   );
 
   const navigation = actions.filter((a) => a.section === 'navigation');
@@ -399,7 +401,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
         className="overflow-hidden p-0 sm:max-w-2xl"
         showCloseButton={false}
       >
-        <DialogTitle className="sr-only">Oasis Command Palette</DialogTitle>
+        <DialogTitle className="sr-only">{t('commandPalette.title')}</DialogTitle>
 
         {fatimaMode ? (
           /* ── Fatima inline response mode ── */
@@ -423,7 +425,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
                     setFatimaStreaming(false);
                   }}
                   className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                  title="Stop"
+                  title={t('common.stop')}
                 >
                   <Square className="h-3 w-3 fill-current" />
                 </button>
@@ -453,13 +455,13 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
                   <kbd className="pointer-events-none inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
                     Esc
                   </kbd>
-                  {' '}to go back
+                  {' '}{t('commandPalette.escToGoBack')}
                 </p>
                 <button
                   onClick={handleContinueInPanel}
                   className="inline-flex items-center gap-1 text-[11px] text-muted-foreground/60 transition-colors hover:text-foreground"
                 >
-                  Open in Fatima
+                  {t('fatima.openInFatima')}
                   <ExternalLink className="h-3 w-3" />
                 </button>
               </div>
@@ -469,7 +471,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
           /* ── Normal command palette mode ── */
           <Command className="[&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
             <CommandInput
-              placeholder="Type a command or ask Fatima..."
+              placeholder={t('commandPalette.placeholder')}
               value={search}
               onValueChange={setSearch}
             />
@@ -477,19 +479,19 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
               <CommandEmpty>
                 <div className="flex flex-col items-center gap-2 py-4">
                   <Search className="h-10 w-10 text-muted-foreground/40" />
-                  <p className="text-muted-foreground">No results found.</p>
+                  <p className="text-muted-foreground">{t('common.noResults')}</p>
                   <button
                     className="mt-1 inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
                     onClick={() => askFatima(search)}
                   >
                     <Sparkles className="h-3.5 w-3.5" />
-                    Ask Fatima: &ldquo;{search}&rdquo;
+                    {t('fatima.askWithQuery', { query: search })}
                   </button>
                 </div>
               </CommandEmpty>
 
               {/* Always show "Ask Fatima" with current query when typing */}
-              <CommandGroup heading="AI Assistant">
+              <CommandGroup heading={t('commandPalette.aiAssistant')}>
                 <CommandItem
                   value="ask fatima ai assistant help chat question"
                   onSelect={() => {
@@ -507,23 +509,23 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
                   </div>
                   <div className="flex flex-1 flex-col">
                     <span className="font-medium">
-                      {search.trim() ? 'Ask Fatima' : 'Open Fatima'}
+                      {search.trim() ? t('fatima.askFatima') : t('fatima.openFatima')}
                     </span>
                     <span className="text-xs text-muted-foreground truncate">
                       {search.trim()
-                        ? `"${search.trim()}"`
-                        : 'Wise woman of the desert'}
+                        ? `\u201c${search.trim()}\u201d`
+                        : t('fatima.subtitle')}
                     </span>
                   </div>
                   <CommandShortcut>
-                    {search.trim() ? '↵' : '⌘J'}
+                    {search.trim() ? '\u21b5' : '\u2318J'}
                   </CommandShortcut>
                 </CommandItem>
               </CommandGroup>
 
               <CommandSeparator />
 
-              <CommandGroup heading="Quick Actions">
+              <CommandGroup heading={t('commandPalette.quickActions')}>
                 {quickActions.map((action) => (
                   <CommandItem
                     key={action.id}
@@ -542,7 +544,7 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
 
               <CommandSeparator />
 
-              <CommandGroup heading="Go to">
+              <CommandGroup heading={t('commandPalette.goTo')}>
                 {navigation.map((action) => (
                   <CommandItem
                     key={action.id}
@@ -562,10 +564,10 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
               <div className="border-t px-3 py-2">
                 <p className="text-[11px] text-muted-foreground/60 text-center">
                   <kbd className="pointer-events-none inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-                    <span className="text-xs">⌘</span>K
+                    <span className="text-xs">{'\u2318'}</span>K
                   </kbd>
-                  {' '}to open{' · '}
-                  type anything to ask Fatima
+                  {' '}{t('commandPalette.openHint')}{' \u00b7 '}
+                  {t('commandPalette.typeToAsk')}
                 </p>
               </div>
             </CommandList>

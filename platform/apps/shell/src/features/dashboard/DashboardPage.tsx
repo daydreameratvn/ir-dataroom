@@ -21,17 +21,17 @@ import {
 } from '@papaya/shared-ui';
 import { useAuth } from '@papaya/auth';
 
-const recentActivity = [
-  { id: '1', type: 'claim', action: 'AI adjudicated', detail: 'CLM-2024-0892 — Auto-approved ($2,450)', time: '2m ago', agent: 'Claim Assessor' },
-  { id: '2', type: 'fwa', action: 'Alert flagged', detail: 'Provider P-0034 — Unusual billing pattern', time: '8m ago', agent: 'Fraud Detector' },
-  { id: '3', type: 'claim', action: 'Submitted', detail: 'CLM-2024-0893 — Hospitalization ($15,800)', time: '12m ago', agent: undefined },
-  { id: '4', type: 'policy', action: 'Renewed', detail: 'POL-TH-2024-1205 — Premium adjusted +5%', time: '25m ago', agent: 'Underwriting Assistant' },
-  { id: '5', type: 'claim', action: 'Documents analyzed', detail: 'CLM-2024-0890 — 12 documents processed', time: '32m ago', agent: 'Document Analyzer' },
-];
-
 export default function DashboardPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+
+  const recentActivity = [
+    { id: '1', type: 'claim', action: t('dashboard.activity.aiAdjudicated'), detail: 'CLM-2024-0892 — Auto-approved ($2,450)', time: '2m ago', agent: t('aiAgents.agents.claimAssessor') },
+    { id: '2', type: 'fwa', action: t('dashboard.activity.alertFlagged'), detail: 'Provider P-0034 — Unusual billing pattern', time: '8m ago', agent: t('aiAgents.agents.fraudDetector') },
+    { id: '3', type: 'claim', action: t('dashboard.activity.submitted'), detail: 'CLM-2024-0893 — Hospitalization ($15,800)', time: '12m ago', agent: undefined },
+    { id: '4', type: 'policy', action: t('dashboard.activity.renewed'), detail: 'POL-TH-2024-1205 — Premium adjusted +5%', time: '25m ago', agent: t('aiAgents.agents.underwritingAssistant') },
+    { id: '5', type: 'claim', action: t('dashboard.activity.documentsAnalyzed'), detail: 'CLM-2024-0890 — 12 documents processed', time: '32m ago', agent: t('aiAgents.agents.documentAnalyzer') },
+  ];
 
   return (
     <div className="space-y-6">
@@ -46,31 +46,31 @@ export default function DashboardPage() {
           label={t('dashboard.totalClaims')}
           value="1,284"
           icon={<FileText className="h-5 w-5" />}
-          trend={{ value: 12.5, label: 'vs last month' }}
+          trend={{ value: 12.5, label: t('dashboard.vsLastMonth') }}
         />
         <StatCard
           label={t('dashboard.pendingReview')}
           value="47"
           icon={<Clock className="h-5 w-5" />}
-          trend={{ value: -8.3, label: 'vs last week' }}
+          trend={{ value: -8.3, label: t('dashboard.vsLastWeek') }}
         />
         <StatCard
           label={t('dashboard.activePolicies')}
           value="8,392"
           icon={<Shield className="h-5 w-5" />}
-          trend={{ value: 3.2, label: 'growth' }}
+          trend={{ value: 3.2, label: t('dashboard.growth') }}
         />
         <StatCard
           label={t('dashboard.fwaAlerts')}
           value="12"
           icon={<ShieldAlert className="h-5 w-5" />}
-          trend={{ value: -15.0, label: 'vs last month' }}
+          trend={{ value: -15.0, label: t('dashboard.vsLastMonth') }}
         />
         <StatCard
           label={t('dashboard.aiProcessed')}
           value="94.7%"
           icon={<Bot className="h-5 w-5" />}
-          trend={{ value: 2.1, label: 'accuracy' }}
+          trend={{ value: 2.1, label: t('dashboard.accuracy') }}
         />
       </div>
 
@@ -81,7 +81,7 @@ export default function DashboardPage() {
             <CardTitle className="text-base font-semibold">{t('dashboard.recentActivity')}</CardTitle>
             <Button variant="ghost" size="sm">
               <TrendingUp className="mr-1.5 h-3.5 w-3.5" />
-              View all
+              {t('common.viewAll')}
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">

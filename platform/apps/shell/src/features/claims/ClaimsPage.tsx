@@ -35,33 +35,33 @@ export default function ClaimsPage() {
         <TabsContent value="intake" className="mt-4">
           <EmptyState
             icon={<FileText className="h-6 w-6" />}
-            title="Claims Intake"
-            description="AI-powered claims processing. Submit, review, and adjudicate claims with intelligent automation."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('claims.intakeTitle')}
+            description={t('claims.intakeDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="review" className="mt-4">
           <EmptyState
             icon={<FileText className="h-6 w-6" />}
-            title="Review Queue"
-            description="Claims pending manual review. AI has flagged these for human attention."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('claims.reviewTitle')}
+            description={t('claims.reviewDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="adjudication" className="mt-4">
           <EmptyState
             icon={<FileText className="h-6 w-6" />}
-            title="Adjudication"
-            description="Final adjudication decisions on reviewed claims. Approve, deny, or request additional information."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('claims.adjudicationTitle')}
+            description={t('claims.adjudicationDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="history" className="mt-4">
           <EmptyState
             icon={<FileText className="h-6 w-6" />}
-            title="Claims History"
-            description="Browse all processed claims with full audit trail and decision history."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('claims.historyTitle')}
+            description={t('claims.historyDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
       </Tabs>

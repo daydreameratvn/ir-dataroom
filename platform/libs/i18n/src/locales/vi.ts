@@ -35,6 +35,17 @@ const translations = {
       'Tính năng này đang được đội ngũ kỹ sư AI của chúng tôi xây dựng và sẽ sớm ra mắt.',
     welcome: 'Chào mừng trở lại',
     selectModule: 'Chọn một mô-đun từ thanh bên để bắt đầu',
+    getStarted: 'Bắt đầu',
+    viewAll: 'Xem tất cả',
+    noResults: 'Không tìm thấy kết quả.',
+    newConversation: 'Cuộc trò chuyện mới',
+    stop: 'Dừng',
+    collapse: 'Thu nhỏ',
+    expand: 'Mở rộng',
+  },
+
+  app: {
+    name: 'Oasis',
   },
 
   nav: {
@@ -93,6 +104,17 @@ const translations = {
     runAnalysis: 'Chạy phân tích',
     claimsTrend: 'Xu hướng bồi thường',
     topProviders: 'Nhà cung cấp hàng đầu',
+    vsLastMonth: 'so với tháng trước',
+    vsLastWeek: 'so với tuần trước',
+    growth: 'tăng trưởng',
+    accuracy: 'độ chính xác',
+    activity: {
+      aiAdjudicated: 'AI đã giám định',
+      alertFlagged: 'Cảnh báo đã phát hiện',
+      submitted: 'Đã gửi',
+      renewed: 'Đã tái tục',
+      documentsAnalyzed: 'Đã phân tích tài liệu',
+    },
   },
 
   claims: {
@@ -114,6 +136,18 @@ const translations = {
       denied: 'Đã từ chối',
       appealed: 'Đã khiếu nại',
     },
+    intakeTitle: 'Tiếp nhận bồi thường',
+    intakeDesc:
+      'Xử lý bồi thường bằng AI. Gửi, xét duyệt và giám định bồi thường với tự động hóa thông minh.',
+    reviewTitle: 'Hàng chờ xét duyệt',
+    reviewDesc:
+      'Các yêu cầu bồi thường chờ xét duyệt thủ công. AI đã đánh dấu cần sự chú ý của con người.',
+    adjudicationTitle: 'Giám định',
+    adjudicationDesc:
+      'Quyết định giám định cuối cùng về các yêu cầu đã xét duyệt. Phê duyệt, từ chối hoặc yêu cầu thêm thông tin.',
+    historyTitle: 'Lịch sử bồi thường',
+    historyDesc:
+      'Duyệt tất cả yêu cầu bồi thường đã xử lý với lịch sử kiểm toán và quyết định đầy đủ.',
   },
 
   policies: {
@@ -132,6 +166,18 @@ const translations = {
       cancelled: 'Đã hủy',
       pending: 'Đang chờ',
     },
+    browseTitle: 'Trình duyệt hợp đồng',
+    browseDesc:
+      'Quản lý hợp đồng bảo hiểm, bổ sung sửa đổi và tái tục trên toàn danh mục.',
+    endorsementsTitle: 'Bổ sung sửa đổi',
+    endorsementsDesc:
+      'Xử lý bổ sung sửa đổi hợp đồng, sửa đổi và điều chỉnh giữa kỳ.',
+    renewalsTitle: 'Tái tục',
+    renewalsDesc:
+      'Theo dõi các lần tái tục hợp đồng sắp tới và quản lý quy trình tái tục.',
+    servicingTitle: 'Dịch vụ hợp đồng',
+    servicingDesc:
+      'Xử lý yêu cầu dịch vụ hợp đồng, hủy bỏ và thắc mắc khách hàng.',
   },
 
   underwriting: {
@@ -148,6 +194,15 @@ const translations = {
       referToUnderwriter: 'Chuyển cho người bảo lãnh',
       moreInfoRequired: 'Cần thêm thông tin',
     },
+    applicationsTitle: 'Đơn đăng ký',
+    applicationsDesc:
+      'Đánh giá rủi ro và định giá hỗ trợ bởi AI cho các đơn đăng ký bảo hiểm mới.',
+    riskTitle: 'Đánh giá rủi ro',
+    riskDesc:
+      'Chấm điểm và phân tích rủi ro bằng AI cho từng đơn đăng ký và danh mục đầu tư.',
+    pricingTitle: 'Định giá',
+    pricingDesc:
+      'Mô hình định giá linh hoạt và tính toán phí bảo hiểm dựa trên hồ sơ rủi ro.',
   },
 
   fwa: {
@@ -163,6 +218,15 @@ const translations = {
     investigate: 'Điều tra',
     resolve: 'Giải quyết',
     falsePositive: 'Báo động giả',
+    alertsTitle: 'Cảnh báo FWA',
+    alertsDesc:
+      'Phát hiện gian lận, lãng phí và lạm dụng theo thời gian thực bằng trợ lý AI của Papaya.',
+    investigationsTitle: 'Điều tra',
+    investigationsDesc:
+      'Theo dõi và quản lý các cuộc điều tra gian lận đang tiến hành với quản lý hồ sơ đầy đủ.',
+    rulesTitle: 'Công cụ quy tắc',
+    rulesDesc:
+      'Cấu hình và quản lý quy tắc phát hiện gian lận, ngưỡng và mô hình chấm điểm.',
   },
 
   providers: {
@@ -173,6 +237,15 @@ const translations = {
     contractStatus: 'Trạng thái hợp đồng',
     networkStatus: 'Trạng thái mạng lưới',
     addProvider: 'Thêm nhà cung cấp',
+    directoryTitle: 'Danh bạ nhà cung cấp',
+    directoryDesc:
+      'Quản lý mạng lưới nhà cung cấp y tế, hợp đồng và chỉ số hiệu suất.',
+    contractsTitle: 'Hợp đồng',
+    contractsDesc:
+      'Xem và quản lý hợp đồng nhà cung cấp, bảng phí và thỏa thuận.',
+    performanceTitle: 'Hiệu suất',
+    performanceDesc:
+      'Theo dõi chỉ số hiệu suất nhà cung cấp, điểm chất lượng và xếp hạng tuân thủ.',
   },
 
   reporting: {
@@ -183,6 +256,18 @@ const translations = {
     lossRatio: 'Tỷ lệ tổn thất',
     claimsRatio: 'Tỷ lệ bồi thường',
     exportData: 'Xuất dữ liệu',
+    dashboardsTitle: 'Bảng điều khiển',
+    dashboardsDesc:
+      'Phân tích bảo hiểm toàn diện, báo cáo và thông tin quản lý tổn thất.',
+    reportsTitle: 'Báo cáo',
+    reportsDesc:
+      'Tạo và lên lịch báo cáo pháp lý, tài chính và vận hành.',
+    analyticsTitle: 'Phân tích',
+    analyticsDesc:
+      'Phân tích chuyên sâu với truy vấn tùy chỉnh, trực quan hóa và khám phá dữ liệu.',
+    lossTitle: 'Quản lý tổn thất',
+    lossDesc:
+      'Theo dõi tỷ lệ tổn thất, mức dự phòng đầy đủ và tam giác phát triển bồi thường.',
   },
 
   admin: {
@@ -196,6 +281,15 @@ const translations = {
     aiAgentConfig: 'Cấu hình trợ lý AI',
     addUser: 'Thêm người dùng',
     inviteUser: 'Mời người dùng',
+    usersTitle: 'Người dùng & Vai trò',
+    usersDesc:
+      'Quản lý người dùng, vai trò, cài đặt hệ thống và xem nhật ký kiểm toán.',
+    settingsTitle: 'Cài đặt',
+    settingsDesc:
+      'Cấu hình cài đặt toàn hệ thống, tích hợp và tùy chọn đối tác.',
+    auditTitle: 'Nhật ký kiểm toán',
+    auditDesc:
+      'Xem tất cả hoạt động hệ thống, hành động người dùng và thay đổi cấu hình.',
   },
 
   auth: {
@@ -253,6 +347,51 @@ const translations = {
     },
     configure: 'Cấu hình',
     viewLogs: 'Xem nhật ký',
+  },
+
+  fatima: {
+    name: 'Fatima',
+    subtitle: 'Người phụ nữ thông thái sa mạc',
+    pageSubtitle: 'Trợ lý AI hoạt động bảo hiểm của bạn',
+    thinking: 'Đang suy nghĩ...',
+    placeholder: 'Hỏi Fatima bất cứ điều gì...',
+    pagePlaceholder:
+      'Hỏi Fatima bất cứ điều gì về hoạt động bảo hiểm của bạn...',
+    disclaimer:
+      'Fatima có thể mắc sai lầm. Hãy xác minh thông tin quan trọng.',
+    tryAsking: 'Thử hỏi',
+    askFatima: 'Hỏi Fatima',
+    openFatima: 'Mở Fatima',
+    openInFatima: 'Mở trong Fatima',
+    askWithQuery: 'Hỏi Fatima: \u201c{{query}}\u201d',
+    suggestions: {
+      recentClaims: 'Hiển thị bồi thường gần đây',
+      fraudAlerts: 'Có cảnh báo gian lận nào không?',
+      capabilities: 'Bạn có thể làm gì?',
+      lossRatio: 'Tỷ lệ tổn thất tháng này',
+      fraudAlertsToday: 'Có cảnh báo gian lận hôm nay không?',
+      whatIsLossRatio: 'Tỷ lệ tổn thất của chúng tôi là bao nhiêu?',
+      findPolicy: 'Tìm hợp đồng cho Siam Group',
+      underwriting: 'Giúp tôi về bảo lãnh phát hành',
+    },
+  },
+
+  theme: {
+    light: 'Sáng',
+    dark: 'Tối',
+    system: 'Hệ thống',
+    switchTheme: 'Giao diện',
+  },
+
+  commandPalette: {
+    title: 'Bảng lệnh Oasis',
+    placeholder: 'Nhập lệnh hoặc hỏi Fatima...',
+    aiAssistant: 'Trợ lý AI',
+    quickActions: 'Thao tác nhanh',
+    goTo: 'Đi đến',
+    openHint: 'để mở',
+    typeToAsk: 'nhập bất cứ điều gì để hỏi Fatima',
+    escToGoBack: 'để quay lại',
   },
 } as const;
 

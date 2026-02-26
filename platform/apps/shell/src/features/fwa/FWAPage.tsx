@@ -28,25 +28,25 @@ export default function FWAPage() {
         <TabsContent value="alerts" className="mt-4">
           <EmptyState
             icon={<ShieldAlert className="h-6 w-6" />}
-            title="FWA Alerts"
-            description="Real-time fraud, waste, and abuse detection powered by Papaya AI agents."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('fwa.alertsTitle')}
+            description={t('fwa.alertsDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="investigations" className="mt-4">
           <EmptyState
             icon={<ShieldAlert className="h-6 w-6" />}
-            title="Investigations"
-            description="Track and manage ongoing fraud investigations with full case management."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('fwa.investigationsTitle')}
+            description={t('fwa.investigationsDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="rules" className="mt-4">
           <EmptyState
             icon={<ShieldAlert className="h-6 w-6" />}
-            title="Rules Engine"
-            description="Configure and manage fraud detection rules, thresholds, and scoring models."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('fwa.rulesTitle')}
+            description={t('fwa.rulesDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
       </Tabs>

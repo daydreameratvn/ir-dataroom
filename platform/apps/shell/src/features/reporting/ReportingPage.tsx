@@ -29,33 +29,33 @@ export default function ReportingPage() {
         <TabsContent value="dashboards" className="mt-4">
           <EmptyState
             icon={<BarChart3 className="h-6 w-6" />}
-            title="Dashboards"
-            description="Comprehensive insurance analytics, reporting, and loss management insights."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('reporting.dashboardsTitle')}
+            description={t('reporting.dashboardsDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="reports" className="mt-4">
           <EmptyState
             icon={<BarChart3 className="h-6 w-6" />}
-            title="Reports"
-            description="Generate and schedule regulatory, financial, and operational reports."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('reporting.reportsTitle')}
+            description={t('reporting.reportsDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="analytics" className="mt-4">
           <EmptyState
             icon={<BarChart3 className="h-6 w-6" />}
-            title="Analytics"
-            description="Deep-dive analytics with custom queries, visualizations, and data exploration."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('reporting.analyticsTitle')}
+            description={t('reporting.analyticsDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="loss" className="mt-4">
           <EmptyState
             icon={<BarChart3 className="h-6 w-6" />}
-            title="Loss Management"
-            description="Track loss ratios, reserve adequacy, and claims development triangles."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('reporting.lossTitle')}
+            description={t('reporting.lossDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
       </Tabs>

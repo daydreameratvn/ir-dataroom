@@ -28,25 +28,25 @@ export default function AdminPage() {
         <TabsContent value="users" className="mt-4">
           <EmptyState
             icon={<Settings className="h-6 w-6" />}
-            title="Users & Roles"
-            description="Manage users, roles, system settings, and review audit trails."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('admin.usersTitle')}
+            description={t('admin.usersDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="settings" className="mt-4">
           <EmptyState
             icon={<Settings className="h-6 w-6" />}
-            title="Settings"
-            description="Configure system-wide settings, integrations, and tenant preferences."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('admin.settingsTitle')}
+            description={t('admin.settingsDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="audit" className="mt-4">
           <EmptyState
             icon={<Settings className="h-6 w-6" />}
-            title="Audit Log"
-            description="Review all system activity, user actions, and configuration changes."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('admin.auditTitle')}
+            description={t('admin.auditDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
       </Tabs>

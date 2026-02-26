@@ -34,25 +34,25 @@ export default function ProvidersPage() {
         <TabsContent value="directory" className="mt-4">
           <EmptyState
             icon={<Building2 className="h-6 w-6" />}
-            title="Provider Directory"
-            description="Manage your medical provider network, contracts, and performance metrics."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('providers.directoryTitle')}
+            description={t('providers.directoryDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="contracts" className="mt-4">
           <EmptyState
             icon={<Building2 className="h-6 w-6" />}
-            title="Contracts"
-            description="View and manage provider contracts, fee schedules, and agreements."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('providers.contractsTitle')}
+            description={t('providers.contractsDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="performance" className="mt-4">
           <EmptyState
             icon={<Building2 className="h-6 w-6" />}
-            title="Performance"
-            description="Track provider performance metrics, quality scores, and compliance ratings."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('providers.performanceTitle')}
+            description={t('providers.performanceDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
       </Tabs>

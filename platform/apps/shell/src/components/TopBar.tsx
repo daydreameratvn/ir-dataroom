@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
 import { Separator } from '@papaya/shared-ui';
 import LanguageSwitcher from './LanguageSwitcher';
+import ThemeChooser from './ThemeChooser';
 import UserMenu from './UserMenu';
 
 export interface TopBarProps {
@@ -53,6 +54,7 @@ export default function TopBar({ onOpenCommandPalette }: TopBarProps) {
           </kbd>
         </button>
         <Separator orientation="vertical" className="mx-1 h-6" />
+        <ThemeChooser />
         <LanguageSwitcher />
         <UserMenu />
       </div>

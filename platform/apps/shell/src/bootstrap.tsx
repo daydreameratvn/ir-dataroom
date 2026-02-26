@@ -7,6 +7,7 @@ import { setTokenAccessor } from '@papaya/api-client';
 import { AuthProvider, getAccessToken } from '@papaya/auth';
 import { routes } from './routes';
 import TenantProvider from './providers/TenantProvider';
+import ThemeProvider from './providers/ThemeProvider';
 import '@papaya/shared-ui/globals.css';
 
 const queryClient = new QueryClient({
@@ -28,11 +29,13 @@ initI18n().then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <TenantProvider>
-          <AuthProvider>
-            <RouterProvider router={router} />
-          </AuthProvider>
-        </TenantProvider>
+        <ThemeProvider>
+          <TenantProvider>
+            <AuthProvider>
+              <RouterProvider router={router} />
+            </AuthProvider>
+          </TenantProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     </StrictMode>,
   );

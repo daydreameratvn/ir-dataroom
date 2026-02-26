@@ -35,33 +35,33 @@ export default function PoliciesPage() {
         <TabsContent value="browse" className="mt-4">
           <EmptyState
             icon={<Shield className="h-6 w-6" />}
-            title="Policy Browser"
-            description="Manage insurance policies, endorsements, and renewals across your portfolio."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('policies.browseTitle')}
+            description={t('policies.browseDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="endorsements" className="mt-4">
           <EmptyState
             icon={<Shield className="h-6 w-6" />}
-            title="Endorsements"
-            description="Process policy endorsements, amendments, and mid-term adjustments."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('policies.endorsementsTitle')}
+            description={t('policies.endorsementsDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="renewals" className="mt-4">
           <EmptyState
             icon={<Shield className="h-6 w-6" />}
-            title="Renewals"
-            description="Track upcoming policy renewals and manage the renewal workflow."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('policies.renewalsTitle')}
+            description={t('policies.renewalsDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="servicing" className="mt-4">
           <EmptyState
             icon={<Shield className="h-6 w-6" />}
-            title="Policy Servicing"
-            description="Handle policy servicing requests, cancellations, and customer inquiries."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('policies.servicingTitle')}
+            description={t('policies.servicingDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
       </Tabs>

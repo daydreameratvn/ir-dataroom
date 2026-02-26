@@ -35,6 +35,17 @@ const translations = {
       'ฟีเจอร์นี้กำลังถูกพัฒนาโดยทีมวิศวกร AI ของเราและจะพร้อมใช้งานเร็วๆ นี้',
     welcome: 'ยินดีต้อนรับกลับ',
     selectModule: 'เลือกโมดูลจากแถบด้านข้างเพื่อเริ่มต้น',
+    getStarted: 'เริ่มต้น',
+    viewAll: 'ดูทั้งหมด',
+    noResults: 'ไม่พบผลลัพธ์',
+    newConversation: 'สนทนาใหม่',
+    stop: 'หยุด',
+    collapse: 'ย่อ',
+    expand: 'ขยาย',
+  },
+
+  app: {
+    name: 'Oasis',
   },
 
   nav: {
@@ -93,6 +104,17 @@ const translations = {
     runAnalysis: 'เรียกใช้การวิเคราะห์',
     claimsTrend: 'แนวโน้มสินไหม',
     topProviders: 'ผู้ให้บริการอันดับต้น',
+    vsLastMonth: 'เทียบกับเดือนก่อน',
+    vsLastWeek: 'เทียบกับสัปดาห์ก่อน',
+    growth: 'เติบโต',
+    accuracy: 'ความแม่นยำ',
+    activity: {
+      aiAdjudicated: 'AI พิจารณาแล้ว',
+      alertFlagged: 'แจ้งเตือนถูกตั้งค่า',
+      submitted: 'ส่งแล้ว',
+      renewed: 'ต่ออายุแล้ว',
+      documentsAnalyzed: 'วิเคราะห์เอกสารแล้ว',
+    },
   },
 
   claims: {
@@ -114,6 +136,18 @@ const translations = {
       denied: 'ปฏิเสธแล้ว',
       appealed: 'อุทธรณ์แล้ว',
     },
+    intakeTitle: 'การรับเรื่องสินไหม',
+    intakeDesc:
+      'การประมวลผลสินไหมด้วย AI ส่ง ตรวจสอบ และพิจารณาสินไหมด้วยระบบอัตโนมัติอัจฉริยะ',
+    reviewTitle: 'คิวตรวจสอบ',
+    reviewDesc:
+      'สินไหมที่รอการตรวจสอบด้วยตนเอง AI ได้ทำเครื่องหมายเพื่อรอการพิจารณาจากเจ้าหน้าที่',
+    adjudicationTitle: 'การพิจารณา',
+    adjudicationDesc:
+      'การตัดสินพิจารณาขั้นสุดท้าย อนุมัติ ปฏิเสธ หรือขอข้อมูลเพิ่มเติม',
+    historyTitle: 'ประวัติสินไหม',
+    historyDesc:
+      'เรียกดูสินไหมที่ประมวลผลแล้วทั้งหมดพร้อมเส้นทางการตรวจสอบและประวัติการตัดสินใจ',
   },
 
   policies: {
@@ -132,6 +166,18 @@ const translations = {
       cancelled: 'ยกเลิกแล้ว',
       pending: 'รอดำเนินการ',
     },
+    browseTitle: 'เรียกดูกรมธรรม์',
+    browseDesc:
+      'จัดการกรมธรรม์ สลักหลัง และการต่ออายุในพอร์ตโฟลิโอของคุณ',
+    endorsementsTitle: 'สลักหลัง',
+    endorsementsDesc:
+      'ดำเนินการสลักหลังกรมธรรม์ การแก้ไข และการปรับปรุงระหว่างระยะเวลา',
+    renewalsTitle: 'ต่ออายุ',
+    renewalsDesc:
+      'ติดตามการต่ออายุกรมธรรม์ที่จะมาถึงและจัดการขั้นตอนการต่ออายุ',
+    servicingTitle: 'บริการกรมธรรม์',
+    servicingDesc:
+      'จัดการคำขอบริการกรมธรรม์ การยกเลิก และข้อสงสัยของลูกค้า',
   },
 
   underwriting: {
@@ -148,6 +194,15 @@ const translations = {
       referToUnderwriter: 'ส่งต่อผู้รับประกัน',
       moreInfoRequired: 'ต้องการข้อมูลเพิ่มเติม',
     },
+    applicationsTitle: 'ใบสมัคร',
+    applicationsDesc:
+      'การประเมินความเสี่ยงและการกำหนดราคาด้วย AI สำหรับใบสมัครประกันภัยใหม่',
+    riskTitle: 'การประเมินความเสี่ยง',
+    riskDesc:
+      'การให้คะแนนและวิเคราะห์ความเสี่ยงด้วย AI สำหรับใบสมัครรายบุคคลและพอร์ตโฟลิโอ',
+    pricingTitle: 'การกำหนดราคา',
+    pricingDesc:
+      'โมเดลการกำหนดราคาแบบไดนามิกและการคำนวณเบี้ยประกันตามโปรไฟล์ความเสี่ยง',
   },
 
   fwa: {
@@ -163,6 +218,15 @@ const translations = {
     investigate: 'สอบสวน',
     resolve: 'แก้ไข',
     falsePositive: 'ผลบวกปลอม',
+    alertsTitle: 'การแจ้งเตือน FWA',
+    alertsDesc:
+      'การตรวจจับการฉ้อฉล ความสูญเปล่า และการใช้ในทางที่ผิดแบบเรียลไทม์โดย AI ของ Papaya',
+    investigationsTitle: 'การสอบสวน',
+    investigationsDesc:
+      'ติดตามและจัดการการสอบสวนการฉ้อฉลที่กำลังดำเนินอยู่พร้อมระบบจัดการคดีเต็มรูปแบบ',
+    rulesTitle: 'เครื่องมือกฎ',
+    rulesDesc:
+      'กำหนดค่าและจัดการกฎการตรวจจับการฉ้อฉล เกณฑ์ และโมเดลการให้คะแนน',
   },
 
   providers: {
@@ -173,6 +237,15 @@ const translations = {
     contractStatus: 'สถานะสัญญา',
     networkStatus: 'สถานะเครือข่าย',
     addProvider: 'เพิ่มผู้ให้บริการ',
+    directoryTitle: 'ไดเรกทอรีผู้ให้บริการ',
+    directoryDesc:
+      'จัดการเครือข่ายผู้ให้บริการทางการแพทย์ สัญญา และตัวชี้วัดผลงาน',
+    contractsTitle: 'สัญญา',
+    contractsDesc:
+      'ดูและจัดการสัญญาผู้ให้บริการ ตารางค่าบริการ และข้อตกลง',
+    performanceTitle: 'ผลงาน',
+    performanceDesc:
+      'ติดตามตัวชี้วัดผลงานผู้ให้บริการ คะแนนคุณภาพ และการจัดอันดับการปฏิบัติตามกฎ',
   },
 
   reporting: {
@@ -183,6 +256,18 @@ const translations = {
     lossRatio: 'อัตราส่วนค่าสินไหม',
     claimsRatio: 'อัตราส่วนสินไหม',
     exportData: 'ส่งออกข้อมูล',
+    dashboardsTitle: 'แดชบอร์ด',
+    dashboardsDesc:
+      'การวิเคราะห์ประกันภัยที่ครอบคลุม การรายงาน และข้อมูลเชิงลึกด้านการจัดการค่าสินไหม',
+    reportsTitle: 'รายงาน',
+    reportsDesc:
+      'สร้างและตั้งเวลารายงานด้านกฎระเบียบ การเงิน และการดำเนินงาน',
+    analyticsTitle: 'การวิเคราะห์',
+    analyticsDesc:
+      'การวิเคราะห์เชิงลึกด้วยการค้นหาแบบกำหนดเอง การแสดงภาพ และการสำรวจข้อมูล',
+    lossTitle: 'การจัดการค่าสินไหม',
+    lossDesc:
+      'ติดตามอัตราส่วนค่าสินไหม ความเพียงพอของเงินสำรอง และสามเหลี่ยมการพัฒนาสินไหม',
   },
 
   admin: {
@@ -196,6 +281,15 @@ const translations = {
     aiAgentConfig: 'การตั้งค่าเอเจนท์ AI',
     addUser: 'เพิ่มผู้ใช้',
     inviteUser: 'เชิญผู้ใช้',
+    usersTitle: 'ผู้ใช้และบทบาท',
+    usersDesc:
+      'จัดการผู้ใช้ บทบาท การตั้งค่าระบบ และตรวจสอบบันทึกการตรวจสอบ',
+    settingsTitle: 'การตั้งค่า',
+    settingsDesc:
+      'กำหนดค่าการตั้งค่าทั้งระบบ การเชื่อมต่อ และการตั้งค่าผู้เช่า',
+    auditTitle: 'บันทึกการตรวจสอบ',
+    auditDesc:
+      'ตรวจสอบกิจกรรมระบบทั้งหมด การกระทำของผู้ใช้ และการเปลี่ยนแปลงการกำหนดค่า',
   },
 
   auth: {
@@ -253,6 +347,51 @@ const translations = {
     },
     configure: 'ตั้งค่า',
     viewLogs: 'ดูบันทึก',
+  },
+
+  fatima: {
+    name: 'Fatima',
+    subtitle: 'สตรีผู้รอบรู้แห่งทะเลทราย',
+    pageSubtitle: 'ผู้ช่วย AI ด้านการดำเนินงานประกันภัยของคุณ',
+    thinking: 'กำลังคิด...',
+    placeholder: 'ถาม Fatima อะไรก็ได้...',
+    pagePlaceholder:
+      'ถาม Fatima อะไรก็ได้เกี่ยวกับการดำเนินงานประกันภัยของคุณ...',
+    disclaimer:
+      'Fatima อาจผิดพลาดได้ กรุณาตรวจสอบข้อมูลสำคัญ',
+    tryAsking: 'ลองถาม',
+    askFatima: 'ถาม Fatima',
+    openFatima: 'เปิด Fatima',
+    openInFatima: 'เปิดใน Fatima',
+    askWithQuery: 'ถาม Fatima: \u201c{{query}}\u201d',
+    suggestions: {
+      recentClaims: 'แสดงสินไหมล่าสุด',
+      fraudAlerts: 'มีการแจ้งเตือนการฉ้อฉลหรือไม่?',
+      capabilities: 'คุณทำอะไรได้บ้าง?',
+      lossRatio: 'อัตราส่วนค่าสินไหมเดือนนี้',
+      fraudAlertsToday: 'มีการแจ้งเตือนการฉ้อฉลวันนี้หรือไม่?',
+      whatIsLossRatio: 'อัตราส่วนค่าสินไหมของเราเท่าไหร่?',
+      findPolicy: 'ค้นหากรมธรรม์ของ Siam Group',
+      underwriting: 'ช่วยเรื่องการรับประกันภัย',
+    },
+  },
+
+  theme: {
+    light: 'สว่าง',
+    dark: 'มืด',
+    system: 'ระบบ',
+    switchTheme: 'ธีม',
+  },
+
+  commandPalette: {
+    title: 'แถบคำสั่ง Oasis',
+    placeholder: 'พิมพ์คำสั่งหรือถาม Fatima...',
+    aiAssistant: 'ผู้ช่วย AI',
+    quickActions: 'การดำเนินการด่วน',
+    goTo: 'ไปที่',
+    openHint: 'เพื่อเปิด',
+    typeToAsk: 'พิมพ์อะไรก็ได้เพื่อถาม Fatima',
+    escToGoBack: 'เพื่อย้อนกลับ',
   },
 } as const;
 

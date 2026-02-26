@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Sparkles,
   Send,
@@ -13,6 +14,7 @@ import useFatimaChat from './useFatimaChat';
 import type { FatimaMessage } from './types';
 
 export default function FatimaPage() {
+  const { t } = useTranslation();
   const { messages, isStreaming, send, stop, clear } = useFatimaChat();
   const [input, setInput] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -41,6 +43,14 @@ export default function FatimaPage() {
     }
   }
 
+  const suggestions = [
+    t('fatima.suggestions.recentClaims'),
+    t('fatima.suggestions.fraudAlertsToday'),
+    t('fatima.suggestions.whatIsLossRatio'),
+    t('fatima.suggestions.findPolicy'),
+    t('fatima.suggestions.underwriting'),
+  ];
+
   return (
     <div className="flex h-[calc(100vh-theme(spacing.14)-theme(spacing.12))] flex-col">
       <div className="flex items-center justify-between pb-4">
@@ -49,15 +59,15 @@ export default function FatimaPage() {
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold">Fatima</h1>
+            <h1 className="text-lg font-semibold">{t('fatima.name')}</h1>
             <p className="text-sm text-muted-foreground">
-              Your AI insurance operations assistant
+              {t('fatima.pageSubtitle')}
             </p>
           </div>
         </div>
         <Button variant="outline" size="sm" onClick={clear} className="gap-2">
           <RotateCcw className="h-3.5 w-3.5" />
-          New conversation
+          {t('common.newConversation')}
         </Button>
       </div>
 
@@ -86,13 +96,7 @@ export default function FatimaPage() {
       {/* Suggestions */}
       {messages.length <= 1 && (
         <div className="flex flex-wrap justify-center gap-2 pt-3">
-          {[
-            'Show recent claims',
-            'Any fraud alerts today?',
-            'What is our loss ratio?',
-            'Find policy for Siam Group',
-            'Help me with underwriting',
-          ].map((suggestion) => (
+          {suggestions.map((suggestion) => (
             <button
               key={suggestion}
               className="rounded-full border bg-background px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
@@ -112,7 +116,7 @@ export default function FatimaPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Fatima anything about your insurance operations..."
+            placeholder={t('fatima.pagePlaceholder')}
             className="max-h-40 min-h-[24px] flex-1 resize-none bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
             rows={1}
             disabled={isStreaming}

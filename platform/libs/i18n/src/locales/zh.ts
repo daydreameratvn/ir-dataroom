@@ -35,6 +35,17 @@ const translations = {
       '此功能正在由我们的AI工程团队构建，即将上线。',
     welcome: '欢迎回来',
     selectModule: '从侧边栏选择一个模块开始使用',
+    getStarted: '开始使用',
+    viewAll: '查看全部',
+    noResults: '未找到结果。',
+    newConversation: '新对话',
+    stop: '停止',
+    collapse: '收起',
+    expand: '展开',
+  },
+
+  app: {
+    name: 'Oasis',
   },
 
   nav: {
@@ -93,6 +104,17 @@ const translations = {
     runAnalysis: '运行分析',
     claimsTrend: '理赔趋势',
     topProviders: '优质医疗机构',
+    vsLastMonth: '较上月',
+    vsLastWeek: '较上周',
+    growth: '增长',
+    accuracy: '准确率',
+    activity: {
+      aiAdjudicated: 'AI已理算',
+      alertFlagged: '已标记警报',
+      submitted: '已提交',
+      renewed: '已续保',
+      documentsAnalyzed: '已分析文档',
+    },
   },
 
   claims: {
@@ -114,6 +136,18 @@ const translations = {
       denied: '已拒绝',
       appealed: '已申诉',
     },
+    intakeTitle: '报案受理',
+    intakeDesc:
+      'AI驱动的理赔处理。提交、审核和理算理赔，实现智能自动化。',
+    reviewTitle: '审核队列',
+    reviewDesc:
+      '等待人工审核的理赔。AI已标记需要人工关注。',
+    adjudicationTitle: '理算',
+    adjudicationDesc:
+      '已审核理赔的最终理算决定。批准、拒绝或要求补充信息。',
+    historyTitle: '理赔历史',
+    historyDesc:
+      '浏览所有已处理的理赔，包含完整的审计跟踪和决策历史。',
   },
 
   policies: {
@@ -132,6 +166,18 @@ const translations = {
       cancelled: '已退保',
       pending: '待生效',
     },
+    browseTitle: '保单浏览器',
+    browseDesc:
+      '管理保险保单、批单和续保，覆盖整个投资组合。',
+    endorsementsTitle: '批单',
+    endorsementsDesc:
+      '处理保单批单、修改和期中调整。',
+    renewalsTitle: '续保',
+    renewalsDesc:
+      '跟踪即将到来的保单续保并管理续保流程。',
+    servicingTitle: '保全服务',
+    servicingDesc:
+      '处理保全服务请求、退保和客户咨询。',
   },
 
   underwriting: {
@@ -148,6 +194,15 @@ const translations = {
       referToUnderwriter: '转核保人',
       moreInfoRequired: '需补充资料',
     },
+    applicationsTitle: '投保申请',
+    applicationsDesc:
+      'AI辅助的风险评估和定价，用于新保险申请。',
+    riskTitle: '风险评估',
+    riskDesc:
+      'AI驱动的风险评分和分析，适用于个人申请和投资组合。',
+    pricingTitle: '定价',
+    pricingDesc:
+      '基于风险档案的动态定价模型和保费计算。',
   },
 
   fwa: {
@@ -163,6 +218,15 @@ const translations = {
     investigate: '调查',
     resolve: '处理',
     falsePositive: '误报',
+    alertsTitle: 'FWA警报',
+    alertsDesc:
+      '由Papaya AI智能体驱动的实时欺诈、浪费和滥用检测。',
+    investigationsTitle: '调查',
+    investigationsDesc:
+      '跟踪和管理正在进行的欺诈调查，提供完整的案件管理。',
+    rulesTitle: '规则引擎',
+    rulesDesc:
+      '配置和管理欺诈检测规则、阈值和评分模型。',
   },
 
   providers: {
@@ -173,6 +237,15 @@ const translations = {
     contractStatus: '合同状态',
     networkStatus: '网络状态',
     addProvider: '添加机构',
+    directoryTitle: '医疗机构目录',
+    directoryDesc:
+      '管理医疗服务提供商网络、合同和绩效指标。',
+    contractsTitle: '合同',
+    contractsDesc:
+      '查看和管理医疗机构合同、费率表和协议。',
+    performanceTitle: '绩效',
+    performanceDesc:
+      '跟踪医疗机构绩效指标、质量评分和合规评级。',
   },
 
   reporting: {
@@ -183,6 +256,18 @@ const translations = {
     lossRatio: '赔付率',
     claimsRatio: '理赔率',
     exportData: '导出数据',
+    dashboardsTitle: '仪表盘',
+    dashboardsDesc:
+      '全面的保险分析、报表和赔付管理洞察。',
+    reportsTitle: '报告',
+    reportsDesc:
+      '生成和安排监管、财务和运营报告。',
+    analyticsTitle: '分析',
+    analyticsDesc:
+      '深度分析，支持自定义查询、可视化和数据探索。',
+    lossTitle: '赔付管理',
+    lossDesc:
+      '跟踪赔付率、准备金充足性和理赔发展三角形。',
   },
 
   admin: {
@@ -196,6 +281,15 @@ const translations = {
     aiAgentConfig: 'AI智能体配置',
     addUser: '添加用户',
     inviteUser: '邀请用户',
+    usersTitle: '用户与角色',
+    usersDesc:
+      '管理用户、角色、系统设置和审查审计跟踪。',
+    settingsTitle: '设置',
+    settingsDesc:
+      '配置系统级设置、集成和租户偏好。',
+    auditTitle: '审计日志',
+    auditDesc:
+      '审查所有系统活动、用户操作和配置变更。',
   },
 
   auth: {
@@ -253,6 +347,51 @@ const translations = {
     },
     configure: '配置',
     viewLogs: '查看日志',
+  },
+
+  fatima: {
+    name: 'Fatima',
+    subtitle: '沙漠中的智慧女性',
+    pageSubtitle: '您的AI保险运营助手',
+    thinking: '思考中...',
+    placeholder: '向 Fatima 提问...',
+    pagePlaceholder:
+      '向 Fatima 咨询保险运营相关问题...',
+    disclaimer:
+      'Fatima 可能会出错，请核实重要信息。',
+    tryAsking: '试试问',
+    askFatima: '问 Fatima',
+    openFatima: '打开 Fatima',
+    openInFatima: '在 Fatima 中打开',
+    askWithQuery: '问 Fatima：\u201c{{query}}\u201d',
+    suggestions: {
+      recentClaims: '显示最近的理赔',
+      fraudAlerts: '有欺诈警报吗？',
+      capabilities: '你能做什么？',
+      lossRatio: '本月赔付率',
+      fraudAlertsToday: '今天有欺诈警报吗？',
+      whatIsLossRatio: '我们的赔付率是多少？',
+      findPolicy: '查找Siam Group的保单',
+      underwriting: '帮我核保',
+    },
+  },
+
+  theme: {
+    light: '浅色',
+    dark: '深色',
+    system: '跟随系统',
+    switchTheme: '主题',
+  },
+
+  commandPalette: {
+    title: 'Oasis 命令面板',
+    placeholder: '输入命令或向 Fatima 提问...',
+    aiAssistant: 'AI助手',
+    quickActions: '快捷操作',
+    goTo: '前往',
+    openHint: '打开',
+    typeToAsk: '输入任何内容向 Fatima 提问',
+    escToGoBack: '返回',
   },
 } as const;
 

@@ -35,6 +35,17 @@ const translations = {
       'This feature is being built by our AI engineering team and will be available soon.',
     welcome: 'Welcome back',
     selectModule: 'Select a module from the sidebar to get started',
+    getStarted: 'Get Started',
+    viewAll: 'View all',
+    noResults: 'No results found.',
+    newConversation: 'New conversation',
+    stop: 'Stop',
+    collapse: 'Collapse',
+    expand: 'Expand',
+  },
+
+  app: {
+    name: 'Oasis',
   },
 
   nav: {
@@ -103,6 +114,17 @@ const translations = {
     runAnalysis: 'Run Analysis',
     claimsTrend: 'Claims Trend',
     topProviders: 'Top Providers',
+    vsLastMonth: 'vs last month',
+    vsLastWeek: 'vs last week',
+    growth: 'growth',
+    accuracy: 'accuracy',
+    activity: {
+      aiAdjudicated: 'AI adjudicated',
+      alertFlagged: 'Alert flagged',
+      submitted: 'Submitted',
+      renewed: 'Renewed',
+      documentsAnalyzed: 'Documents analyzed',
+    },
   },
 
   claims: {
@@ -124,6 +146,18 @@ const translations = {
       denied: 'Denied',
       appealed: 'Appealed',
     },
+    intakeTitle: 'Claims Intake',
+    intakeDesc:
+      'AI-powered claims processing. Submit, review, and adjudicate claims with intelligent automation.',
+    reviewTitle: 'Review Queue',
+    reviewDesc:
+      'Claims pending manual review. AI has flagged these for human attention.',
+    adjudicationTitle: 'Adjudication',
+    adjudicationDesc:
+      'Final adjudication decisions on reviewed claims. Approve, deny, or request additional information.',
+    historyTitle: 'Claims History',
+    historyDesc:
+      'Browse all processed claims with full audit trail and decision history.',
   },
 
   policies: {
@@ -142,6 +176,18 @@ const translations = {
       cancelled: 'Cancelled',
       pending: 'Pending',
     },
+    browseTitle: 'Policy Browser',
+    browseDesc:
+      'Manage insurance policies, endorsements, and renewals across your portfolio.',
+    endorsementsTitle: 'Endorsements',
+    endorsementsDesc:
+      'Process policy endorsements, amendments, and mid-term adjustments.',
+    renewalsTitle: 'Renewals',
+    renewalsDesc:
+      'Track upcoming policy renewals and manage the renewal workflow.',
+    servicingTitle: 'Policy Servicing',
+    servicingDesc:
+      'Handle policy servicing requests, cancellations, and customer inquiries.',
   },
 
   underwriting: {
@@ -158,6 +204,15 @@ const translations = {
       referToUnderwriter: 'Refer to Underwriter',
       moreInfoRequired: 'More Info Required',
     },
+    applicationsTitle: 'Applications',
+    applicationsDesc:
+      'AI-assisted risk assessment and pricing for new insurance applications.',
+    riskTitle: 'Risk Assessment',
+    riskDesc:
+      'AI-driven risk scoring and analysis for individual applications and portfolios.',
+    pricingTitle: 'Pricing',
+    pricingDesc:
+      'Dynamic pricing models and premium calculations based on risk profiles.',
   },
 
   fwa: {
@@ -173,6 +228,15 @@ const translations = {
     investigate: 'Investigate',
     resolve: 'Resolve',
     falsePositive: 'False Positive',
+    alertsTitle: 'FWA Alerts',
+    alertsDesc:
+      'Real-time fraud, waste, and abuse detection powered by Papaya AI agents.',
+    investigationsTitle: 'Investigations',
+    investigationsDesc:
+      'Track and manage ongoing fraud investigations with full case management.',
+    rulesTitle: 'Rules Engine',
+    rulesDesc:
+      'Configure and manage fraud detection rules, thresholds, and scoring models.',
   },
 
   providers: {
@@ -183,6 +247,15 @@ const translations = {
     contractStatus: 'Contract Status',
     networkStatus: 'Network Status',
     addProvider: 'Add Provider',
+    directoryTitle: 'Provider Directory',
+    directoryDesc:
+      'Manage your medical provider network, contracts, and performance metrics.',
+    contractsTitle: 'Contracts',
+    contractsDesc:
+      'View and manage provider contracts, fee schedules, and agreements.',
+    performanceTitle: 'Performance',
+    performanceDesc:
+      'Track provider performance metrics, quality scores, and compliance ratings.',
   },
 
   reporting: {
@@ -193,6 +266,18 @@ const translations = {
     lossRatio: 'Loss Ratio',
     claimsRatio: 'Claims Ratio',
     exportData: 'Export Data',
+    dashboardsTitle: 'Dashboards',
+    dashboardsDesc:
+      'Comprehensive insurance analytics, reporting, and loss management insights.',
+    reportsTitle: 'Reports',
+    reportsDesc:
+      'Generate and schedule regulatory, financial, and operational reports.',
+    analyticsTitle: 'Analytics',
+    analyticsDesc:
+      'Deep-dive analytics with custom queries, visualizations, and data exploration.',
+    lossTitle: 'Loss Management',
+    lossDesc:
+      'Track loss ratios, reserve adequacy, and claims development triangles.',
   },
 
   admin: {
@@ -206,6 +291,15 @@ const translations = {
     aiAgentConfig: 'AI Agent Configuration',
     addUser: 'Add User',
     inviteUser: 'Invite User',
+    usersTitle: 'Users & Roles',
+    usersDesc:
+      'Manage users, roles, system settings, and review audit trails.',
+    settingsTitle: 'Settings',
+    settingsDesc:
+      'Configure system-wide settings, integrations, and tenant preferences.',
+    auditTitle: 'Audit Log',
+    auditDesc:
+      'Review all system activity, user actions, and configuration changes.',
   },
 
   auth: {
@@ -263,6 +357,51 @@ const translations = {
     },
     configure: 'Configure',
     viewLogs: 'View Logs',
+  },
+
+  fatima: {
+    name: 'Fatima',
+    subtitle: 'Wise woman of the desert',
+    pageSubtitle: 'Your AI insurance operations assistant',
+    thinking: 'Thinking...',
+    placeholder: 'Ask Fatima anything...',
+    pagePlaceholder:
+      'Ask Fatima anything about your insurance operations...',
+    disclaimer:
+      'Fatima can make mistakes. Verify important information.',
+    tryAsking: 'Try asking',
+    askFatima: 'Ask Fatima',
+    openFatima: 'Open Fatima',
+    openInFatima: 'Open in Fatima',
+    askWithQuery: 'Ask Fatima: \u201c{{query}}\u201d',
+    suggestions: {
+      recentClaims: 'Show recent claims',
+      fraudAlerts: 'Any fraud alerts?',
+      capabilities: 'What can you do?',
+      lossRatio: 'Loss ratio this month',
+      fraudAlertsToday: 'Any fraud alerts today?',
+      whatIsLossRatio: 'What is our loss ratio?',
+      findPolicy: 'Find policy for Siam Group',
+      underwriting: 'Help me with underwriting',
+    },
+  },
+
+  theme: {
+    light: 'Light',
+    dark: 'Dark',
+    system: 'System',
+    switchTheme: 'Theme',
+  },
+
+  commandPalette: {
+    title: 'Oasis Command Palette',
+    placeholder: 'Type a command or ask Fatima...',
+    aiAssistant: 'AI Assistant',
+    quickActions: 'Quick Actions',
+    goTo: 'Go to',
+    openHint: 'to open',
+    typeToAsk: 'type anything to ask Fatima',
+    escToGoBack: 'to go back',
   },
 } as const;
 

@@ -34,25 +34,25 @@ export default function UnderwritingPage() {
         <TabsContent value="applications" className="mt-4">
           <EmptyState
             icon={<ClipboardCheck className="h-6 w-6" />}
-            title="Applications"
-            description="AI-assisted risk assessment and pricing for new insurance applications."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('underwriting.applicationsTitle')}
+            description={t('underwriting.applicationsDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="risk" className="mt-4">
           <EmptyState
             icon={<ClipboardCheck className="h-6 w-6" />}
-            title="Risk Assessment"
-            description="AI-driven risk scoring and analysis for individual applications and portfolios."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('underwriting.riskTitle')}
+            description={t('underwriting.riskDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
         <TabsContent value="pricing" className="mt-4">
           <EmptyState
             icon={<ClipboardCheck className="h-6 w-6" />}
-            title="Pricing"
-            description="Dynamic pricing models and premium calculations based on risk profiles."
-            action={<Button variant="outline">Get Started</Button>}
+            title={t('underwriting.pricingTitle')}
+            description={t('underwriting.pricingDesc')}
+            action={<Button variant="outline">{t('common.getStarted')}</Button>}
           />
         </TabsContent>
       </Tabs>
