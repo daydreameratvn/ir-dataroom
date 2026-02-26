@@ -11,21 +11,37 @@ const ssmClient = new SSMClient({ region });
 let cachedDbUrl: string | null = null;
 let cachedJwtKey: string | null = null;
 
+function buildDbUrl(secret: {
+  username: string;
+  password: string;
+  host: string;
+  port: number | string;
+  dbname: string;
+}): string {
+  const password = encodeURIComponent(secret.password);
+  return `postgresql://${secret.username}:${password}@${secret.host}:${secret.port}/${secret.dbname}`;
+}
+
 export async function getDbUrl(): Promise<string> {
   if (cachedDbUrl) return cachedDbUrl;
 
   if (process.env.DATABASE_URL) {
-    cachedDbUrl = process.env.DATABASE_URL;
+    let url = process.env.DATABASE_URL;
+    // ECS secret injection provides the raw JSON object, not a connection string
+    if (url.trimStart().startsWith("{")) {
+      const secret = JSON.parse(url);
+      url = buildDbUrl(secret);
+    }
+    cachedDbUrl = url;
     return cachedDbUrl;
   }
 
-  const secretName = process.env.DB_SECRET_NAME || "banyan-prod-db-secret";
+  const secretName = process.env.DB_SECRET_NAME || "banyan-prod-db-credentials";
   const resp = await smClient.send(
     new GetSecretValueCommand({ SecretId: secretName })
   );
   const secret = JSON.parse(resp.SecretString!);
-  const password = encodeURIComponent(secret.password);
-  cachedDbUrl = `postgresql://${secret.username}:${password}@${secret.host}:${secret.port}/${secret.dbname}?sslmode=require`;
+  cachedDbUrl = buildDbUrl(secret);
   return cachedDbUrl;
 }
 

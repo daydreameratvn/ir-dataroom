@@ -216,6 +216,8 @@ export const banyanAuthTaskDef = new aws.ecs.TaskDefinition("banyan-prod-auth-ta
             { name: "RP_ORIGIN", value: "https://oasis.papaya.asia" },
             { name: "AUTH_BASE_URL", value: "https://oasis.papaya.asia" },
             { name: "OTP_FROM_EMAIL", value: "noreply@papaya.asia" },
+            { name: "DB_SECRET_NAME", value: "banyan-prod-db-credentials" },
+            { name: "JWT_SECRET_NAME", value: "banyan-prod-jwt-secret" },
           ],
           logConfiguration: {
             logDriver: "awslogs",

@@ -12,6 +12,8 @@ export async function getPool(): Promise<pg.Pool> {
     max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 5000,
+    // RDS uses Amazon-issued certificates; accept them without bundling the CA
+    ssl: { rejectUnauthorized: false },
   });
 
   pool.on("error", (err) => {

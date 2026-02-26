@@ -206,14 +206,18 @@ sso.get("/callback/:provider", async (c) => {
     );
   } catch (err) {
     console.error(`SSO callback error for ${provider}:`, err);
-    await recordLoginAttempt({
-      tenantId,
-      provider,
-      success: false,
-      ipAddress,
-      userAgent,
-      failureReason: String(err),
-    });
+    try {
+      await recordLoginAttempt({
+        tenantId,
+        provider,
+        success: false,
+        ipAddress,
+        userAgent,
+        failureReason: String(err),
+      });
+    } catch (dbErr) {
+      console.error("Failed to record login attempt:", dbErr);
+    }
     return c.redirect("/login?error=auth_failed");
   }
 });
