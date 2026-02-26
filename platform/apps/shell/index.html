@@ -16,8 +16,209 @@
         if (dark) document.documentElement.classList.add('dark');
       })();
     </script>
+    <style>
+      /* ── Loading skeleton — mirrors App layout, removed on React mount ── */
+      :root {
+        --sk-bg: #fff;
+        --sk-sidebar: #fff;
+        --sk-border: hsl(240 5.9% 90%);
+        --sk-pulse: hsl(240 4.8% 95.9%);
+        --sk-pulse-hi: hsl(240 4.8% 91%);
+        --sk-brand: #ED1B55;
+        --sk-muted: hsl(240 4.8% 95.9%);
+      }
+      .dark {
+        --sk-bg: hsl(240 10% 3.9%);
+        --sk-sidebar: hsl(240 10% 3.9%);
+        --sk-border: hsl(240 3.7% 15.9%);
+        --sk-pulse: hsl(240 3.7% 15.9%);
+        --sk-pulse-hi: hsl(240 3.7% 20%);
+        --sk-muted: hsl(240 3.7% 15.9%);
+      }
+      body { margin: 0; background: var(--sk-bg); }
+
+      #app-skeleton {
+        display: flex;
+        height: 100vh;
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      }
+
+      /* Sidebar skeleton */
+      .sk-sidebar {
+        width: 256px;
+        background: var(--sk-sidebar);
+        border-right: 1px solid var(--sk-border);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+      }
+      .sk-sidebar-header {
+        height: 56px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        border-bottom: 1px solid var(--sk-border);
+        gap: 8px;
+      }
+      .sk-logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--sk-brand);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+      .sk-brand-text {
+        height: 14px;
+        width: 48px;
+        border-radius: 4px;
+        background: var(--sk-pulse);
+      }
+      .sk-nav {
+        flex: 1;
+        padding: 16px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .sk-nav-item {
+        height: 36px;
+        border-radius: 8px;
+        background: var(--sk-pulse);
+        animation: sk-pulse 1.8s ease-in-out infinite;
+      }
+      .sk-nav-item:nth-child(1) { width: 75%; animation-delay: 0s; }
+      .sk-nav-item:nth-child(2) { width: 60%; animation-delay: 0.1s; }
+      .sk-nav-item:nth-child(3) { width: 85%; animation-delay: 0.2s; }
+      .sk-nav-item:nth-child(4) { width: 55%; animation-delay: 0.3s; }
+      .sk-nav-item:nth-child(5) { width: 70%; animation-delay: 0.4s; }
+      .sk-nav-spacer { height: 16px; }
+
+      /* Main area */
+      .sk-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      /* Topbar skeleton */
+      .sk-topbar {
+        height: 56px;
+        border-bottom: 1px solid var(--sk-border);
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+      .sk-search {
+        width: 240px;
+        height: 36px;
+        border-radius: 8px;
+        background: var(--sk-pulse);
+      }
+      .sk-topbar-right {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+      }
+      .sk-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--sk-pulse);
+      }
+
+      /* Content skeleton */
+      .sk-content {
+        flex: 1;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .sk-heading {
+        height: 28px;
+        width: 180px;
+        border-radius: 6px;
+        background: var(--sk-pulse);
+        animation: sk-pulse 1.8s ease-in-out infinite;
+      }
+      .sk-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .sk-card {
+        height: 120px;
+        border-radius: 12px;
+        background: var(--sk-pulse);
+        animation: sk-pulse 1.8s ease-in-out infinite;
+      }
+      .sk-card:nth-child(1) { animation-delay: 0.1s; }
+      .sk-card:nth-child(2) { animation-delay: 0.2s; }
+      .sk-card:nth-child(3) { animation-delay: 0.3s; }
+      .sk-wide {
+        height: 200px;
+        border-radius: 12px;
+        background: var(--sk-pulse);
+        animation: sk-pulse 1.8s ease-in-out infinite;
+        animation-delay: 0.4s;
+      }
+
+      @keyframes sk-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+
+      /* Hide on small screens — sidebar collapses */
+      @media (max-width: 768px) {
+        .sk-sidebar { display: none; }
+      }
+    </style>
   </head>
   <body>
+    <!-- Loading skeleton — replaced when React mounts -->
+    <div id="app-skeleton">
+      <div class="sk-sidebar">
+        <div class="sk-sidebar-header">
+          <div class="sk-logo">O</div>
+          <div class="sk-brand-text"></div>
+        </div>
+        <div class="sk-nav">
+          <div class="sk-nav-item"></div>
+          <div class="sk-nav-item"></div>
+          <div class="sk-nav-item"></div>
+          <div class="sk-nav-spacer"></div>
+          <div class="sk-nav-item"></div>
+          <div class="sk-nav-item"></div>
+        </div>
+      </div>
+      <div class="sk-main">
+        <div class="sk-topbar">
+          <div class="sk-search"></div>
+          <div class="sk-topbar-right">
+            <div class="sk-avatar"></div>
+          </div>
+        </div>
+        <div class="sk-content">
+          <div class="sk-heading"></div>
+          <div class="sk-cards">
+            <div class="sk-card"></div>
+            <div class="sk-card"></div>
+            <div class="sk-card"></div>
+          </div>
+          <div class="sk-wide"></div>
+        </div>
+      </div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

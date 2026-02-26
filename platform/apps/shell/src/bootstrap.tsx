@@ -26,6 +26,9 @@ const router = createBrowserRouter(routes);
 
 // Initialize i18n before rendering
 initI18n().then(() => {
+  // Remove the loading skeleton from index.html
+  document.getElementById('app-skeleton')?.remove();
+
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
