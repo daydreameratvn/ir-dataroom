@@ -143,9 +143,9 @@ export default function LoginPage() {
           .oasis-brand { display: flex; }
           .oasis-mobile-logo { display: none; }
         }
-        .oasis-sso:hover { border-color: rgba(197,151,91,0.3) !important; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
-        .oasis-cta:hover:not(:disabled) { background: #0F4A4F !important; }
-        .oasis-passkey:hover { border-color: rgba(197,151,91,0.3) !important; color: #1A1A1A !important; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+        .oasis-sso:hover { border-color: rgba(255,107,74,0.25) !important; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+        .oasis-cta:hover:not(:disabled) { background: #D94A33 !important; }
+        .oasis-passkey:hover { border-color: rgba(255,107,74,0.25) !important; color: #1A1A1A !important; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
       `}</style>
 
       <div className="oasis-login">
@@ -160,7 +160,7 @@ export default function LoginPage() {
             padding: 48,
             width: 520,
             minWidth: 520,
-            background: 'linear-gradient(135deg, #0D3B3F 0%, #0B2027 50%, #061214 100%)',
+            background: 'linear-gradient(135deg, #3D1F14 0%, #2A1209 50%, #1A0A04 100%)',
             fontFamily: "'DM Serif Display', Georgia, serif",
           }}
         >
@@ -190,8 +190,8 @@ export default function LoginPage() {
           </svg>
 
           {/* Warm accent orbs */}
-          <div style={{ position: 'absolute', top: '20%', left: -60, width: 300, height: 300, borderRadius: '50%', background: 'rgba(197,151,91,0.06)', filter: 'blur(100px)' }} />
-          <div style={{ position: 'absolute', bottom: '25%', right: -20, width: 250, height: 250, borderRadius: '50%', background: 'rgba(26,107,99,0.12)', filter: 'blur(80px)' }} />
+          <div style={{ position: 'absolute', top: '20%', left: -60, width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,107,74,0.08)', filter: 'blur(100px)' }} />
+          <div style={{ position: 'absolute', bottom: '25%', right: -20, width: 250, height: 250, borderRadius: '50%', background: 'rgba(255,138,107,0.1)', filter: 'blur(80px)' }} />
 
           {/* Top: Logo */}
           <div style={{ position: 'relative', zIndex: 1 }}>
@@ -210,12 +210,12 @@ export default function LoginPage() {
               <br />
               find clarity.
             </p>
-            <div style={{ marginTop: 24, height: 1, width: 64, background: 'linear-gradient(90deg, rgba(197,151,91,0.5) 0%, transparent 100%)' }} />
+            <div style={{ marginTop: 24, height: 1, width: 64, background: 'linear-gradient(90deg, rgba(255,107,74,0.5) 0%, transparent 100%)' }} />
           </div>
 
           {/* Bottom: Attribution */}
           <p style={{ position: 'relative', zIndex: 1, fontSize: 11, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", fontWeight: 300, letterSpacing: '0.05em', color: 'rgba(255,255,255,0.18)', margin: 0 }}>
-            &copy; 2026 Papaya Insurance Technology
+            &copy; 2026 Papaya
           </p>
         </div>
 
@@ -232,7 +232,7 @@ export default function LoginPage() {
           <div style={{ width: '100%', maxWidth: 380 }}>
             {/* Mobile logo */}
             <div className="oasis-mobile-logo">
-              <h1 style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: '1.8rem', color: '#0D3B3F', margin: 0 }}>
+              <h1 style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: '1.8rem', color: '#E8533A', margin: 0 }}>
                 Oasis
               </h1>
               <p style={{ marginTop: 4, fontSize: 11, fontWeight: 300, letterSpacing: '0.15em', textTransform: 'uppercase' as const, color: '#8B8178' }}>
@@ -296,7 +296,7 @@ export default function LoginPage() {
                       fontSize: 13.5, color: '#1A1A1A', outline: 'none',
                       transition: 'border-color 0.2s',
                     }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = 'rgba(13,59,63,0.3)'; }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = 'rgba(232,83,58,0.3)'; }}
                     onBlur={(e) => { e.currentTarget.style.borderColor = '#E5DDD3'; }}
                   />
 
@@ -307,7 +307,7 @@ export default function LoginPage() {
                     disabled={isSubmitting || !destination}
                     style={{
                       width: '100%', padding: '12px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
-                      background: '#0D3B3F', color: '#fff', fontSize: 13.5, fontWeight: 600,
+                      background: '#E8533A', color: '#fff', fontSize: 13.5, fontWeight: 600,
                       opacity: (isSubmitting || !destination) ? 0.4 : 1,
                       transition: 'all 0.2s',
                     }}
@@ -376,7 +376,7 @@ export default function LoginPage() {
                     letterSpacing: '0.5em', outline: 'none',
                     transition: 'border-color 0.2s',
                   }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = 'rgba(13,59,63,0.3)'; }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = 'rgba(232,83,58,0.3)'; }}
                   onBlur={(e) => { e.currentTarget.style.borderColor = '#E5DDD3'; }}
                 />
 
@@ -387,7 +387,7 @@ export default function LoginPage() {
                   disabled={isSubmitting || code.length !== 6}
                   style={{
                     width: '100%', padding: '12px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
-                    background: '#0D3B3F', color: '#fff', fontSize: 13.5, fontWeight: 600,
+                    background: '#E8533A', color: '#fff', fontSize: 13.5, fontWeight: 600,
                     opacity: (isSubmitting || code.length !== 6) ? 0.4 : 1,
                     transition: 'all 0.2s',
                   }}
@@ -407,7 +407,7 @@ export default function LoginPage() {
 
             {/* Footer */}
             <p style={{ marginTop: 40, textAlign: 'center' as const, fontSize: 11, color: '#B5AFA6' }}>
-              {t('common.poweredBy')}
+              &copy; 2026 Papaya
             </p>
           </div>
         </div>
@@ -496,7 +496,7 @@ function LoginLanguageSwitcher() {
                   borderRadius: 6, border: 'none', textAlign: 'left' as const,
                   fontSize: 13, fontWeight: currentLang === lang ? 600 : 400,
                   color: currentLang === lang ? '#0D3B3F' : '#5A5550',
-                  background: currentLang === lang ? 'rgba(13,59,63,0.06)' : 'transparent',
+                  background: currentLang === lang ? 'rgba(232,83,58,0.06)' : 'transparent',
                   cursor: 'pointer', transition: 'background 0.15s',
                 }}
                 onMouseEnter={(e) => { if (currentLang !== lang) e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}

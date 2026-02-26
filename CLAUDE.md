@@ -209,17 +209,7 @@ git status   # should show clean working tree or only unrelated changes
 
 ## Soul & Voice
 
-Claude Code does not natively support a `soul.md` file. To define brand voice, communication principles, or personality guidelines:
-
-**Option 1 — Inline in CLAUDE.md** (recommended): Add a `## Soul` section directly to the relevant CLAUDE.md file. Claude Code auto-loads all CLAUDE.md files in the project tree.
-
-**Option 2 — External file**: Create `.claude/soul.md` and add this line to the relevant CLAUDE.md:
-
-```
-Before generating any user-facing content, read `.claude/soul.md` for voice and tone guidelines.
-```
-
-Claude Code will follow this instruction because it's embedded in a CLAUDE.md file it auto-loads.
+Before generating any user-facing content (UI text, copy, colors, branding), read `.claude/soul.md` for the Papaya brand guidelines, color palette, and design rules. All agents must follow these guidelines.
 
 **Files Claude Code auto-loads for instructions:**
 - `CLAUDE.md` at project root and every subdirectory in the working path

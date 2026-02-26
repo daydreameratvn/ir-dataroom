@@ -192,14 +192,14 @@ export default function AppSidebar({ collapsed, onToggle, onOpenFatima }: AppSid
       <div className={cn('flex h-14 items-center border-b px-3', collapsed ? 'justify-center' : 'justify-between')}>
         {!collapsed && (
           <div className="flex items-center gap-2 overflow-hidden">
-            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm shadow-sm">
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-red-400 to-orange-500 text-white font-bold text-sm shadow-sm">
               O
             </div>
             <span className="truncate text-sm font-semibold">Oasis</span>
           </div>
         )}
         {collapsed && (
-          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm shadow-sm">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-red-400 to-orange-500 text-white font-bold text-sm shadow-sm">
             O
           </div>
         )}
