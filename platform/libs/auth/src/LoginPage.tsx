@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from '@papaya/i18n';
-import { Input } from '@papaya/shared-ui';
+import { useTranslation, supportedLanguages, languageNames } from '@papaya/i18n';
+import type { SupportedLanguage } from '@papaya/i18n';
 import { useAuth } from './AuthProvider';
 import {
   getSSOUrl,
@@ -225,7 +225,11 @@ export default function LoginPage() {
           flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: '48px 24px', background: '#FAFAF7',
           fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+          position: 'relative',
         }}>
+          {/* Language switcher — top right */}
+          <LoginLanguageSwitcher />
+
           <div style={{ width: '100%', maxWidth: 380 }}>
             {/* Mobile logo */}
             <div className="oasis-mobile-logo">
@@ -465,5 +469,74 @@ function SSOButton({ href, icon, label }: SSOButtonProps) {
       {icon}
       <span>{label}</span>
     </a>
+  );
+}
+
+/* ── Language Switcher ── */
+
+function LoginLanguageSwitcher() {
+  const { i18n } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const currentLang = (i18n.language || 'en') as SupportedLanguage;
+
+  return (
+    <div style={{ position: 'absolute', top: 20, right: 24 }}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '6px 12px', borderRadius: 8,
+          border: '1px solid transparent', background: 'transparent',
+          fontSize: 13, fontWeight: 500, color: '#8B8178', cursor: 'pointer',
+          transition: 'all 0.15s',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M2 12h20" />
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
+        {languageNames[currentLang]}
+      </button>
+
+      {open && (
+        <>
+          {/* Backdrop to close */}
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 40 }}
+            onClick={() => setOpen(false)}
+          />
+          <div style={{
+            position: 'absolute', right: 0, top: '100%', marginTop: 4, zIndex: 50,
+            minWidth: 140, padding: 4, borderRadius: 10,
+            border: '1px solid #E5DDD3', background: '#fff',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+          }}>
+            {supportedLanguages.map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => { i18n.changeLanguage(lang); setOpen(false); }}
+                style={{
+                  display: 'block', width: '100%', padding: '8px 12px',
+                  borderRadius: 6, border: 'none', textAlign: 'left' as const,
+                  fontSize: 13, fontWeight: currentLang === lang ? 600 : 400,
+                  color: currentLang === lang ? '#0D3B3F' : '#5A5550',
+                  background: currentLang === lang ? 'rgba(13,59,63,0.06)' : 'transparent',
+                  cursor: 'pointer', transition: 'background 0.15s',
+                }}
+                onMouseEnter={(e) => { if (currentLang !== lang) e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+                onMouseLeave={(e) => { if (currentLang !== lang) e.currentTarget.style.background = 'transparent'; }}
+              >
+                {languageNames[lang]}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
   );
 }
