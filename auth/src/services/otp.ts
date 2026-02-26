@@ -91,7 +91,7 @@ export async function verifyOtp(opts: {
 }
 
 export async function sendEmailOtp(email: string, code: string): Promise<void> {
-  const fromEmail = process.env.OTP_FROM_EMAIL || "noreply@papaya.insure";
+  const fromEmail = process.env.OTP_FROM_EMAIL || "noreply@papaya.asia";
 
   await sesClient.send(
     new SendEmailCommand({
