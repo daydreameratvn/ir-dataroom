@@ -14,6 +14,7 @@ const ReportingPage = lazy(() => import('./features/reporting/ReportingPage'));
 const AdminPage = lazy(() => import('./features/admin/AdminPage'));
 const AIAgentsPage = lazy(() => import('./features/ai-agents/AIAgentsPage'));
 const FatimaPage = lazy(() => import('./features/fatima/FatimaPage'));
+const DronePage = lazy(() => import('./features/drone/DronePage'));
 const DesignSystemPage = lazy(() => import('./features/design-system/DesignSystemPage'));
 const StatusPage = lazy(() => import('./features/status/StatusPage'));
 const StatusPagePublic = lazy(() => import('./features/status/StatusPagePublic'));
@@ -100,6 +101,12 @@ export const routes: RouteObject[] = [
       {
         path: 'fatima',
         element: <FatimaPage />,
+      },
+
+      // Drone — Automated claims adjudication
+      {
+        path: 'drone/*',
+        element: <DronePage />,
       },
 
       // Design System Reference

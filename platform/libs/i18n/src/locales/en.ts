@@ -102,6 +102,7 @@ const translations = {
     designSystem: 'Design System',
     // AI
     aiAgents: 'AI Agents',
+    drone: 'Drone',
   },
 
   dashboard: {

@@ -70,6 +70,12 @@ export const navigationGroups: NavGroup[] = [
         ],
       },
       {
+        id: 'drone',
+        labelKey: 'nav.drone',
+        icon: 'Bot',
+        path: '/drone',
+      },
+      {
         id: 'reporting',
         labelKey: 'nav.reporting',
         icon: 'BarChart3',
@@ -108,6 +114,8 @@ export const navigationGroups: NavGroup[] = [
           { id: 'admin-users', labelKey: 'nav.adminUsers', path: '/admin/users' },
           { id: 'admin-settings', labelKey: 'nav.adminSettings', path: '/admin/settings' },
           { id: 'admin-audit', labelKey: 'nav.adminAudit', path: '/admin/audit' },
+          { id: 'admin-status', labelKey: 'nav.systemStatus', path: '/system-status' },
+          { id: 'admin-design-system', labelKey: 'nav.designSystem', path: '/design-system' },
         ],
       },
     ],

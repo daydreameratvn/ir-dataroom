@@ -91,6 +91,7 @@ const translations = {
     systemStatus: 'Trạng thái hệ thống',
     designSystem: 'Hệ thống thiết kế',
     aiAgents: 'Trợ lý AI',
+    drone: 'Drone',
   },
 
   dashboard: {

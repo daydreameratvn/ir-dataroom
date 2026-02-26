@@ -91,6 +91,7 @@ const translations = {
     systemStatus: 'สถานะระบบ',
     designSystem: 'ระบบออกแบบ',
     aiAgents: 'เอไอเอเจนท์',
+    drone: 'Drone',
   },
 
   dashboard: {

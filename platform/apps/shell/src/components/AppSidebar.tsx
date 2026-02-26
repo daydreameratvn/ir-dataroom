@@ -220,7 +220,7 @@ export default function AppSidebar({ collapsed, onToggle, onOpenFatima }: AppSid
       )}
 
       {/* Navigation */}
-      <ScrollArea className="flex-1 px-2 py-3">
+      <ScrollArea className="min-h-0 flex-1 px-2 py-3">
         <div className="space-y-4">
           {navigationGroups.map(renderGroup)}
         </div>

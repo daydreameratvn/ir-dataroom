@@ -91,6 +91,7 @@ const translations = {
     systemStatus: '系统状态',
     designSystem: '设计系统',
     aiAgents: 'AI智能体',
+    drone: 'Drone',
   },
 
   dashboard: {
