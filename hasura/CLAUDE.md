@@ -20,19 +20,28 @@ The GraphQL engine and NDC PostgreSQL connector run on **DDN Cloud** (Hasura's m
 hasura/
 ├── CLAUDE.md
 ├── .env.example              # SSM parameter reference
-├── ddn/                      # DDN Cloud project
-│   ├── hasura.yaml           # DDN project config
+├── ddn/                      # DDN Cloud project (project: banyan-prod)
+│   ├── hasura.yaml           # DDN project config (v3)
 │   ├── supergraph.yaml       # Supergraph definition
-│   ├── .env                  # Non-sensitive config only
+│   ├── .env                  # Local env (connector URLs, JWT key)
+│   ├── .env.cloud            # Cloud env (NLB connection URI, JWT key) — gitignored
 │   ├── .gitignore
+│   ├── globals/
+│   │   ├── subgraph.yaml
+│   │   └── metadata/
+│   │       ├── auth-config.hml       # JWT HS256 auth
+│   │       ├── graphql-config.hml
+│   │       └── compatibility-config.hml
 │   └── app/
-│       ├── metadata/         # HML files (models, permissions, relationships)
-│       │   ├── auth-config.hml
-│       │   ├── data-connector-link.hml
-│       │   ├── scalar-types.hml
-│       │   ├── tenant.hml    # ObjectType + Model + Permissions + Relationships
-│       │   ├── claim.hml
-│       │   └── ...           # One file per type (34 total)
+│       ├── subgraph.yaml
+│       ├── metadata/         # HML files (models, commands, relationships)
+│       │   ├── banyan_pg.hml         # DataConnectorLink (NDC schema)
+│       │   ├── banyan_pg-types.hml   # Scalar/object type mappings
+│       │   ├── Claims.hml            # Model + ObjectType + Relationships
+│       │   ├── InsertClaims.hml      # Insert command
+│       │   ├── UpdateClaimsById.hml  # Update command
+│       │   ├── DeleteClaimsById.hml  # Delete command
+│       │   └── ...                   # ~140 files for 35 tables
 │       └── connector/
 │           └── banyan_pg/
 │               ├── connector.yaml
@@ -94,15 +103,23 @@ All migrations MUST follow the backward compatibility rules from the root `CLAUD
 
 ### Permissions
 
-- All permissions are defined in HML files (ModelPermissions, TypePermissions)
+- Permissions are defined in HML files (ModelPermissions, TypePermissions)
 - Role-based access: `admin`, `claims_processor`, `fwa_analyst`, `viewer`
 - Default deny — every table/column must have explicit permission grants
 - Row-level security uses session variables (`x-hasura-user-id`, `x-hasura-role`)
+- **Note**: Role-based permissions are not yet ported from the old metadata. Currently all authenticated users have full admin access. Permissions will be added as ModelPermissions/TypePermissions in the HML files.
+
+## DDN Cloud
+
+- **Project**: `banyan-prod`
+- **API URL**: `https://banyan-prod.ddn.hasura.app/graphql`
+- **Console**: `https://console.hasura.io/project/banyan-prod`
+- **Auth**: JWT HS256 via `Authorization: Bearer <token>` header
 
 ## Secrets
 
-- **DDN Cloud secrets** (set via DDN Console or `ddn` CLI):
-  - `CONNECTION_URI` — RDS connection string via NLB endpoint
+- **DDN Cloud secrets** (set via `.env.cloud`, passed to `ddn supergraph build create --env-file .env.cloud`):
+  - `APP_BANYAN_PG_CONNECTION_URI` — RDS connection string via NLB endpoint
   - `JWT_SECRET_KEY` — HMAC key from Secrets Manager `banyan-prod-jwt-secret`
 - **AWS SSM** (`/banyan/hasura/`):
   - `admin-token` — Pre-signed JWT for admin access
