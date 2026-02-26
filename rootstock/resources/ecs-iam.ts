@@ -1,6 +1,5 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-import { hasuraConfig } from "../config.ts";
 import { mergeTags } from "../lib/tags.ts";
 import { banyanJwtSecret } from "./jwt.ts";
 import { banyanDbSecret } from "./rds.ts";
@@ -78,28 +77,4 @@ export const banyanTaskRole = new aws.iam.Role("banyan-prod-ecs-task-role", {
     Name: "banyan-prod-ecs-task-role",
     Component: "iam",
   }),
-});
-
-const banyanTaskS3Policy = new aws.iam.Policy("banyan-prod-ecs-task-s3-policy", {
-  name: "banyan-prod-ecs-task-s3-policy",
-  description: "Allow ECS tasks to read metadata from S3",
-  policy: JSON.stringify({
-    Version: "2012-10-17",
-    Statement: [
-      {
-        Effect: "Allow",
-        Action: ["s3:GetObject"],
-        Resource: [`arn:aws:s3:::${hasuraConfig.metadataBucket}/*`],
-      },
-    ],
-  }),
-  tags: mergeTags({
-    Name: "banyan-prod-ecs-task-s3-policy",
-    Component: "iam",
-  }),
-});
-
-new aws.iam.RolePolicyAttachment("banyan-prod-ecs-task-s3-attachment", {
-  role: banyanTaskRole.name,
-  policyArn: banyanTaskS3Policy.arn,
 });

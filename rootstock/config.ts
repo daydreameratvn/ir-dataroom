@@ -22,17 +22,6 @@ export const dbConfig = {
   engineVersion: "16",
 };
 
-export const ecsConfig = {
-  engineCpu: Number(config.get("ecsEngineCpu") || "512"),
-  engineMemory: Number(config.get("ecsEngineMemory") || "1024"),
-  ndcCpu: Number(config.get("ecsNdcCpu") || "256"),
-  ndcMemory: Number(config.get("ecsNdcMemory") || "512"),
-};
-
-export const hasuraConfig = {
-  metadataBucket: config.require("metadataBucket"),
-};
-
 export const domainConfig = {
   domainName: config.require("domainName"),
 };

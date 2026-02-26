@@ -1,10 +1,10 @@
 /**
  * Banyan Pulumi Entry Point
  *
- * Hasura DDN v3 Self-Hosted Infrastructure on AWS
+ * Infrastructure: VPC, RDS PostgreSQL, ECS Fargate (Auth service),
+ * ALB, NLB (RDS proxy for DDN Cloud), Secrets Manager, Bastion
  *
- * Components: VPC, RDS PostgreSQL, ECS Fargate (Engine + NDC Connector),
- * ALB, Cloud Map, Secrets Manager
+ * Hasura GraphQL layer runs on DDN Cloud (managed service).
  */
 
 // ============================================================
