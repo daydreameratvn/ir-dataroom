@@ -391,6 +391,21 @@ const translations = {
     dark: 'Dark',
     system: 'System',
     switchTheme: 'Theme',
+    customize: 'Customize',
+    customizeDesc: 'Pick a color theme, adjust radius, and choose your preferred mode.',
+    color: 'Color',
+    radius: 'Radius',
+    mode: 'Mode',
+    reset: 'Reset to defaults',
+    colors: {
+      papaya: 'Papaya',
+      blue: 'Blue',
+      green: 'Green',
+      orange: 'Orange',
+      violet: 'Violet',
+      rose: 'Rose',
+      zinc: 'Zinc',
+    },
   },
 
   commandPalette: {

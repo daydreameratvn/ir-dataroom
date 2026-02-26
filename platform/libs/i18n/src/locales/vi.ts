@@ -381,6 +381,21 @@ const translations = {
     dark: 'Tối',
     system: 'Hệ thống',
     switchTheme: 'Giao diện',
+    customize: 'Tùy chỉnh',
+    customizeDesc: 'Chọn chủ đề màu, điều chỉnh bo góc và chọn chế độ hiển thị.',
+    color: 'Màu sắc',
+    radius: 'Bo góc',
+    mode: 'Chế độ',
+    reset: 'Đặt lại mặc định',
+    colors: {
+      papaya: 'Papaya',
+      blue: 'Xanh dương',
+      green: 'Xanh lá',
+      orange: 'Cam',
+      violet: 'Tím',
+      rose: 'Hồng',
+      zinc: 'Xám',
+    },
   },
 
   commandPalette: {

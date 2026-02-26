@@ -381,6 +381,21 @@ const translations = {
     dark: '深色',
     system: '跟随系统',
     switchTheme: '主题',
+    customize: '自定义',
+    customizeDesc: '选择颜色主题、调整圆角和选择显示模式。',
+    color: '颜色',
+    radius: '圆角',
+    mode: '模式',
+    reset: '恢复默认',
+    colors: {
+      papaya: 'Papaya',
+      blue: '蓝色',
+      green: '绿色',
+      orange: '橙色',
+      violet: '紫色',
+      rose: '玫瑰',
+      zinc: '灰色',
+    },
   },
 
   commandPalette: {

@@ -381,6 +381,21 @@ const translations = {
     dark: 'มืด',
     system: 'ระบบ',
     switchTheme: 'ธีม',
+    customize: 'ปรับแต่ง',
+    customizeDesc: 'เลือกธีมสี ปรับความโค้งมน และเลือกโหมดที่ต้องการ',
+    color: 'สี',
+    radius: 'ความโค้งมน',
+    mode: 'โหมด',
+    reset: 'รีเซ็ตค่าเริ่มต้น',
+    colors: {
+      papaya: 'Papaya',
+      blue: 'น้ำเงิน',
+      green: 'เขียว',
+      orange: 'ส้ม',
+      violet: 'ม่วง',
+      rose: 'กุหลาบ',
+      zinc: 'เทา',
+    },
   },
 
   commandPalette: {
