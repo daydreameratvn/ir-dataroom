@@ -261,18 +261,33 @@ export const assessBenefitTool: AgentTool = {
       totalPaidAmountBeforeCopay: detail.covered_amount,
       totalRequestAmount: detail.total_request_amount,
     };
-    const { data } = await client.mutate({
-      mutation: CreateUpdateClaimDetailDocument,
-      variables: { input, options: { copayDeductType: "BeforeBalance" } },
-    });
-    slackClient.chat.postMessage({
-      channel: "C0A9MDAUR6Y",
-      text: `Claim case ${claim_case_id} has been assessed with details`,
-    }).catch(console.error);
-    return {
-      content: [{ type: "text", text: JSON.stringify(data) }],
-      details: { claimCode: claim_code },
-    };
+    const MAX_RETRIES = 3;
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        console.log(`[assessBenefit] ${claim_code} attempt ${attempt}/${MAX_RETRIES}`);
+        const { data } = await client.mutate({
+          mutation: CreateUpdateClaimDetailDocument,
+          variables: { input, options: { copayDeductType: "BeforeBalance" } },
+        });
+        console.log(`[assessBenefit] ${claim_code} result:`, JSON.stringify(data));
+        slackClient.chat.postMessage({
+          channel: "C0A9MDAUR6Y",
+          text: `Claim case ${claim_case_id} has been assessed with details`,
+        }).catch(console.error);
+        return {
+          content: [{ type: "text", text: JSON.stringify(data) }],
+          details: { claimCode: claim_code },
+        };
+      } catch (err) {
+        console.error(`[assessBenefit] ${claim_code} attempt ${attempt} ERROR:`, err instanceof Error ? err.message : String(err));
+        if (attempt === MAX_RETRIES) {
+          console.error(`[assessBenefit] ${claim_code} all ${MAX_RETRIES} attempts failed, input:`, JSON.stringify(input));
+          throw err;
+        }
+        await new Promise((r) => setTimeout(r, attempt * 2000));
+      }
+    }
+    throw new Error("Unreachable");
   },
 };
 
@@ -322,32 +337,42 @@ export const createSignOffTool: AgentTool = {
         }
       }
     `);
-    const { data: updateClaimData } = await client.mutate({
-      mutation: UpdateClaimDocument,
-      variables: {
-        id: claim_case_id,
-        input: {
-          assessment_explanation: policy_citations,
-          assessment_summary,
-        },
-      },
-    });
-    await client.mutate({
-      mutation: CreateSignOffDocument,
-      variables: {
-        input: {
-          claim_case_id,
-          user_id: "9a34cadb-3c87-46db-b124-5d856205f18f",
-          content,
-          content_md: content,
-          type: "SignOff",
-        },
-      },
-    });
-    return {
-      content: [{ type: "text", text: JSON.stringify(updateClaimData) }],
-      details: { claimCaseId: claim_case_id },
-    };
+    const MAX_RETRIES = 3;
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const { data: updateClaimData } = await client.mutate({
+          mutation: UpdateClaimDocument,
+          variables: {
+            id: claim_case_id,
+            input: {
+              assessment_explanation: policy_citations,
+              assessment_summary,
+            },
+          },
+        });
+        await client.mutate({
+          mutation: CreateSignOffDocument,
+          variables: {
+            input: {
+              claim_case_id,
+              user_id: "9a34cadb-3c87-46db-b124-5d856205f18f",
+              content,
+              content_md: content,
+              type: "SignOff",
+            },
+          },
+        });
+        return {
+          content: [{ type: "text", text: JSON.stringify(updateClaimData) }],
+          details: { claimCaseId: claim_case_id },
+        };
+      } catch (err) {
+        console.error(`[createSignOff] ${claim_case_id} attempt ${attempt} ERROR:`, err instanceof Error ? err.message : String(err));
+        if (attempt === MAX_RETRIES) throw err;
+        await new Promise((r) => setTimeout(r, attempt * 2000));
+      }
+    }
+    throw new Error("Unreachable");
   },
 };
 
