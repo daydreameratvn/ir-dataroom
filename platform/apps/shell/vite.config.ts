@@ -17,7 +17,7 @@ export default defineConfig({
           name: 'sample',
           entry:
             process.env.VITE_SAMPLE_REMOTE_URL ??
-            'http://localhost:3001/mf-manifest.json',
+            'http://sample.oasis.localhost:1355/mf-manifest.json',
           entryGlobalName: 'sample',
         },
       },

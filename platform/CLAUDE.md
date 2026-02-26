@@ -138,7 +138,7 @@ federation({
     <remoteName>: {
       type: 'module',
       name: '<remoteName>',
-      entry: process.env.VITE_<REMOTE>_URL ?? 'http://localhost:<port>/mf-manifest.json',
+      entry: process.env.VITE_<REMOTE>_URL ?? 'http://<remoteName>.oasis.localhost:1355/mf-manifest.json',
       entryGlobalName: '<remoteName>',
     },
   },
@@ -146,14 +146,18 @@ federation({
 })
 ```
 
-### Dev Server Ports
+### Dev Server URLs (Portless)
 
-| App    | Port |
-| ------ | ---- |
-| shell  | 3000 |
-| sample | 3001 |
+The platform uses [portless](https://github.com/vercel-labs/portless) to replace port numbers with stable `.localhost` URLs. The proxy runs on port 1355 and auto-starts when any app runs.
 
-New remote apps should use the next available port (3002, 3003, etc.).
+| App    | Portless URL                           | Legacy Port |
+| ------ | -------------------------------------- | ----------- |
+| shell  | `http://oasis.localhost:1355`          | 3000        |
+| sample | `http://sample.oasis.localhost:1355`   | 3001        |
+
+New remote apps should use `<name>.oasis` as their portless name and register a `dev:legacy` script with the next available port.
+
+To run without portless: `bun run dev:legacy` (uses hardcoded ports).
 
 ### Standalone vs Embedded Mode
 
@@ -263,15 +267,14 @@ features/
 ## Creating a New Remote App
 
 1. Copy `apps/sample/` to `apps/<new-name>/`
-2. Update `package.json`: change `name`
-3. Update `vite.config.ts`: change federation `name`
+2. Update `package.json`: change `name`, set portless dev script to `portless <name>.oasis vite`, add `dev:legacy` with next port
+3. Update `vite.config.ts`: change federation `name`, set `server.port` to the legacy port
 4. Update `index.html`: change `<title>`
-5. Assign next dev port (3002, 3003, etc.) in `vite.config.ts` and `package.json` scripts
-6. In the shell:
-   - Add remote to `shell/vite.config.ts` remotes
+5. In the shell:
+   - Add remote to `shell/vite.config.ts` remotes with entry `http://<name>.oasis.localhost:1355/mf-manifest.json`
    - Add module declaration to `shell/src/vite-env.d.ts`
    - Add route to `shell/src/routes.tsx` with `RemoteLoader`
-7. Run `bun install` from `platform/`
+6. Run `bun install` from `platform/`
 
 ---
 
@@ -281,6 +284,7 @@ features/
 {
   "dev": "bun run --filter './apps/*' dev",
   "dev:shell": "bun run --filter shell dev",
+  "dev:legacy": "bun run --filter './apps/*' dev:legacy",
   "build": "bun run --filter './libs/*' build && bun run --filter './apps/*' build",
   "test": "bun run --filter '*' test",
   "lint": "bun run --filter '*' lint",
@@ -288,6 +292,10 @@ features/
   "ui:add": "cd libs/shared-ui && bunx shadcn@latest add"
 }
 ```
+
+- `dev` — starts all apps via portless (stable `.localhost` URLs)
+- `dev:legacy` — starts all apps with hardcoded ports (no portless)
+- `dev:shell` — starts only the shell via portless
 
 ---
 
