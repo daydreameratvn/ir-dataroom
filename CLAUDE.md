@@ -150,7 +150,7 @@ AI agents (Claude Code) MUST follow these rules to prevent "point of no return" 
 
 5. **Recovery checkpoints** — During multi-step operations (scaffolding, migrations, large refactors), commit after each successful step. The user must be able to `git reset --soft` to any intermediate state without losing work.
 
-6. **Never amend published commits** — If a commit has been pushed, create a new fix commit instead.
+6. **Never amend or squash** — Always create new commits. Never use `git commit --amend`, `git rebase -i` (squash/fixup), or `git reset` to rewrite history. If a commit needs fixing, create a new fix commit on top. Clean, linear history is preferred over "perfect" history.
 
 7. **Verify before committing** — Run typecheck (and relevant tests) before every commit. Never commit code that doesn't compile.
 
