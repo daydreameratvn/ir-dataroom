@@ -51,7 +51,7 @@ export interface CommandPaletteProps {
 }
 
 export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [fatimaMode, setFatimaMode] = useState(false);
@@ -101,12 +101,14 @@ export default function CommandPalette({ onOpenFatima }: CommandPaletteProps) {
 
     simulateStream(
       query.trim(),
+      i18n.language,
       (delta) => setFatimaResponse((prev) => prev + delta),
       () => {
         setFatimaStreaming(false);
         abortRef.current = null;
       },
-      controller.signal
+      controller.signal,
+      t('fatima.offlineFallback')
     );
   }
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuth } from '@papaya/auth';
 import { cn } from '@papaya/shared-ui';
@@ -12,6 +12,18 @@ export default function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [fatimaOpen, setFatimaOpen] = useState(false);
   const { isImpersonating } = useAuth();
+
+  // Global ⌘J shortcut to toggle Fatima panel
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'j') {
+        e.preventDefault();
+        setFatimaOpen((prev) => !prev);
+      }
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   return (
     <>

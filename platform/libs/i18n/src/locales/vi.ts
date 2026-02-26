@@ -456,6 +456,20 @@ const translations = {
     openFatima: 'Mở Fatima',
     openInFatima: 'Mở trong Fatima',
     askWithQuery: 'Hỏi Fatima: \u201c{{query}}\u201d',
+    welcome: `Xin chào! Tôi là **Fatima** — người phụ nữ thông thái của sa mạc. Như ngọn gió biết mỗi hạt cát ở Sahara, tôi biết mọi yêu cầu bồi thường, mọi hợp đồng, mọi quy luật ẩn trong dữ liệu của bạn.
+
+Tôi có thể giúp bạn với:
+
+- **Bồi thường** — Tra cứu trạng thái, tìm bồi thường theo bệnh nhân hoặc nhà cung cấp, giải thích quyết định xét duyệt
+- **Hợp đồng** — Tìm kiếm hợp đồng, kiểm tra chi tiết bảo hiểm, xem xét bổ sung
+- **Bảo lãnh phát hành** — Đánh giá điểm rủi ro, kiểm tra trạng thái đơn
+- **Chống gian lận** — Xem xét cảnh báo gian lận, điều tra các mẫu đáng ngờ
+- **Nhà cung cấp** — Tìm nhà cung cấp, kiểm tra trạng thái hợp đồng
+- **Phân tích** — Tỷ lệ tổn thất, xu hướng bồi thường, tóm tắt KPI
+
+Bạn muốn biết gì?`,
+    offlineFallback:
+      'Tôi đang gặp sự cố kết nối. Vui lòng đảm bảo dịch vụ đang chạy. Tôi sẽ sẵn sàng khi kết nối được khôi phục.',
     suggestions: {
       recentClaims: 'Hiển thị bồi thường gần đây',
       fraudAlerts: 'Có cảnh báo gian lận nào không?',

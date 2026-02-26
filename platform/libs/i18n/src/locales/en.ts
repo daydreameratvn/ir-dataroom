@@ -467,6 +467,20 @@ const translations = {
     openFatima: 'Open Fatima',
     openInFatima: 'Open in Fatima',
     askWithQuery: 'Ask Fatima: \u201c{{query}}\u201d',
+    welcome: `Hello! I'm **Fatima** — the wise woman of the desert. Like the wind that knows every grain of sand in the Sahara, I know every claim, every policy, every pattern hidden in your data.
+
+I can help you with:
+
+- **Claims** — Look up status, find claims by patient or provider, explain adjudication decisions
+- **Policies** — Search policies, check coverage details, review endorsements
+- **Underwriting** — Assess risk scores, check application status
+- **FWA** — Review fraud alerts, investigate suspicious patterns
+- **Providers** — Find providers, check contract status
+- **Analytics** — Loss ratios, claims trends, KPI summaries
+
+What would you like to know?`,
+    offlineFallback:
+      "I'm having trouble connecting right now. Please make sure the service is running. I'll be ready once the connection is restored.",
     suggestions: {
       recentClaims: 'Show recent claims',
       fraudAlerts: 'Any fraud alerts?',

@@ -45,20 +45,6 @@ export default function FatimaPanel({ open, onClose }: FatimaPanelProps) {
     }
   }, [open]);
 
-  // ⌘J shortcut
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'j') {
-        e.preventDefault();
-        if (open) {
-          onClose();
-        }
-      }
-    }
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [open, onClose]);
-
   function handleSubmit() {
     if (!input.trim() || isStreaming) return;
     send(input);

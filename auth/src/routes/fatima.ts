@@ -6,7 +6,7 @@ const fatima = new Hono();
 
 // POST /auth/fatima/chat — stream AI response via SSE
 fatima.post("/fatima/chat", async (c) => {
-  const body = await c.req.json<{ messages: ChatMessage[] }>();
+  const body = await c.req.json<{ messages: ChatMessage[]; language?: string }>();
 
   if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
     return c.json({ error: "messages array is required" }, 400);
@@ -33,7 +33,8 @@ fatima.post("/fatima/chat", async (c) => {
     try {
       for await (const chunk of streamFatimaResponse(
         body.messages,
-        abortController.signal
+        abortController.signal,
+        body.language
       )) {
         await stream.writeSSE({
           data: JSON.stringify({ type: "delta", text: chunk }),

@@ -1,23 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { FatimaMessage } from './types';
-
-const WELCOME_MESSAGE: FatimaMessage = {
-  id: 'welcome',
-  role: 'assistant',
-  content: `Hello! I'm **Fatima** — the wise woman of the desert. Like the wind that knows every grain of sand in the Sahara, I know every claim, every policy, every pattern hidden in your data.
-
-I can help you with:
-
-- **Claims** — Look up status, find claims by patient or provider, explain adjudication decisions
-- **Policies** — Search policies, check coverage details, review endorsements
-- **Underwriting** — Assess risk scores, check application status
-- **FWA** — Review fraud alerts, investigate suspicious patterns
-- **Providers** — Find providers, check contract status
-- **Analytics** — Loss ratios, claims trends, KPI summaries
-
-What would you like to know?`,
-  timestamp: Date.now(),
-};
 
 /**
  * Stream a response from the Fatima backend (SSE).
@@ -25,14 +8,16 @@ What would you like to know?`,
  */
 export function streamFromAPI(
   messages: Array<{ role: 'user' | 'assistant'; content: string }>,
+  language: string,
   onDelta: (text: string) => void,
   onDone: () => void,
-  signal: AbortSignal
+  signal: AbortSignal,
+  offlineFallback: string
 ): void {
   fetch('/auth/fatima/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({ messages, language }),
     signal,
   })
     .then((res) => {
@@ -94,10 +79,7 @@ export function streamFromAPI(
     .catch((err) => {
       if (signal.aborted) return;
       console.warn('[Fatima] API unavailable, using offline fallback:', err.message);
-      // Offline fallback — let the user know
-      onDelta(
-        "I'm having trouble connecting to my backend right now. Please make sure the auth service is running (`bun run dev` in `auth/`). I'll be ready once the connection is restored."
-      );
+      onDelta(offlineFallback);
       onDone();
     });
 }
@@ -108,20 +90,33 @@ export function streamFromAPI(
  */
 export function simulateStream(
   userMessage: string,
+  language: string,
   onDelta: (text: string) => void,
   onDone: () => void,
-  signal: AbortSignal
+  signal: AbortSignal,
+  offlineFallback: string
 ): void {
   streamFromAPI(
     [{ role: 'user', content: userMessage }],
+    language,
     onDelta,
     onDone,
-    signal
+    signal,
+    offlineFallback
   );
 }
 
 export default function useFatimaChat() {
-  const [messages, setMessages] = useState<FatimaMessage[]>([WELCOME_MESSAGE]);
+  const { t, i18n } = useTranslation();
+
+  const [messages, setMessages] = useState<FatimaMessage[]>(() => [
+    {
+      id: 'welcome',
+      role: 'assistant',
+      content: t('fatima.welcome'),
+      timestamp: Date.now(),
+    },
+  ]);
   const [isStreaming, setIsStreaming] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -158,6 +153,7 @@ export default function useFatimaChat() {
 
     streamFromAPI(
       apiMessages,
+      i18n.language,
       (delta) => {
         setMessages((prev) =>
           prev.map((m) =>
@@ -178,9 +174,10 @@ export default function useFatimaChat() {
         setIsStreaming(false);
         abortRef.current = null;
       },
-      controller.signal
+      controller.signal,
+      t('fatima.offlineFallback')
     );
-  }, [isStreaming, messages]);
+  }, [isStreaming, messages, i18n.language, t]);
 
   const stop = useCallback(() => {
     abortRef.current?.abort();
@@ -193,8 +190,13 @@ export default function useFatimaChat() {
   const clear = useCallback(() => {
     abortRef.current?.abort();
     setIsStreaming(false);
-    setMessages([WELCOME_MESSAGE]);
-  }, []);
+    setMessages([{
+      id: 'welcome',
+      role: 'assistant',
+      content: t('fatima.welcome'),
+      timestamp: Date.now(),
+    }]);
+  }, [t]);
 
   return { messages, isStreaming, send, stop, clear };
 }

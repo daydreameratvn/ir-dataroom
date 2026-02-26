@@ -46,22 +46,37 @@ export interface ChatMessage {
   content: string;
 }
 
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: "English",
+  vi: "Vietnamese (Tiếng Việt)",
+  th: "Thai (ภาษาไทย)",
+  zh: "Chinese (中文)",
+};
+
 /**
  * Stream a Fatima response via Bedrock ConverseStream.
  * Yields text chunks as they arrive.
  */
 export async function* streamFatimaResponse(
   messages: ChatMessage[],
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  language?: string
 ): AsyncGenerator<string> {
   const bedrockMessages: Message[] = messages.map((m) => ({
     role: m.role,
     content: [{ text: m.content }],
   }));
 
+  // Build system prompt with language instruction
+  let systemPrompt = getSystemPrompt();
+  if (language && language !== "en") {
+    const langName = LANGUAGE_NAMES[language] || language;
+    systemPrompt += `\n\nIMPORTANT: The user's interface language is ${langName}. You MUST respond in ${langName}. Always use ${langName} for your responses, regardless of the language of the user's message.`;
+  }
+
   const command = new ConverseStreamCommand({
     modelId: MODEL_ID,
-    system: [{ text: getSystemPrompt() }],
+    system: [{ text: systemPrompt }],
     messages: bedrockMessages,
     inferenceConfig: {
       maxTokens: 2048,
