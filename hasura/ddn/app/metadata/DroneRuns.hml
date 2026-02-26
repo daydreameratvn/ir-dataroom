@@ -1,0 +1,467 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DroneRuns
+  fields:
+    - name: batchSize
+      type: Int32!
+    - name: completedAt
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: deniedCount
+      type: Int32!
+    - name: durationMs
+      type: Int32
+    - name: errorCount
+      type: Int32!
+    - name: id
+      type: Uuid!
+    - name: processedCount
+      type: Int32!
+    - name: runType
+      type: String_1!
+    - name: scheduleId
+      type: Uuid
+    - name: skippedCount
+      type: Int32!
+    - name: startedAt
+      type: Timestamptz
+    - name: status
+      type: String_1!
+    - name: successCount
+      type: Int32!
+    - name: tenantId
+      type: Uuid!
+    - name: tier
+      type: Int32!
+    - name: totalClaims
+      type: Int32!
+    - name: triggeredBy
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: DroneRuns
+    inputTypeName: DroneRunsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: drone_runs
+      fieldMapping:
+        batchSize:
+          column:
+            name: batch_size
+        completedAt:
+          column:
+            name: completed_at
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        deniedCount:
+          column:
+            name: denied_count
+        durationMs:
+          column:
+            name: duration_ms
+        errorCount:
+          column:
+            name: error_count
+        id:
+          column:
+            name: id
+        processedCount:
+          column:
+            name: processed_count
+        runType:
+          column:
+            name: run_type
+        scheduleId:
+          column:
+            name: schedule_id
+        skippedCount:
+          column:
+            name: skipped_count
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        successCount:
+          column:
+            name: success_count
+        tenantId:
+          column:
+            name: tenant_id
+        tier:
+          column:
+            name: tier
+        totalClaims:
+          column:
+            name: total_claims
+        triggeredBy:
+          column:
+            name: triggered_by
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DroneRuns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - batchSize
+          - completedAt
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - deniedCount
+          - durationMs
+          - errorCount
+          - id
+          - processedCount
+          - runType
+          - scheduleId
+          - skippedCount
+          - startedAt
+          - status
+          - successCount
+          - tenantId
+          - tier
+          - totalClaims
+          - triggeredBy
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: DroneRunsAggExp
+  operand:
+    object:
+      aggregatedType: DroneRuns
+      aggregatableFields:
+        - fieldName: batchSize
+          aggregateExpression: Int4AggExp
+        - fieldName: completedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deniedCount
+          aggregateExpression: Int4AggExp
+        - fieldName: durationMs
+          aggregateExpression: Int4AggExp
+        - fieldName: errorCount
+          aggregateExpression: Int4AggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: processedCount
+          aggregateExpression: Int4AggExp
+        - fieldName: runType
+          aggregateExpression: TextAggExp
+        - fieldName: scheduleId
+          aggregateExpression: UuidAggExp
+        - fieldName: skippedCount
+          aggregateExpression: Int4AggExp
+        - fieldName: startedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: successCount
+          aggregateExpression: Int4AggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: tier
+          aggregateExpression: Int4AggExp
+        - fieldName: totalClaims
+          aggregateExpression: Int4AggExp
+        - fieldName: triggeredBy
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: DroneRunsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: DroneRuns
+  objectType: DroneRuns
+  source:
+    dataConnectorName: banyan_pg
+    collection: drone_runs
+  filterExpressionType: DroneRunsBoolExp
+  aggregateExpression: DroneRunsAggExp
+  orderByExpression: DroneRunsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: droneRuns
+      subscription:
+        rootField: droneRuns
+    selectUniques:
+      - queryRootField: droneRunsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: droneRunsById
+    filterInputTypeName: DroneRunsFilterInput
+    aggregate:
+      queryRootField: droneRunsAggregate
+      subscription:
+        rootField: droneRunsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: DroneRuns
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: DroneRuns
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: userByTriggeredBy
+  sourceType: DroneRuns
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: triggeredBy
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: droneSchedule
+  sourceType: DroneRuns
+  target:
+    model:
+      name: DroneSchedules
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: scheduleId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: droneRunResults
+  sourceType: DroneRuns
+  target:
+    model:
+      name: DroneRunResults
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: DroneRunResultsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: runId
+  graphql:
+    aggregateFieldName: droneRunResultsAggregate
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: DroneRunsOrderByExp
+  operand:
+    object:
+      orderedType: DroneRuns
+      orderableFields:
+        - fieldName: batchSize
+          orderByExpression: Int32OrderByExp
+        - fieldName: completedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deniedCount
+          orderByExpression: Int32OrderByExp
+        - fieldName: durationMs
+          orderByExpression: Int32OrderByExp
+        - fieldName: errorCount
+          orderByExpression: Int32OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: processedCount
+          orderByExpression: Int32OrderByExp
+        - fieldName: runType
+          orderByExpression: String1OrderByExp
+        - fieldName: scheduleId
+          orderByExpression: UuidOrderByExp
+        - fieldName: skippedCount
+          orderByExpression: Int32OrderByExp
+        - fieldName: startedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: successCount
+          orderByExpression: Int32OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tier
+          orderByExpression: Int32OrderByExp
+        - fieldName: totalClaims
+          orderByExpression: Int32OrderByExp
+        - fieldName: triggeredBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: tenant
+        - relationshipName: userByTriggeredBy
+        - relationshipName: droneSchedule
+  graphql:
+    expressionTypeName: DroneRunsOrderByExp
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: DroneRunsBoolExp
+  operand:
+    object:
+      type: DroneRuns
+      comparableFields:
+        - fieldName: batchSize
+          booleanExpressionType: Int4BoolExp
+        - fieldName: completedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deniedCount
+          booleanExpressionType: Int4BoolExp
+        - fieldName: durationMs
+          booleanExpressionType: Int4BoolExp
+        - fieldName: errorCount
+          booleanExpressionType: Int4BoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: processedCount
+          booleanExpressionType: Int4BoolExp
+        - fieldName: runType
+          booleanExpressionType: TextBoolExp
+        - fieldName: scheduleId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: skippedCount
+          booleanExpressionType: Int4BoolExp
+        - fieldName: startedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: successCount
+          booleanExpressionType: Int4BoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tier
+          booleanExpressionType: Int4BoolExp
+        - fieldName: totalClaims
+          booleanExpressionType: Int4BoolExp
+        - fieldName: triggeredBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: tenant
+        - relationshipName: userByTriggeredBy
+        - relationshipName: droneSchedule
+        - relationshipName: droneRunResults
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: DroneRunsBoolExp

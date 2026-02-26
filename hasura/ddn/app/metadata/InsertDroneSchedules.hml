@@ -1,0 +1,209 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDroneSchedulesObject
+  fields:
+    - name: batchSize
+      type: Int32
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: cronExpression
+      type: String_1!
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: description
+      type: String_1
+    - name: enabled
+      type: Boolean_1
+    - name: id
+      type: Uuid
+    - name: lastRunAt
+      type: Timestamptz
+    - name: lastRunId
+      type: Uuid
+    - name: name
+      type: String_1!
+    - name: nextRunAt
+      type: Timestamptz
+    - name: slackChannel
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: tier
+      type: Int32
+    - name: timezone
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertDroneSchedulesObject
+    inputTypeName: InsertDroneSchedulesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_drone_schedules_object
+      fieldMapping:
+        batchSize:
+          column:
+            name: batch_size
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        cronExpression:
+          column:
+            name: cron_expression
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        description:
+          column:
+            name: description
+        enabled:
+          column:
+            name: enabled
+        id:
+          column:
+            name: id
+        lastRunAt:
+          column:
+            name: last_run_at
+        lastRunId:
+          column:
+            name: last_run_id
+        name:
+          column:
+            name: name
+        nextRunAt:
+          column:
+            name: next_run_at
+        slackChannel:
+          column:
+            name: slack_channel
+        tenantId:
+          column:
+            name: tenant_id
+        tier:
+          column:
+            name: tier
+        timezone:
+          column:
+            name: timezone
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDroneSchedulesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - batchSize
+          - createdAt
+          - createdBy
+          - cronExpression
+          - deletedAt
+          - deletedBy
+          - description
+          - enabled
+          - id
+          - lastRunAt
+          - lastRunId
+          - name
+          - nextRunAt
+          - slackChannel
+          - tenantId
+          - tier
+          - timezone
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDroneSchedulesResponse
+  description: Responses from the 'insert_drone_schedules' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[DroneSchedules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertDroneSchedulesResponse
+    inputTypeName: InsertDroneSchedulesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_drone_schedules_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDroneSchedulesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertDroneSchedules
+  outputType: InsertDroneSchedulesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertDroneSchedulesObject!]!"
+    - name: postCheck
+      type: DroneSchedulesBoolExp
+      description: Insert permission predicate over the 'drone_schedules' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_drone_schedules
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertDroneSchedules
+    rootFieldKind: Mutation
+  description: Insert into the drone_schedules table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertDroneSchedules
+  permissions:
+    - role: admin
+      allowExecution: true

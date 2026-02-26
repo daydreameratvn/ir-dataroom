@@ -1,0 +1,227 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDroneRunResultsObject
+  fields:
+    - name: claimCaseId
+      type: String_1
+    - name: claimCode
+      type: String_1!
+    - name: completedAt
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: durationMs
+      type: Int32
+    - name: id
+      type: Uuid
+    - name: message
+      type: String_1
+    - name: nonPaidAmount
+      type: Bigdecimal
+    - name: paidAmount
+      type: Bigdecimal
+    - name: requestAmount
+      type: Bigdecimal
+    - name: runId
+      type: Uuid!
+    - name: startedAt
+      type: Timestamptz
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: tier
+      type: Int32
+    - name: toolCallCount
+      type: Int32
+    - name: toolsCalled
+      type: "[String_1!]"
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertDroneRunResultsObject
+    inputTypeName: InsertDroneRunResultsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_drone_run_results_object
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        claimCode:
+          column:
+            name: claim_code
+        completedAt:
+          column:
+            name: completed_at
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        durationMs:
+          column:
+            name: duration_ms
+        id:
+          column:
+            name: id
+        message:
+          column:
+            name: message
+        nonPaidAmount:
+          column:
+            name: non_paid_amount
+        paidAmount:
+          column:
+            name: paid_amount
+        requestAmount:
+          column:
+            name: request_amount
+        runId:
+          column:
+            name: run_id
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        tier:
+          column:
+            name: tier
+        toolCallCount:
+          column:
+            name: tool_call_count
+        toolsCalled:
+          column:
+            name: tools_called
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDroneRunResultsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - claimCode
+          - completedAt
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - durationMs
+          - id
+          - message
+          - nonPaidAmount
+          - paidAmount
+          - requestAmount
+          - runId
+          - startedAt
+          - status
+          - tenantId
+          - tier
+          - toolCallCount
+          - toolsCalled
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDroneRunResultsResponse
+  description: Responses from the 'insert_drone_run_results' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[DroneRunResults!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertDroneRunResultsResponse
+    inputTypeName: InsertDroneRunResultsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_drone_run_results_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDroneRunResultsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertDroneRunResults
+  outputType: InsertDroneRunResultsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertDroneRunResultsObject!]!"
+    - name: postCheck
+      type: DroneRunResultsBoolExp
+      description: Insert permission predicate over the 'drone_run_results' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_drone_run_results
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertDroneRunResults
+    rootFieldKind: Mutation
+  description: Insert into the drone_run_results table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertDroneRunResults
+  permissions:
+    - role: admin
+      allowExecution: true

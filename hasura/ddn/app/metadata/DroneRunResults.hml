@@ -1,0 +1,406 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DroneRunResults
+  fields:
+    - name: claimCaseId
+      type: String_1
+    - name: claimCode
+      type: String_1!
+    - name: completedAt
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: durationMs
+      type: Int32
+    - name: id
+      type: Uuid!
+    - name: message
+      type: String_1
+    - name: nonPaidAmount
+      type: Bigdecimal
+    - name: paidAmount
+      type: Bigdecimal
+    - name: requestAmount
+      type: Bigdecimal
+    - name: runId
+      type: Uuid!
+    - name: startedAt
+      type: Timestamptz!
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: tier
+      type: Int32!
+    - name: toolCallCount
+      type: Int32
+    - name: toolsCalled
+      type: "[String_1!]"
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: DroneRunResults
+    inputTypeName: DroneRunResultsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: drone_run_results
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        claimCode:
+          column:
+            name: claim_code
+        completedAt:
+          column:
+            name: completed_at
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        durationMs:
+          column:
+            name: duration_ms
+        id:
+          column:
+            name: id
+        message:
+          column:
+            name: message
+        nonPaidAmount:
+          column:
+            name: non_paid_amount
+        paidAmount:
+          column:
+            name: paid_amount
+        requestAmount:
+          column:
+            name: request_amount
+        runId:
+          column:
+            name: run_id
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        tier:
+          column:
+            name: tier
+        toolCallCount:
+          column:
+            name: tool_call_count
+        toolsCalled:
+          column:
+            name: tools_called
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DroneRunResults
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - claimCode
+          - completedAt
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - durationMs
+          - id
+          - message
+          - nonPaidAmount
+          - paidAmount
+          - requestAmount
+          - runId
+          - startedAt
+          - status
+          - tenantId
+          - tier
+          - toolCallCount
+          - toolsCalled
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: DroneRunResultsAggExp
+  operand:
+    object:
+      aggregatedType: DroneRunResults
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: TextAggExp
+        - fieldName: claimCode
+          aggregateExpression: TextAggExp
+        - fieldName: completedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: durationMs
+          aggregateExpression: Int4AggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: message
+          aggregateExpression: TextAggExp
+        - fieldName: nonPaidAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: paidAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: requestAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: runId
+          aggregateExpression: UuidAggExp
+        - fieldName: startedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: tier
+          aggregateExpression: Int4AggExp
+        - fieldName: toolCallCount
+          aggregateExpression: Int4AggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: DroneRunResultsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: DroneRunResults
+  objectType: DroneRunResults
+  source:
+    dataConnectorName: banyan_pg
+    collection: drone_run_results
+  filterExpressionType: DroneRunResultsBoolExp
+  aggregateExpression: DroneRunResultsAggExp
+  orderByExpression: DroneRunResultsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: droneRunResults
+      subscription:
+        rootField: droneRunResults
+    selectUniques:
+      - queryRootField: droneRunResultsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: droneRunResultsById
+    filterInputTypeName: DroneRunResultsFilterInput
+    aggregate:
+      queryRootField: droneRunResultsAggregate
+      subscription:
+        rootField: droneRunResultsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: DroneRunResults
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: droneRun
+  sourceType: DroneRunResults
+  target:
+    model:
+      name: DroneRuns
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: runId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: DroneRunResults
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: DroneRunResultsOrderByExp
+  operand:
+    object:
+      orderedType: DroneRunResults
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: String1OrderByExp
+        - fieldName: claimCode
+          orderByExpression: String1OrderByExp
+        - fieldName: completedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: durationMs
+          orderByExpression: Int32OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: message
+          orderByExpression: String1OrderByExp
+        - fieldName: nonPaidAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: paidAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: requestAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: runId
+          orderByExpression: UuidOrderByExp
+        - fieldName: startedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tier
+          orderByExpression: Int32OrderByExp
+        - fieldName: toolCallCount
+          orderByExpression: Int32OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: droneRun
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: DroneRunResultsOrderByExp
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: DroneRunResultsBoolExp
+  operand:
+    object:
+      type: DroneRunResults
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: TextBoolExp
+        - fieldName: claimCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: completedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: durationMs
+          booleanExpressionType: Int4BoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: message
+          booleanExpressionType: TextBoolExp
+        - fieldName: nonPaidAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: paidAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: requestAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: runId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: startedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tier
+          booleanExpressionType: Int4BoolExp
+        - fieldName: toolCallCount
+          booleanExpressionType: Int4BoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: droneRun
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: DroneRunResultsBoolExp

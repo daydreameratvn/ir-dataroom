@@ -1,0 +1,399 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DroneSchedules
+  fields:
+    - name: batchSize
+      type: Int32!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: cronExpression
+      type: String_1!
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: description
+      type: String_1
+    - name: enabled
+      type: Boolean_1!
+    - name: id
+      type: Uuid!
+    - name: lastRunAt
+      type: Timestamptz
+    - name: lastRunId
+      type: Uuid
+    - name: name
+      type: String_1!
+    - name: nextRunAt
+      type: Timestamptz
+    - name: slackChannel
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: tier
+      type: Int32!
+    - name: timezone
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: DroneSchedules
+    inputTypeName: DroneSchedulesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: drone_schedules
+      fieldMapping:
+        batchSize:
+          column:
+            name: batch_size
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        cronExpression:
+          column:
+            name: cron_expression
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        description:
+          column:
+            name: description
+        enabled:
+          column:
+            name: enabled
+        id:
+          column:
+            name: id
+        lastRunAt:
+          column:
+            name: last_run_at
+        lastRunId:
+          column:
+            name: last_run_id
+        name:
+          column:
+            name: name
+        nextRunAt:
+          column:
+            name: next_run_at
+        slackChannel:
+          column:
+            name: slack_channel
+        tenantId:
+          column:
+            name: tenant_id
+        tier:
+          column:
+            name: tier
+        timezone:
+          column:
+            name: timezone
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DroneSchedules
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - batchSize
+          - createdAt
+          - createdBy
+          - cronExpression
+          - deletedAt
+          - deletedBy
+          - description
+          - enabled
+          - id
+          - lastRunAt
+          - lastRunId
+          - name
+          - nextRunAt
+          - slackChannel
+          - tenantId
+          - tier
+          - timezone
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: DroneSchedulesAggExp
+  operand:
+    object:
+      aggregatedType: DroneSchedules
+      aggregatableFields:
+        - fieldName: batchSize
+          aggregateExpression: Int4AggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: cronExpression
+          aggregateExpression: TextAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: enabled
+          aggregateExpression: BoolAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: lastRunAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: lastRunId
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: nextRunAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: slackChannel
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: tier
+          aggregateExpression: Int4AggExp
+        - fieldName: timezone
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: DroneSchedulesAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: DroneSchedules
+  objectType: DroneSchedules
+  source:
+    dataConnectorName: banyan_pg
+    collection: drone_schedules
+  filterExpressionType: DroneSchedulesBoolExp
+  aggregateExpression: DroneSchedulesAggExp
+  orderByExpression: DroneSchedulesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: droneSchedules
+      subscription:
+        rootField: droneSchedules
+    selectUniques:
+      - queryRootField: droneSchedulesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: droneSchedulesById
+    filterInputTypeName: DroneSchedulesFilterInput
+    aggregate:
+      queryRootField: droneSchedulesAggregate
+      subscription:
+        rootField: droneSchedulesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: DroneSchedules
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: DroneSchedules
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: lastRun
+  sourceType: DroneSchedules
+  target:
+    model:
+      name: DroneRuns
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: lastRunId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: droneRuns
+  sourceType: DroneSchedules
+  target:
+    model:
+      name: DroneRuns
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: DroneRunsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: scheduleId
+  graphql:
+    aggregateFieldName: droneRunsAggregate
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: DroneSchedulesOrderByExp
+  operand:
+    object:
+      orderedType: DroneSchedules
+      orderableFields:
+        - fieldName: batchSize
+          orderByExpression: Int32OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: cronExpression
+          orderByExpression: String1OrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: enabled
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: lastRunAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: lastRunId
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: nextRunAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: slackChannel
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tier
+          orderByExpression: Int32OrderByExp
+        - fieldName: timezone
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: tenant
+        - relationshipName: lastRun
+  graphql:
+    expressionTypeName: DroneSchedulesOrderByExp
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: DroneSchedulesBoolExp
+  operand:
+    object:
+      type: DroneSchedules
+      comparableFields:
+        - fieldName: batchSize
+          booleanExpressionType: Int4BoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: cronExpression
+          booleanExpressionType: TextBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: enabled
+          booleanExpressionType: BoolBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: lastRunAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: lastRunId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: nextRunAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: slackChannel
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tier
+          booleanExpressionType: Int4BoolExp
+        - fieldName: timezone
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: tenant
+        - relationshipName: lastRun
+        - relationshipName: droneRuns
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: DroneSchedulesBoolExp

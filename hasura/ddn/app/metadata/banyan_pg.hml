@@ -132,6 +132,27 @@ definition:
               unique_columns:
                 - id
         - arguments: {}
+          name: drone_run_results
+          type: drone_run_results
+          uniqueness_constraints:
+            drone_run_results_pkey:
+              unique_columns:
+                - id
+        - arguments: {}
+          name: drone_runs
+          type: drone_runs
+          uniqueness_constraints:
+            drone_runs_pkey:
+              unique_columns:
+                - id
+        - arguments: {}
+          name: drone_schedules
+          type: drone_schedules
+          uniqueness_constraints:
+            drone_schedules_pkey:
+              unique_columns:
+                - id
+        - arguments: {}
           name: endorsement_statuses
           type: endorsement_statuses
           uniqueness_constraints:
@@ -1584,6 +1605,415 @@ definition:
                 tenant_id:
                   - id
               foreign_collection: tenants
+        drone_run_results:
+          fields:
+            claim_case_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            claim_code:
+              type:
+                name: text
+                type: named
+            completed_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_at:
+              type:
+                name: timestamptz
+                type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            duration_ms:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            id:
+              type:
+                name: uuid
+                type: named
+            message:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            non_paid_amount:
+              type:
+                type: nullable
+                underlying_type:
+                  name: numeric
+                  type: named
+            paid_amount:
+              type:
+                type: nullable
+                underlying_type:
+                  name: numeric
+                  type: named
+            request_amount:
+              type:
+                type: nullable
+                underlying_type:
+                  name: numeric
+                  type: named
+            run_id:
+              type:
+                name: uuid
+                type: named
+            started_at:
+              type:
+                name: timestamptz
+                type: named
+            status:
+              type:
+                name: text
+                type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            tier:
+              type:
+                name: int4
+                type: named
+            tool_call_count:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            tools_called:
+              type:
+                type: nullable
+                underlying_type:
+                  element_type:
+                    name: text
+                    type: named
+                  type: array
+            updated_at:
+              type:
+                name: timestamptz
+                type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys:
+            drone_run_results_created_by_fkey:
+              column_mapping:
+                created_by:
+                  - id
+              foreign_collection: users
+            drone_run_results_deleted_by_fkey:
+              column_mapping:
+                deleted_by:
+                  - id
+              foreign_collection: users
+            drone_run_results_run_id_fkey:
+              column_mapping:
+                run_id:
+                  - id
+              foreign_collection: drone_runs
+            drone_run_results_tenant_id_fkey:
+              column_mapping:
+                tenant_id:
+                  - id
+              foreign_collection: tenants
+            drone_run_results_updated_by_fkey:
+              column_mapping:
+                updated_by:
+                  - id
+              foreign_collection: users
+        drone_runs:
+          fields:
+            batch_size:
+              type:
+                name: int4
+                type: named
+            completed_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_at:
+              type:
+                name: timestamptz
+                type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            denied_count:
+              type:
+                name: int4
+                type: named
+            duration_ms:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            error_count:
+              type:
+                name: int4
+                type: named
+            id:
+              type:
+                name: uuid
+                type: named
+            processed_count:
+              type:
+                name: int4
+                type: named
+            run_type:
+              type:
+                name: text
+                type: named
+            schedule_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            skipped_count:
+              type:
+                name: int4
+                type: named
+            started_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            status:
+              type:
+                name: text
+                type: named
+            success_count:
+              type:
+                name: int4
+                type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            tier:
+              type:
+                name: int4
+                type: named
+            total_claims:
+              type:
+                name: int4
+                type: named
+            triggered_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            updated_at:
+              type:
+                name: timestamptz
+                type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys:
+            drone_runs_created_by_fkey:
+              column_mapping:
+                created_by:
+                  - id
+              foreign_collection: users
+            drone_runs_deleted_by_fkey:
+              column_mapping:
+                deleted_by:
+                  - id
+              foreign_collection: users
+            drone_runs_schedule_id_fkey:
+              column_mapping:
+                schedule_id:
+                  - id
+              foreign_collection: drone_schedules
+            drone_runs_tenant_id_fkey:
+              column_mapping:
+                tenant_id:
+                  - id
+              foreign_collection: tenants
+            drone_runs_triggered_by_fkey:
+              column_mapping:
+                triggered_by:
+                  - id
+              foreign_collection: users
+            drone_runs_updated_by_fkey:
+              column_mapping:
+                updated_by:
+                  - id
+              foreign_collection: users
+        drone_schedules:
+          fields:
+            batch_size:
+              type:
+                name: int4
+                type: named
+            created_at:
+              type:
+                name: timestamptz
+                type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            cron_expression:
+              type:
+                name: text
+                type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            description:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            enabled:
+              type:
+                name: bool
+                type: named
+            id:
+              type:
+                name: uuid
+                type: named
+            last_run_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            last_run_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            name:
+              type:
+                name: text
+                type: named
+            next_run_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            slack_channel:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            tier:
+              type:
+                name: int4
+                type: named
+            timezone:
+              type:
+                name: text
+                type: named
+            updated_at:
+              type:
+                name: timestamptz
+                type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys:
+            drone_schedules_created_by_fkey:
+              column_mapping:
+                created_by:
+                  - id
+              foreign_collection: users
+            drone_schedules_deleted_by_fkey:
+              column_mapping:
+                deleted_by:
+                  - id
+              foreign_collection: users
+            drone_schedules_last_run_id_fkey:
+              column_mapping:
+                last_run_id:
+                  - id
+              foreign_collection: drone_runs
+            drone_schedules_tenant_id_fkey:
+              column_mapping:
+                tenant_id:
+                  - id
+              foreign_collection: tenants
+            drone_schedules_updated_by_fkey:
+              column_mapping:
+                updated_by:
+                  - id
+              foreign_collection: users
         delete_agent_actions_by_id_response:
           description: Responses from the 'delete_agent_actions_by_id' procedure
           fields:
@@ -1837,6 +2267,54 @@ definition:
               type:
                 element_type:
                   name: claims
+                  type: named
+                type: array
+          foreign_keys: {}
+        delete_drone_run_results_by_id_response:
+          description: Responses from the 'delete_drone_run_results_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: drone_run_results
+                  type: named
+                type: array
+          foreign_keys: {}
+        delete_drone_runs_by_id_response:
+          description: Responses from the 'delete_drone_runs_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: drone_runs
+                  type: named
+                type: array
+          foreign_keys: {}
+        delete_drone_schedules_by_id_response:
+          description: Responses from the 'delete_drone_schedules_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: drone_schedules
                   type: named
                 type: array
           foreign_keys: {}
@@ -4052,6 +4530,433 @@ definition:
               type:
                 element_type:
                   name: claims
+                  type: named
+                type: array
+          foreign_keys: {}
+        insert_drone_run_results_object:
+          fields:
+            claim_case_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            claim_code:
+              type:
+                name: text
+                type: named
+            completed_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            duration_ms:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            message:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            non_paid_amount:
+              type:
+                type: nullable
+                underlying_type:
+                  name: numeric
+                  type: named
+            paid_amount:
+              type:
+                type: nullable
+                underlying_type:
+                  name: numeric
+                  type: named
+            request_amount:
+              type:
+                type: nullable
+                underlying_type:
+                  name: numeric
+                  type: named
+            run_id:
+              type:
+                name: uuid
+                type: named
+            started_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            status:
+              type:
+                name: text
+                type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            tier:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            tool_call_count:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            tools_called:
+              type:
+                type: nullable
+                underlying_type:
+                  element_type:
+                    name: text
+                    type: named
+                  type: array
+            updated_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        insert_drone_run_results_response:
+          description: Responses from the 'insert_drone_run_results' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: drone_run_results
+                  type: named
+                type: array
+          foreign_keys: {}
+        insert_drone_runs_object:
+          fields:
+            batch_size:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            completed_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            denied_count:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            duration_ms:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            error_count:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            processed_count:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            run_type:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            schedule_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            skipped_count:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            started_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            status:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            success_count:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            tier:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            total_claims:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            triggered_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            updated_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        insert_drone_runs_response:
+          description: Responses from the 'insert_drone_runs' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: drone_runs
+                  type: named
+                type: array
+          foreign_keys: {}
+        insert_drone_schedules_object:
+          fields:
+            batch_size:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            created_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            cron_expression:
+              type:
+                name: text
+                type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            description:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            enabled:
+              type:
+                type: nullable
+                underlying_type:
+                  name: bool
+                  type: named
+            id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            last_run_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            last_run_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            name:
+              type:
+                name: text
+                type: named
+            next_run_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            slack_channel:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            tier:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            timezone:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            updated_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        insert_drone_schedules_response:
+          description: Responses from the 'insert_drone_schedules' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: drone_schedules
                   type: named
                 type: array
           foreign_keys: {}
@@ -9979,6 +10884,645 @@ definition:
                   name: uuid
                   type: named
           foreign_keys: {}
+        update_column_drone_run_results_claim_case_id:
+          description: Update the 'claim_case_id' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_drone_run_results_claim_code:
+          description: Update the 'claim_code' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_drone_run_results_completed_at:
+          description: Update the 'completed_at' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_drone_run_results_created_at:
+          description: Update the 'created_at' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_drone_run_results_created_by:
+          description: Update the 'created_by' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_drone_run_results_deleted_at:
+          description: Update the 'deleted_at' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_drone_run_results_deleted_by:
+          description: Update the 'deleted_by' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_drone_run_results_duration_ms:
+          description: Update the 'duration_ms' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+          foreign_keys: {}
+        update_column_drone_run_results_id:
+          description: Update the 'id' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_drone_run_results_message:
+          description: Update the 'message' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_drone_run_results_non_paid_amount:
+          description: Update the 'non_paid_amount' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: numeric
+                  type: named
+          foreign_keys: {}
+        update_column_drone_run_results_paid_amount:
+          description: Update the 'paid_amount' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: numeric
+                  type: named
+          foreign_keys: {}
+        update_column_drone_run_results_request_amount:
+          description: Update the 'request_amount' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: numeric
+                  type: named
+          foreign_keys: {}
+        update_column_drone_run_results_run_id:
+          description: Update the 'run_id' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_drone_run_results_started_at:
+          description: Update the 'started_at' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_drone_run_results_status:
+          description: Update the 'status' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_drone_run_results_tenant_id:
+          description: Update the 'tenant_id' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_drone_run_results_tier:
+          description: Update the 'tier' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: int4
+                type: named
+          foreign_keys: {}
+        update_column_drone_run_results_tool_call_count:
+          description: Update the 'tool_call_count' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+          foreign_keys: {}
+        update_column_drone_run_results_tools_called:
+          description: Update the 'tools_called' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: array_text
+                  type: named
+          foreign_keys: {}
+        update_column_drone_run_results_updated_at:
+          description: Update the 'updated_at' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_drone_run_results_updated_by:
+          description: Update the 'updated_by' column in the 'drone_run_results' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_drone_runs_batch_size:
+          description: Update the 'batch_size' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: int4
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_completed_at:
+          description: Update the 'completed_at' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_drone_runs_created_at:
+          description: Update the 'created_at' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_created_by:
+          description: Update the 'created_by' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_drone_runs_deleted_at:
+          description: Update the 'deleted_at' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_drone_runs_deleted_by:
+          description: Update the 'deleted_by' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_drone_runs_denied_count:
+          description: Update the 'denied_count' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: int4
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_duration_ms:
+          description: Update the 'duration_ms' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+          foreign_keys: {}
+        update_column_drone_runs_error_count:
+          description: Update the 'error_count' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: int4
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_id:
+          description: Update the 'id' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_processed_count:
+          description: Update the 'processed_count' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: int4
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_run_type:
+          description: Update the 'run_type' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_schedule_id:
+          description: Update the 'schedule_id' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_drone_runs_skipped_count:
+          description: Update the 'skipped_count' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: int4
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_started_at:
+          description: Update the 'started_at' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_drone_runs_status:
+          description: Update the 'status' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_success_count:
+          description: Update the 'success_count' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: int4
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_tenant_id:
+          description: Update the 'tenant_id' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_tier:
+          description: Update the 'tier' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: int4
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_total_claims:
+          description: Update the 'total_claims' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: int4
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_triggered_by:
+          description: Update the 'triggered_by' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_drone_runs_updated_at:
+          description: Update the 'updated_at' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_drone_runs_updated_by:
+          description: Update the 'updated_by' column in the 'drone_runs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_drone_schedules_batch_size:
+          description: Update the 'batch_size' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: int4
+                type: named
+          foreign_keys: {}
+        update_column_drone_schedules_created_at:
+          description: Update the 'created_at' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_drone_schedules_created_by:
+          description: Update the 'created_by' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_drone_schedules_cron_expression:
+          description: Update the 'cron_expression' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_drone_schedules_deleted_at:
+          description: Update the 'deleted_at' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_drone_schedules_deleted_by:
+          description: Update the 'deleted_by' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_drone_schedules_description:
+          description: Update the 'description' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_drone_schedules_enabled:
+          description: Update the 'enabled' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: bool
+                type: named
+          foreign_keys: {}
+        update_column_drone_schedules_id:
+          description: Update the 'id' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_drone_schedules_last_run_at:
+          description: Update the 'last_run_at' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_drone_schedules_last_run_id:
+          description: Update the 'last_run_id' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_drone_schedules_name:
+          description: Update the 'name' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_drone_schedules_next_run_at:
+          description: Update the 'next_run_at' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_drone_schedules_slack_channel:
+          description: Update the 'slack_channel' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_drone_schedules_tenant_id:
+          description: Update the 'tenant_id' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_drone_schedules_tier:
+          description: Update the 'tier' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: int4
+                type: named
+          foreign_keys: {}
+        update_column_drone_schedules_timezone:
+          description: Update the 'timezone' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_drone_schedules_updated_at:
+          description: Update the 'updated_at' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_drone_schedules_updated_by:
+          description: Update the 'updated_by' column in the 'drone_schedules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+
         update_column_endorsement_statuses_comment:
           description: Update the 'comment' column in the 'endorsement_statuses' collection
           fields:
@@ -11818,6 +13362,515 @@ definition:
                 name: text
                 type: named
           foreign_keys: {}
+        update_drone_run_results_by_id_response:
+          description: Responses from the 'update_drone_run_results_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: drone_run_results
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_drone_run_results_by_id_update_columns:
+          description: Update the columns of the 'drone_run_results' collection
+          fields:
+            claim_case_id:
+              description: Update the 'claim_case_id' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_claim_case_id
+                  type: named
+            claim_code:
+              description: Update the 'claim_code' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_claim_code
+                  type: named
+            completed_at:
+              description: Update the 'completed_at' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_completed_at
+                  type: named
+            created_at:
+              description: Update the 'created_at' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_created_at
+                  type: named
+            created_by:
+              description: Update the 'created_by' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_created_by
+                  type: named
+            deleted_at:
+              description: Update the 'deleted_at' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_deleted_at
+                  type: named
+            deleted_by:
+              description: Update the 'deleted_by' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_deleted_by
+                  type: named
+            duration_ms:
+              description: Update the 'duration_ms' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_duration_ms
+                  type: named
+            id:
+              description: Update the 'id' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_id
+                  type: named
+            message:
+              description: Update the 'message' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_message
+                  type: named
+            non_paid_amount:
+              description: Update the 'non_paid_amount' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_non_paid_amount
+                  type: named
+            paid_amount:
+              description: Update the 'paid_amount' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_paid_amount
+                  type: named
+            request_amount:
+              description: Update the 'request_amount' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_request_amount
+                  type: named
+            run_id:
+              description: Update the 'run_id' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_run_id
+                  type: named
+            started_at:
+              description: Update the 'started_at' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_started_at
+                  type: named
+            status:
+              description: Update the 'status' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_status
+                  type: named
+            tenant_id:
+              description: Update the 'tenant_id' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_tenant_id
+                  type: named
+            tier:
+              description: Update the 'tier' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_tier
+                  type: named
+            tool_call_count:
+              description: Update the 'tool_call_count' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_tool_call_count
+                  type: named
+            tools_called:
+              description: Update the 'tools_called' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_tools_called
+                  type: named
+            updated_at:
+              description: Update the 'updated_at' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_updated_at
+                  type: named
+            updated_by:
+              description: Update the 'updated_by' column in the 'drone_run_results' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_run_results_updated_by
+                  type: named
+          foreign_keys: {}
+        update_drone_runs_by_id_response:
+          description: Responses from the 'update_drone_runs_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: drone_runs
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_drone_runs_by_id_update_columns:
+          description: Update the columns of the 'drone_runs' collection
+          fields:
+            batch_size:
+              description: Update the 'batch_size' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_batch_size
+                  type: named
+            completed_at:
+              description: Update the 'completed_at' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_completed_at
+                  type: named
+            created_at:
+              description: Update the 'created_at' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_created_at
+                  type: named
+            created_by:
+              description: Update the 'created_by' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_created_by
+                  type: named
+            deleted_at:
+              description: Update the 'deleted_at' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_deleted_at
+                  type: named
+            deleted_by:
+              description: Update the 'deleted_by' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_deleted_by
+                  type: named
+            denied_count:
+              description: Update the 'denied_count' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_denied_count
+                  type: named
+            duration_ms:
+              description: Update the 'duration_ms' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_duration_ms
+                  type: named
+            error_count:
+              description: Update the 'error_count' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_error_count
+                  type: named
+            id:
+              description: Update the 'id' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_id
+                  type: named
+            processed_count:
+              description: Update the 'processed_count' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_processed_count
+                  type: named
+            run_type:
+              description: Update the 'run_type' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_run_type
+                  type: named
+            schedule_id:
+              description: Update the 'schedule_id' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_schedule_id
+                  type: named
+            skipped_count:
+              description: Update the 'skipped_count' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_skipped_count
+                  type: named
+            started_at:
+              description: Update the 'started_at' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_started_at
+                  type: named
+            status:
+              description: Update the 'status' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_status
+                  type: named
+            success_count:
+              description: Update the 'success_count' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_success_count
+                  type: named
+            tenant_id:
+              description: Update the 'tenant_id' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_tenant_id
+                  type: named
+            tier:
+              description: Update the 'tier' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_tier
+                  type: named
+            total_claims:
+              description: Update the 'total_claims' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_total_claims
+                  type: named
+            triggered_by:
+              description: Update the 'triggered_by' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_triggered_by
+                  type: named
+            updated_at:
+              description: Update the 'updated_at' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_updated_at
+                  type: named
+            updated_by:
+              description: Update the 'updated_by' column in the 'drone_runs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_runs_updated_by
+                  type: named
+          foreign_keys: {}
+        update_drone_schedules_by_id_response:
+          description: Responses from the 'update_drone_schedules_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: drone_schedules
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_drone_schedules_by_id_update_columns:
+          description: Update the columns of the 'drone_schedules' collection
+          fields:
+            batch_size:
+              description: Update the 'batch_size' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_batch_size
+                  type: named
+            created_at:
+              description: Update the 'created_at' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_created_at
+                  type: named
+            created_by:
+              description: Update the 'created_by' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_created_by
+                  type: named
+            cron_expression:
+              description: Update the 'cron_expression' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_cron_expression
+                  type: named
+            deleted_at:
+              description: Update the 'deleted_at' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_deleted_at
+                  type: named
+            deleted_by:
+              description: Update the 'deleted_by' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_deleted_by
+                  type: named
+            description:
+              description: Update the 'description' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_description
+                  type: named
+            enabled:
+              description: Update the 'enabled' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_enabled
+                  type: named
+            id:
+              description: Update the 'id' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_id
+                  type: named
+            last_run_at:
+              description: Update the 'last_run_at' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_last_run_at
+                  type: named
+            last_run_id:
+              description: Update the 'last_run_id' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_last_run_id
+                  type: named
+            name:
+              description: Update the 'name' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_name
+                  type: named
+            next_run_at:
+              description: Update the 'next_run_at' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_next_run_at
+                  type: named
+            slack_channel:
+              description: Update the 'slack_channel' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_slack_channel
+                  type: named
+            tenant_id:
+              description: Update the 'tenant_id' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_tenant_id
+                  type: named
+            tier:
+              description: Update the 'tier' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_tier
+                  type: named
+            timezone:
+              description: Update the 'timezone' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_timezone
+                  type: named
+            updated_at:
+              description: Update the 'updated_at' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_updated_at
+                  type: named
+            updated_by:
+              description: Update the 'updated_by' column in the 'drone_schedules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_drone_schedules_updated_by
+                  type: named
+          foreign_keys: {}
+
         update_endorsement_statuses_by_value_response:
           description: Responses from the 'update_endorsement_statuses_by_value' procedure
           fields:
@@ -13869,6 +15922,57 @@ definition:
             name: delete_claims_by_id_response
             type: named
         - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            pre_check:
+              description: Delete permission predicate over the 'drone_run_results' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: drone_run_results
+                  type: predicate
+          description: Delete any row on the 'drone_run_results' collection using the 'id' key
+          name: delete_drone_run_results_by_id
+          result_type:
+            name: delete_drone_run_results_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            pre_check:
+              description: Delete permission predicate over the 'drone_runs' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: drone_runs
+                  type: predicate
+          description: Delete any row on the 'drone_runs' collection using the 'id' key
+          name: delete_drone_runs_by_id
+          result_type:
+            name: delete_drone_runs_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            pre_check:
+              description: Delete permission predicate over the 'drone_schedules' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: drone_schedules
+                  type: predicate
+          description: Delete any row on the 'drone_schedules' collection using the 'id' key
+          name: delete_drone_schedules_by_id
+          result_type:
+            name: delete_drone_schedules_by_id_response
+            type: named
+        - arguments:
             key_value:
               type:
                 name: text
@@ -14494,6 +16598,63 @@ definition:
           name: insert_claims
           result_type:
             name: insert_claims_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
+                  name: insert_drone_run_results_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'drone_run_results' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: drone_run_results
+                  type: predicate
+          description: Insert into the drone_run_results table
+          name: insert_drone_run_results
+          result_type:
+            name: insert_drone_run_results_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
+                  name: insert_drone_runs_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'drone_runs' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: drone_runs
+                  type: predicate
+          description: Insert into the drone_runs table
+          name: insert_drone_runs
+          result_type:
+            name: insert_drone_runs_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
+                  name: insert_drone_schedules_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'drone_schedules' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: drone_schedules
+                  type: predicate
+          description: Insert into the drone_schedules table
+          name: insert_drone_schedules
+          result_type:
+            name: insert_drone_schedules_response
             type: named
         - arguments:
             objects:
@@ -15303,6 +17464,90 @@ definition:
           name: update_claims_by_id
           result_type:
             name: update_claims_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            post_check:
+              description: Update permission post-condition predicate over the 'drone_run_results' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: drone_run_results
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'drone_run_results' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: drone_run_results
+                  type: predicate
+            update_columns:
+              type:
+                name: update_drone_run_results_by_id_update_columns
+                type: named
+          description: Update any row on the 'drone_run_results' collection using the 'id' key
+          name: update_drone_run_results_by_id
+          result_type:
+            name: update_drone_run_results_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            post_check:
+              description: Update permission post-condition predicate over the 'drone_runs' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: drone_runs
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'drone_runs' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: drone_runs
+                  type: predicate
+            update_columns:
+              type:
+                name: update_drone_runs_by_id_update_columns
+                type: named
+          description: Update any row on the 'drone_runs' collection using the 'id' key
+          name: update_drone_runs_by_id
+          result_type:
+            name: update_drone_runs_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            post_check:
+              description: Update permission post-condition predicate over the 'drone_schedules' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: drone_schedules
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'drone_schedules' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: drone_schedules
+                  type: predicate
+            update_columns:
+              type:
+                name: update_drone_schedules_by_id_update_columns
+                type: named
+          description: Update any row on the 'drone_schedules' collection using the 'id' key
+          name: update_drone_schedules_by_id
+          result_type:
+            name: update_drone_schedules_by_id_response
             type: named
         - arguments:
             key_value:

@@ -1286,6 +1286,14 @@
             "hasDefault": "hasDefault",
             "description": null
           },
+          "impersonator_id": {
+            "name": "impersonator_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
           "ip_address": {
             "name": "ip_address",
             "type": {
@@ -1358,6 +1366,13 @@
           ]
         },
         "foreignRelations": {
+          "auth_sessions_impersonator_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "impersonator_id": "id"
+            }
+          },
           "auth_sessions_tenant_id_fkey": {
             "foreignSchema": "public",
             "foreignTable": "tenants",
@@ -2289,6 +2304,701 @@
         },
         "description": null
       },
+      "drone_run_results": {
+        "schemaName": "public",
+        "tableName": "drone_run_results",
+        "columns": {
+          "claim_case_id": {
+            "name": "claim_case_id",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "claim_code": {
+            "name": "claim_code",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "completed_at": {
+            "name": "completed_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "created_at": {
+            "name": "created_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "created_by": {
+            "name": "created_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "deleted_at": {
+            "name": "deleted_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "deleted_by": {
+            "name": "deleted_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "duration_ms": {
+            "name": "duration_ms",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "id": {
+            "name": "id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "message": {
+            "name": "message",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "non_paid_amount": {
+            "name": "non_paid_amount",
+            "type": {
+              "scalarType": "numeric"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "paid_amount": {
+            "name": "paid_amount",
+            "type": {
+              "scalarType": "numeric"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "request_amount": {
+            "name": "request_amount",
+            "type": {
+              "scalarType": "numeric"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "run_id": {
+            "name": "run_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "started_at": {
+            "name": "started_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "status": {
+            "name": "status",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "tenant_id": {
+            "name": "tenant_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "tier": {
+            "name": "tier",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "tool_call_count": {
+            "name": "tool_call_count",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "tools_called": {
+            "name": "tools_called",
+            "type": {
+              "arrayType": {
+                "scalarType": "text"
+              }
+            },
+            "nullable": "nullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "updated_at": {
+            "name": "updated_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "updated_by": {
+            "name": "updated_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          }
+        },
+        "uniquenessConstraints": {
+          "drone_run_results_pkey": [
+            "id"
+          ]
+        },
+        "foreignRelations": {
+          "drone_run_results_created_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "created_by": "id"
+            }
+          },
+          "drone_run_results_deleted_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "deleted_by": "id"
+            }
+          },
+          "drone_run_results_run_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "drone_runs",
+            "columnMapping": {
+              "run_id": "id"
+            }
+          },
+          "drone_run_results_tenant_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "tenants",
+            "columnMapping": {
+              "tenant_id": "id"
+            }
+          },
+          "drone_run_results_updated_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "updated_by": "id"
+            }
+          }
+        },
+        "description": null
+      },
+      "drone_runs": {
+        "schemaName": "public",
+        "tableName": "drone_runs",
+        "columns": {
+          "batch_size": {
+            "name": "batch_size",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "completed_at": {
+            "name": "completed_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "created_at": {
+            "name": "created_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "created_by": {
+            "name": "created_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "deleted_at": {
+            "name": "deleted_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "deleted_by": {
+            "name": "deleted_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "denied_count": {
+            "name": "denied_count",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "duration_ms": {
+            "name": "duration_ms",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "error_count": {
+            "name": "error_count",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "id": {
+            "name": "id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "processed_count": {
+            "name": "processed_count",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "run_type": {
+            "name": "run_type",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "schedule_id": {
+            "name": "schedule_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "skipped_count": {
+            "name": "skipped_count",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "started_at": {
+            "name": "started_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "status": {
+            "name": "status",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "success_count": {
+            "name": "success_count",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "tenant_id": {
+            "name": "tenant_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "tier": {
+            "name": "tier",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "total_claims": {
+            "name": "total_claims",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "triggered_by": {
+            "name": "triggered_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "updated_at": {
+            "name": "updated_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "updated_by": {
+            "name": "updated_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          }
+        },
+        "uniquenessConstraints": {
+          "drone_runs_pkey": [
+            "id"
+          ]
+        },
+        "foreignRelations": {
+          "drone_runs_created_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "created_by": "id"
+            }
+          },
+          "drone_runs_deleted_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "deleted_by": "id"
+            }
+          },
+          "drone_runs_schedule_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "drone_schedules",
+            "columnMapping": {
+              "schedule_id": "id"
+            }
+          },
+          "drone_runs_tenant_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "tenants",
+            "columnMapping": {
+              "tenant_id": "id"
+            }
+          },
+          "drone_runs_triggered_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "triggered_by": "id"
+            }
+          },
+          "drone_runs_updated_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "updated_by": "id"
+            }
+          }
+        },
+        "description": null
+      },
+      "drone_schedules": {
+        "schemaName": "public",
+        "tableName": "drone_schedules",
+        "columns": {
+          "batch_size": {
+            "name": "batch_size",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "created_at": {
+            "name": "created_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "created_by": {
+            "name": "created_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "cron_expression": {
+            "name": "cron_expression",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "deleted_at": {
+            "name": "deleted_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "deleted_by": {
+            "name": "deleted_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "description": {
+            "name": "description",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "enabled": {
+            "name": "enabled",
+            "type": {
+              "scalarType": "bool"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "id": {
+            "name": "id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "last_run_at": {
+            "name": "last_run_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "last_run_id": {
+            "name": "last_run_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "name": {
+            "name": "name",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "next_run_at": {
+            "name": "next_run_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "slack_channel": {
+            "name": "slack_channel",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "tenant_id": {
+            "name": "tenant_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "tier": {
+            "name": "tier",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "timezone": {
+            "name": "timezone",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "updated_at": {
+            "name": "updated_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "updated_by": {
+            "name": "updated_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          }
+        },
+        "uniquenessConstraints": {
+          "drone_schedules_pkey": [
+            "id"
+          ]
+        },
+        "foreignRelations": {
+          "drone_schedules_created_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "created_by": "id"
+            }
+          },
+          "drone_schedules_deleted_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "deleted_by": "id"
+            }
+          },
+          "drone_schedules_last_run_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "drone_runs",
+            "columnMapping": {
+              "last_run_id": "id"
+            }
+          },
+          "drone_schedules_tenant_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "tenants",
+            "columnMapping": {
+              "tenant_id": "id"
+            }
+          },
+          "drone_schedules_updated_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "updated_by": "id"
+            }
+          }
+        },
+        "description": null
+      },
       "endorsement_statuses": {
         "schemaName": "public",
         "tableName": "endorsement_statuses",
@@ -2551,6 +3261,398 @@
             }
           }
         },
+        "description": null
+      },
+      "error_reports": {
+        "schemaName": "public",
+        "tableName": "error_reports",
+        "columns": {
+          "component_stack": {
+            "name": "component_stack",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "created_at": {
+            "name": "created_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "created_by": {
+            "name": "created_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "deleted_at": {
+            "name": "deleted_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "deleted_by": {
+            "name": "deleted_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "endpoint": {
+            "name": "endpoint",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "fingerprint": {
+            "name": "fingerprint",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "first_seen_at": {
+            "name": "first_seen_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "fix_attempted_at": {
+            "name": "fix_attempted_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "fix_branch": {
+            "name": "fix_branch",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "fix_completed_at": {
+            "name": "fix_completed_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "fix_pr_number": {
+            "name": "fix_pr_number",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "fix_pr_url": {
+            "name": "fix_pr_url",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "id": {
+            "name": "id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "impersonator_id": {
+            "name": "impersonator_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "ip_address": {
+            "name": "ip_address",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "last_seen_at": {
+            "name": "last_seen_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "message": {
+            "name": "message",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "metadata": {
+            "name": "metadata",
+            "type": {
+              "scalarType": "jsonb"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "occurrence_count": {
+            "name": "occurrence_count",
+            "type": {
+              "scalarType": "int4"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "request_id": {
+            "name": "request_id",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "session_id": {
+            "name": "session_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "severity": {
+            "name": "severity",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "source": {
+            "name": "source",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "stack_trace": {
+            "name": "stack_trace",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "status": {
+            "name": "status",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "tenant_id": {
+            "name": "tenant_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "updated_at": {
+            "name": "updated_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "updated_by": {
+            "name": "updated_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "url": {
+            "name": "url",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "user_agent": {
+            "name": "user_agent",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "user_id": {
+            "name": "user_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          }
+        },
+        "uniquenessConstraints": {
+          "error_reports_pkey": [
+            "id"
+          ]
+        },
+        "foreignRelations": {
+          "error_reports_created_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "created_by": "id"
+            }
+          },
+          "error_reports_deleted_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "deleted_by": "id"
+            }
+          },
+          "error_reports_impersonator_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "impersonator_id": "id"
+            }
+          },
+          "error_reports_source_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "error_sources",
+            "columnMapping": {
+              "source": "value"
+            }
+          },
+          "error_reports_status_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "error_statuses",
+            "columnMapping": {
+              "status": "value"
+            }
+          },
+          "error_reports_tenant_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "tenants",
+            "columnMapping": {
+              "tenant_id": "id"
+            }
+          },
+          "error_reports_updated_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "updated_by": "id"
+            }
+          },
+          "error_reports_user_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "user_id": "id"
+            }
+          }
+        },
+        "description": null
+      },
+      "error_sources": {
+        "schemaName": "public",
+        "tableName": "error_sources",
+        "columns": {
+          "comment": {
+            "name": "comment",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "value": {
+            "name": "value",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          }
+        },
+        "uniquenessConstraints": {
+          "error_sources_pkey": [
+            "value"
+          ]
+        },
+        "foreignRelations": {},
+        "description": null
+      },
+      "error_statuses": {
+        "schemaName": "public",
+        "tableName": "error_statuses",
+        "columns": {
+          "comment": {
+            "name": "comment",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "value": {
+            "name": "value",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          }
+        },
+        "uniquenessConstraints": {
+          "error_statuses_pkey": [
+            "value"
+          ]
+        },
+        "foreignRelations": {},
         "description": null
       },
       "fwa_alerts": {
@@ -2985,6 +4087,200 @@
           ]
         },
         "foreignRelations": {},
+        "description": null
+      },
+      "impersonation_logs": {
+        "schemaName": "public",
+        "tableName": "impersonation_logs",
+        "columns": {
+          "action": {
+            "name": "action",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "created_at": {
+            "name": "created_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "created_by": {
+            "name": "created_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "deleted_at": {
+            "name": "deleted_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "deleted_by": {
+            "name": "deleted_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "ended_at": {
+            "name": "ended_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "id": {
+            "name": "id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "impersonator_id": {
+            "name": "impersonator_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "ip_address": {
+            "name": "ip_address",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "reason": {
+            "name": "reason",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "session_id": {
+            "name": "session_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "target_user_id": {
+            "name": "target_user_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "tenant_id": {
+            "name": "tenant_id",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "updated_at": {
+            "name": "updated_at",
+            "type": {
+              "scalarType": "timestamptz"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "updated_by": {
+            "name": "updated_by",
+            "type": {
+              "scalarType": "uuid"
+            },
+            "nullable": "nullable",
+            "description": null
+          },
+          "user_agent": {
+            "name": "user_agent",
+            "type": {
+              "scalarType": "text"
+            },
+            "nullable": "nullable",
+            "description": null
+          }
+        },
+        "uniquenessConstraints": {
+          "impersonation_logs_pkey": [
+            "id"
+          ]
+        },
+        "foreignRelations": {
+          "impersonation_logs_created_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "created_by": "id"
+            }
+          },
+          "impersonation_logs_deleted_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "deleted_by": "id"
+            }
+          },
+          "impersonation_logs_impersonator_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "impersonator_id": "id"
+            }
+          },
+          "impersonation_logs_session_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "auth_sessions",
+            "columnMapping": {
+              "session_id": "id"
+            }
+          },
+          "impersonation_logs_target_user_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "target_user_id": "id"
+            }
+          },
+          "impersonation_logs_tenant_id_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "tenants",
+            "columnMapping": {
+              "tenant_id": "id"
+            }
+          },
+          "impersonation_logs_updated_by_fkey": {
+            "foreignSchema": "public",
+            "foreignTable": "users",
+            "columnMapping": {
+              "updated_by": "id"
+            }
+          }
+        },
         "description": null
       },
       "nationalities": {
@@ -4138,6 +5434,15 @@
             "name": "id",
             "type": {
               "scalarType": "uuid"
+            },
+            "nullable": "nonNullable",
+            "hasDefault": "hasDefault",
+            "description": null
+          },
+          "is_impersonatable": {
+            "name": "is_impersonatable",
+            "type": {
+              "scalarType": "bool"
             },
             "nullable": "nonNullable",
             "hasDefault": "hasDefault",

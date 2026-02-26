@@ -1,0 +1,233 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDroneRunsObject
+  fields:
+    - name: batchSize
+      type: Int32
+    - name: completedAt
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: deniedCount
+      type: Int32
+    - name: durationMs
+      type: Int32
+    - name: errorCount
+      type: Int32
+    - name: id
+      type: Uuid
+    - name: processedCount
+      type: Int32
+    - name: runType
+      type: String_1
+    - name: scheduleId
+      type: Uuid
+    - name: skippedCount
+      type: Int32
+    - name: startedAt
+      type: Timestamptz
+    - name: status
+      type: String_1
+    - name: successCount
+      type: Int32
+    - name: tenantId
+      type: Uuid!
+    - name: tier
+      type: Int32
+    - name: totalClaims
+      type: Int32
+    - name: triggeredBy
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertDroneRunsObject
+    inputTypeName: InsertDroneRunsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_drone_runs_object
+      fieldMapping:
+        batchSize:
+          column:
+            name: batch_size
+        completedAt:
+          column:
+            name: completed_at
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        deniedCount:
+          column:
+            name: denied_count
+        durationMs:
+          column:
+            name: duration_ms
+        errorCount:
+          column:
+            name: error_count
+        id:
+          column:
+            name: id
+        processedCount:
+          column:
+            name: processed_count
+        runType:
+          column:
+            name: run_type
+        scheduleId:
+          column:
+            name: schedule_id
+        skippedCount:
+          column:
+            name: skipped_count
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        successCount:
+          column:
+            name: success_count
+        tenantId:
+          column:
+            name: tenant_id
+        tier:
+          column:
+            name: tier
+        totalClaims:
+          column:
+            name: total_claims
+        triggeredBy:
+          column:
+            name: triggered_by
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDroneRunsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - batchSize
+          - completedAt
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - deniedCount
+          - durationMs
+          - errorCount
+          - id
+          - processedCount
+          - runType
+          - scheduleId
+          - skippedCount
+          - startedAt
+          - status
+          - successCount
+          - tenantId
+          - tier
+          - totalClaims
+          - triggeredBy
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDroneRunsResponse
+  description: Responses from the 'insert_drone_runs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[DroneRuns!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertDroneRunsResponse
+    inputTypeName: InsertDroneRunsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_drone_runs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDroneRunsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertDroneRuns
+  outputType: InsertDroneRunsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertDroneRunsObject!]!"
+    - name: postCheck
+      type: DroneRunsBoolExp
+      description: Insert permission predicate over the 'drone_runs' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_drone_runs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertDroneRuns
+    rootFieldKind: Mutation
+  description: Insert into the drone_runs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertDroneRuns
+  permissions:
+    - role: admin
+      allowExecution: true
