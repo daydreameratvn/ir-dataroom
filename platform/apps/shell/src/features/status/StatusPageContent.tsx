@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   cn,
   Card,
@@ -155,38 +156,67 @@ const incidents: Incident[] = [
 
 /* ── Status Helpers ── */
 
-const statusConfig: Record<ServiceStatus, { label: string; color: string; dotColor: string; bgColor: string }> = {
-  operational: {
-    label: 'Operational',
-    color: 'text-emerald-600',
-    dotColor: 'bg-emerald-500',
-    bgColor: 'bg-emerald-500',
-  },
-  degraded: {
-    label: 'Degraded',
-    color: 'text-amber-600',
-    dotColor: 'bg-amber-500',
-    bgColor: 'bg-amber-500',
-  },
-  outage: {
-    label: 'Major Outage',
-    color: 'text-red-600',
-    dotColor: 'bg-red-500',
-    bgColor: 'bg-red-500',
-  },
-  maintenance: {
-    label: 'Maintenance',
-    color: 'text-blue-600',
-    dotColor: 'bg-blue-500',
-    bgColor: 'bg-blue-500',
-  },
-};
+function useStatusConfig() {
+  const { t } = useTranslation();
 
-const severityConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-  minor: { label: 'Minor', variant: 'secondary' },
-  major: { label: 'Major', variant: 'default' },
-  critical: { label: 'Critical', variant: 'destructive' },
-};
+  const statusConfig: Record<ServiceStatus, { label: string; color: string; dotColor: string; bgColor: string }> = {
+    operational: {
+      label: t('status.statusLabels.operational'),
+      color: 'text-emerald-600',
+      dotColor: 'bg-emerald-500',
+      bgColor: 'bg-emerald-500',
+    },
+    degraded: {
+      label: t('status.statusLabels.degraded'),
+      color: 'text-amber-600',
+      dotColor: 'bg-amber-500',
+      bgColor: 'bg-amber-500',
+    },
+    outage: {
+      label: t('status.statusLabels.outage'),
+      color: 'text-red-600',
+      dotColor: 'bg-red-500',
+      bgColor: 'bg-red-500',
+    },
+    maintenance: {
+      label: t('status.statusLabels.maintenance'),
+      color: 'text-blue-600',
+      dotColor: 'bg-blue-500',
+      bgColor: 'bg-blue-500',
+    },
+  };
+
+  const severityConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+    minor: { label: t('status.severityLabels.minor'), variant: 'secondary' },
+    major: { label: t('status.severityLabels.major'), variant: 'default' },
+    critical: { label: t('status.severityLabels.critical'), variant: 'destructive' },
+  };
+
+  const overallStatusMessages: Record<ServiceStatus, { title: string; subtitle: string; icon: React.ReactNode }> = {
+    operational: {
+      title: t('status.overall.operational'),
+      subtitle: t('status.overall.operationalDesc'),
+      icon: <CheckCircle2 className="h-6 w-6" />,
+    },
+    degraded: {
+      title: t('status.overall.degraded'),
+      subtitle: t('status.overall.degradedDesc'),
+      icon: <AlertTriangle className="h-6 w-6" />,
+    },
+    outage: {
+      title: t('status.overall.outage'),
+      subtitle: t('status.overall.outageDesc'),
+      icon: <XCircle className="h-6 w-6" />,
+    },
+    maintenance: {
+      title: t('status.overall.maintenance'),
+      subtitle: t('status.overall.maintenanceDesc'),
+      icon: <Clock className="h-6 w-6" />,
+    },
+  };
+
+  return { statusConfig, severityConfig, overallStatusMessages };
+}
 
 const incidentStatusConfig: Record<string, { icon: React.ReactNode; color: string }> = {
   resolved: { icon: <CheckCircle2 className="h-4 w-4" />, color: 'text-emerald-600' },
@@ -202,29 +232,6 @@ function getOverallStatus(svcs: Service[]): ServiceStatus {
   return 'operational';
 }
 
-const overallStatusMessages: Record<ServiceStatus, { title: string; subtitle: string; icon: React.ReactNode }> = {
-  operational: {
-    title: 'All Systems Operational',
-    subtitle: 'All services are running normally.',
-    icon: <CheckCircle2 className="h-6 w-6" />,
-  },
-  degraded: {
-    title: 'Partial System Degradation',
-    subtitle: 'Some services are experiencing issues.',
-    icon: <AlertTriangle className="h-6 w-6" />,
-  },
-  outage: {
-    title: 'Major System Outage',
-    subtitle: 'Critical services are currently unavailable.',
-    icon: <XCircle className="h-6 w-6" />,
-  },
-  maintenance: {
-    title: 'Scheduled Maintenance',
-    subtitle: 'Some services are undergoing maintenance.',
-    icon: <Clock className="h-6 w-6" />,
-  },
-};
-
 const overallBannerStyles: Record<ServiceStatus, string> = {
   operational: 'from-emerald-500 to-emerald-600',
   degraded: 'from-amber-500 to-amber-600',
@@ -235,11 +242,14 @@ const overallBannerStyles: Record<ServiceStatus, string> = {
 /* ── Uptime Bar ── */
 
 function UptimeBar({ dailyStatus }: { dailyStatus: ServiceStatus[] }) {
+  const { t } = useTranslation();
+  const { statusConfig } = useStatusConfig();
+
   return (
     <TooltipProvider delayDuration={100}>
       <div className="flex items-center gap-px">
         {dailyStatus.map((status, i) => {
-          const dayLabel = `${90 - i}d ago`;
+          const dayLabel = t('status.daysAgo', { count: 90 - i });
           return (
             <Tooltip key={i}>
               <TooltipTrigger asChild>
@@ -267,6 +277,8 @@ function UptimeBar({ dailyStatus }: { dailyStatus: ServiceStatus[] }) {
 /* ── Service Row ── */
 
 function ServiceRow({ service }: { service: Service }) {
+  const { t } = useTranslation();
+  const { statusConfig } = useStatusConfig();
   const config = statusConfig[service.status];
 
   return (
@@ -299,8 +311,8 @@ function ServiceRow({ service }: { service: Service }) {
       <div className="pb-4">
         <UptimeBar dailyStatus={service.dailyStatus} />
         <div className="flex justify-between mt-1.5">
-          <span className="text-[10px] text-muted-foreground/60">90 days ago</span>
-          <span className="text-[10px] text-muted-foreground/60">Today</span>
+          <span className="text-[10px] text-muted-foreground/60">{t('status.ninetyDaysAgo')}</span>
+          <span className="text-[10px] text-muted-foreground/60">{t('status.today')}</span>
         </div>
       </div>
     </div>
@@ -310,6 +322,8 @@ function ServiceRow({ service }: { service: Service }) {
 /* ── Incident Card ── */
 
 function IncidentCard({ incident }: { incident: Incident }) {
+  const { t } = useTranslation();
+  const { severityConfig } = useStatusConfig();
   const sConfig = severityConfig[incident.severity]!;
   const iConfig = incidentStatusConfig[incident.status]!;
 
@@ -337,7 +351,7 @@ function IncidentCard({ incident }: { incident: Incident }) {
           <span>{new Date(incident.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
           {incident.resolvedAt && (
             <span className="text-emerald-600">
-              Resolved {new Date(incident.resolvedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+              {t('status.resolved', { time: new Date(incident.resolvedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) })}
             </span>
           )}
         </div>
@@ -358,6 +372,9 @@ function IncidentCard({ incident }: { incident: Incident }) {
 /* ── Main Content ── */
 
 export default function StatusPageContent() {
+  const { t } = useTranslation();
+  const { overallStatusMessages } = useStatusConfig();
+
   const overall = getOverallStatus(services);
   const banner = overallStatusMessages[overall];
   const bannerGradient = overallBannerStyles[overall];
@@ -392,12 +409,12 @@ export default function StatusPageContent() {
           <div className="hidden sm:flex items-center gap-6">
             <div className="text-right">
               <p className="text-2xl font-bold font-mono tabular-nums">{overallUptime}%</p>
-              <p className="text-xs text-white/60">Overall uptime</p>
+              <p className="text-xs text-white/60">{t('status.overallUptime')}</p>
             </div>
             <Separator orientation="vertical" className="h-10 bg-white/20" />
             <div className="text-right">
               <p className="text-2xl font-bold font-mono tabular-nums">{activeIncidents}</p>
-              <p className="text-xs text-white/60">Active incidents</p>
+              <p className="text-xs text-white/60">{t('status.activeIncidents')}</p>
             </div>
           </div>
         </div>
@@ -407,8 +424,8 @@ export default function StatusPageContent() {
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-foreground">Services</h3>
-            <span className="text-xs text-muted-foreground">90-day uptime history</span>
+            <h3 className="text-base font-semibold text-foreground">{t('status.services')}</h3>
+            <span className="text-xs text-muted-foreground">{t('status.servicesUptime')}</span>
           </div>
           <div className="divide-y">
             {services.map((service) => (
@@ -422,8 +439,8 @@ export default function StatusPageContent() {
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-base font-semibold text-foreground">Recent Incidents</h3>
-            <span className="text-xs text-muted-foreground">Last 7 days</span>
+            <h3 className="text-base font-semibold text-foreground">{t('status.recentIncidents')}</h3>
+            <span className="text-xs text-muted-foreground">{t('status.last7Days')}</span>
           </div>
           <div>
             {incidents.map((incident) => (
@@ -435,7 +452,7 @@ export default function StatusPageContent() {
 
       {/* ── Footer Note ── */}
       <p className="text-center text-xs text-muted-foreground/60 pb-4">
-        Updated every 60 seconds &middot; &copy; 2026 Papaya
+        {t('status.footer')} &middot; &copy; 2026 Papaya
       </p>
     </div>
   );

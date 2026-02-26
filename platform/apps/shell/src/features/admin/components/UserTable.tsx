@@ -10,9 +10,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
-  Eye,
-  ShieldCheck,
-  ShieldOff,
 } from 'lucide-react';
 import type { UserType, UserLevel } from '@papaya/shared-types';
 import {
@@ -29,7 +26,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Avatar,
   AvatarFallback,
@@ -47,7 +43,7 @@ import {
 } from '@papaya/shared-ui';
 import { useAuth } from '@papaya/auth';
 import useUsers from '../hooks/useUsers';
-import { deleteUser, setUserImpersonatable, type AdminUser } from '../api';
+import { deleteUser, type AdminUser } from '../api';
 import UserDialog from './UserDialog';
 import TenantFilter from './TenantFilter';
 
@@ -59,21 +55,6 @@ const LEVEL_STYLES: Record<UserLevel, string> = {
   manager: 'bg-blue-600 text-white hover:bg-blue-600/90',
   staff: 'bg-gray-500 text-white hover:bg-gray-500/90',
   viewer: 'bg-gray-300 text-gray-700 hover:bg-gray-300/90',
-};
-
-const TYPE_LABELS: Record<UserType, string> = {
-  insurer: 'Insurer',
-  broker: 'Broker',
-  provider: 'Provider',
-  papaya: 'Papaya',
-};
-
-const LEVEL_LABELS: Record<UserLevel, string> = {
-  admin: 'Admin',
-  executive: 'Executive',
-  manager: 'Manager',
-  staff: 'Staff',
-  viewer: 'Viewer',
 };
 
 // ── Helpers ──
@@ -88,28 +69,11 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
-function formatRelativeTime(dateString: string | undefined): string {
-  if (!dateString) return 'Never';
-
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString();
-}
-
 // ── Component ──
 
 export default function UserTable() {
   const { t } = useTranslation();
-  const { user: currentUser, startImpersonation } = useAuth();
+  const { user: currentUser } = useAuth();
 
   const isSuperAdmin =
     currentUser?.userType === 'papaya' && currentUser?.userLevel === 'admin';
@@ -200,21 +164,22 @@ export default function UserTable() {
     }
   }
 
-  async function handleImpersonate(user: AdminUser) {
-    try {
-      await startImpersonation(user.id);
-    } catch {
-      // Error handling could be improved with a toast
-    }
-  }
+  // ── Relative time formatter ──
+  function formatRelativeTime(dateString: string | undefined): string {
+    if (!dateString) return t('admin.lastLogin.never');
 
-  async function handleToggleImpersonatable(user: AdminUser) {
-    try {
-      await setUserImpersonatable(user.id, !user.isImpersonatable);
-      refetch();
-    } catch {
-      // Error handling could be improved with a toast
-    }
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return t('admin.lastLogin.justNow');
+    if (diffMins < 60) return t('admin.lastLogin.minutesAgo', { count: diffMins });
+    if (diffHours < 24) return t('admin.lastLogin.hoursAgo', { count: diffHours });
+    if (diffDays < 7) return t('admin.lastLogin.daysAgo', { count: diffDays });
+    return date.toLocaleDateString();
   }
 
   // ── Table columns ──
@@ -223,7 +188,7 @@ export default function UserTable() {
     () => [
       {
         accessorKey: 'name',
-        header: 'Name',
+        header: t('admin.table.name'),
         cell: ({ row }) => {
           const user = row.original;
           return (
@@ -242,26 +207,26 @@ export default function UserTable() {
       },
       {
         accessorKey: 'userType',
-        header: 'Type',
+        header: t('admin.table.type'),
         cell: ({ row }) => (
-          <span className="text-sm capitalize">{TYPE_LABELS[row.original.userType]}</span>
+          <span className="text-sm capitalize">{t(`admin.userTypes.${row.original.userType}`)}</span>
         ),
       },
       {
         accessorKey: 'userLevel',
-        header: 'Level',
+        header: t('admin.table.level'),
         cell: ({ row }) => (
           <Badge
             variant="secondary"
             className={cn('text-xs', LEVEL_STYLES[row.original.userLevel])}
           >
-            {LEVEL_LABELS[row.original.userLevel]}
+            {t(`admin.userLevels.${row.original.userLevel}`)}
           </Badge>
         ),
       },
       {
         accessorKey: 'department',
-        header: 'Department',
+        header: t('admin.table.department'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
             {row.original.department ?? '--'}
@@ -270,7 +235,7 @@ export default function UserTable() {
       },
       {
         accessorKey: 'lastLoginAt',
-        header: 'Last Login',
+        header: t('admin.table.lastLogin'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
             {formatRelativeTime(row.original.lastLoginAt)}
@@ -289,46 +254,21 @@ export default function UserTable() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                   <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Open menu</span>
+                  <span className="sr-only">{t('admin.table.openMenu')}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => handleEditUser(user)}>
                   <Pencil className="mr-2 h-4 w-4" />
-                  Edit
+                  {t('admin.table.edit')}
                 </DropdownMenuItem>
-                {isSuperAdmin && !isSelf && user.isImpersonatable && (
-                  <DropdownMenuItem onClick={() => handleImpersonate(user)}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    Impersonate
-                  </DropdownMenuItem>
-                )}
-                {isSuperAdmin && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => handleToggleImpersonatable(user)}>
-                      {user.isImpersonatable ? (
-                        <>
-                          <ShieldOff className="mr-2 h-4 w-4" />
-                          Disallow Impersonation
-                        </>
-                      ) : (
-                        <>
-                          <ShieldCheck className="mr-2 h-4 w-4" />
-                          Allow Impersonation
-                        </>
-                      )}
-                    </DropdownMenuItem>
-                  </>
-                )}
-                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => handleDeleteClick(user)}
                   disabled={isSelf}
                   className="text-destructive focus:text-destructive"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  {t('admin.table.delete')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -336,7 +276,7 @@ export default function UserTable() {
         },
       },
     ],
-    [currentUser?.id, isSuperAdmin],
+    [currentUser?.id, t],
   );
 
   // ── Pagination info ──
@@ -358,7 +298,7 @@ export default function UserTable() {
           <div className="relative max-w-sm flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search by name or email..."
+              placeholder={t('admin.searchPlaceholder')}
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-9"
@@ -371,14 +311,14 @@ export default function UserTable() {
             onValueChange={(val) => setTypeFilter(val === '__all__' ? undefined : val as UserType)}
           >
             <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="All types" />
+              <SelectValue placeholder={t('admin.filters.allTypes')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">All types</SelectItem>
-              <SelectItem value="insurer">Insurer</SelectItem>
-              <SelectItem value="broker">Broker</SelectItem>
-              <SelectItem value="provider">Provider</SelectItem>
-              <SelectItem value="papaya">Papaya</SelectItem>
+              <SelectItem value="__all__">{t('admin.filters.allTypes')}</SelectItem>
+              <SelectItem value="insurer">{t('admin.userTypes.insurer')}</SelectItem>
+              <SelectItem value="broker">{t('admin.userTypes.broker')}</SelectItem>
+              <SelectItem value="provider">{t('admin.userTypes.provider')}</SelectItem>
+              <SelectItem value="papaya">{t('admin.userTypes.papaya')}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -388,15 +328,15 @@ export default function UserTable() {
             onValueChange={(val) => setLevelFilter(val === '__all__' ? undefined : val as UserLevel)}
           >
             <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="All levels" />
+              <SelectValue placeholder={t('admin.filters.allLevels')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">All levels</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
-              <SelectItem value="executive">Executive</SelectItem>
-              <SelectItem value="manager">Manager</SelectItem>
-              <SelectItem value="staff">Staff</SelectItem>
-              <SelectItem value="viewer">Viewer</SelectItem>
+              <SelectItem value="__all__">{t('admin.filters.allLevels')}</SelectItem>
+              <SelectItem value="admin">{t('admin.userLevels.admin')}</SelectItem>
+              <SelectItem value="executive">{t('admin.userLevels.executive')}</SelectItem>
+              <SelectItem value="manager">{t('admin.userLevels.manager')}</SelectItem>
+              <SelectItem value="staff">{t('admin.userLevels.staff')}</SelectItem>
+              <SelectItem value="viewer">{t('admin.userLevels.viewer')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -404,7 +344,7 @@ export default function UserTable() {
         {/* Add user button */}
         <Button onClick={handleCreateUser}>
           <Plus className="mr-2 h-4 w-4" />
-          Add User
+          {t('admin.addUser')}
         </Button>
       </div>
 
@@ -418,7 +358,7 @@ export default function UserTable() {
             className="ml-2 text-destructive underline"
             onClick={refetch}
           >
-            Retry
+            {t('common.retry')}
           </Button>
         </div>
       )}
@@ -434,17 +374,17 @@ export default function UserTable() {
       {!isLoading && !error && users.length === 0 && (
         <EmptyState
           icon={<Users className="h-6 w-6" />}
-          title="No users found"
+          title={t('admin.emptyState.noUsersFound')}
           description={
             debouncedSearch || typeFilter || levelFilter
-              ? 'Try adjusting your search or filters.'
-              : 'Get started by adding your first user.'
+              ? t('admin.emptyState.adjustFilters')
+              : t('admin.emptyState.addFirstUser')
           }
           action={
             !debouncedSearch && !typeFilter && !levelFilter ? (
               <Button variant="outline" onClick={handleCreateUser}>
                 <Plus className="mr-2 h-4 w-4" />
-                Add User
+                {t('admin.addUser')}
               </Button>
             ) : undefined
           }
@@ -459,7 +399,7 @@ export default function UserTable() {
           {/* Pagination */}
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Showing {startItem}--{endItem} of {total} users
+              {t('admin.pagination.showing', { start: startItem, end: endItem, total })}
             </p>
             <div className="flex items-center gap-2">
               <Button
@@ -469,10 +409,10 @@ export default function UserTable() {
                 disabled={page <= 1}
               >
                 <ChevronLeft className="h-4 w-4" />
-                Previous
+                {t('common.previous')}
               </Button>
               <span className="text-sm text-muted-foreground">
-                Page {page} of {totalPages || 1}
+                {t('admin.pagination.pageOf', { page, totalPages: totalPages || 1 })}
               </span>
               <Button
                 variant="outline"
@@ -480,7 +420,7 @@ export default function UserTable() {
                 onClick={() => setPage(page + 1)}
                 disabled={!hasMore}
               >
-                Next
+                {t('common.next')}
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -502,21 +442,19 @@ export default function UserTable() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent size="sm">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogTitle>{t('admin.deleteDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete{' '}
-              <span className="font-medium text-foreground">{deletingUser?.name}</span>?
-              This action cannot be undone.
+              {t('admin.deleteDialog.description', { name: deletingUser?.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"
               onClick={handleConfirmDelete}
               disabled={isDeleting}
             >
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? t('admin.deleteDialog.deleting') : t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

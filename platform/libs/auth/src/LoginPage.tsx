@@ -127,7 +127,7 @@ export default function LoginPage() {
       setOtpSent(true);
       setStep('otp-verify');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send code');
+      setError(err instanceof Error ? err.message : t('auth.login.failedToSendCode'));
     } finally {
       setIsSubmitting(false);
     }
@@ -141,7 +141,7 @@ export default function LoginPage() {
       signIn(result.user, result.accessToken, result.expiresAt);
       navigate(returnUrl, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Invalid code');
+      setError(err instanceof Error ? err.message : t('auth.login.invalidCode'));
     } finally {
       setIsSubmitting(false);
     }
@@ -156,14 +156,14 @@ export default function LoginPage() {
         publicKey: options as unknown as PublicKeyCredentialRequestOptions,
       });
       if (!credential) {
-        setError('Passkey authentication cancelled');
+        setError(t('auth.login.passkeyCancelled'));
         return;
       }
       const result = await verifyPasskeyLogin(options.challengeKey, credential, tenantId);
       signIn(result.user, result.accessToken, result.expiresAt);
       navigate(returnUrl, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Passkey authentication failed');
+      setError(err instanceof Error ? err.message : t('auth.login.passkeyFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -256,7 +256,7 @@ export default function LoginPage() {
               {t('common.welcome')}
             </h2>
             <p className="mt-2 text-sm text-papaya-muted">
-              Sign in to your account to continue
+              {t('auth.login.subtitle')}
             </p>
           </div>
 

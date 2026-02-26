@@ -40,23 +40,6 @@ interface FormState {
   tenantId: string;
 }
 
-// ── Constants ──
-
-const USER_TYPES: { value: UserType; label: string }[] = [
-  { value: 'insurer', label: 'Insurer' },
-  { value: 'broker', label: 'Broker' },
-  { value: 'provider', label: 'Provider' },
-  { value: 'papaya', label: 'Papaya' },
-];
-
-const USER_LEVELS: { value: UserLevel; label: string }[] = [
-  { value: 'admin', label: 'Admin' },
-  { value: 'executive', label: 'Executive' },
-  { value: 'manager', label: 'Manager' },
-  { value: 'staff', label: 'Staff' },
-  { value: 'viewer', label: 'Viewer' },
-];
-
 // ── Component ──
 
 export default function UserDialog({
@@ -140,15 +123,15 @@ export default function UserDialog({
     const errors: Partial<Record<keyof FormState, string>> = {};
 
     if (!form.name.trim()) {
-      errors.name = 'Name is required';
+      errors.name = t('admin.validation.nameRequired');
     }
     if (!form.email.trim()) {
-      errors.email = 'Email is required';
+      errors.email = t('admin.validation.emailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      errors.email = 'Invalid email address';
+      errors.email = t('admin.validation.invalidEmail');
     }
     if (isSuperAdmin && !isEditMode && !form.tenantId) {
-      errors.tenantId = 'Tenant is required';
+      errors.tenantId = t('admin.validation.tenantRequired');
     }
 
     setFieldErrors(errors);
@@ -207,8 +190,8 @@ export default function UserDialog({
           </DialogTitle>
           <DialogDescription>
             {isEditMode
-              ? 'Update the user details below.'
-              : 'Fill in the details to create a new user.'}
+              ? t('admin.dialog.editDescription')
+              : t('admin.dialog.createDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -216,13 +199,13 @@ export default function UserDialog({
           {/* Name */}
           <div className="space-y-1.5">
             <label htmlFor="user-name" className="text-sm font-medium">
-              Name <span className="text-destructive">*</span>
+              {t('admin.form.name')} <span className="text-destructive">*</span>
             </label>
             <Input
               id="user-name"
               value={form.name}
               onChange={(e) => updateField('name', e.target.value)}
-              placeholder="John Doe"
+              placeholder={t('admin.form.namePlaceholder')}
               aria-invalid={!!fieldErrors.name}
             />
             {fieldErrors.name && (
@@ -233,14 +216,14 @@ export default function UserDialog({
           {/* Email */}
           <div className="space-y-1.5">
             <label htmlFor="user-email" className="text-sm font-medium">
-              Email <span className="text-destructive">*</span>
+              {t('admin.form.email')} <span className="text-destructive">*</span>
             </label>
             <Input
               id="user-email"
               type="email"
               value={form.email}
               onChange={(e) => updateField('email', e.target.value)}
-              placeholder="john@example.com"
+              placeholder={t('admin.form.emailPlaceholder')}
               aria-invalid={!!fieldErrors.email}
             />
             {fieldErrors.email && (
@@ -251,21 +234,21 @@ export default function UserDialog({
           {/* Phone */}
           <div className="space-y-1.5">
             <label htmlFor="user-phone" className="text-sm font-medium">
-              Phone
+              {t('admin.form.phone')}
             </label>
             <Input
               id="user-phone"
               type="tel"
               value={form.phone}
               onChange={(e) => updateField('phone', e.target.value)}
-              placeholder="+66 812 345 678"
+              placeholder={t('admin.form.phonePlaceholder')}
             />
           </div>
 
           {/* User Type & Level — side by side */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Type</label>
+              <label className="text-sm font-medium">{t('admin.form.type')}</label>
               <Select
                 value={form.userType}
                 onValueChange={(val) => updateField('userType', val as UserType)}
@@ -274,17 +257,16 @@ export default function UserDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {USER_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="insurer">{t('admin.userTypes.insurer')}</SelectItem>
+                  <SelectItem value="broker">{t('admin.userTypes.broker')}</SelectItem>
+                  <SelectItem value="provider">{t('admin.userTypes.provider')}</SelectItem>
+                  <SelectItem value="papaya">{t('admin.userTypes.papaya')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Level</label>
+              <label className="text-sm font-medium">{t('admin.form.level')}</label>
               <Select
                 value={form.userLevel}
                 onValueChange={(val) => updateField('userLevel', val as UserLevel)}
@@ -293,11 +275,11 @@ export default function UserDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {USER_LEVELS.map((level) => (
-                    <SelectItem key={level.value} value={level.value}>
-                      {level.label}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="admin">{t('admin.userLevels.admin')}</SelectItem>
+                  <SelectItem value="executive">{t('admin.userLevels.executive')}</SelectItem>
+                  <SelectItem value="manager">{t('admin.userLevels.manager')}</SelectItem>
+                  <SelectItem value="staff">{t('admin.userLevels.staff')}</SelectItem>
+                  <SelectItem value="viewer">{t('admin.userLevels.viewer')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -307,25 +289,25 @@ export default function UserDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label htmlFor="user-title" className="text-sm font-medium">
-                Title
+                {t('admin.form.jobTitle')}
               </label>
               <Input
                 id="user-title"
                 value={form.title}
                 onChange={(e) => updateField('title', e.target.value)}
-                placeholder="VP of Claims"
+                placeholder={t('admin.form.titlePlaceholder')}
               />
             </div>
 
             <div className="space-y-1.5">
               <label htmlFor="user-department" className="text-sm font-medium">
-                Department
+                {t('admin.form.department')}
               </label>
               <Input
                 id="user-department"
                 value={form.department}
                 onChange={(e) => updateField('department', e.target.value)}
-                placeholder="Operations"
+                placeholder={t('admin.form.departmentPlaceholder')}
               />
             </div>
           </div>
@@ -334,14 +316,14 @@ export default function UserDialog({
           {isSuperAdmin && !isEditMode && (
             <div className="space-y-1.5">
               <label className="text-sm font-medium">
-                Tenant <span className="text-destructive">*</span>
+                {t('admin.form.tenant')} <span className="text-destructive">*</span>
               </label>
               <Select
                 value={form.tenantId || undefined}
                 onValueChange={(val) => updateField('tenantId', val)}
               >
                 <SelectTrigger className="w-full" aria-invalid={!!fieldErrors.tenantId}>
-                  <SelectValue placeholder="Select a tenant" />
+                  <SelectValue placeholder={t('admin.form.selectTenant')} />
                 </SelectTrigger>
                 <SelectContent>
                   {tenants.map((tenant) => (
@@ -371,12 +353,12 @@ export default function UserDialog({
               onClick={() => onOpenChange(false)}
               disabled={isSubmitting}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting
-                ? (isEditMode ? 'Saving...' : 'Creating...')
-                : (isEditMode ? 'Save Changes' : 'Create User')}
+                ? (isEditMode ? t('admin.dialog.saving') : t('admin.dialog.creating'))
+                : (isEditMode ? t('admin.dialog.saveChanges') : t('admin.dialog.createUser'))}
             </Button>
           </DialogFooter>
         </form>
