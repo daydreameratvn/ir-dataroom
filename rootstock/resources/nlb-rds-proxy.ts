@@ -1,7 +1,8 @@
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 import { mergeTags } from "../lib/tags.ts";
 import { banyanDb } from "./rds.ts";
-import { banyanNlbSg } from "./security-groups.ts";
+import { banyanNlbSg, banyanRdsSg } from "./security-groups.ts";
 import { banyanPublicSubnets, banyanVpc } from "./vpc.ts";
 
 // ============================================================
@@ -49,17 +50,20 @@ export const banyanNlbTargetGroup = new aws.lb.TargetGroup("banyan-prod-nlb-rds-
 // ============================================================
 // Target Group Attachment (RDS instance IP)
 // NLB IP target groups require an IPv4 address, not a hostname.
-// Look up the RDS ENI's private IP using AWS API (works from
-// outside the VPC, unlike dns.lookup on the RDS hostname).
+// Look up the RDS ENI's private IP via the RDS security group
+// (works from outside the VPC, unlike dns.lookup on the hostname).
 // ============================================================
 
-const rdsIp = banyanDb.address.apply((hostname) => {
+const rdsIp = pulumi.all([banyanRdsSg.id, banyanVpc.id]).apply(([sgId, vpcId]) => {
   return aws.ec2.getNetworkInterfaces({
-    filters: [{ name: "private-dns-name", values: [`${hostname}.`] }],
+    filters: [
+      { name: "group-id", values: [sgId] },
+      { name: "vpc-id", values: [vpcId] },
+    ],
   }).then((enis) => {
-    const eni = enis.ids[0];
-    if (!eni) throw new Error(`No ENI found for RDS hostname: ${hostname}`);
-    return aws.ec2.getNetworkInterface({ id: eni });
+    const eniId = enis.ids[0];
+    if (!eniId) throw new Error(`No ENI found for RDS security group: ${sgId}`);
+    return aws.ec2.getNetworkInterface({ id: eniId });
   }).then((eni) => eni.privateIp);
 });
 
