@@ -10,6 +10,7 @@ export default defineConfig({
     tailwindcss(),
     federation({
       name: 'shell',
+      manifest: true,
       remotes: {
         sample: {
           type: 'module',

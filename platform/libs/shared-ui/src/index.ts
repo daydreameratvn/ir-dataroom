@@ -125,6 +125,18 @@ export {
   SheetDescription,
 } from './components/ui/sheet';
 export { Skeleton } from './components/ui/skeleton';
+export { Textarea } from './components/ui/textarea';
+export {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from './components/ui/command';
 
 // Composites
 export { default as MarkdownRenderer } from './composites/MarkdownRenderer';

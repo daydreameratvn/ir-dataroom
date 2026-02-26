@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@papaya/shared-ui';
-import { useAuth } from '@/providers/AuthProvider';
+import { useAuth } from '@papaya/auth';
 
 export default function UserMenu() {
   const { t } = useTranslation();

@@ -14,6 +14,7 @@ import {
   ChevronRight,
   PanelLeftClose,
   PanelLeft,
+  Sparkles,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -29,7 +30,7 @@ import {
 } from '@papaya/shared-ui';
 import type { NavItem, NavGroup } from '@papaya/shared-types';
 import { useTenant } from '@/providers/TenantProvider';
-import { useAuth } from '@/providers/AuthProvider';
+import { useAuth } from '@papaya/auth';
 import { navigationGroups } from '@/config/navigation';
 
 const iconMap: Record<string, LucideIcon> = {
@@ -47,9 +48,10 @@ const iconMap: Record<string, LucideIcon> = {
 export interface AppSidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  onOpenFatima?: () => void;
 }
 
-export default function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
+export default function AppSidebar({ collapsed, onToggle, onOpenFatima }: AppSidebarProps) {
   const { t } = useTranslation();
   const location = useLocation();
   const { tenant } = useTenant();
@@ -186,20 +188,36 @@ export default function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
         collapsed ? 'w-16' : 'w-64'
       )}
     >
-      {/* Header */}
+      {/* Header — Oasis branding */}
       <div className={cn('flex h-14 items-center border-b px-3', collapsed ? 'justify-center' : 'justify-between')}>
         {!collapsed && (
           <div className="flex items-center gap-2 overflow-hidden">
-            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
-              P
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm shadow-sm">
+              O
             </div>
-            <span className="truncate text-sm font-semibold">{tenant.name}</span>
+            <span className="truncate text-sm font-semibold">Oasis</span>
           </div>
         )}
-        <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={onToggle}>
-          {collapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-        </Button>
+        {collapsed && (
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold text-sm shadow-sm">
+            O
+          </div>
+        )}
+        {!collapsed && (
+          <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={onToggle}>
+            <PanelLeftClose className="h-4 w-4" />
+          </Button>
+        )}
       </div>
+
+      {/* Toggle button when collapsed */}
+      {collapsed && (
+        <div className="flex justify-center py-2">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onToggle}>
+            <PanelLeft className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       {/* Navigation */}
       <ScrollArea className="flex-1 px-2 py-3">
@@ -221,7 +239,45 @@ export default function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
           <Bot className="h-4 w-4 flex-shrink-0" />
           {!collapsed && <span>{t('nav.aiAgents')}</span>}
         </Link>
+
+        {/* Fatima Link */}
+        <Link
+          to="/fatima"
+          className={cn(
+            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
+            isActive('/fatima') ? 'bg-accent text-foreground' : 'text-muted-foreground',
+            collapsed && 'justify-center px-2'
+          )}
+        >
+          <Sparkles className="h-4 w-4 flex-shrink-0" />
+          {!collapsed && <span>Fatima</span>}
+        </Link>
       </ScrollArea>
+
+      {/* Fatima quick-access button */}
+      <div className={cn('border-t px-2 py-2', collapsed && 'flex justify-center')}>
+        <button
+          onClick={onOpenFatima}
+          className={cn(
+            'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
+            'bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 text-foreground',
+            'hover:from-violet-500/20 hover:to-fuchsia-500/20',
+            collapsed && 'justify-center px-2'
+          )}
+        >
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-sm">
+            <Sparkles className="h-3 w-3" />
+          </div>
+          {!collapsed && (
+            <>
+              <span className="flex-1 text-left">Ask Fatima</span>
+              <kbd className="inline-flex h-5 items-center gap-0.5 rounded border bg-background/80 px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                <span className="text-xs">⌘</span>J
+              </kbd>
+            </>
+          )}
+        </button>
+      </div>
 
       {/* Footer - User */}
       <div className={cn('border-t p-3', collapsed && 'flex justify-center')}>

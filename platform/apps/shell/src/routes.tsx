@@ -14,6 +14,7 @@ const ProvidersPage = lazy(() => import('./features/providers/ProvidersPage'));
 const ReportingPage = lazy(() => import('./features/reporting/ReportingPage'));
 const AdminPage = lazy(() => import('./features/admin/AdminPage'));
 const AIAgentsPage = lazy(() => import('./features/ai-agents/AIAgentsPage'));
+const FatimaPage = lazy(() => import('./features/fatima/FatimaPage'));
 
 // Remote apps
 const SampleEntry = lazy(() => import('sample/entry'));
@@ -86,6 +87,12 @@ export const routes: RouteObject[] = [
       {
         path: 'ai-agents',
         element: <AIAgentsPage />,
+      },
+
+      // Fatima AI Assistant
+      {
+        path: 'fatima',
+        element: <FatimaPage />,
       },
 
       // Remote apps

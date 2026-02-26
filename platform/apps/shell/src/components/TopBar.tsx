@@ -1,11 +1,15 @@
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
-import { Input, Separator } from '@papaya/shared-ui';
+import { Separator } from '@papaya/shared-ui';
 import LanguageSwitcher from './LanguageSwitcher';
 import UserMenu from './UserMenu';
 
-export default function TopBar() {
+export interface TopBarProps {
+  onOpenCommandPalette?: () => void;
+}
+
+export default function TopBar({ onOpenCommandPalette }: TopBarProps) {
   const { t } = useTranslation();
   const location = useLocation();
 
@@ -18,6 +22,17 @@ export default function TopBar() {
     return translated !== navKey ? translated : segment.charAt(0).toUpperCase() + segment.slice(1);
   });
 
+  function handleSearchClick() {
+    // Trigger ⌘K programmatically
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'k',
+        metaKey: true,
+        bubbles: true,
+      })
+    );
+  }
+
   return (
     <header className="flex h-14 items-center justify-between border-b bg-background px-4">
       {/* Left: Breadcrumb */}
@@ -27,13 +42,16 @@ export default function TopBar() {
 
       {/* Right: Search + Language + User */}
       <div className="flex items-center gap-2">
-        <div className="relative hidden md:block">
-          <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder={`${t('common.search')}...`}
-            className="h-8 w-48 pl-8 text-sm lg:w-64"
-          />
-        </div>
+        <button
+          onClick={handleSearchClick}
+          className="relative hidden items-center gap-2 rounded-lg border bg-muted/40 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted/60 md:flex"
+        >
+          <Search className="h-3.5 w-3.5" />
+          <span className="text-muted-foreground/70">{t('common.search')}...</span>
+          <kbd className="pointer-events-none ml-4 inline-flex h-5 items-center gap-0.5 rounded border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground/70">
+            <span className="text-xs">⌘</span>K
+          </kbd>
+        </button>
         <Separator orientation="vertical" className="mx-1 h-6" />
         <LanguageSwitcher />
         <UserMenu />

@@ -11,6 +11,7 @@ export default defineConfig({
     federation({
       name: 'sample',
       filename: 'remoteEntry.js',
+      manifest: true,
       exposes: {
         './entry': './src/entry.tsx',
       },

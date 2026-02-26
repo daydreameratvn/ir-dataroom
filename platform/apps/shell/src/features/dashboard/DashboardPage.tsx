@@ -19,7 +19,7 @@ import {
   CardTitle,
   Badge,
 } from '@papaya/shared-ui';
-import { useAuth } from '@/providers/AuthProvider';
+import { useAuth } from '@papaya/auth';
 
 const recentActivity = [
   { id: '1', type: 'claim', action: 'AI adjudicated', detail: 'CLM-2024-0892 — Auto-approved ($2,450)', time: '2m ago', agent: 'Claim Assessor' },

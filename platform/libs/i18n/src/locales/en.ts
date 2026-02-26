@@ -38,80 +38,64 @@ const translations = {
   },
 
   nav: {
-    main: {
-      dashboard: 'Dashboard',
-    },
-    operations: {
-      claims: {
-        _title: 'Claims',
-        intake: 'Intake',
-        reviewQueue: 'Review Queue',
-        adjudication: 'Adjudication',
-        history: 'History',
-      },
-      policies: {
-        _title: 'Policies',
-        browse: 'Browse',
-        endorsements: 'Endorsements',
-        renewals: 'Renewals',
-        servicing: 'Servicing',
-      },
-      underwriting: {
-        _title: 'Underwriting',
-        applications: 'Applications',
-        riskAssessment: 'Risk Assessment',
-        pricing: 'Pricing',
-      },
-    },
-    intelligence: {
-      fwa: {
-        _title: 'FWA Detection',
-        alerts: 'Alerts',
-        investigations: 'Investigations',
-        rulesEngine: 'Rules Engine',
-      },
-      reporting: {
-        _title: 'Reporting',
-        dashboards: 'Dashboards',
-        reports: 'Reports',
-        analytics: 'Analytics',
-        lossManagement: 'Loss Management',
-      },
-    },
-    management: {
-      providers: {
-        _title: 'Providers',
-        directory: 'Directory',
-        contracts: 'Contracts',
-        performance: 'Performance',
-      },
-      admin: {
-        _title: 'Administration',
-        usersAndRoles: 'Users & Roles',
-        settings: 'Settings',
-        auditLog: 'Audit Log',
-      },
-      aiAgents: 'AI Agents',
-    },
-    sections: {
-      main: 'Main',
-      operations: 'Operations',
-      intelligence: 'Intelligence',
-      management: 'Management',
-    },
+    // Section labels
+    main: 'Main',
+    operations: 'Operations',
+    intelligence: 'Intelligence',
+    management: 'Management',
+    // Dashboard
+    dashboard: 'Dashboard',
+    // Claims
+    claims: 'Claims',
+    claimsIntake: 'Claims Intake',
+    claimsReview: 'Review Queue',
+    claimsAdjudication: 'Adjudication',
+    claimsHistory: 'History',
+    // Policies
+    policies: 'Policies',
+    policiesBrowse: 'Browse Policies',
+    policiesEndorsements: 'Endorsements',
+    policiesRenewals: 'Renewals',
+    policiesServicing: 'Servicing',
+    // Underwriting
+    underwriting: 'Underwriting',
+    underwritingApplications: 'Applications',
+    underwritingRisk: 'Risk Assessment',
+    underwritingPricing: 'Pricing',
+    // FWA
+    fwa: 'FWA Detection',
+    fwaAlerts: 'Alerts',
+    fwaInvestigations: 'Investigations',
+    fwaRules: 'Rules Engine',
+    // Reporting
+    reporting: 'Reporting',
+    reportingDashboards: 'Dashboards',
+    reportingReports: 'Reports',
+    reportingAnalytics: 'Analytics',
+    reportingLoss: 'Loss Management',
+    // Providers
+    providers: 'Providers',
+    providersDirectory: 'Directory',
+    providersContracts: 'Contracts',
+    providersPerformance: 'Performance',
+    // Administration
+    admin: 'Administration',
+    adminUsers: 'Users & Roles',
+    adminSettings: 'Settings',
+    adminAudit: 'Audit Log',
+    // AI
+    aiAgents: 'AI Agents',
   },
 
   dashboard: {
     title: 'Dashboard',
     subtitle: 'Overview of your insurance operations',
-    kpi: {
-      totalClaims: 'Total Claims',
-      pendingReview: 'Pending Review',
-      activePolicies: 'Active Policies',
-      fwaAlerts: 'FWA Alerts',
-      aiProcessedToday: 'AI Processed Today',
-      lossRatio: 'Loss Ratio',
-    },
+    totalClaims: 'Total Claims',
+    pendingReview: 'Pending Review',
+    activePolicies: 'Active Policies',
+    fwaAlerts: 'FWA Alerts',
+    aiProcessed: 'AI Processed Today',
+    lossRatio: 'Loss Ratio',
     recentActivity: 'Recent Activity',
     quickActions: 'Quick Actions',
     newClaim: 'New Claim',
