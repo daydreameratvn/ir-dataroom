@@ -276,9 +276,10 @@ After the DB schema changes, update the connector and generate HML files:
 ### Phase 3: Deploy to DDN Cloud
 
 ```bash
-bun run hasura:deploy
-# Equivalent to: cd hasura/ddn && ddn supergraph build create --env-file .env.cloud --apply
+AWS_PROFILE=banyan bun run hasura:deploy
 ```
+
+This fetches secrets from AWS SSM, generates a temp `.env.cloud`, builds and deploys, then cleans up. No secrets are stored in files.
 
 Verify on the DDN Cloud console: `https://console.hasura.io/project/banyan-prod`
 

@@ -52,6 +52,8 @@ hasura/
 │   ├── db.ts                 # Database connection helpers
 │   └── ssm.ts                # AWS SSM Parameter Store client
 ├── scripts/
+│   ├── deploy.ts             # DDN Cloud deploy (fetches secrets from SSM)
+│   ├── setup-env.ts          # Generate local .env from SSM
 │   ├── migrate.ts            # Database migration runner (dbmate)
 │   ├── tunnel.ts             # SSM port-forwarding to RDS
 │   ├── convert-permissions.ts # JSON→HML converter (one-time use)
@@ -64,7 +66,8 @@ hasura/
 
 | Command | Purpose |
 |---------|---------|
-| `bun run hasura:deploy` | Build and deploy supergraph to DDN Cloud |
+| `bun run hasura:deploy` | Build and deploy supergraph to DDN Cloud (fetches secrets from SSM) |
+| `bun run hasura:setup` | Generate local `.env` from AWS SSM (run once per checkout) |
 | `bun run hasura:start` | Start local DDN dev environment |
 | `bun run hasura:introspect` | Introspect database and update connector schema |
 | `bun run hasura:console` | Open DDN Cloud console |
@@ -118,14 +121,20 @@ All migrations MUST follow the backward compatibility rules from the root `CLAUD
 
 ## Secrets
 
-- **DDN Cloud secrets** (set via `.env.cloud`, passed to `ddn supergraph build create --env-file .env.cloud`):
-  - `APP_BANYAN_PG_CONNECTION_URI` — RDS connection string via NLB endpoint
-  - `JWT_SECRET_KEY` — HMAC key from Secrets Manager `banyan-prod-jwt-secret`
-- **AWS SSM** (`/banyan/hasura/`):
-  - `admin-token` — Pre-signed JWT for admin access
-  - `db-connection-uri` — Direct RDS connection string (for migrations/tunnel)
-  - `rds-nlb-endpoint` — NLB DNS name
-  - `ddn-cloud-endpoint` — DDN Cloud GraphQL API URL
+All secrets are stored in **AWS SSM Parameter Store** under `/banyan/hasura/`. No secrets in `.env` files — they are generated from SSM by scripts.
+
+| SSM Parameter | Type | Purpose |
+|---------------|------|---------|
+| `jwt-secret-key` | SecureString | JWT HMAC HS256 key for DDN Cloud auth |
+| `ddn-connection-uri` | SecureString | RDS connection string via NLB for DDN Cloud |
+| `db-connection-uri` | SecureString | Direct RDS connection string (migrations/tunnel) |
+| `admin-token` | SecureString | Pre-signed admin JWT for API access |
+| `rds-nlb-endpoint` | String | NLB DNS name |
+| `ddn-cloud-endpoint` | String | DDN Cloud GraphQL API URL |
+
+- **`hasura:deploy`** fetches `ddn-connection-uri` + `jwt-secret-key` from SSM → generates temp `.env.cloud` → deploys → cleans up
+- **`hasura:setup`** fetches `db-connection-uri` + `jwt-secret-key` from SSM → generates `.env` for local dev
+- **CI/CD** fetches secrets via IAM role (`AWS_DEPLOY_ROLE_ARN`) from SSM during GitHub Actions
 
 ## Work Scope
 
