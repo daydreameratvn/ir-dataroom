@@ -43,14 +43,47 @@ interface Investor {
   invitedAt: string;
   ndaAcceptedAt: string | null;
   ndaRequired: boolean;
-  accessLogs?: { startedAt: string }[];
+  lastActiveAt: string | null;
+  totalViews: number;
+  totalDownloads: number;
+  uniqueFilesViewed: number;
+  totalTimeSpent: number;
 }
 
-function getLastActive(investor: Investor): string {
-  if (investor.accessLogs && investor.accessLogs.length > 0) {
-    return new Date(investor.accessLogs[0].startedAt).toLocaleDateString();
+function getDaysAgo(dateStr: string | null): string {
+  if (!dateStr) return "Never";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  if (days === 0) return "Today";
+  if (days === 1) return "1d ago";
+  return `${days}d ago`;
+}
+
+function getSignal(investor: Investor): { label: string; color: string; tip: string } | null {
+  if (["termsheet_sent", "termsheet_signed", "docs_out", "dropped"].includes(investor.status)) return null;
+
+  const daysSinceActive = investor.lastActiveAt
+    ? Math.floor((Date.now() - new Date(investor.lastActiveAt).getTime()) / 86400000)
+    : Infinity;
+  const hasActivity = investor.totalViews > 0 || investor.totalDownloads > 0;
+
+  if (!hasActivity) {
+    return { label: "New", color: "#9ca3af", tip: "No activity yet. Waiting for first visit." };
   }
-  return "Never";
+  if (daysSinceActive >= 14) {
+    return { label: "Cold", color: "#ef4444", tip: "No activity in 14+ days. Consider follow-up." };
+  }
+  if (investor.totalDownloads > 0 && daysSinceActive < 7) {
+    return { label: "Hot", color: "#22c55e", tip: "Downloading files. High interest — consider next steps." };
+  }
+  if ((investor.totalViews >= 5 || investor.totalDownloads >= 2 || investor.totalTimeSpent >= 300) && daysSinceActive < 14) {
+    return { label: "Engaged", color: "#3b82f6", tip: "Strong engagement. Prioritize this investor." };
+  }
+  if (investor.totalViews > 0 && investor.totalDownloads === 0 && daysSinceActive < 7) {
+    return { label: "Warming", color: "#eab308", tip: "Browsing but no downloads yet. May need a nudge." };
+  }
+
+  return null;
 }
 
 function EditableCell({
@@ -351,6 +384,7 @@ export function InvestorManager() {
                   <TableHead>Status</TableHead>
                   <TableHead>NDA Accepted</TableHead>
                   <TableHead>Last Active</TableHead>
+                  <TableHead>Signal</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -394,7 +428,19 @@ export function InvestorManager() {
                           ? <span className="text-xs text-blue-600">Offline</span>
                           : "Pending"}
                     </TableCell>
-                    <TableCell>{getLastActive(investor)}</TableCell>
+                    <TableCell className="text-sm">{getDaysAgo(investor.lastActiveAt)}</TableCell>
+                    <TableCell>
+                      {(() => {
+                        const signal = getSignal(investor);
+                        if (!signal) return <span className="text-xs text-gray-400">—</span>;
+                        return (
+                          <div className="flex items-center gap-1.5" title={signal.tip}>
+                            <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: signal.color, display: "inline-block" }} />
+                            <span className="text-xs font-medium" style={{ color: signal.color }}>{signal.label}</span>
+                          </div>
+                        );
+                      })()}
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <select

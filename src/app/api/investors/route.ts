@@ -24,17 +24,34 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const investors = await prisma.investor.findMany({
+  const investorsWithLogs = await prisma.investor.findMany({
     include: {
-      accessLogs: {
-        orderBy: { startedAt: "desc" },
-        take: 1,
-      },
+      accessLogs: true,
     },
     orderBy: { invitedAt: "desc" },
   });
 
-  return NextResponse.json(investors);
+  const enriched = investorsWithLogs.map((inv) => {
+    const views = inv.accessLogs.filter((l) => l.action === "view");
+    const downloads = inv.accessLogs.filter((l) => l.action === "download");
+    const uniqueFiles = new Set(views.map((l) => l.fileId));
+    const totalTime = views.reduce((sum, l) => sum + (l.duration || 0), 0);
+    const lastLog = [...inv.accessLogs].sort(
+      (a, b) => b.startedAt.getTime() - a.startedAt.getTime()
+    )[0];
+
+    const { accessLogs: _logs, ...rest } = inv;
+    return {
+      ...rest,
+      lastActiveAt: lastLog?.startedAt.toISOString() || null,
+      totalViews: views.length,
+      totalDownloads: downloads.length,
+      uniqueFilesViewed: uniqueFiles.size,
+      totalTimeSpent: totalTime,
+    };
+  });
+
+  return NextResponse.json(enriched);
 }
 
 // POST /api/investors - Add a new investor
