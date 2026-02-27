@@ -11,6 +11,7 @@ import {
   Building2,
   Settings,
   Bot,
+  Briefcase,
   ChevronRight,
   PanelLeftClose,
   PanelLeft,
@@ -43,6 +44,7 @@ const iconMap: Record<string, LucideIcon> = {
   Building2,
   Settings,
   Bot,
+  Briefcase,
 };
 
 export interface AppSidebarProps {

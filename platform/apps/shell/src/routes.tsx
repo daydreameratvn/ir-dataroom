@@ -15,6 +15,7 @@ const AdminPage = lazy(() => import('./features/admin/AdminPage'));
 const AIAgentsPage = lazy(() => import('./features/ai-agents/AIAgentsPage'));
 const FatimaPage = lazy(() => import('./features/fatima/FatimaPage'));
 const DronePage = lazy(() => import('./features/drone/DronePage'));
+const IRPage = lazy(() => import('./features/ir/IRPage'));
 const DesignSystemPage = lazy(() => import('./features/design-system/DesignSystemPage'));
 const StatusPage = lazy(() => import('./features/status/StatusPage'));
 const StatusPagePublic = lazy(() => import('./features/status/StatusPagePublic'));
@@ -107,6 +108,12 @@ export const routes: RouteObject[] = [
       {
         path: 'drone/*',
         element: <DronePage />,
+      },
+
+      // Investor Relations — Dataroom management
+      {
+        path: 'ir/*',
+        element: <IRPage />,
       },
 
       // Design System Reference

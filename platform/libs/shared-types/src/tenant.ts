@@ -23,4 +23,5 @@ export interface TenantFeatures {
   providers: boolean;
   reporting: boolean;
   aiAgents: boolean;
+  ir: boolean;
 }

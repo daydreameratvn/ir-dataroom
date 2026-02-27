@@ -100,6 +100,17 @@ export const navigationGroups: NavGroup[] = [
         ],
       },
       {
+        id: 'ir',
+        labelKey: 'nav.ir',
+        icon: 'Briefcase',
+        requiredFeature: 'ir',
+        children: [
+          { id: 'ir-rounds', labelKey: 'nav.irRounds', path: '/ir' },
+          { id: 'ir-investors', labelKey: 'nav.irInvestors', path: '/ir/investors' },
+          { id: 'ir-analytics', labelKey: 'nav.irAnalytics', path: '/ir/analytics' },
+        ],
+      },
+      {
         id: 'admin',
         labelKey: 'nav.admin',
         icon: 'Settings',
