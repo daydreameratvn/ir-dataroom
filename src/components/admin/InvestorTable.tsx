@@ -59,7 +59,7 @@ function getDaysAgo(dateStr: string | null): string {
   return `${days}d ago`;
 }
 
-function getSignal(investor: Investor): { label: string; color: string; tip: string } | null {
+function getSignal(investor: Investor): { label: string; color: string; tip: string; rec: string } | null {
   if (["termsheet_sent", "termsheet_signed", "docs_out", "dropped"].includes(investor.status)) return null;
 
   const daysSinceActive = investor.lastActiveAt
@@ -68,19 +68,19 @@ function getSignal(investor: Investor): { label: string; color: string; tip: str
   const hasActivity = investor.totalViews > 0 || investor.totalDownloads > 0;
 
   if (!hasActivity) {
-    return { label: "New", color: "#9ca3af", tip: "No activity yet. Waiting for first visit." };
+    return { label: "New", color: "#9ca3af", tip: "No activity yet.", rec: "Send intro email or share dataroom link" };
   }
   if (daysSinceActive >= 14) {
-    return { label: "Cold", color: "#ef4444", tip: "No activity in 14+ days. Consider follow-up." };
+    return { label: "Cold", color: "#ef4444", tip: "Inactive 14+ days.", rec: "Send follow-up to re-engage" };
   }
   if (investor.totalDownloads > 0 && daysSinceActive < 7) {
-    return { label: "Hot", color: "#22c55e", tip: "Downloading files. High interest — consider next steps." };
+    return { label: "Hot", color: "#22c55e", tip: "Downloading files.", rec: "Send termsheet or schedule call" };
   }
   if ((investor.totalViews >= 5 || investor.totalDownloads >= 2 || investor.totalTimeSpent >= 300) && daysSinceActive < 14) {
-    return { label: "Engaged", color: "#3b82f6", tip: "Strong engagement. Prioritize this investor." };
+    return { label: "Engaged", color: "#3b82f6", tip: "Strong engagement.", rec: "Prioritize — share key materials" };
   }
   if (investor.totalViews > 0 && investor.totalDownloads === 0 && daysSinceActive < 7) {
-    return { label: "Warming", color: "#eab308", tip: "Browsing but no downloads yet. May need a nudge." };
+    return { label: "Warming", color: "#eab308", tip: "Browsing, no downloads.", rec: "Nudge with highlights or Q&A" };
   }
 
   return null;
@@ -385,6 +385,7 @@ export function InvestorManager() {
                   <TableHead>NDA Accepted</TableHead>
                   <TableHead>Last Active</TableHead>
                   <TableHead>Signal</TableHead>
+                  <TableHead>Recommendation</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -429,18 +430,30 @@ export function InvestorManager() {
                           : "Pending"}
                     </TableCell>
                     <TableCell className="text-sm">{getDaysAgo(investor.lastActiveAt)}</TableCell>
-                    <TableCell>
-                      {(() => {
-                        const signal = getSignal(investor);
-                        if (!signal) return <span className="text-xs text-gray-400">—</span>;
-                        return (
-                          <div className="flex items-center gap-1.5" title={signal.tip}>
-                            <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: signal.color, display: "inline-block" }} />
-                            <span className="text-xs font-medium" style={{ color: signal.color }}>{signal.label}</span>
-                          </div>
-                        );
-                      })()}
-                    </TableCell>
+                    {(() => {
+                      const signal = getSignal(investor);
+                      return (
+                        <>
+                          <TableCell>
+                            {signal ? (
+                              <div className="flex items-center gap-1.5" title={signal.tip}>
+                                <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: signal.color, display: "inline-block" }} />
+                                <span className="text-xs font-medium" style={{ color: signal.color }}>{signal.label}</span>
+                              </div>
+                            ) : (
+                              <span className="text-xs text-gray-400">—</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {signal ? (
+                              <span className="text-xs text-gray-600">{signal.rec}</span>
+                            ) : (
+                              <span className="text-xs text-gray-400">—</span>
+                            )}
+                          </TableCell>
+                        </>
+                      );
+                    })()}
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <select
