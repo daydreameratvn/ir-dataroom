@@ -22,6 +22,7 @@ console.log("Fetching secrets from SSM...");
 const params = await fetchSSMParams();
 
 const connectionUri = requireParam(params, "ddn-connection-uri");
+const doltgresConnectionUri = requireParam(params, "doltgres-ddn-connection-uri");
 const jwtSecretKey = requireParam(params, "jwt-secret-key");
 const appleEndpoint = params["apple-endpoint"] ?? "https://prod.apple.papaya.services/v1/graphql";
 const appleAdminSecret = requireParam(params, "apple-admin-secret");
@@ -30,6 +31,7 @@ const appleAdminSecret = requireParam(params, "apple-admin-secret");
 // auto-populated by DDN CLI from connector builds into .env.cloud.
 const envContent = [
   `APP_BANYAN_PG_CONNECTION_URI="${connectionUri}"`,
+  `APP_BANYAN_DOLTGRES_CONNECTION_URI="${doltgresConnectionUri}"`,
   `JWT_SECRET_KEY="${jwtSecretKey}"`,
   `APPLE_APPLE_GQL_GRAPHQL_ENDPOINT="${appleEndpoint}"`,
   `APPLE_APPLE_GQL_GRAPHQL_ENDPOINT_1="${appleEndpoint}"`,

@@ -133,3 +133,4 @@ export const banyanDdnEndpointParam = new aws.ssm.Parameter("banyan-prod-ddn-end
     Service: "ddn-cloud",
   }),
 });
+

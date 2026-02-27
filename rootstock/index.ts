@@ -40,6 +40,7 @@ export const stackOutputs = {
   BastionInstanceId: resources.banyanBastion.id,
   DoltgresServiceArn: resources.banyanDoltgresService.id,
   DoltgresEfsId: resources.banyanDoltgresEfs.id,
+  DoltgresDdnConnectionParam: resources.banyanDoltgresDdnConnectionParam.name,
 
   DomainName: resources.banyanCertificate.domainName,
   CertificateArn: resources.banyanCertificate.arn,

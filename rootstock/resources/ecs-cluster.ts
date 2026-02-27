@@ -25,12 +25,3 @@ export const banyanDoltgresLogGroup = new aws.cloudwatch.LogGroup("banyan-prod-d
   }),
 });
 
-export const banyanNdcDoltgresLogGroup = new aws.cloudwatch.LogGroup("banyan-prod-ndc-doltgres-logs", {
-  name: "/ecs/banyan-prod/ndc-doltgres",
-  retentionInDays: 30,
-  tags: mergeTags({
-    Name: "banyan-prod-ndc-doltgres-logs",
-    Component: "logs",
-    Service: "ndc-doltgres",
-  }),
-});
