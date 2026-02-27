@@ -18,11 +18,23 @@ export default async function NdaPage() {
     where: { email: session.user.email },
   });
 
-  // Fetch active NDA template
-  const template = await prisma.ndaTemplate.findFirst({
-    where: { isActive: true },
-    orderBy: { updatedAt: "desc" },
-  });
+  // NDA signing is a permanent fact — check ndaAcceptedAt, not status
+  const ndaSigned = !!investor?.ndaAcceptedAt;
+
+  // Fetch the NDA template: use the signed version if available, otherwise active
+  let template;
+  if (ndaSigned && investor?.ndaTemplateId) {
+    template = await prisma.ndaTemplate.findUnique({
+      where: { id: investor.ndaTemplateId },
+    });
+  }
+  // Fallback to active template (for unsigned investors or legacy signed without templateId)
+  if (!template) {
+    template = await prisma.ndaTemplate.findFirst({
+      where: { isActive: true },
+      orderBy: { updatedAt: "desc" },
+    });
+  }
 
   if (!template) {
     return (
@@ -33,9 +45,6 @@ export default async function NdaPage() {
       </div>
     );
   }
-
-  // NDA signing is a permanent fact — check ndaAcceptedAt, not status
-  const ndaSigned = !!investor?.ndaAcceptedAt;
 
   // Mode 1: NDA already signed — show signed NDA with sign-off details
   if (ndaSigned && investor) {

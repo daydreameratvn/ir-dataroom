@@ -20,10 +20,19 @@ export async function GET() {
     );
   }
 
-  const template = await prisma.ndaTemplate.findFirst({
-    where: { isActive: true },
-    orderBy: { updatedAt: "desc" },
-  });
+  // Use the signed version if available, fallback to active (legacy)
+  let template;
+  if (investor.ndaTemplateId) {
+    template = await prisma.ndaTemplate.findUnique({
+      where: { id: investor.ndaTemplateId },
+    });
+  }
+  if (!template) {
+    template = await prisma.ndaTemplate.findFirst({
+      where: { isActive: true },
+      orderBy: { updatedAt: "desc" },
+    });
+  }
 
   if (!template) {
     return NextResponse.json(

@@ -70,6 +70,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Find the active NDA template they are signing
+  const template = await prisma.ndaTemplate.findFirst({
+    where: { isActive: true },
+    orderBy: { updatedAt: "desc" },
+  });
+
+  if (!template) {
+    return NextResponse.json(
+      { error: "No NDA template configured" },
+      { status: 404 }
+    );
+  }
+
   // Log consent with IP and user agent
   const ipAddress =
     req.headers.get("x-forwarded-for") ||
@@ -84,6 +97,7 @@ export async function POST(req: NextRequest) {
       ndaAcceptedAt: new Date(),
       ndaIpAddress: ipAddress,
       ndaUserAgent: userAgent,
+      ndaTemplateId: template.id,
     },
   });
 
