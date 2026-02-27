@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FileText, FileSpreadsheet, Video, File } from "lucide-react";
 import { getCategoryStyle, sortCategories } from "@/lib/categories";
+import { hasDataroomAccess } from "@/lib/statuses";
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return bytes + " B";
@@ -43,7 +44,7 @@ export default async function DataroomPage() {
     where: { email: session.user.email },
   });
 
-  if (!investor || investor.status !== "nda_accepted") {
+  if (!investor || !hasDataroomAccess(investor.status)) {
     redirect("/dataroom/nda");
   }
 

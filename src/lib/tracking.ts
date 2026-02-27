@@ -13,7 +13,7 @@ export async function logAccess({
   ipAddress?: string;
   userAgent?: string;
 }) {
-  return prisma.accessLog.create({
+  const log = await prisma.accessLog.create({
     data: {
       investorId,
       fileId,
@@ -23,6 +23,19 @@ export async function logAccess({
       duration: 0,
     },
   });
+
+  // Auto-promote to "active" on first file access
+  const investor = await prisma.investor.findUnique({
+    where: { id: investorId },
+  });
+  if (investor?.status === "nda_accepted") {
+    await prisma.investor.update({
+      where: { id: investorId },
+      data: { status: "active" },
+    });
+  }
+
+  return log;
 }
 
 export async function updateDuration(accessLogId: string, duration: number) {

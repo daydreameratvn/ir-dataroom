@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       where: { email: normalizedEmail },
     });
 
-    if (!admin && (!investor || investor.status === "revoked")) {
+    if (!admin && (!investor || investor.status === "dropped" || investor.status === "revoked")) {
       // Don't reveal whether the email exists — return generic success
       return NextResponse.json({ success: true });
     }

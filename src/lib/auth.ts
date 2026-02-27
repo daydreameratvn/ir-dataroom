@@ -38,8 +38,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const admin = await prisma.adminUser.findUnique({ where: { email } });
         const investor = await prisma.investor.findUnique({ where: { email } });
 
-        if (!admin && (!investor || investor.status === "revoked")) {
-          return null; // Reject unknown/revoked users
+        if (!admin && (!investor || investor.status === "dropped" || investor.status === "revoked")) {
+          return null; // Reject unknown/dropped users
         }
 
         return {

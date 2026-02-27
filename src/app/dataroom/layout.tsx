@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { DataroomTabs } from "@/components/dataroom/DataroomTabs";
 import { Shield } from "lucide-react";
+import { hasDataroomAccess } from "@/lib/statuses";
 
 export default async function DataroomLayout({
   children,
@@ -25,7 +26,7 @@ export default async function DataroomLayout({
     redirect("/auth/signin");
   }
 
-  if (investor.status === "revoked") {
+  if (investor.status === "dropped" || investor.status === "revoked") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -39,7 +40,7 @@ export default async function DataroomLayout({
     );
   }
 
-  const ndaAccepted = investor.status === "nda_accepted";
+  const ndaAccepted = hasDataroomAccess(investor.status);
 
   // Check if user is also an admin (for "Back to Admin" button)
   const isAlsoAdmin = await prisma.adminUser.findUnique({

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { hasDataroomAccess } from "@/lib/statuses";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -22,11 +23,12 @@ export default async function HomePage() {
       where: { email: session.user.email },
     });
     if (investor) {
-      if (investor.status === "nda_accepted") {
+      if (hasDataroomAccess(investor.status)) {
         redirect("/dataroom");
-      } else {
+      } else if (investor.status !== "dropped" && investor.status !== "revoked") {
         redirect("/dataroom/nda");
       }
+      // dropped/revoked investors see the landing page
     }
   }
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { hasDataroomAccess } from "@/lib/statuses";
 
 // GET /api/nda - Get current NDA text
 export async function GET() {
@@ -28,7 +29,7 @@ export async function GET() {
 
   return NextResponse.json({
     content: template.content,
-    alreadyAccepted: investor?.status === "nda_accepted",
+    alreadyAccepted: investor ? hasDataroomAccess(investor.status) : false,
     acceptedAt: investor?.ndaAcceptedAt,
   });
 }
@@ -51,11 +52,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  if (investor.status === "nda_accepted") {
+  if (hasDataroomAccess(investor.status)) {
     return NextResponse.json({ message: "NDA already accepted" });
   }
 
-  if (investor.status === "revoked") {
+  if (investor.status === "dropped" || investor.status === "revoked") {
     return NextResponse.json(
       { error: "Access has been revoked" },
       { status: 403 }

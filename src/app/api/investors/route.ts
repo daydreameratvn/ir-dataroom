@@ -6,6 +6,7 @@ import { z } from "zod";
 const addInvestorSchema = z.object({
   email: z.string().email(),
   name: z.string().optional(),
+  firm: z.string().optional(),
 });
 
 // GET /api/investors - List all investors
@@ -73,6 +74,7 @@ export async function POST(req: NextRequest) {
     data: {
       email: parsed.data.email,
       name: parsed.data.name || null,
+      firm: parsed.data.firm || null,
     },
   });
 

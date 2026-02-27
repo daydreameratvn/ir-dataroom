@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { ViewTracker } from "@/components/dataroom/ViewTracker";
 import { getCategoryStyle } from "@/lib/categories";
+import { hasDataroomAccess } from "@/lib/statuses";
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return bytes + " B";
@@ -29,7 +30,7 @@ export default async function FileViewerPage({
     where: { email: session.user.email },
   });
 
-  if (!investor || investor.status !== "nda_accepted") {
+  if (!investor || !hasDataroomAccess(investor.status)) {
     redirect("/dataroom/nda");
   }
 

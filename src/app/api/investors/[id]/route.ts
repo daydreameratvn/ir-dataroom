@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { INVESTOR_STATUSES } from "@/lib/statuses";
 
 // PUT /api/investors/[id] - Update investor
 export async function PUT(
@@ -22,12 +23,22 @@ export async function PUT(
   const { id } = await params;
   const body = await req.json();
 
+  // Validate status if provided
+  if (body.status && !(INVESTOR_STATUSES as readonly string[]).includes(body.status)) {
+    return NextResponse.json(
+      { error: `Invalid status: ${body.status}` },
+      { status: 400 }
+    );
+  }
+
+  const updateData: Record<string, unknown> = {};
+  if (body.name !== undefined) updateData.name = body.name;
+  if (body.firm !== undefined) updateData.firm = body.firm;
+  if (body.status !== undefined) updateData.status = body.status;
+
   const investor = await prisma.investor.update({
     where: { id },
-    data: {
-      name: body.name,
-      status: body.status,
-    },
+    data: updateData,
   });
 
   return NextResponse.json(investor);

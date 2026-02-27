@@ -5,6 +5,7 @@ import { watermarkPdf } from "@/lib/watermark/pdf";
 import { watermarkExcel } from "@/lib/watermark/excel";
 import { watermarkVideo } from "@/lib/watermark/video";
 import { logAccess } from "@/lib/tracking";
+import { hasDataroomAccess } from "@/lib/statuses";
 import fs from "fs/promises";
 import { createReadStream } from "fs";
 import path from "path";
@@ -53,10 +54,10 @@ export async function GET(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // Check NDA status for non-admin investors
-  if (!admin && investor && investor.status !== "nda_accepted") {
+  // Check access for non-admin investors
+  if (!admin && investor && !hasDataroomAccess(investor.status)) {
     return NextResponse.json(
-      { error: "NDA not accepted" },
+      { error: "Access denied" },
       { status: 403 }
     );
   }

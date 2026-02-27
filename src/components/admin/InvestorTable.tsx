@@ -19,7 +19,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -28,31 +27,22 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Ban, Trash2, RefreshCw } from "lucide-react";
+import { Plus, Trash2, RefreshCw, Pencil, Check, X } from "lucide-react";
+import {
+  STATUS_LABELS,
+  INVESTOR_STATUSES,
+  getStatusStyle,
+} from "@/lib/statuses";
 
 interface Investor {
   id: string;
   email: string;
   name: string | null;
+  firm: string | null;
   status: string;
   invitedAt: string;
   ndaAcceptedAt: string | null;
   accessLogs?: { startedAt: string }[];
-}
-
-function getStatusVariant(
-  status: string
-): "default" | "secondary" | "destructive" | "outline" {
-  switch (status) {
-    case "nda_accepted":
-      return "default";
-    case "invited":
-      return "secondary";
-    case "revoked":
-      return "destructive";
-    default:
-      return "outline";
-  }
 }
 
 function getLastActive(investor: Investor): string {
@@ -62,12 +52,74 @@ function getLastActive(investor: Investor): string {
   return "Never";
 }
 
+function EditableCell({
+  value,
+  placeholder,
+  onSave,
+}: {
+  value: string | null;
+  placeholder: string;
+  onSave: (newValue: string | null) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value || "");
+
+  const handleSave = () => {
+    const trimmed = draft.trim();
+    const newVal = trimmed || null;
+    if (newVal !== value) {
+      onSave(newVal);
+    }
+    setEditing(false);
+  };
+
+  const handleCancel = () => {
+    setDraft(value || "");
+    setEditing(false);
+  };
+
+  if (editing) {
+    return (
+      <div className="flex items-center gap-1">
+        <Input
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSave();
+            if (e.key === "Escape") handleCancel();
+          }}
+          className="h-7 text-sm w-32"
+          autoFocus
+          placeholder={placeholder}
+        />
+        <button onClick={handleSave} className="text-green-600 hover:text-green-800">
+          <Check className="h-3.5 w-3.5" />
+        </button>
+        <button onClick={handleCancel} className="text-gray-400 hover:text-gray-600">
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => { setDraft(value || ""); setEditing(true); }}
+      className="group flex items-center gap-1 text-left hover:text-blue-600"
+    >
+      <span>{value || "-"}</span>
+      <Pencil className="h-3 w-3 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+    </button>
+  );
+}
+
 export function InvestorManager() {
   const [investors, setInvestors] = useState<Investor[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [newName, setNewName] = useState("");
+  const [newFirm, setNewFirm] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -100,7 +152,7 @@ export function InvestorManager() {
       const res = await fetch("/api/investors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: newEmail.trim(), name: newName.trim() || null }),
+        body: JSON.stringify({ email: newEmail.trim(), name: newName.trim() || null, firm: newFirm.trim() || null }),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -109,6 +161,7 @@ export function InvestorManager() {
       toast({ title: "Success", description: "Investor added successfully." });
       setNewEmail("");
       setNewName("");
+      setNewFirm("");
       setDialogOpen(false);
       fetchInvestors();
     } catch (err: unknown) {
@@ -123,20 +176,39 @@ export function InvestorManager() {
     }
   };
 
-  const handleRevoke = async (id: string) => {
+  const handleStatusChange = async (id: string, newStatus: string) => {
     try {
       const res = await fetch(`/api/investors/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "revoked" }),
+        body: JSON.stringify({ status: newStatus }),
       });
-      if (!res.ok) throw new Error("Failed to revoke investor");
-      toast({ title: "Success", description: "Investor access revoked." });
+      if (!res.ok) throw new Error("Failed to update status");
+      toast({ title: "Success", description: `Status updated to ${STATUS_LABELS[newStatus] || newStatus}.` });
       fetchInvestors();
     } catch {
       toast({
         title: "Error",
-        description: "Failed to revoke investor.",
+        description: "Failed to update investor status.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleFieldUpdate = async (id: string, field: "name" | "firm", value: string | null) => {
+    try {
+      const res = await fetch(`/api/investors/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [field]: value }),
+      });
+      if (!res.ok) throw new Error(`Failed to update ${field}`);
+      toast({ title: "Success", description: `${field.charAt(0).toUpperCase() + field.slice(1)} updated.` });
+      fetchInvestors();
+    } catch {
+      toast({
+        title: "Error",
+        description: `Failed to update ${field}.`,
         variant: "destructive",
       });
     }
@@ -205,6 +277,15 @@ export function InvestorManager() {
                     onChange={(e) => setNewName(e.target.value)}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="firm">Firm (optional)</Label>
+                  <Input
+                    id="firm"
+                    placeholder="Sequoia Capital"
+                    value={newFirm}
+                    onChange={(e) => setNewFirm(e.target.value)}
+                  />
+                </div>
                 <Button
                   onClick={handleAdd}
                   disabled={submitting || !newEmail.trim()}
@@ -240,6 +321,7 @@ export function InvestorManager() {
                 <TableRow>
                   <TableHead>Email</TableHead>
                   <TableHead>Name</TableHead>
+                  <TableHead>Firm</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>NDA Accepted</TableHead>
                   <TableHead>Last Active</TableHead>
@@ -252,11 +334,32 @@ export function InvestorManager() {
                     <TableCell className="font-medium">
                       {investor.email}
                     </TableCell>
-                    <TableCell>{investor.name || "-"}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(investor.status)}>
-                        {investor.status}
-                      </Badge>
+                      <EditableCell
+                        value={investor.name}
+                        placeholder="Name"
+                        onSave={(val) => handleFieldUpdate(investor.id, "name", val)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <EditableCell
+                        value={investor.firm}
+                        placeholder="Firm"
+                        onSave={(val) => handleFieldUpdate(investor.id, "firm", val)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <span
+                          className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold"
+                          style={getStatusStyle(investor.status)}
+                        >
+                          {STATUS_LABELS[investor.status] || investor.status}
+                        </span>
+                        {(investor.status === "dropped" || investor.status === "revoked") && (
+                          <p className="text-[11px] text-red-500 mt-0.5">Access revoked</p>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       {investor.ndaAcceptedAt
@@ -266,16 +369,27 @@ export function InvestorManager() {
                     <TableCell>{getLastActive(investor)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {investor.status !== "revoked" && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleRevoke(investor.id)}
-                          >
-                            <Ban className="h-3 w-3 mr-1" />
-                            Revoke
-                          </Button>
-                        )}
+                        <select
+                          className="rounded-md border border-gray-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          value={investor.status}
+                          onChange={(e) => {
+                            const newStatus = e.target.value;
+                            if (newStatus === investor.status) return;
+                            if (newStatus === "dropped") {
+                              if (!confirm(`Are you sure you want to drop ${investor.email}? This will revoke all their dataroom access.`)) {
+                                e.target.value = investor.status;
+                                return;
+                              }
+                            }
+                            handleStatusChange(investor.id, newStatus);
+                          }}
+                        >
+                          {INVESTOR_STATUSES.map((s) => (
+                            <option key={s} value={s}>
+                              {STATUS_LABELS[s]}
+                            </option>
+                          ))}
+                        </select>
                         <Button
                           variant="destructive"
                           size="sm"
