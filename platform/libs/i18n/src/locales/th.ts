@@ -295,6 +295,8 @@ const translations = {
       level: 'ระดับ',
       department: 'แผนก',
       lastLogin: 'เข้าสู่ระบบล่าสุด',
+      createdAt: 'สร้างเมื่อ',
+      createdBy: 'สร้างโดย',
       openMenu: 'เปิดเมนู',
       edit: 'แก้ไข',
       delete: 'ลบ',

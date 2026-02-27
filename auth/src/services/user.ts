@@ -168,6 +168,7 @@ export interface AdminUserView extends AuthUser {
   locale?: string;
   lastLoginAt?: string;
   createdAt: string;
+  createdByName?: string;
 }
 
 export interface ListUsersOptions {
@@ -193,6 +194,7 @@ interface AdminUserRow extends UserRow {
   locale: string | null;
   last_login_at: string | null;
   created_at: string;
+  created_by_name: string | null;
   // is_impersonatable is inherited from UserRow
 }
 
@@ -204,6 +206,7 @@ function rowToAdminUser(row: AdminUserRow): AdminUserView {
     locale: row.locale ?? undefined,
     lastLoginAt: row.last_login_at ?? undefined,
     createdAt: row.created_at,
+    createdByName: row.created_by_name ?? undefined,
   };
 }
 
@@ -212,24 +215,24 @@ export async function listUsers(opts: ListUsersOptions): Promise<ListUsersResult
   const limit = Math.min(opts.limit ?? 20, 100);
   const offset = (page - 1) * limit;
 
-  const conditions: string[] = ["tenant_id = $1", "deleted_at IS NULL"];
+  const conditions: string[] = ["u.tenant_id = $1", "u.deleted_at IS NULL"];
   const params: unknown[] = [opts.tenantId];
   let paramIdx = 2;
 
   if (opts.search) {
-    conditions.push(`(name ILIKE $${paramIdx} OR email ILIKE $${paramIdx})`);
+    conditions.push(`(u.name ILIKE $${paramIdx} OR u.email ILIKE $${paramIdx})`);
     params.push(`%${opts.search}%`);
     paramIdx++;
   }
 
   if (opts.userType) {
-    conditions.push(`user_type = $${paramIdx}`);
+    conditions.push(`u.user_type = $${paramIdx}`);
     params.push(opts.userType);
     paramIdx++;
   }
 
   if (opts.userLevel) {
-    conditions.push(`user_level = $${paramIdx}`);
+    conditions.push(`u.user_level = $${paramIdx}`);
     params.push(opts.userLevel);
     paramIdx++;
   }
@@ -237,17 +240,19 @@ export async function listUsers(opts: ListUsersOptions): Promise<ListUsersResult
   const where = conditions.join(" AND ");
 
   const countResult = await query<{ count: string }>(
-    `SELECT COUNT(*) as count FROM users WHERE ${where}`,
+    `SELECT COUNT(*) as count FROM users u WHERE ${where}`,
     params
   );
   const total = parseInt(countResult.rows[0]!.count, 10);
 
   const dataResult = await query<AdminUserRow>(
-    `SELECT id, email, name, tenant_id, user_type, user_level, phone,
-            title, department, locale, last_login_at, created_at, is_impersonatable
-     FROM users
+    `SELECT u.id, u.email, u.name, u.tenant_id, u.user_type, u.user_level, u.phone,
+            u.title, u.department, u.locale, u.last_login_at, u.created_at, u.is_impersonatable,
+            cb.name AS created_by_name
+     FROM users u
+     LEFT JOIN users cb ON cb.id = u.created_by
      WHERE ${where}
-     ORDER BY created_at DESC
+     ORDER BY u.created_at DESC
      LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
     [...params, limit, offset]
   );

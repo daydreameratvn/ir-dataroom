@@ -243,6 +243,24 @@ export default function UserTable() {
         ),
       },
       {
+        accessorKey: 'createdAt',
+        header: t('admin.table.createdAt'),
+        cell: ({ row }) => (
+          <span className="text-sm text-muted-foreground">
+            {new Date(row.original.createdAt).toLocaleDateString()}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'createdByName',
+        header: t('admin.table.createdBy'),
+        cell: ({ row }) => (
+          <span className="text-sm text-muted-foreground">
+            {row.original.createdByName ?? '--'}
+          </span>
+        ),
+      },
+      {
         id: 'actions',
         header: '',
         cell: ({ row }) => {

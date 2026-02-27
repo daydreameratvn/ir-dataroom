@@ -8,6 +8,7 @@ export interface AdminUser extends User {
   lastLoginAt?: string;
   createdAt: string;
   updatedAt: string;
+  createdByName?: string;
 }
 
 // ── Request types ──

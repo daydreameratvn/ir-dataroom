@@ -295,6 +295,8 @@ const translations = {
       level: '级别',
       department: '部门',
       lastLogin: '最后登录',
+      createdAt: '创建时间',
+      createdBy: '创建者',
       openMenu: '打开菜单',
       edit: '编辑',
       delete: '删除',

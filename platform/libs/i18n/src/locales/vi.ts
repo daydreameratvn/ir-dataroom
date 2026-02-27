@@ -295,6 +295,8 @@ const translations = {
       level: 'Cấp độ',
       department: 'Phòng ban',
       lastLogin: 'Đăng nhập lần cuối',
+      createdAt: 'Ngày tạo',
+      createdBy: 'Người tạo',
       openMenu: 'Mở menu',
       edit: 'Chỉnh sửa',
       delete: 'Xóa',

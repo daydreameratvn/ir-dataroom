@@ -306,6 +306,8 @@ const translations = {
       level: 'Level',
       department: 'Department',
       lastLogin: 'Last Login',
+      createdAt: 'Created',
+      createdBy: 'Created By',
       openMenu: 'Open menu',
       edit: 'Edit',
       delete: 'Delete',
