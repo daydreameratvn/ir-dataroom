@@ -7,9 +7,8 @@ import { banyanBastionSg } from "./bastion.ts";
 import { banyanDnsNamespace } from "./cloud-map.ts";
 import { banyanCluster, banyanDoltgresLogGroup } from "./ecs-cluster.ts";
 import { banyanExecRole, banyanTaskRole } from "./ecs-iam.ts";
-import { banyanNlb } from "./nlb-rds-proxy.ts";
 import { banyanDb } from "./rds.ts";
-import { banyanNlbSg, banyanRdsSg } from "./security-groups.ts";
+import { banyanRdsSg } from "./security-groups.ts";
 import { banyanVpc, banyanPrivateSubnets } from "./vpc.ts";
 
 // ============================================================
@@ -386,86 +385,6 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
 // ============================================================
 
 // ============================================================
-// NLB Integration — DDN Cloud connects to Doltgres via NLB port 5433
-//
-// DDN Cloud runs a managed ndc-postgres connector that connects to
-// Doltgres through the same NLB used for RDS (port 5432).
-// Doltgres uses port 5433 on the NLB, forwarded to container port 5432.
-// ============================================================
-
-const banyanNlbDoltgresTargetGroup = new aws.lb.TargetGroup("banyan-prod-nlb-doltgres-tg", {
-  name: "banyan-prod-nlb-doltgres-tg",
-  port: 5432,
-  protocol: "TCP",
-  targetType: "ip",
-  vpcId: banyanVpc.id,
-  healthCheck: {
-    enabled: true,
-    protocol: "TCP",
-    port: "5432",
-    healthyThreshold: 3,
-    unhealthyThreshold: 3,
-    interval: 30,
-  },
-  tags: mergeTags({
-    Name: "banyan-prod-nlb-doltgres-tg",
-    Component: "nlb",
-    Service: "doltgres",
-  }),
-});
-
-// Allow NLB → Doltgres on port 5432
-new aws.vpc.SecurityGroupIngressRule("banyan-prod-doltgres-from-nlb", {
-  securityGroupId: banyanDoltgresSg.id,
-  referencedSecurityGroupId: banyanNlbSg.id,
-  fromPort: 5432,
-  toPort: 5432,
-  ipProtocol: "tcp",
-  description: "PostgreSQL from NLB (DDN Cloud)",
-  tags: mergeTags({ Name: "doltgres-from-nlb", Component: "security-group" }),
-});
-
-// Doltgres TCP Listener (port 5433)
-// TCP pass-through — Doltgres does not support PostgreSQL SSL.
-// Security: password auth (48-char alphanumeric), read-only audit replica.
-new aws.lb.Listener("banyan-prod-nlb-doltgres-listener", {
-  loadBalancerArn: banyanNlb.arn,
-  port: 5433,
-  protocol: "TCP",
-  defaultActions: [
-    {
-      type: "forward",
-      targetGroupArn: banyanNlbDoltgresTargetGroup.arn,
-    },
-  ],
-  tags: mergeTags({
-    Name: "banyan-prod-nlb-doltgres-listener",
-    Component: "nlb",
-    Service: "doltgres",
-  }),
-});
-
-// SSM Parameter — Doltgres DDN connection URI (via NLB port 5433)
-export const banyanDoltgresDdnConnectionParam = new aws.ssm.Parameter("banyan-prod-doltgres-ddn-connection-uri", {
-  name: "/banyan/hasura/doltgres-ddn-connection-uri",
-  type: "SecureString",
-  value: pulumi.all([banyanNlb.dnsName, banyanDoltgresSecret.arn]).apply(([nlbDns, secretArn]) => {
-    return aws.secretsmanager.getSecretVersion({ secretId: secretArn }).then((secret) => {
-      const creds = JSON.parse(secret.secretString);
-      const rootPassword = encodeURIComponent(creds.root_password);
-      // Doltgres replicator hardcodes self-connection to "postgres" db
-      return `postgresql://postgres:${rootPassword}@${nlbDns}:5433/postgres`;
-    });
-  }),
-  description: "Doltgres connection URI via NLB for DDN Cloud connector",
-  tags: mergeTags({
-    Name: "banyan-prod-doltgres-ddn-connection-uri",
-    Component: "ssm",
-    Service: "doltgres",
-  }),
-});
-
-// ============================================================
 // Doltgres ECS Service (Fargate + EFS Persistent Volume)
 // ============================================================
 
@@ -488,14 +407,6 @@ export const banyanDoltgresService = new aws.ecs.Service("banyan-prod-doltgres-s
   serviceRegistries: {
     registryArn: banyanDoltgresServiceDiscovery.arn,
   },
-  // ECS auto-registers/deregisters task IPs with NLB target group
-  loadBalancers: [
-    {
-      targetGroupArn: banyanNlbDoltgresTargetGroup.arn,
-      containerName: "doltgresql",
-      containerPort: 5432,
-    },
-  ],
   tags: mergeTags({
     Name: "banyan-prod-doltgres-service",
     Component: "ecs",

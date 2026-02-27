@@ -22,16 +22,6 @@ export const banyanNlbSg = new aws.ec2.SecurityGroup("banyan-prod-nlb-sg", {
       // To restrict, upgrade to Private DDN (dedicated or BYOC) for static IPs / VPC peering.
       cidrBlocks: ["0.0.0.0/0"],
     },
-    {
-      description: "Doltgres from DDN Cloud (password auth, audit replica)",
-      fromPort: 5433,
-      toPort: 5433,
-      protocol: "tcp",
-      // Same DDN Cloud dynamic IPs — access control: password auth.
-      // Doltgres does not support PostgreSQL SSL; traffic is unencrypted.
-      // Acceptable: read-only audit replica, strong password (48-char alphanumeric).
-      cidrBlocks: ["0.0.0.0/0"],
-    },
   ],
   egress: [
     {
