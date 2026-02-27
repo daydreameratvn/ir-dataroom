@@ -82,29 +82,58 @@ else
 fi
 
 # ----------------------------------------------------------
-# 4. TypeScript Go (tsgo) — optional but preferred
+# 4. TypeScript Go (tsgo) — preferred type checker
 # ----------------------------------------------------------
 if command -v tsgo &>/dev/null; then
   TSGO_VERSION=$(tsgo --version 2>/dev/null || echo "unknown")
   ok "TypeScript Go (tsgo) v${TSGO_VERSION}"
 else
-  warn "tsgo not found — falling back to tsc. Install when available for faster type checking."
-fi
-
-# ----------------------------------------------------------
-# 5. Git
-# ----------------------------------------------------------
-if command -v git &>/dev/null; then
-  GIT_VERSION=$(git --version | sed 's/git version //')
-  ok "Git v${GIT_VERSION}"
-else
-  fail "Git not found"
+  warn "tsgo not found — install: npm install -g @typescript/native-preview"
 fi
 
 echo ""
 
 # ----------------------------------------------------------
-# 6. AWS CLI & Profile
+# 5. Git & Author Configuration
+# ----------------------------------------------------------
+echo "Checking Git..."
+
+if command -v git &>/dev/null; then
+  GIT_VERSION=$(git --version | sed 's/git version //')
+  ok "Git v${GIT_VERSION}"
+
+  # Verify git user config
+  GIT_USER_NAME=$(git config --global user.name 2>/dev/null || echo "")
+  GIT_USER_EMAIL=$(git config --global user.email 2>/dev/null || echo "")
+  if [ -n "$GIT_USER_NAME" ] && [ -n "$GIT_USER_EMAIL" ]; then
+    ok "Git author: ${GIT_USER_NAME} <${GIT_USER_EMAIL}>"
+  else
+    warn "Git author not configured — run: git config --global user.name 'Your Name' && git config --global user.email 'you@example.com'"
+  fi
+else
+  fail "Git not found"
+fi
+
+# ----------------------------------------------------------
+# 6. GitHub CLI
+# ----------------------------------------------------------
+if command -v gh &>/dev/null; then
+  GH_VERSION=$(gh --version 2>/dev/null | head -1 | sed 's/gh version //' | awk '{print $1}')
+  ok "GitHub CLI v${GH_VERSION}"
+
+  if gh auth status &>/dev/null 2>&1; then
+    ok "GitHub CLI authenticated"
+  else
+    warn "GitHub CLI not authenticated — run: gh auth login"
+  fi
+else
+  warn "GitHub CLI not found — install: brew install gh (needed for PRs and issues)"
+fi
+
+echo ""
+
+# ----------------------------------------------------------
+# 7. AWS CLI & Profile
 # ----------------------------------------------------------
 echo "Checking AWS..."
 
@@ -130,7 +159,7 @@ if command -v aws &>/dev/null; then
   elif [ -n "$AWS_ACCOUNT" ]; then
     fail "Wrong AWS account: ${AWS_ACCOUNT} — expected 812652266901. Check your 'banyan' profile."
   else
-    warn "AWS session expired or not authenticated — run: aws login --profile banyan"
+    warn "AWS session expired or not authenticated — run: aws sso login --profile banyan"
   fi
 else
   fail "AWS CLI not found — install: brew install awscli"
@@ -139,7 +168,7 @@ fi
 echo ""
 
 # ----------------------------------------------------------
-# 7. GCP CLI (optional)
+# 8. GCP CLI (optional)
 # ----------------------------------------------------------
 echo "Checking GCP..."
 
@@ -159,7 +188,36 @@ fi
 echo ""
 
 # ----------------------------------------------------------
-# 8. Database tools
+# 9. Infrastructure tools
+# ----------------------------------------------------------
+echo "Checking infrastructure tools..."
+
+# Docker
+if command -v docker &>/dev/null; then
+  DOCKER_VERSION=$(docker --version 2>/dev/null | sed 's/Docker version //' | cut -d, -f1)
+  ok "Docker v${DOCKER_VERSION}"
+
+  if docker info &>/dev/null 2>&1; then
+    ok "Docker daemon running"
+  else
+    warn "Docker daemon not running — start Docker Desktop"
+  fi
+else
+  warn "Docker not found — install Docker Desktop (needed for auth service deployment)"
+fi
+
+# Pulumi
+if command -v pulumi &>/dev/null; then
+  PULUMI_VERSION=$(pulumi version 2>/dev/null | sed 's/v//')
+  ok "Pulumi v${PULUMI_VERSION}"
+else
+  info "Pulumi not found — install: brew install pulumi (needed for infrastructure changes)"
+fi
+
+echo ""
+
+# ----------------------------------------------------------
+# 10. Database tools
 # ----------------------------------------------------------
 echo "Checking database tools..."
 
@@ -193,10 +251,25 @@ fi
 echo ""
 
 # ----------------------------------------------------------
-# 9. Root dependencies (bun)
+# 11. Hasura DDN CLI
+# ----------------------------------------------------------
+echo "Checking Hasura..."
+
+if command -v ddn &>/dev/null; then
+  DDN_VERSION=$(ddn version 2>/dev/null | grep -o 'v[0-9][^ ]*' | head -1 || echo "unknown")
+  ok "Hasura DDN CLI ${DDN_VERSION}"
+else
+  info "Hasura DDN CLI not found — install: curl -L https://graphql-engine-cdn.hasura.io/ddn/cli/v4/get.sh | bash"
+fi
+
+echo ""
+
+# ----------------------------------------------------------
+# 12. Dependencies
 # ----------------------------------------------------------
 echo "Checking dependencies..."
 
+# Root dependencies
 if [ -d "$ROOT_DIR/node_modules" ]; then
   ok "Root node_modules present"
 else
@@ -205,9 +278,7 @@ else
   ok "Root dependencies installed"
 fi
 
-# ----------------------------------------------------------
-# 10. Platform dependencies (bun)
-# ----------------------------------------------------------
+# Platform dependencies
 PLATFORM_DIR="$ROOT_DIR/platform"
 if [ -d "$PLATFORM_DIR" ]; then
   if [ -d "$PLATFORM_DIR/node_modules" ]; then
@@ -225,9 +296,23 @@ else
   warn "platform/ directory not found — skip if not working on frontend"
 fi
 
-# ----------------------------------------------------------
-# 11. Mobile dependencies (bun)
-# ----------------------------------------------------------
+# Auth dependencies
+AUTH_DIR="$ROOT_DIR/auth"
+if [ -d "$AUTH_DIR" ] && [ -f "$AUTH_DIR/package.json" ]; then
+  if [ -d "$AUTH_DIR/node_modules" ]; then
+    ok "Auth node_modules present"
+  else
+    if command -v bun &>/dev/null; then
+      warn "Auth node_modules missing — running: bun install"
+      (cd "$AUTH_DIR" && bun install)
+      ok "Auth dependencies installed"
+    else
+      fail "Cannot install auth deps — bun not found"
+    fi
+  fi
+fi
+
+# Mobile dependencies
 MOBILE_DIR="$ROOT_DIR/mobile"
 if [ -d "$MOBILE_DIR" ] && [ -f "$MOBILE_DIR/package.json" ]; then
   if [ -d "$MOBILE_DIR/node_modules" ]; then
@@ -243,11 +328,12 @@ if [ -d "$MOBILE_DIR" ] && [ -f "$MOBILE_DIR/package.json" ]; then
   fi
 fi
 
+echo ""
+
 # ----------------------------------------------------------
-# 12. Mobile-specific tools (optional)
+# 13. Mobile-specific tools (optional)
 # ----------------------------------------------------------
 if [ -d "$MOBILE_DIR" ]; then
-  echo ""
   echo "Checking mobile tools (optional)..."
 
   if command -v eas &>/dev/null; then
@@ -275,12 +361,12 @@ if [ -d "$MOBILE_DIR" ]; then
       info "CocoaPods not found — install with: sudo gem install cocoapods (needed for iOS native modules)"
     fi
   fi
+
+  echo ""
 fi
 
-echo ""
-
 # ----------------------------------------------------------
-# 13. TypeScript compilation check
+# 14. TypeScript compilation check
 # ----------------------------------------------------------
 echo "Checking compilation..."
 
@@ -292,6 +378,29 @@ if [ -d "$PLATFORM_DIR" ] && [ -d "$PLATFORM_DIR/node_modules" ]; then
   fi
 fi
 
+if [ -d "$AUTH_DIR" ] && [ -d "$AUTH_DIR/node_modules" ]; then
+  if (cd "$AUTH_DIR" && bun run typecheck 2>/dev/null); then
+    ok "Auth typecheck passes"
+  else
+    warn "Auth typecheck has errors — run 'cd auth && bun run typecheck' for details"
+  fi
+fi
+
+echo ""
+
+# ----------------------------------------------------------
+# 15. Quick reference
+# ----------------------------------------------------------
+echo "=== Quick Reference ==="
+echo ""
+echo "  Platform dev:        cd platform && bun run dev"
+echo "  Auth dev:            cd auth && bun run dev"
+echo "  Hasura tunnel:       bun run hasura:tunnel"
+echo "  Hasura migrate:      bun run hasura:migrate"
+echo "  Hasura deploy:       bun run hasura:deploy"
+echo "  Deploy (all):        AWS_PROFILE=banyan bash scripts/deploy.sh all"
+echo "  Deploy (frontend):   AWS_PROFILE=banyan bash scripts/deploy.sh frontend"
+echo "  Deploy (auth):       AWS_PROFILE=banyan bash scripts/deploy.sh auth"
 echo ""
 
 # ----------------------------------------------------------
