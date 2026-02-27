@@ -42,6 +42,7 @@ interface Investor {
   status: string;
   invitedAt: string;
   ndaAcceptedAt: string | null;
+  ndaRequired: boolean;
   accessLogs?: { startedAt: string }[];
 }
 
@@ -120,6 +121,7 @@ export function InvestorManager() {
   const [newEmail, setNewEmail] = useState("");
   const [newName, setNewName] = useState("");
   const [newFirm, setNewFirm] = useState("");
+  const [skipNda, setSkipNda] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -152,7 +154,7 @@ export function InvestorManager() {
       const res = await fetch("/api/investors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: newEmail.trim(), name: newName.trim() || null, firm: newFirm.trim() || null }),
+        body: JSON.stringify({ email: newEmail.trim(), name: newName.trim() || null, firm: newFirm.trim() || null, skipNda }),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -162,6 +164,7 @@ export function InvestorManager() {
       setNewEmail("");
       setNewName("");
       setNewFirm("");
+      setSkipNda(false);
       setDialogOpen(false);
       fetchInvestors();
     } catch (err: unknown) {
@@ -286,6 +289,23 @@ export function InvestorManager() {
                     onChange={(e) => setNewFirm(e.target.value)}
                   />
                 </div>
+                <div className="flex items-start gap-3 rounded-md border border-amber-200 bg-amber-50 p-3">
+                  <input
+                    type="checkbox"
+                    id="skipNda"
+                    checked={skipNda}
+                    onChange={(e) => setSkipNda(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                  />
+                  <div>
+                    <Label htmlFor="skipNda" className="text-sm font-medium cursor-pointer">
+                      Skip NDA requirement
+                    </Label>
+                    <p className="text-xs text-amber-700 mt-0.5">
+                      Check this if the investor has already signed an NDA offline. They will get immediate access without signing online.
+                    </p>
+                  </div>
+                </div>
                 <Button
                   onClick={handleAdd}
                   disabled={submitting || !newEmail.trim()}
@@ -364,7 +384,9 @@ export function InvestorManager() {
                     <TableCell>
                       {investor.ndaAcceptedAt
                         ? new Date(investor.ndaAcceptedAt).toLocaleDateString()
-                        : "Pending"}
+                        : !investor.ndaRequired
+                          ? <span className="text-xs text-blue-600">Offline</span>
+                          : "Pending"}
                     </TableCell>
                     <TableCell>{getLastActive(investor)}</TableCell>
                     <TableCell className="text-right">

@@ -7,6 +7,7 @@ const addInvestorSchema = z.object({
   email: z.string().email(),
   name: z.string().optional(),
   firm: z.string().optional(),
+  skipNda: z.boolean().optional(),
 });
 
 // GET /api/investors - List all investors
@@ -70,11 +71,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const skipNda = parsed.data.skipNda === true;
+
   const investor = await prisma.investor.create({
     data: {
       email: parsed.data.email,
       name: parsed.data.name || null,
       firm: parsed.data.firm || null,
+      ...(skipNda
+        ? { ndaRequired: false, status: "nda_accepted" }
+        : {}),
     },
   });
 

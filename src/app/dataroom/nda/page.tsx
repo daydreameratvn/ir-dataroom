@@ -127,7 +127,30 @@ export default async function NdaPage() {
     );
   }
 
-  // Mode 2: NDA not yet accepted — show acceptance form
+  // Mode 2b: NDA not required (handled offline) — informational message
+  if (investor && !investor.ndaRequired) {
+    return (
+      <div className="mx-auto max-w-3xl">
+        <div className="mb-6 flex items-center gap-3">
+          <CheckCircle2 className="h-7 w-7 text-blue-600" />
+          <h2 className="text-2xl font-bold">Non-Disclosure Agreement</h2>
+          <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+            Handled Offline
+          </span>
+        </div>
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-sm text-gray-600">
+              Your NDA was handled offline. If you have any questions, please
+              contact us directly.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Mode 3: NDA not yet accepted — show acceptance form
   return (
     <div className="mx-auto max-w-3xl">
       <h2 className="mb-6 text-2xl font-bold">Non-Disclosure Agreement</h2>
