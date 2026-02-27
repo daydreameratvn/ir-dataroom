@@ -104,31 +104,56 @@ export async function POST(req: NextRequest) {
 
   // Send welcome email (non-blocking — don't fail the request if email fails)
   const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-  const investorName = investor.name || "there";
+  const investorName = investor.name ? investor.name.split(" ")[0] : "there";
   sendEmail({
     to: investor.email,
-    subject: "Welcome to the Papaya Investor Dataroom",
+    subject: "You're Invited — Papaya Investor Dataroom",
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 20px;">
-        <img src="${baseUrl}/papaya-logo.png" alt="Papaya" style="height: 32px; margin-bottom: 24px;" />
-        <h2 style="color: #1a1a1a; margin-bottom: 8px;">Welcome to the Dataroom</h2>
-        <p style="color: #444; line-height: 1.6;">
+      <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 48px 24px; color: #333;">
+        <img src="${baseUrl}/papaya-logo.png" alt="Papaya" style="height: 28px; margin-bottom: 32px;" />
+
+        <h1 style="font-size: 22px; font-weight: 700; color: #1a1a1a; margin: 0 0 20px;">
+          Welcome to Papaya's Investor Dataroom
+        </h1>
+
+        <p style="font-size: 15px; line-height: 1.7; margin: 0 0 16px;">
           Hi ${investorName},
         </p>
-        <p style="color: #444; line-height: 1.6;">
-          You have been invited to access the Papaya investor dataroom. Here you can review our key documents, financials, and other materials.
+
+        <p style="font-size: 15px; line-height: 1.7; margin: 0 0 16px;">
+          Thank you for your interest in Papaya. We're excited to share our journey with you.
         </p>
-        <div style="margin: 32px 0;">
-          <a href="${baseUrl}" style="display: inline-block; background: #e91e63; color: #fff; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 15px;">
-            Access Dataroom
+
+        <p style="font-size: 15px; line-height: 1.7; margin: 0 0 24px;">
+          We've prepared a dedicated dataroom where you can explore our pitch deck, financials, product roadmap, and other key materials — all in one place, at your own pace.
+        </p>
+
+        <div style="margin: 32px 0; text-align: center;">
+          <a href="${baseUrl}" style="display: inline-block; background: #e91e63; color: #ffffff; text-decoration: none; padding: 14px 36px; border-radius: 8px; font-weight: 600; font-size: 15px; letter-spacing: 0.2px;">
+            Enter Dataroom
           </a>
         </div>
-        <p style="color: #666; font-size: 13px; line-height: 1.5;">
-          Simply click the button above and enter your email to receive a one-time login code. No password needed.
+
+        <div style="background: #f8f9fa; border-radius: 8px; padding: 16px 20px; margin: 24px 0;">
+          <p style="font-size: 13px; line-height: 1.6; color: #555; margin: 0;">
+            <strong>How to sign in:</strong> Click the button above and enter your email address (<span style="color: #e91e63;">${investor.email}</span>). You'll receive a one-time verification code — no password needed.
+          </p>
+        </div>
+
+        <p style="font-size: 15px; line-height: 1.7; margin: 24px 0 0;">
+          If you have any questions or would like to schedule a conversation, please don't hesitate to reach out. We'd love to hear from you.
         </p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" />
-        <p style="color: #999; font-size: 12px;">
-          This email was sent by Papaya. If you received this in error, please disregard.
+
+        <p style="font-size: 15px; line-height: 1.7; margin: 24px 0 0;">
+          Warm regards,<br />
+          <strong>The Papaya Team</strong>
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #eee; margin: 36px 0 16px;" />
+
+        <p style="font-size: 11px; color: #aaa; line-height: 1.5; margin: 0;">
+          You're receiving this because your email was added to the Papaya investor dataroom.
+          If this wasn't intended for you, you can safely ignore this message.
         </p>
       </div>
     `,
