@@ -2,9 +2,10 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { NdaConsentForm } from "@/components/dataroom/NdaConsentForm";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Download } from "lucide-react";
 
 export default async function NdaPage() {
   const session = await auth();
@@ -33,10 +34,11 @@ export default async function NdaPage() {
     );
   }
 
-  const ndaAccepted = investor?.status === "nda_accepted";
+  // NDA signing is a permanent fact — check ndaAcceptedAt, not status
+  const ndaSigned = !!investor?.ndaAcceptedAt;
 
-  // Mode 1: NDA already accepted — show signed NDA with sign-off details
-  if (ndaAccepted) {
+  // Mode 1: NDA already signed — show signed NDA with sign-off details
+  if (ndaSigned && investor) {
     return (
       <div className="mx-auto max-w-3xl">
         <div className="mb-6 flex items-center gap-3">
@@ -105,6 +107,13 @@ export default async function NdaPage() {
             </dl>
           </CardContent>
         </Card>
+
+        <Button asChild className="mt-6">
+          <a href="/api/nda/download" download>
+            <Download className="h-4 w-4 mr-2" />
+            Download Signed NDA (PDF)
+          </a>
+        </Button>
       </div>
     );
   }
