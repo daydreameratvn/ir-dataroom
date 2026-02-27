@@ -15,10 +15,10 @@ import { banyanVpc, banyanPrivateSubnets } from "./vpc.ts";
 // Doltgres Replicator Password
 // ============================================================
 
-const doltgresReplicatorPassword = new random.RandomPassword("banyan-prod-doltgres-replicator-password", {
-  length: 32,
-  special: true,
-  overrideSpecial: "!#$%&*()-_=+[]{}|:?",
+// No special chars — Doltgres embeds this in a postgres:// URL without encoding
+const doltgresReplicatorPassword = new random.RandomPassword("banyan-prod-doltgres-replicator-password-v2", {
+  length: 48,
+  special: false,
 });
 
 const doltgresRootPassword = new random.RandomPassword("banyan-prod-doltgres-root-password", {
@@ -53,7 +53,8 @@ new aws.secretsmanager.SecretVersion("banyan-prod-doltgres-secret-version", {
       rds_connection_uri: `postgresql://doltgres_replicator:${encodeURIComponent(password)}@${rdsAddress}:5432/banyan?sslmode=disable`,
       doltgres_host: "doltgres.ddn.internal",
       doltgres_port: 5432,
-      connection_uri: `postgresql://postgres:${encodeURIComponent(rootPassword)}@doltgres.ddn.internal:5432/banyan`,
+      // Doltgres replicator hardcodes self-connection to "postgres" db, so all replicated tables live there
+      connection_uri: `postgresql://postgres:${encodeURIComponent(rootPassword)}@doltgres.ddn.internal:5432/postgres`,
     }),
   ),
 });
@@ -269,12 +270,16 @@ new aws.iam.RolePolicyAttachment("banyan-prod-doltgres-efs-attachment", {
 
 // Doltgres config.yaml for replication — written by init container
 // data_dir: /data/doltgres — EFS mount, avoids Docker VOLUME conflict at /var/lib/doltgres
-const doltgresConfigYaml = pulumi.all([banyanDb.address, doltgresReplicatorPassword.result]).apply(([rdsAddress, password]) => `
+const doltgresConfigYaml = pulumi.all([banyanDb.address, doltgresReplicatorPassword.result, doltgresRootPassword.result]).apply(([rdsAddress, password, rootPassword]) => `
 listener:
   host: "0.0.0.0"
   port: 5432
 
 data_dir: "/data/doltgres"
+
+user:
+  name: "postgres"
+  password: "${rootPassword}"
 
 behavior:
   read_only: false
@@ -286,7 +291,7 @@ postgres_replication:
   postgres_password: "${password}"
   postgres_database: "banyan"
   postgres_port: 5432
-  slot_name: "doltgres_slot"
+  slot_name: "doltgres_pub"
 `.trim());
 
 export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-doltgres-task-def", {
@@ -313,7 +318,6 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
         },
       },
     },
-    { name: "doltgres-initdb" }, // ephemeral volume for /docker-entrypoint-initdb.d/
     { name: "doltgres-config" }, // ephemeral shared volume for /var/lib/doltgres/ (config.yaml)
   ],
   containerDefinitions: pulumi.all([banyanDoltgresLogGroup.name, doltgresConfigYaml, doltgresRootPassword.result]).apply(([logGroupName, configYaml, rootPassword]) =>
@@ -330,14 +334,11 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
             "mkdir -p /data/doltgres",
             // Write config.yaml to ephemeral shared volume (subshell so heredoc terminator is isolated from && chain)
             `(cat > /var/lib/doltgres/config.yaml << 'DOLTCFG'\n${configYaml}\nDOLTCFG\n)`,
-            // Write initdb script to create the banyan database on first start
-            "echo 'CREATE DATABASE banyan;' > /docker-entrypoint-initdb.d/01-create-db.sql",
           ].join(" && "),
         ],
         mountPoints: [
           { sourceVolume: "doltgres-data", containerPath: "/data/doltgres" },
           { sourceVolume: "doltgres-config", containerPath: "/var/lib/doltgres" },
-          { sourceVolume: "doltgres-initdb", containerPath: "/docker-entrypoint-initdb.d" },
         ],
         logConfiguration: {
           logDriver: "awslogs",
@@ -357,12 +358,9 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
         mountPoints: [
           { sourceVolume: "doltgres-data", containerPath: "/data/doltgres" },
           { sourceVolume: "doltgres-config", containerPath: "/var/lib/doltgres" },
-          { sourceVolume: "doltgres-initdb", containerPath: "/docker-entrypoint-initdb.d" },
         ],
         environment: [
           { name: "DOLTGRES_PASSWORD", value: rootPassword },
-          // PGPASSWORD needed for entrypoint's internal psql (runs initdb scripts)
-          { name: "PGPASSWORD", value: rootPassword },
         ],
         logConfiguration: {
           logDriver: "awslogs",

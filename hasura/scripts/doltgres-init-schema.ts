@@ -4,7 +4,15 @@
  * Logical replication does NOT replicate DDL. This script:
  * 1. pg_dump --schema-only from RDS (via SSM tunnel on localhost:15432)
  * 2. pg_dump --data-only (excluding schema_migrations) for initial data
- * 3. Applies both to Doltgres (via SSM tunnel on localhost:25432)
+ * 3. Applies both to Doltgres "postgres" database (via SSM tunnel on localhost:25432)
+ *
+ * NOTE: Doltgres replicator hardcodes self-connection to the "postgres" database,
+ * so all replicated tables must live there — not in a separate "banyan" database.
+ *
+ * After running this script:
+ * 1. Drop any existing replication slot: SELECT pg_drop_replication_slot('doltgres_pub');
+ * 2. Create a new slot at current LSN: SELECT * FROM pg_create_logical_replication_slot('doltgres_pub', 'pgoutput');
+ * 3. Force restart the Doltgres ECS task to pick up the new slot
  *
  * Prerequisites:
  *   - RDS tunnel running: bun run hasura:tunnel        (localhost:15432)

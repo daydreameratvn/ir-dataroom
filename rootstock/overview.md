@@ -131,16 +131,20 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
 * **Storage:** Amazon EFS (Elastic File System) — persistent, encrypted, `generalPurpose` performance mode, `elastic` throughput. Mount targets in both private subnets. Access point at `/doltgres-data` (UID/GID 0). EFS mounted at `/data/doltgres` (not `/var/lib/doltgres`) to avoid conflict with Docker VOLUME declaration. Config `data_dir: "/data/doltgres"` directs all database writes to EFS. Data survives task restarts and redeployments.
 * **IAM:** Task role has `elasticfilesystem:ClientMount`, `ClientWrite`, `ClientRootAccess` on the EFS filesystem. Transit encryption enabled with IAM authorization.
 * **Deployment:** `minimumHealthyPercent: 0`, `maximumPercent: 100`, AZ rebalancing disabled — stops old task before starting new to avoid EFS lock conflicts (Doltgres holds exclusive file locks).
-* **Volumes:** 3 volumes — `doltgres-data` (EFS, `/data/doltgres`), `doltgres-config` (ephemeral, `/var/lib/doltgres` for config.yaml), `doltgres-initdb` (ephemeral, `/docker-entrypoint-initdb.d/`).
-* **Init Container** (`busybox`): Writes `config.yaml` to ephemeral shared volume at `/var/lib/doltgres/`. Writes `CREATE DATABASE banyan;` to `/docker-entrypoint-initdb.d/` for first-start initialization. `PGPASSWORD` env var set for entrypoint psql auth.
+* **Volumes:** 2 volumes — `doltgres-data` (EFS, `/data/doltgres`), `doltgres-config` (ephemeral, `/var/lib/doltgres` for config.yaml).
+* **Init Container** (`busybox`): Writes `config.yaml` (with `user`, `listener`, `data_dir`, `behavior`, `postgres_replication` sections) to ephemeral shared volume at `/var/lib/doltgres/`.
 * **Replication Config:**
-  * Subscribes to `doltgres_pub` publication on RDS
+  * Subscribes to `doltgres_pub` publication on RDS (slot_name = publication_name — Doltgres uses the same name for both)
+  * Replicator password must be alphanumeric (no special chars) — Doltgres embeds it in a `postgres://` URL without encoding
+  * Replicated tables live in the default `postgres` database (Doltgres replicator hardcodes self-connection to `postgres` db)
+  * Config `user` section must match `DOLTGRES_PASSWORD` — needed for the replicator's self-connection
   * Connection via `doltgres_replicator` user without SSL (`sslmode=disable` — internal VPC traffic)
   * Every replicated transaction creates a Dolt commit (enables `dolt_log`, `dolt_diff`, time-travel queries)
+* **Schema Init:** DDL not replicated by logical replication. Run `bun run doltgres:init-schema` to load schema + data from RDS into Doltgres `postgres` database, then recreate the replication slot at the current LSN.
 * **Secrets:** Replicator credentials stored in Secrets Manager (`banyan-prod-doltgres-credentials`) with:
   * `replicator_username`, `replicator_password` — for RDS logical replication
   * `rds_connection_uri` — replicator connection to RDS
-  * `connection_uri` — NDC connector connection to Doltgres (`root@doltgres.ddn.internal:5432/banyan`)
+  * `connection_uri` — NDC connector connection to Doltgres (`postgres@doltgres.ddn.internal:5432/postgres`)
 
 #### NDC Doltgres Connector
 
