@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Bot,
   Play,
@@ -17,6 +17,7 @@ import {
   Zap,
   BarChart3,
   Timer,
+  RefreshCw,
 } from 'lucide-react';
 import {
   Badge,
@@ -198,6 +199,19 @@ export default function DronePage() {
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
+
+  // Auto-refresh stats every 30s
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const result = await getStats();
+        setStats(result);
+      } catch {
+        // Silent
+      }
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -493,7 +507,7 @@ function PickAndRunTab({ onRunComplete }: PickAndRunTabProps) {
 // ── Results Tab ──
 
 function ResultsTab() {
-  const { runs, total, page, isLoading, error, refetch, setPage } = useDroneRuns({ limit: 15 });
+  const { runs, total, page, isLoading, error, hasNewData, refetch, setPage } = useDroneRuns({ limit: 15 });
   const [expandedRunId, setExpandedRunId] = useState<string | null>(null);
   const [runResults, setRunResults] = useState<DroneRunResult[]>([]);
   const [resultsLoading, setResultsLoading] = useState(false);
@@ -517,11 +531,23 @@ function ResultsTab() {
 
   return (
     <div className="space-y-4">
+      {/* New data banner */}
+      {hasNewData && (
+        <div className="flex items-center justify-between rounded-md border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300">
+          <span>New run data is available.</span>
+          <Button variant="outline" size="sm" onClick={refetch} className="ml-4 gap-1.5">
+            <RefreshCw className="h-3.5 w-3.5" />
+            Refresh
+          </Button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">
           {total} run{total !== 1 ? 's' : ''} total
         </h3>
-        <Button variant="outline" size="sm" onClick={refetch}>
+        <Button variant="outline" size="sm" onClick={refetch} className="gap-1.5">
+          <RefreshCw className="h-3.5 w-3.5" />
           Refresh
         </Button>
       </div>
@@ -743,6 +769,8 @@ function SchedulesTab() {
   const [error, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<DroneSchedule | null>(null);
+  const [hasNewData, setHasNewData] = useState(false);
+  const snapshotRef = useRef<string | null>(null);
 
   const fetchSchedules = useCallback(async () => {
     setIsLoading(true);
@@ -750,6 +778,8 @@ function SchedulesTab() {
     try {
       const result = await listSchedules();
       setSchedules(result);
+      setHasNewData(false);
+      snapshotRef.current = JSON.stringify(result.map((s) => `${s.id}:${s.enabled}:${s.lastRunAt}`));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch schedules');
     } finally {
@@ -760,6 +790,22 @@ function SchedulesTab() {
   useEffect(() => {
     fetchSchedules();
   }, [fetchSchedules]);
+
+  // Background poll for schedule changes
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const result = await listSchedules();
+        const fingerprint = JSON.stringify(result.map((s) => `${s.id}:${s.enabled}:${s.lastRunAt}`));
+        if (snapshotRef.current && fingerprint !== snapshotRef.current) {
+          setHasNewData(true);
+        }
+      } catch {
+        // Silent
+      }
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, []);
 
   async function handleToggleEnabled(schedule: DroneSchedule) {
     try {
@@ -811,14 +857,31 @@ function SchedulesTab() {
 
   return (
     <div className="space-y-4">
+      {/* New data banner */}
+      {hasNewData && (
+        <div className="flex items-center justify-between rounded-md border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300">
+          <span>Schedule data has been updated.</span>
+          <Button variant="outline" size="sm" onClick={fetchSchedules} className="ml-4 gap-1.5">
+            <RefreshCw className="h-3.5 w-3.5" />
+            Refresh
+          </Button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">
           {schedules.length} schedule{schedules.length !== 1 ? 's' : ''}
         </h3>
-        <Button size="sm" onClick={handleNewSchedule} className="gap-2">
-          <Plus className="h-4 w-4" />
-          New Schedule
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={fetchSchedules} className="gap-1.5">
+            <RefreshCw className="h-3.5 w-3.5" />
+            Refresh
+          </Button>
+          <Button size="sm" onClick={handleNewSchedule} className="gap-2">
+            <Plus className="h-4 w-4" />
+            New Schedule
+          </Button>
+        </div>
       </div>
 
       {error && (
