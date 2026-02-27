@@ -19,6 +19,8 @@ const params = await fetchSSMParams();
 
 const dbConnectionUri = requireParam(params, "db-connection-uri");
 const jwtSecretKey = requireParam(params, "jwt-secret-key");
+const appleEndpoint = params.get("apple-endpoint") ?? "https://prod.apple.papaya.services/v1/graphql";
+const appleAdminSecret = requireParam(params, "apple-admin-secret");
 
 // Rewrite DB host to localhost tunnel
 const tunnelUri = dbConnectionUri.replace(
@@ -41,6 +43,16 @@ APP_BANYAN_PG_OTEL_SERVICE_NAME="app_banyan_pg"
 APP_BANYAN_PG_READ_URL="http://local.hasura.dev:7892"
 APP_BANYAN_PG_WRITE_URL="http://local.hasura.dev:7892"
 JWT_SECRET_KEY="${jwtSecretKey}"
+APPLE_APPLE_GQL_GRAPHQL_ENDPOINT="${appleEndpoint}"
+APPLE_APPLE_GQL_GRAPHQL_ENDPOINT_1="${appleEndpoint}"
+APPLE_APPLE_GQL_ADMIN_SECRET="${appleAdminSecret}"
+APPLE_APPLE_GQL_AUTHORIZATION_HEADER="Bearer ${serviceToken}"
+APPLE_APPLE_GQL_HASURA_CONNECTOR_PORT_1=7893
+APPLE_APPLE_GQL_HASURA_SERVICE_TOKEN_SECRET_1="${serviceToken}"
+APPLE_APPLE_GQL_OTEL_EXPORTER_OTLP_ENDPOINT_1="http://local.hasura.dev:4317"
+APPLE_APPLE_GQL_OTEL_SERVICE_NAME_1="apple_apple_gql"
+APPLE_APPLE_GQL_READ_URL="http://local.hasura.dev:7893"
+APPLE_APPLE_GQL_WRITE_URL="http://local.hasura.dev:7893"
 `;
 
 await Bun.write(ENV_PATH, envContent);

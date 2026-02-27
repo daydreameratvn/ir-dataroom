@@ -9,7 +9,7 @@ The GraphQL engine and NDC PostgreSQL connector run on **DDN Cloud** (Hasura's m
 ## Tech Stack
 
 - **Hasura**: DDN Cloud (managed v3)
-- **Database**: PostgreSQL 16 (Amazon RDS, managed via Pulumi in `rootstock/`)
+- **Database**: PostgreSQL 17 (Amazon RDS, managed via Pulumi in `rootstock/`)
 - **Metadata**: HML (YAML) files in `ddn/app/metadata/`
 - **CLI**: `ddn` CLI for build, deploy, introspect, and local dev
 - **RDS Connectivity**: NLB in public subnets proxies TCP 5432 to RDS
