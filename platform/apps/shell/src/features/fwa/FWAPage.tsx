@@ -1,53 +1,67 @@
-import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 import { ShieldAlert } from 'lucide-react';
 import {
   PageHeader,
-  EmptyState,
-  Button,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@papaya/shared-ui';
+import AssessmentTab from './components/AssessmentTab';
+import ComplianceTab from './components/ComplianceTab';
+import ScourgeTab from './components/ScourgeTab';
+import PendingTab from './components/PendingTab';
 
 export default function FWAPage() {
-  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState('assessment');
+
+  // When user clicks a pending assessment, switch to assessment tab with that chat
+  const [pendingChatId, setPendingChatId] = useState<string | undefined>();
+  const [pendingClaimCode, setPendingClaimCode] = useState<string | undefined>();
+
+  function handleSelectPendingChat(chatId: string, claimCode: string) {
+    setPendingChatId(chatId);
+    setPendingClaimCode(claimCode);
+    setActiveTab('assessment');
+  }
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title={t('fwa.title')}
-        subtitle={t('fwa.subtitle')}
+        title="FWA Detection"
+        subtitle="Fraud, waste, and abuse detection agents"
+        action={
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-sm">
+            <ShieldAlert className="h-5 w-5" />
+          </div>
+        }
       />
-      <Tabs defaultValue="alerts">
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
-          <TabsTrigger value="alerts">{t('nav.fwaAlerts')}</TabsTrigger>
-          <TabsTrigger value="investigations">{t('nav.fwaInvestigations')}</TabsTrigger>
-          <TabsTrigger value="rules">{t('nav.fwaRules')}</TabsTrigger>
+          <TabsTrigger value="assessment">Assessment</TabsTrigger>
+          <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          <TabsTrigger value="scourge">Scourge</TabsTrigger>
+          <TabsTrigger value="pending">Pending</TabsTrigger>
         </TabsList>
-        <TabsContent value="alerts" className="mt-4">
-          <EmptyState
-            icon={<ShieldAlert className="h-6 w-6" />}
-            title={t('fwa.alertsTitle')}
-            description={t('fwa.alertsDesc')}
-            action={<Button variant="outline">{t('common.getStarted')}</Button>}
+
+        <TabsContent value="assessment">
+          <AssessmentTab
+            initialChatId={pendingChatId}
+            initialClaimCode={pendingClaimCode}
           />
         </TabsContent>
-        <TabsContent value="investigations" className="mt-4">
-          <EmptyState
-            icon={<ShieldAlert className="h-6 w-6" />}
-            title={t('fwa.investigationsTitle')}
-            description={t('fwa.investigationsDesc')}
-            action={<Button variant="outline">{t('common.getStarted')}</Button>}
-          />
+
+        <TabsContent value="compliance">
+          <ComplianceTab />
         </TabsContent>
-        <TabsContent value="rules" className="mt-4">
-          <EmptyState
-            icon={<ShieldAlert className="h-6 w-6" />}
-            title={t('fwa.rulesTitle')}
-            description={t('fwa.rulesDesc')}
-            action={<Button variant="outline">{t('common.getStarted')}</Button>}
-          />
+
+        <TabsContent value="scourge">
+          <ScourgeTab />
+        </TabsContent>
+
+        <TabsContent value="pending">
+          <PendingTab onSelectChat={handleSelectPendingChat} />
         </TabsContent>
       </Tabs>
     </div>

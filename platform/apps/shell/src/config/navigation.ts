@@ -62,12 +62,7 @@ export const navigationGroups: NavGroup[] = [
         id: 'fwa',
         labelKey: 'nav.fwa',
         icon: 'ShieldAlert',
-        requiredFeature: 'fwa',
-        children: [
-          { id: 'fwa-alerts', labelKey: 'nav.fwaAlerts', path: '/fwa/alerts' },
-          { id: 'fwa-investigations', labelKey: 'nav.fwaInvestigations', path: '/fwa/investigations' },
-          { id: 'fwa-rules', labelKey: 'nav.fwaRules', path: '/fwa/rules' },
-        ],
+        path: '/fwa',
       },
       {
         id: 'drone',

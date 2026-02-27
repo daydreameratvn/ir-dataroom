@@ -11,6 +11,8 @@ import admin from "./routes/admin.ts";
 import errorRoutes from "./routes/errors.ts";
 import statusRoutes from "./routes/status.ts";
 import drone from "./routes/drone.ts";
+import fwa from "./routes/fwa.ts";
+import ir from "./routes/ir.ts";
 
 const app = new Hono();
 
@@ -18,7 +20,7 @@ const app = new Hono();
 app.use(
   "*",
   cors({
-    origin: [authConfig.rpOrigin, "http://localhost:3000"],
+    origin: [authConfig.rpOrigin, "http://localhost:3000", "https://investors.papaya.asia"],
     credentials: true,
     allowHeaders: ["Content-Type", "Authorization", "x-tenant-id"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -41,6 +43,8 @@ app.route("/auth", admin);
 app.route("/auth", errorRoutes);
 app.route("/auth", statusRoutes);
 app.route("/auth", drone);
+app.route("/auth", fwa);
+app.route("/auth", ir);
 
 // Global error handler — auto-reports unhandled errors
 app.onError(async (err, c) => {
