@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Save } from "lucide-react";
 
-export default function SettingsPage() {
+export default function NdaDraftingPage() {
   const [ndaText, setNdaText] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -70,9 +70,9 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
+        <h2 className="text-2xl font-bold tracking-tight">NDA Drafting</h2>
         <p className="text-muted-foreground">
-          Configure your dataroom settings.
+          Draft and manage the NDA template for your dataroom.
         </p>
       </div>
 

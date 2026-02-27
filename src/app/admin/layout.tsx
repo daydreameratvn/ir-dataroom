@@ -8,7 +8,7 @@ import {
   Users,
   FolderOpen,
   BarChart3,
-  Settings,
+  FileText,
   Eye,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -18,7 +18,7 @@ const navItems = [
   { href: "/admin/investors", label: "Investors", icon: Users },
   { href: "/admin/files", label: "Files", icon: FolderOpen },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/nda-drafting", label: "NDA Drafting", icon: FileText },
 ];
 
 export default async function AdminLayout({
