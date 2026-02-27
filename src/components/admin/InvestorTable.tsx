@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Card,
   CardHeader,
@@ -27,7 +27,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, RefreshCw, Pencil, Check, X } from "lucide-react";
+import { Plus, Trash2, RefreshCw, Pencil, Check, X, Building2 } from "lucide-react";
 import {
   STATUS_LABELS,
   INVESTOR_STATUSES,
@@ -84,6 +84,67 @@ function getSignal(investor: Investor): { label: string; color: string; tip: str
   }
 
   return null;
+}
+
+// Common free email providers — investors using these aren't from the same "firm"
+const FREE_EMAIL_DOMAINS = new Set([
+  "gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "aol.com",
+  "icloud.com", "mail.com", "protonmail.com", "proton.me", "zoho.com",
+  "yandex.com", "live.com", "msn.com", "me.com", "hey.com",
+]);
+
+function getInferredFirm(investor: Investor): string | null {
+  // Use explicit firm if set
+  if (investor.firm) return investor.firm.toLowerCase().trim();
+  // Otherwise extract from email domain
+  const domain = investor.email.split("@")[1]?.toLowerCase();
+  if (!domain || FREE_EMAIL_DOMAINS.has(domain)) return null;
+  return domain;
+}
+
+function groupByFirm(investors: Investor[]): Investor[] {
+  // Build a map of inferredFirm → investors
+  const firmMap = new Map<string, Investor[]>();
+  const ungrouped: Investor[] = [];
+
+  for (const inv of investors) {
+    const firm = getInferredFirm(inv);
+    if (firm) {
+      const list = firmMap.get(firm) || [];
+      list.push(inv);
+      firmMap.set(firm, list);
+    } else {
+      ungrouped.push(inv);
+    }
+  }
+
+  // Sort firm groups by size (largest first), then alphabetically
+  const sortedFirms = Array.from(firmMap.entries()).sort((a: [string, Investor[]], b: [string, Investor[]]) => {
+    if (b[1].length !== a[1].length) return b[1].length - a[1].length;
+    return a[0].localeCompare(b[0]);
+  });
+
+  // Flatten: grouped firms first (each group sorted by invitedAt desc), then ungrouped
+  const result: Investor[] = [];
+  for (const [, group] of sortedFirms) {
+    group.sort((a, b) => new Date(b.invitedAt).getTime() - new Date(a.invitedAt).getTime());
+    result.push(...group);
+  }
+  // Ungrouped at the end, sorted by invitedAt desc
+  ungrouped.sort((a, b) => new Date(b.invitedAt).getTime() - new Date(a.invitedAt).getTime());
+  result.push(...ungrouped);
+
+  return result;
+}
+
+// Returns a display label for the inferred firm grouping
+function getFirmGroupLabel(investor: Investor): string | null {
+  if (investor.firm) return investor.firm;
+  const domain = investor.email.split("@")[1]?.toLowerCase();
+  if (!domain || FREE_EMAIL_DOMAINS.has(domain)) return null;
+  // Pretty-print domain: remove TLD, capitalize
+  const name = domain.split(".")[0];
+  return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
 function EditableCell({
@@ -153,9 +214,9 @@ export function InvestorManager() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [newName, setNewName] = useState("");
-  const [newFirm, setNewFirm] = useState("");
   const [skipNda, setSkipNda] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [groupedByFirm, setGroupedByFirm] = useState(false);
   const { toast } = useToast();
 
   const fetchInvestors = useCallback(async () => {
@@ -187,7 +248,7 @@ export function InvestorManager() {
       const res = await fetch("/api/investors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: newEmail.trim(), name: newName.trim() || null, firm: newFirm.trim() || null, skipNda }),
+        body: JSON.stringify({ email: newEmail.trim(), name: newName.trim() || null, skipNda }),
       });
       if (!res.ok) {
         let message = "Failed to add investor";
@@ -202,7 +263,6 @@ export function InvestorManager() {
       toast({ title: "Success", description: "Investor added successfully." });
       setNewEmail("");
       setNewName("");
-      setNewFirm("");
       setSkipNda(false);
       setDialogOpen(false);
       fetchInvestors();
@@ -284,6 +344,15 @@ export function InvestorManager() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant={groupedByFirm ? "default" : "outline"}
+            size="sm"
+            onClick={() => setGroupedByFirm((prev) => !prev)}
+            title="Group investors from the same firm together (auto-detects by email domain)"
+          >
+            <Building2 className="h-4 w-4 mr-2" />
+            {groupedByFirm ? "Grouped by Firm" : "Group by Firm"}
+          </Button>
           <Button variant="outline" size="sm" onClick={fetchInvestors}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -317,15 +386,6 @@ export function InvestorManager() {
                     placeholder="John Doe"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="firm">Firm (optional)</Label>
-                  <Input
-                    id="firm"
-                    placeholder="Sequoia Capital"
-                    value={newFirm}
-                    onChange={(e) => setNewFirm(e.target.value)}
                   />
                 </div>
                 <div className="flex items-start gap-3 rounded-md border border-amber-200 bg-amber-50 p-3">
@@ -390,8 +450,39 @@ export function InvestorManager() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {investors.map((investor) => (
-                  <TableRow key={investor.id}>
+                {(groupedByFirm ? groupByFirm(investors) : investors).map((investor, idx, arr) => {
+                  // Show firm group header row when grouping is active
+                  const firmLabel = groupedByFirm ? getFirmGroupLabel(investor) : null;
+                  const prevFirmLabel = groupedByFirm && idx > 0 ? getFirmGroupLabel(arr[idx - 1]) : null;
+                  const showFirmHeader = groupedByFirm && firmLabel && firmLabel !== prevFirmLabel;
+
+                  return (
+                    <React.Fragment key={investor.id}>
+                      {showFirmHeader && (
+                        <TableRow className="bg-gray-50 hover:bg-gray-50">
+                          <TableCell colSpan={9} className="py-1.5 px-4">
+                            <div className="flex items-center gap-2">
+                              <Building2 className="h-3.5 w-3.5 text-gray-400" />
+                              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                {firmLabel}
+                              </span>
+                              <span className="text-xs text-gray-400">
+                                ({arr.filter((i) => getFirmGroupLabel(i) === firmLabel).length})
+                              </span>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {groupedByFirm && !firmLabel && idx > 0 && getFirmGroupLabel(arr[idx - 1]) !== null && (
+                        <TableRow className="bg-gray-50 hover:bg-gray-50">
+                          <TableCell colSpan={9} className="py-1.5 px-4">
+                            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                              Individual / Personal Email
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    <TableRow>
                     <TableCell className="font-medium">
                       {investor.email}
                     </TableCell>
@@ -488,7 +579,9 @@ export function InvestorManager() {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                    </React.Fragment>
+                  );
+                })}
               </TableBody>
             </Table>
           )}

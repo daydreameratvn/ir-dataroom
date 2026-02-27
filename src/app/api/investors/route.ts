@@ -7,9 +7,23 @@ import { z } from "zod";
 const addInvestorSchema = z.object({
   email: z.string().email(),
   name: z.string().optional(),
-  firm: z.string().optional(),
   skipNda: z.boolean().optional(),
 });
+
+// Common free email providers — don't infer firm from these
+const FREE_EMAIL_DOMAINS = new Set([
+  "gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "aol.com",
+  "icloud.com", "mail.com", "protonmail.com", "proton.me", "zoho.com",
+  "yandex.com", "live.com", "msn.com", "me.com", "hey.com",
+]);
+
+function inferFirmFromEmail(email: string): string | null {
+  const domain = email.split("@")[1]?.toLowerCase();
+  if (!domain || FREE_EMAIL_DOMAINS.has(domain)) return null;
+  // Pretty-print: remove TLD, capitalize first letter
+  const name = domain.split(".")[0];
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
 
 // GET /api/investors - List all investors
 export async function GET() {
@@ -90,12 +104,13 @@ export async function POST(req: NextRequest) {
   }
 
   const skipNda = parsed.data.skipNda === true;
+  const autoFirm = inferFirmFromEmail(parsed.data.email);
 
   const investor = await prisma.investor.create({
     data: {
       email: parsed.data.email,
       name: parsed.data.name || null,
-      firm: parsed.data.firm || null,
+      firm: autoFirm,
       ...(skipNda
         ? { ndaRequired: false, status: "nda_accepted" }
         : {}),
