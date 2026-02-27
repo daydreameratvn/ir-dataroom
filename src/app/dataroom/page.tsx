@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FileText, FileSpreadsheet, Video, File } from "lucide-react";
-import { getCategoryStyle } from "@/lib/categories";
+import { getCategoryStyle, sortCategories } from "@/lib/categories";
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return bytes + " B";
@@ -60,7 +60,7 @@ export default async function DataroomPage() {
     grouped[file.category].push(file);
   }
 
-  const categories = Object.keys(grouped).sort();
+  const categories = sortCategories(Object.keys(grouped));
 
   return (
     <div>
@@ -96,7 +96,7 @@ export default async function DataroomPage() {
                         {file.category}
                       </span>
                       <span className="text-sm text-gray-400">
-                        {formatFileSize(file.size)}
+                        {formatFileSize(file.size)} · {new Date(file.uploadedAt).toLocaleDateString()}
                       </span>
                     </div>
                     <Button variant="outline" size="sm" asChild>

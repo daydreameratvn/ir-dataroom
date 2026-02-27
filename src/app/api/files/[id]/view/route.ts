@@ -5,9 +5,27 @@ import { watermarkPdf } from "@/lib/watermark/pdf";
 import { watermarkVideo } from "@/lib/watermark/video";
 import { logAccess } from "@/lib/tracking";
 import fs from "fs/promises";
+import { createReadStream } from "fs";
 import path from "path";
 
 const UPLOAD_DIR = path.join(process.cwd(), "uploads", "files");
+
+/** Stream a file from disk as a web ReadableStream */
+function streamFile(filePath: string): ReadableStream<Uint8Array> {
+  const nodeStream = createReadStream(filePath);
+  return new ReadableStream({
+    start(controller) {
+      nodeStream.on("data", (chunk) => {
+        controller.enqueue(new Uint8Array(Buffer.from(chunk)));
+      });
+      nodeStream.on("end", () => controller.close());
+      nodeStream.on("error", (err) => controller.error(err));
+    },
+    cancel() {
+      nodeStream.destroy();
+    },
+  });
+}
 
 export async function GET(
   req: NextRequest,
@@ -47,24 +65,59 @@ export async function GET(
   const email = session.user.email;
 
   try {
-    let buffer: Buffer;
-
     // SECURE BY DEFAULT: Always watermark files.
-    // Only skip watermark for admin when explicitly requesting clean copy (?clean=true).
-    // This ensures watermarks are never accidentally omitted for investors.
     const cleanRequested = req.nextUrl.searchParams.get("clean") === "true";
     const skipWatermark = admin && !investor && cleanRequested;
 
-    if (skipWatermark) {
-      buffer = await fs.readFile(filePath);
-    } else if (file.mimeType === "application/pdf") {
+    const headers: Record<string, string> = {
+      "Content-Type": file.mimeType,
+      "Content-Disposition": `inline; filename="${file.name}"`,
+    };
+
+    // Log view access
+    let accessLogId: string | null = null;
+    if (investor) {
       try {
-        buffer = await watermarkPdf(filePath, email);
+        const log = await logAccess({
+          investorId: investor.id,
+          fileId: file.id,
+          action: "view",
+          ipAddress: req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || undefined,
+          userAgent: req.headers.get("user-agent") || undefined,
+        });
+        accessLogId = log.id;
       } catch (err) {
-        console.error("PDF watermark failed, serving original:", err);
-        buffer = await fs.readFile(filePath);
+        console.error("Failed to log view:", err);
       }
-    } else if (file.mimeType.startsWith("video/")) {
+    }
+
+    if (accessLogId) {
+      headers["X-Access-Log-Id"] = accessLogId;
+    }
+
+    // Admin clean view — stream from disk
+    if (skipWatermark) {
+      const stat = await fs.stat(filePath);
+      headers["Content-Length"] = stat.size.toString();
+      return new Response(streamFile(filePath), { headers });
+    }
+
+    // PDF watermark — returns buffer (fast, in-memory with pdf-lib)
+    if (file.mimeType === "application/pdf") {
+      try {
+        const buffer = await watermarkPdf(filePath, email);
+        headers["Content-Length"] = buffer.length.toString();
+        return new Response(new Uint8Array(buffer), { headers });
+      } catch (err) {
+        console.error("PDF watermark failed, streaming original:", err);
+        const stat = await fs.stat(filePath);
+        headers["Content-Length"] = stat.size.toString();
+        return new Response(streamFile(filePath), { headers });
+      }
+    }
+
+    // Video watermark — stream from cached file (ffmpeg has 15s timeout)
+    if (file.mimeType.startsWith("video/")) {
       try {
         const cachedPath = await watermarkVideo(
           filePath,
@@ -72,36 +125,21 @@ export async function GET(
           file.id,
           investor?.id || "admin"
         );
-        buffer = await fs.readFile(cachedPath);
+        const stat = await fs.stat(cachedPath);
+        headers["Content-Length"] = stat.size.toString();
+        return new Response(streamFile(cachedPath), { headers });
       } catch (err) {
-        console.error("Video watermark failed, serving original:", err);
-        buffer = await fs.readFile(filePath);
+        console.error("Video watermark failed, streaming original:", err);
+        const stat = await fs.stat(filePath);
+        headers["Content-Length"] = stat.size.toString();
+        return new Response(streamFile(filePath), { headers });
       }
-    } else {
-      buffer = await fs.readFile(filePath);
     }
 
-    // Log view access and return the accessLogId in headers
-    let accessLogId: string | null = null;
-    if (investor) {
-      const log = await logAccess({
-        investorId: investor.id,
-        fileId: file.id,
-        action: "view",
-        ipAddress: req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || undefined,
-        userAgent: req.headers.get("user-agent") || undefined,
-      });
-      accessLogId = log.id;
-    }
-
-    return new NextResponse(new Uint8Array(buffer), {
-      headers: {
-        "Content-Type": file.mimeType,
-        "Content-Disposition": `inline; filename="${file.name}"`,
-        "Content-Length": buffer.length.toString(),
-        ...(accessLogId ? { "X-Access-Log-Id": accessLogId } : {}),
-      },
-    });
+    // Other file types — stream from disk
+    const stat = await fs.stat(filePath);
+    headers["Content-Length"] = stat.size.toString();
+    return new Response(streamFile(filePath), { headers });
   } catch (error) {
     console.error("View error:", error);
     return NextResponse.json(

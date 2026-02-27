@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Trash2, RefreshCw } from "lucide-react";
-import { CATEGORIES, getCategoryStyle } from "@/lib/categories";
+import { CATEGORIES, getCategoryStyle, sortCategories } from "@/lib/categories";
 
 interface DataroomFile {
   id: string;
@@ -203,7 +203,9 @@ export function FileManager() {
           No files uploaded yet.
         </div>
       ) : (
-        Object.entries(groupedFiles).map(([category, categoryFiles]) => (
+        sortCategories(Object.keys(groupedFiles)).map((category) => {
+          const categoryFiles = groupedFiles[category];
+          return (
           <Card key={category}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -259,7 +261,8 @@ export function FileManager() {
               </Table>
             </CardContent>
           </Card>
-        ))
+          );
+        })
       )}
     </div>
   );

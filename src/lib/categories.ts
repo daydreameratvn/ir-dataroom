@@ -1,6 +1,16 @@
-export const CATEGORIES = ["Financials", "Product", "Strategy", "Legal", "Other"] as const;
+export const CATEGORIES = ["Financials", "Strategy", "Product", "Legal", "Other"] as const;
 
 export type Category = (typeof CATEGORIES)[number];
+
+/** Sort category names by the preferred display order defined in CATEGORIES */
+export function sortCategories(categories: string[]): string[] {
+  const order = CATEGORIES as readonly string[];
+  return [...categories].sort((a, b) => {
+    const ai = order.indexOf(a as Category);
+    const bi = order.indexOf(b as Category);
+    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+  });
+}
 
 /**
  * Returns inline style object for category badges.

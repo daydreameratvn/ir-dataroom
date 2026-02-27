@@ -1,4 +1,4 @@
-import ffmpeg from "fluent-ffmpeg";
+import ffmpeg, { FfmpegCommand } from "fluent-ffmpeg";
 import fs from "fs/promises";
 import path from "path";
 
@@ -13,6 +13,7 @@ try {
 }
 
 const CACHE_DIR = path.join(process.cwd(), "uploads", "cache");
+const WATERMARK_TIMEOUT_MS = 15_000; // 15 seconds max for video watermarking
 
 function getCachePath(fileId: string, investorId: string, ext: string): string {
   return path.join(CACHE_DIR, `${fileId}_${investorId}${ext}`);
@@ -38,8 +39,11 @@ export async function watermarkVideo(
   // Ensure cache directory exists
   await fs.mkdir(CACHE_DIR, { recursive: true });
 
-  return new Promise((resolve, reject) => {
-    ffmpeg(filePath)
+  // Run ffmpeg with a timeout to prevent hanging the server
+  let ffmpegProcess: FfmpegCommand | null = null;
+
+  const encodePromise = new Promise<string>((resolve, reject) => {
+    ffmpegProcess = ffmpeg(filePath)
       .videoFilters([
         {
           filter: "drawtext",
@@ -54,7 +58,6 @@ export async function watermarkVideo(
             shadowy: 2,
           },
         },
-        // Second line slightly offset
         {
           filter: "drawtext",
           options: {
@@ -68,9 +71,28 @@ export async function watermarkVideo(
       ])
       .output(cachePath)
       .on("end", () => resolve(cachePath))
-      .on("error", (err) => reject(err))
-      .run();
+      .on("error", (err) => reject(err));
+
+    ffmpegProcess.run();
   });
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => {
+      // Kill the ffmpeg process on timeout
+      if (ffmpegProcess) {
+        try {
+          ffmpegProcess.kill("SIGKILL");
+        } catch {
+          // Process may already be dead
+        }
+      }
+      // Clean up partial output
+      fs.unlink(cachePath).catch(() => {});
+      reject(new Error(`Video watermarking timed out after ${WATERMARK_TIMEOUT_MS / 1000}s`));
+    }, WATERMARK_TIMEOUT_MS);
+  });
+
+  return Promise.race([encodePromise, timeoutPromise]);
 }
 
 export async function invalidateVideoCache(fileId: string): Promise<void> {
