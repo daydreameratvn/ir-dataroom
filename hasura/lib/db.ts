@@ -3,7 +3,7 @@
  *
  * Centralizes all DB credential handling to avoid recurring issues:
  * - Fetches from Secrets Manager (password is properly URL-encoded)
- * - Appends sslmode=require (RDS requires encrypted connections)
+ * - Appends sslmode=require (client-side SSL enforcement for public connections)
  * - Resolves pg_dump path (homebrew postgresql not linked by default)
  * - Rewrites host for SSM tunnel when needed
  *
@@ -52,7 +52,7 @@ export async function getDbUrl(opts?: { tunnel?: boolean }): Promise<string> {
     uri = uri.replace(/@[^:]+:\d+\//, `@localhost:${TUNNEL_PORT}/`);
   }
 
-  // RDS requires SSL — append sslmode if not already present
+  // Enforce SSL for public connections (RDS rds.force_ssl=0, but client-side sslmode=require)
   if (!uri.includes("sslmode=")) {
     uri += uri.includes("?") ? "&sslmode=require" : "?sslmode=require";
   }

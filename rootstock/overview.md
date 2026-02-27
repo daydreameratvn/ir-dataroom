@@ -14,7 +14,7 @@
 Unlike Hasura v2, Hasura DDN (v3) has a distributed architecture and **does not require a Postgres metadata database**. The architecture consists of two distinct components that communicate over HTTP:
 
 1. **RDS PostgreSQL 17** — the database, in isolated subnets
-2. **Doltgres** — logical replication subscriber for audit and version control (Fargate + EBS)
+2. **Doltgres** — logical replication subscriber for audit and version control (Fargate + EFS)
 3. **NLB (Network Load Balancer)** — internet-facing TCP proxy allowing DDN Cloud connectors to reach RDS
 4. **ALB (Application Load Balancer)** — public-facing HTTPS for the auth service
 5. **ECS Fargate** — runs the auth API service and Doltgres services
@@ -61,6 +61,7 @@ No CIDR blocks for internal traffic — use Security Group referencing exclusive
 | `banyan-prod-nlb-sg` | TCP 5432 | 0.0.0.0/0 |
 | `banyan-prod-doltgres-sg` | TCP 5432 | NDC Doltgres SG, Bastion SG |
 | `banyan-prod-ndc-doltgres-sg` | TCP 8080 | (internal only) |
+| `banyan-prod-doltgres-efs-sg` | TCP 2049 (NFS) | Doltgres SG |
 
 All security groups allow all outbound traffic (required for NAT, ECR image pulls, DNS, SSM).
 
@@ -124,12 +125,14 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
 * **Image:** `dolthub/doltgresql:latest`
 * **Resources:** 1024 CPU / 2048 MB memory (x86_64 only — Doltgres image is amd64).
 * **Desired Count:** 1 task.
-* **Placement:** Private Subnet (`private-1a`, pinned for EBS AZ).
+* **Placement:** Private Subnet (`private-1a`).
 * **Port:** Container port `5432`.
 * **Cloud Map:** Registered as `doltgres.ddn.internal`.
-* **Storage:** 50 GB managed EBS volume (`gp3`, encrypted, `ext4`). Ephemeral — deleted when task exits. Doltgres is a replica; recovery means re-sync from RDS.
-* **IAM:** Dedicated EBS volume role (`banyan-prod-doltgres-ebs-role`) with `AmazonECSInfrastructureRolePolicyForVolumes`.
-* **Init Container** (`busybox`): Writes `config.yaml` with replication subscription settings to the shared EBS volume.
+* **Storage:** Amazon EFS (Elastic File System) — persistent, encrypted, `generalPurpose` performance mode, `elastic` throughput. Mount targets in both private subnets. Access point at `/doltgres-data` (UID/GID 0). EFS mounted at `/data/doltgres` (not `/var/lib/doltgres`) to avoid conflict with Docker VOLUME declaration. Config `data_dir: "/data/doltgres"` directs all database writes to EFS. Data survives task restarts and redeployments.
+* **IAM:** Task role has `elasticfilesystem:ClientMount`, `ClientWrite`, `ClientRootAccess` on the EFS filesystem. Transit encryption enabled with IAM authorization.
+* **Deployment:** `minimumHealthyPercent: 0`, `maximumPercent: 100`, AZ rebalancing disabled — stops old task before starting new to avoid EFS lock conflicts (Doltgres holds exclusive file locks).
+* **Volumes:** 3 volumes — `doltgres-data` (EFS, `/data/doltgres`), `doltgres-config` (ephemeral, `/var/lib/doltgres` for config.yaml), `doltgres-initdb` (ephemeral, `/docker-entrypoint-initdb.d/`).
+* **Init Container** (`busybox`): Writes `config.yaml` to ephemeral shared volume at `/var/lib/doltgres/`. Writes `CREATE DATABASE banyan;` to `/docker-entrypoint-initdb.d/` for first-start initialization. `PGPASSWORD` env var set for entrypoint psql auth.
 * **Replication Config:**
   * Subscribes to `doltgres_pub` publication on RDS
   * Connection via `doltgres_replicator` user without SSL (`sslmode=disable` — internal VPC traffic)
@@ -208,7 +211,7 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
 
 * **Execution Role (`banyan-prod-ecs-exec-role`):** ECS agent. Permissions: ECR pulls, CloudWatch logs, Secrets Manager read (DB, JWT, Doltgres secrets).
 * **Task Role (`banyan-prod-ecs-task-role`):** Running containers. Permissions: SES, SNS, SSM (auth service).
-* **Doltgres EBS Role (`banyan-prod-doltgres-ebs-role`):** EBS volume management for Fargate tasks.
+* **Doltgres EFS Policy (`banyan-prod-doltgres-efs-policy`):** Attached to task role — allows EFS mount, write, and root access for Doltgres persistent storage.
 
 ---
 
@@ -245,7 +248,7 @@ new aws.Provider("banyan-aws-provider", {
 | `domainName` | yes | — | Domain for the ALB |
 | `doltgresCpu` | no | `1024` | Doltgres task CPU units |
 | `doltgresMemory` | no | `2048` | Doltgres task memory (MB) |
-| `doltgresDataVolumeSize` | no | `50` | Doltgres EBS data volume size (GB) |
+| `doltgresDataVolumeSize` | no | `50` | (unused — EFS is elastic, no fixed size) |
 
 ### 4.4 Stack Outputs
 
@@ -294,7 +297,7 @@ rootstock/
     ├── ecs-auth.ts              # Auth service task def + ECS service
     ├── nlb-rds-proxy.ts         # NLB, target group, listener, SSM param
     ├── github-oidc.ts           # GitHub Actions OIDC provider and deploy role
-    ├── doltgres.ts              # Doltgres Fargate + EBS + SG + Secrets + Cloud Map
+    ├── doltgres.ts              # Doltgres Fargate + EFS + SG + Secrets + Cloud Map
     └── ecs-ndc-doltgres.ts      # NDC Doltgres connector task def + service
 ```
 
@@ -310,7 +313,7 @@ rootstock/
 | ALB (hourly + ~1 LCU) | $24.24 | 11% |
 | NLB (RDS proxy for DDN Cloud) | $20.00 | 9% |
 | NDC Doltgres Fargate (1 task: 256 CPU / 512 MB) | $9.30 | 4% |
-| Doltgres EBS (50 GB gp3) | $4.80 | 2% |
+| Doltgres EFS (elastic, ~10 GB est.) | $3.00 | 1% |
 | Bastion (t4g.nano, on-demand) | $3.07 | 1% |
 | ACM Certificate | $0.00 | 0% |
 | Other (Secrets Manager, Cloud Map, CloudWatch, SSM) | $2.50 | <1% |

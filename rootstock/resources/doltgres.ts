@@ -155,31 +155,112 @@ const banyanDoltgresServiceDiscovery = new aws.servicediscovery.Service("banyan-
 });
 
 // ============================================================
-// IAM Role — EBS Volume Management (Fargate EBS)
+// EFS — Persistent Storage for Doltgres
 // ============================================================
 
-const banyanDoltgresEbsRole = new aws.iam.Role("banyan-prod-doltgres-ebs-role", {
-  name: "banyan-prod-doltgres-ebs-role",
-  assumeRolePolicy: JSON.stringify({
-    Version: "2012-10-17",
-    Statement: [
-      {
-        Effect: "Allow",
-        Principal: { Service: "ecs.amazonaws.com" },
-        Action: "sts:AssumeRole",
-      },
-    ],
-  }),
+const banyanDoltgresEfsSg = new aws.ec2.SecurityGroup("banyan-prod-doltgres-efs-sg", {
+  vpcId: banyanVpc.id,
+  name: "banyan-prod-doltgres-efs-sg",
+  description: "Security group for Doltgres EFS mount targets",
+  egress: [
+    {
+      description: "Allow all outbound",
+      fromPort: 0,
+      toPort: 0,
+      protocol: "-1",
+      cidrBlocks: ["0.0.0.0/0"],
+    },
+  ],
   tags: mergeTags({
-    Name: "banyan-prod-doltgres-ebs-role",
+    Name: "banyan-prod-doltgres-efs-sg",
+    Component: "security-group",
+    Service: "doltgres",
+  }),
+});
+
+// Allow Doltgres Fargate tasks → EFS on port 2049 (NFS)
+new aws.vpc.SecurityGroupIngressRule("banyan-prod-efs-from-doltgres", {
+  securityGroupId: banyanDoltgresEfsSg.id,
+  referencedSecurityGroupId: banyanDoltgresSg.id,
+  fromPort: 2049,
+  toPort: 2049,
+  ipProtocol: "tcp",
+  description: "NFS from Doltgres Fargate tasks",
+  tags: mergeTags({ Name: "efs-from-doltgres", Component: "security-group" }),
+});
+
+export const banyanDoltgresEfs = new aws.efs.FileSystem("banyan-prod-doltgres-efs", {
+  encrypted: true,
+  performanceMode: "generalPurpose",
+  throughputMode: "elastic",
+  tags: mergeTags({
+    Name: "banyan-prod-doltgres-efs",
+    Component: "efs",
+    Service: "doltgres",
+  }),
+});
+
+// Mount targets in each private subnet (Fargate tasks run here)
+for (let i = 0; i < banyanPrivateSubnets.length; i++) {
+  const azSuffix = ["1a", "1b"][i];
+  new aws.efs.MountTarget(`banyan-prod-doltgres-efs-mt-${azSuffix}`, {
+    fileSystemId: banyanDoltgresEfs.id,
+    subnetId: banyanPrivateSubnets[i]!.id,
+    securityGroups: [banyanDoltgresEfsSg.id],
+  });
+}
+
+const banyanDoltgresEfsAp = new aws.efs.AccessPoint("banyan-prod-doltgres-efs-ap", {
+  fileSystemId: banyanDoltgresEfs.id,
+  rootDirectory: {
+    path: "/doltgres-data",
+    creationInfo: {
+      ownerGid: 0,
+      ownerUid: 0,
+      permissions: "0755",
+    },
+  },
+  posixUser: {
+    gid: 0,
+    uid: 0,
+  },
+  tags: mergeTags({
+    Name: "banyan-prod-doltgres-efs-ap",
+    Component: "efs",
+    Service: "doltgres",
+  }),
+});
+
+// Grant task role access to EFS
+const banyanDoltgresEfsPolicy = new aws.iam.Policy("banyan-prod-doltgres-efs-policy", {
+  name: "banyan-prod-doltgres-efs-policy",
+  description: "Allow Doltgres ECS tasks to mount and write to EFS",
+  policy: banyanDoltgresEfs.arn.apply((arn) =>
+    JSON.stringify({
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Effect: "Allow",
+          Action: [
+            "elasticfilesystem:ClientMount",
+            "elasticfilesystem:ClientWrite",
+            "elasticfilesystem:ClientRootAccess",
+          ],
+          Resource: [arn],
+        },
+      ],
+    }),
+  ),
+  tags: mergeTags({
+    Name: "banyan-prod-doltgres-efs-policy",
     Component: "iam",
     Service: "doltgres",
   }),
 });
 
-new aws.iam.RolePolicyAttachment("banyan-prod-doltgres-ebs-policy", {
-  role: banyanDoltgresEbsRole.name,
-  policyArn: "arn:aws:iam::aws:policy/service-role/AmazonECSInfrastructureRolePolicyForVolumes",
+new aws.iam.RolePolicyAttachment("banyan-prod-doltgres-efs-attachment", {
+  role: banyanTaskRole.name,
+  policyArn: banyanDoltgresEfsPolicy.arn,
 });
 
 // ============================================================
@@ -187,10 +268,13 @@ new aws.iam.RolePolicyAttachment("banyan-prod-doltgres-ebs-policy", {
 // ============================================================
 
 // Doltgres config.yaml for replication — written by init container
+// data_dir: /data/doltgres — EFS mount, avoids Docker VOLUME conflict at /var/lib/doltgres
 const doltgresConfigYaml = pulumi.all([banyanDb.address, doltgresReplicatorPassword.result]).apply(([rdsAddress, password]) => `
 listener:
   host: "0.0.0.0"
   port: 5432
+
+data_dir: "/data/doltgres"
 
 behavior:
   read_only: false
@@ -217,7 +301,21 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
     cpuArchitecture: "X86_64",
     operatingSystemFamily: "LINUX",
   },
-  volumes: [{ name: "doltgres-data", configureAtLaunch: true }],
+  volumes: [
+    {
+      name: "doltgres-data",
+      efsVolumeConfiguration: {
+        fileSystemId: banyanDoltgresEfs.id,
+        transitEncryption: "ENABLED",
+        authorizationConfig: {
+          accessPointId: banyanDoltgresEfsAp.id,
+          iam: "ENABLED",
+        },
+      },
+    },
+    { name: "doltgres-initdb" }, // ephemeral volume for /docker-entrypoint-initdb.d/
+    { name: "doltgres-config" }, // ephemeral shared volume for /var/lib/doltgres/ (config.yaml)
+  ],
   containerDefinitions: pulumi.all([banyanDoltgresLogGroup.name, doltgresConfigYaml, doltgresRootPassword.result]).apply(([logGroupName, configYaml, rootPassword]) =>
     JSON.stringify([
       {
@@ -228,13 +326,19 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
           "sh",
           "-c",
           [
-            // Initialize doltgres data directory
-            "mkdir -p /var/lib/doltgres",
-            // Write config.yaml
-            `cat > /var/lib/doltgres/config.yaml << 'DOLTCFG'\n${configYaml}\nDOLTCFG`,
+            // Ensure EFS data directory exists
+            "mkdir -p /data/doltgres",
+            // Write config.yaml to ephemeral shared volume (subshell so heredoc terminator is isolated from && chain)
+            `(cat > /var/lib/doltgres/config.yaml << 'DOLTCFG'\n${configYaml}\nDOLTCFG\n)`,
+            // Write initdb script to create the banyan database on first start
+            "echo 'CREATE DATABASE banyan;' > /docker-entrypoint-initdb.d/01-create-db.sql",
           ].join(" && "),
         ],
-        mountPoints: [{ sourceVolume: "doltgres-data", containerPath: "/var/lib/doltgres" }],
+        mountPoints: [
+          { sourceVolume: "doltgres-data", containerPath: "/data/doltgres" },
+          { sourceVolume: "doltgres-config", containerPath: "/var/lib/doltgres" },
+          { sourceVolume: "doltgres-initdb", containerPath: "/docker-entrypoint-initdb.d" },
+        ],
         logConfiguration: {
           logDriver: "awslogs",
           options: {
@@ -250,9 +354,15 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
         essential: true,
         dependsOn: [{ containerName: "init-doltgres-config", condition: "SUCCESS" }],
         portMappings: [{ containerPort: 5432, protocol: "tcp" }],
-        mountPoints: [{ sourceVolume: "doltgres-data", containerPath: "/var/lib/doltgres" }],
+        mountPoints: [
+          { sourceVolume: "doltgres-data", containerPath: "/data/doltgres" },
+          { sourceVolume: "doltgres-config", containerPath: "/var/lib/doltgres" },
+          { sourceVolume: "doltgres-initdb", containerPath: "/docker-entrypoint-initdb.d" },
+        ],
         environment: [
           { name: "DOLTGRES_PASSWORD", value: rootPassword },
+          // PGPASSWORD needed for entrypoint's internal psql (runs initdb scripts)
+          { name: "PGPASSWORD", value: rootPassword },
         ],
         logConfiguration: {
           logDriver: "awslogs",
@@ -273,7 +383,7 @@ export const banyanDoltgresTaskDef = new aws.ecs.TaskDefinition("banyan-prod-dol
 });
 
 // ============================================================
-// Doltgres ECS Service (Fargate + Managed EBS Volume)
+// Doltgres ECS Service (Fargate + EFS Persistent Volume)
 // ============================================================
 
 export const banyanDoltgresService = new aws.ecs.Service("banyan-prod-doltgres-service", {
@@ -282,6 +392,11 @@ export const banyanDoltgresService = new aws.ecs.Service("banyan-prod-doltgres-s
   taskDefinition: banyanDoltgresTaskDef.arn,
   desiredCount: 1,
   launchType: "FARGATE",
+  platformVersion: "1.4.0",
+  // Stop old task before starting new — Doltgres holds exclusive EFS lock
+  availabilityZoneRebalancing: "DISABLED",
+  deploymentMinimumHealthyPercent: 0,
+  deploymentMaximumPercent: 100,
   networkConfiguration: {
     subnets: [banyanPrivateSubnets[0]!.id],
     securityGroups: [banyanDoltgresSg.id],
@@ -289,16 +404,6 @@ export const banyanDoltgresService = new aws.ecs.Service("banyan-prod-doltgres-s
   },
   serviceRegistries: {
     registryArn: banyanDoltgresServiceDiscovery.arn,
-  },
-  volumeConfiguration: {
-    name: "doltgres-data",
-    managedEbsVolume: {
-      roleArn: banyanDoltgresEbsRole.arn,
-      sizeInGb: doltgresConfig.dataVolumeSize,
-      volumeType: "gp3",
-      encrypted: true,
-      fileSystemType: "ext4",
-    },
   },
   tags: mergeTags({
     Name: "banyan-prod-doltgres-service",
