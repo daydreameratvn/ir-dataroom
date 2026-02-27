@@ -49,7 +49,8 @@ new aws.secretsmanager.SecretVersion("banyan-prod-doltgres-secret-version", {
       root_password: rootPassword,
       rds_host: rdsAddress,
       rds_port: 5432,
-      rds_connection_uri: `postgresql://doltgres_replicator:${encodeURIComponent(password)}@${rdsAddress}:5432/banyan`,
+      // sslmode=disable — internal VPC connection, no SSL needed (rds.force_ssl=0)
+      rds_connection_uri: `postgresql://doltgres_replicator:${encodeURIComponent(password)}@${rdsAddress}:5432/banyan?sslmode=disable`,
       doltgres_host: "doltgres.ddn.internal",
       doltgres_port: 5432,
       connection_uri: `postgresql://postgres:${encodeURIComponent(rootPassword)}@doltgres.ddn.internal:5432/banyan`,

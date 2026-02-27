@@ -54,6 +54,9 @@ const banyanDbParamGroup = new aws.rds.ParameterGroup("banyan-prod-db-param-grou
     { name: "rds.logical_replication", value: "1", applyMethod: "pending-reboot" },
     { name: "max_replication_slots", value: "5", applyMethod: "pending-reboot" },
     { name: "max_wal_senders", value: "5", applyMethod: "pending-reboot" },
+    // Disable forced SSL so internal VPC connections (Doltgres replication) work without SSL.
+    // Public connections (via NLB) enforce SSL at the client level with sslmode=require.
+    { name: "rds.force_ssl", value: "0", applyMethod: "pending-reboot" },
   ],
   tags: mergeTags({ Name: "banyan-prod-db-param-group", Component: "rds" }),
 });
@@ -99,7 +102,9 @@ new aws.secretsmanager.SecretVersion("banyan-prod-db-secret-version", {
       port: 5432,
       dbname: dbConfig.name,
       endpoint,
-      connection_uri: `postgresql://banyan_admin:${encodeURIComponent(password)}@${address}:5432/${dbConfig.name}`,
+      // sslmode=require ensures DDN Cloud connections (via NLB) are always encrypted
+      // using PostgreSQL native SSL, even though RDS doesn't force SSL globally.
+      connection_uri: `postgresql://banyan_admin:${encodeURIComponent(password)}@${address}:5432/${dbConfig.name}?sslmode=require`,
     }),
   ),
 });

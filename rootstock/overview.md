@@ -67,12 +67,13 @@ All security groups allow all outbound traffic (required for NAT, ECR image pull
 ### 2.3 Bastion Host (SSM Tunnel)
 
 * **Purpose:** Allow DDN Cloud connectors to reach RDS PostgreSQL in isolated subnets.
-* **Type:** Network Load Balancer, internet-facing, TCP only.
+* **Type:** Network Load Balancer, internet-facing, TCP pass-through.
 * **Placement:** Public subnets.
 * **Target Group:** IP type, port 5432, pointing at RDS instance address.
 * **Listener:** TCP port 5432, forwarding to target group.
+* **SSL:** TCP pass-through — PostgreSQL SSL (`sslmode=require`) is negotiated end-to-end between DDN Cloud and RDS through the NLB. NLB does NOT do TLS termination because PostgreSQL uses STARTTLS (incompatible with NLB TLS listeners).
 * **SSM Parameter:** NLB DNS name stored at `/banyan/hasura/rds-nlb-endpoint`.
-* **Security:** NLB SG allows TCP 5432; RDS SG allows DDN Cloud egress CIDRs.
+* **Security:** NLB SG allows TCP 5432 from 0.0.0.0/0; password auth + PostgreSQL SSL (`sslmode=require`).
 
 ### 2.4 Bastion Host (SSM Tunnel)
 
@@ -96,6 +97,8 @@ All security groups allow all outbound traffic (required for NAT, ECR image pull
   * `rds.logical_replication = 1`
   * `max_replication_slots = 5`
   * `max_wal_senders = 5`
+  * `rds.force_ssl = 0` — disabled so internal VPC connections (Doltgres) can connect without SSL
+* **SSL Strategy:** RDS does not force SSL globally. Public connections (DDN Cloud via NLB) enforce SSL via `sslmode=require` in the connection string. Internal connections (Doltgres replication) use `sslmode=disable` for lower overhead.
 * **Backup:** 7-day retention, deletion protection enabled.
 * **Credentials:** Random 32-character password generated via `@pulumi/random`. Connection details stored in **AWS Secrets Manager** as JSON:
 
@@ -129,7 +132,7 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
 * **Init Container** (`busybox`): Writes `config.yaml` with replication subscription settings to the shared EBS volume.
 * **Replication Config:**
   * Subscribes to `doltgres_pub` publication on RDS
-  * Connection via `doltgres_replicator` user with SSL
+  * Connection via `doltgres_replicator` user without SSL (`sslmode=disable` — internal VPC traffic)
   * Every replicated transaction creates a Dolt commit (enables `dolt_log`, `dolt_diff`, time-travel queries)
 * **Secrets:** Replicator credentials stored in Secrets Manager (`banyan-prod-doltgres-credentials`) with:
   * `replicator_username`, `replicator_password` — for RDS logical replication

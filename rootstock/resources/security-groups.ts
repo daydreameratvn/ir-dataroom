@@ -12,12 +12,13 @@ export const banyanNlbSg = new aws.ec2.SecurityGroup("banyan-prod-nlb-sg", {
   description: "Security group for NLB RDS proxy (DDN Cloud connectivity)",
   ingress: [
     {
-      description: "PostgreSQL from DDN Cloud egress CIDRs",
+      description: "PostgreSQL from DDN Cloud (SSL enforced via sslmode=require)",
       fromPort: 5432,
       toPort: 5432,
       protocol: "tcp",
       // DDN Cloud (public) uses dynamic egress IPs with no static CIDR ranges.
-      // Must allow 0.0.0.0/0 — RDS auth (user/password + SSL) is the access control layer.
+      // Must allow 0.0.0.0/0 — access control: password auth + PostgreSQL SSL (sslmode=require).
+      // RDS rds.force_ssl=0 to allow internal VPC connections (Doltgres) without SSL.
       // To restrict, upgrade to Private DDN (dedicated or BYOC) for static IPs / VPC peering.
       cidrBlocks: ["0.0.0.0/0"],
     },

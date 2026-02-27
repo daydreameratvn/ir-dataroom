@@ -6,7 +6,13 @@ import { banyanNlbSg, banyanRdsSg } from "./security-groups.ts";
 import { banyanPublicSubnets, banyanVpc } from "./vpc.ts";
 
 // ============================================================
-// Network Load Balancer (internet-facing, TCP only)
+// Network Load Balancer (internet-facing, TCP pass-through)
+//
+// SSL architecture: NLB uses TCP (not TLS) because PostgreSQL clients
+// use STARTTLS (SSLRequest), which is incompatible with NLB TLS termination
+// (NLB TLS expects a raw TLS ClientHello as the first message).
+// Instead, SSL is enforced end-to-end via sslmode=require in the connection
+// string — PostgreSQL SSL passes through the NLB transparently.
 // ============================================================
 
 export const banyanNlb = new aws.lb.LoadBalancer("banyan-prod-nlb-rds", {
@@ -75,6 +81,8 @@ export const banyanNlbTargetAttachment = new aws.lb.TargetGroupAttachment("banya
 
 // ============================================================
 // TCP Listener (port 5432)
+// TCP pass-through — PostgreSQL SSL (sslmode=require) is negotiated
+// end-to-end between DDN Cloud and RDS through this listener.
 // ============================================================
 
 export const banyanNlbListener = new aws.lb.Listener("banyan-prod-nlb-rds-listener", {
