@@ -46,7 +46,6 @@ Create a multi-AZ network foundation spanning 2 Availability Zones (`ap-southeas
 * **Isolated Subnets:** No internet route whatsoever — RDS only.
 * **Service Discovery:** AWS Cloud Map with a private DNS namespace `ddn.internal`. Used for Doltgres internal service discovery:
   * `doltgres.ddn.internal:5432` — Doltgres logical replica
-  * `ndc-doltgres.ddn.internal:8080` — NDC Postgres connector (Doltgres)
 
 ### 2.2 Security Groups (Zero-Trust Referencing)
 
@@ -58,23 +57,24 @@ No CIDR blocks for internal traffic — use Security Group referencing exclusive
 | `banyan-prod-rds-sg` | TCP 5432 | NLB SG, Bastion SG, Auth SG, Doltgres SG |
 | `banyan-prod-bastion-sg` | (none — SSM only) | — |
 | `banyan-prod-auth-sg` | TCP 4000 | ALB SG |
-| `banyan-prod-nlb-sg` | TCP 5432 | 0.0.0.0/0 |
-| `banyan-prod-doltgres-sg` | TCP 5432 | NDC Doltgres SG, Bastion SG |
-| `banyan-prod-ndc-doltgres-sg` | TCP 8080 | (internal only) |
+| `banyan-prod-nlb-sg` | TCP 5432, 5433 | 0.0.0.0/0 |
+| `banyan-prod-doltgres-sg` | TCP 5432 | NLB SG, Bastion SG |
 | `banyan-prod-doltgres-efs-sg` | TCP 2049 (NFS) | Doltgres SG |
 
 All security groups allow all outbound traffic (required for NAT, ECR image pulls, DNS, SSM).
 
 ### 2.3 Bastion Host (SSM Tunnel)
 
-* **Purpose:** Allow DDN Cloud connectors to reach RDS PostgreSQL in isolated subnets.
+* **Purpose:** Allow DDN Cloud-managed connectors to reach databases in private/isolated subnets.
 * **Type:** Network Load Balancer, internet-facing, TCP pass-through.
 * **Placement:** Public subnets.
-* **Target Group:** IP type, port 5432, pointing at RDS instance address.
-* **Listener:** TCP port 5432, forwarding to target group.
-* **SSL:** TCP pass-through — PostgreSQL SSL (`sslmode=require`) is negotiated end-to-end between DDN Cloud and RDS through the NLB. NLB does NOT do TLS termination because PostgreSQL uses STARTTLS (incompatible with NLB TLS listeners).
-* **SSM Parameter:** NLB DNS name stored at `/banyan/hasura/rds-nlb-endpoint`.
-* **Security:** NLB SG allows TCP 5432 from 0.0.0.0/0; password auth + PostgreSQL SSL (`sslmode=require`).
+* **Listeners:**
+  * **Port 5432 → RDS:** TCP pass-through. Target group (IP type) points at RDS instance address. SSL enforced end-to-end via `sslmode=require` (NLB does NOT terminate TLS — PostgreSQL uses STARTTLS which is incompatible with NLB TLS listeners).
+  * **Port 5433 → Doltgres:** TCP pass-through. Target group (IP type) managed by ECS service `loadBalancers` — task IPs auto-registered/deregistered on deployment. Doltgres does not support PostgreSQL SSL; traffic is unencrypted. Security: strong password auth (48-char alphanumeric), read-only audit replica.
+* **SSM Parameters:**
+  * `/banyan/hasura/rds-nlb-endpoint` — NLB DNS name
+  * `/banyan/hasura/doltgres-ddn-connection-uri` — full Doltgres connection URI for DDN Cloud connector
+* **Security:** NLB SG allows TCP 5432+5433 from 0.0.0.0/0; password auth + SSL for RDS, password auth for Doltgres.
 
 ### 2.4 Bastion Host (SSM Tunnel)
 
@@ -131,6 +131,7 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
 * **Storage:** Amazon EFS (Elastic File System) — persistent, encrypted, `generalPurpose` performance mode, `elastic` throughput. Mount targets in both private subnets. Access point at `/doltgres-data` (UID/GID 0). EFS mounted at `/data/doltgres` (not `/var/lib/doltgres`) to avoid conflict with Docker VOLUME declaration. Config `data_dir: "/data/doltgres"` directs all database writes to EFS. Data survives task restarts and redeployments.
 * **IAM:** Task role has `elasticfilesystem:ClientMount`, `ClientWrite`, `ClientRootAccess` on the EFS filesystem. Transit encryption enabled with IAM authorization.
 * **Deployment:** `minimumHealthyPercent: 0`, `maximumPercent: 100`, AZ rebalancing disabled — stops old task before starting new to avoid EFS lock conflicts (Doltgres holds exclusive file locks).
+* **NLB Integration:** ECS service `loadBalancers` auto-registers task IP with NLB target group (`banyan-prod-nlb-doltgres-tg`). DDN Cloud connects via NLB port 5433 → container port 5432.
 * **Volumes:** 2 volumes — `doltgres-data` (EFS, `/data/doltgres`), `doltgres-config` (ephemeral, `/var/lib/doltgres` for config.yaml).
 * **Init Container** (`busybox`): Writes `config.yaml` (with `user`, `listener`, `data_dir`, `behavior`, `postgres_replication` sections) to ephemeral shared volume at `/var/lib/doltgres/`.
 * **Replication Config:**
@@ -146,16 +147,13 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
   * `rds_connection_uri` — replicator connection to RDS
   * `connection_uri` — NDC connector connection to Doltgres (`postgres@doltgres.ddn.internal:5432/postgres`)
 
-#### NDC Doltgres Connector
+#### DDN Cloud Connector for Doltgres
 
-* **Image:** `ghcr.io/hasura/ndc-postgres:v3.0.0`
-* **Resources:** 256 CPU / 512 MB memory.
-* **Desired Count:** 1 task.
-* **Placement:** Private Subnets.
-* **Port:** Container port `8080`.
-* **Cloud Map:** Registered as `ndc-doltgres.ddn.internal`.
-* **Init Container Chain:** 3-container pattern (busybox → introspect → serve), using the Doltgres secret `CONNECTION_URI`.
-* **Purpose:** Provides GraphQL access to Dolt version control tables (`dolt_log`, `dolt_diff_*`, `dolt_commit_ancestors`) via Hasura DDN Cloud.
+* **Type:** DDN Cloud-managed (not self-hosted) — same as `banyan_pg` connector for RDS.
+* **Connector:** `hasura/postgres:v3.1.0` (Hasura-managed NDC Postgres)
+* **Connection:** Doltgres is reachable via NLB port 5433 (TCP pass-through to Fargate container port 5432).
+* **Purpose:** Provides GraphQL access to replicated tables and Dolt version control tables (`dolt_log`, `dolt_diff_*`, `dolt_commit_ancestors`) via Hasura DDN Cloud.
+* **Hasura Metadata:** Connector defined in `hasura/ddn/app/connector/banyan_doltgres/connector.yaml` with env var `APP_BANYAN_DOLTGRES_CONNECTION_URI`.
 
 ### 2.7 Application Load Balancer
 
@@ -263,6 +261,7 @@ new aws.Provider("banyan-aws-provider", {
 * `SecretArn`: Secrets Manager ARN for DB credentials
 * `BastionInstanceId`: EC2 instance ID for SSM tunnel
 * `DoltgresServiceArn`: ARN of the Doltgres ECS service
+* `DoltgresDdnConnectionParam`: SSM parameter name for Doltgres DDN connection URI
 * `DomainName`: Domain name
 * `CertificateArn`: ACM certificate ARN
 * `CertValidationCname`: DNS CNAME records for cert validation
@@ -301,8 +300,7 @@ rootstock/
     ├── ecs-auth.ts              # Auth service task def + ECS service
     ├── nlb-rds-proxy.ts         # NLB, target group, listener, SSM param
     ├── github-oidc.ts           # GitHub Actions OIDC provider and deploy role
-    ├── doltgres.ts              # Doltgres Fargate + EFS + SG + Secrets + Cloud Map
-    └── ecs-ndc-doltgres.ts      # NDC Doltgres connector task def + service
+    └── doltgres.ts              # Doltgres Fargate + EFS + SG + Secrets + Cloud Map + NLB integration
 ```
 
 ---
@@ -316,11 +314,10 @@ rootstock/
 | Doltgres Fargate (1 task: 1024 CPU / 2048 MB, x86_64) | $37.18 | 16% |
 | ALB (hourly + ~1 LCU) | $24.24 | 11% |
 | NLB (RDS proxy for DDN Cloud) | $20.00 | 9% |
-| NDC Doltgres Fargate (1 task: 256 CPU / 512 MB) | $9.30 | 4% |
 | Doltgres EFS (elastic, ~10 GB est.) | $3.00 | 1% |
 | Bastion (t4g.nano, on-demand) | $3.07 | 1% |
 | ACM Certificate | $0.00 | 0% |
 | Other (Secrets Manager, Cloud Map, CloudWatch, SSM) | $2.50 | <1% |
-| **Total** | **~$230/mo** | |
+| **Total** | **~$220/mo** | |
 
 **Cost optimization paths:** RDS Reserved Instance (~30-40% savings), Fargate Savings Plans (~20%), reduce to 1 task per service (~50% Fargate savings).
