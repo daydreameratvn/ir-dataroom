@@ -4,9 +4,9 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from "lucide-react";
 import { ViewTracker } from "@/components/dataroom/ViewTracker";
+import { getCategoryStyle } from "@/lib/categories";
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return bytes + " B";
@@ -67,7 +67,12 @@ export default async function FileViewerPage({
             <div>
               <CardTitle className="text-xl">{file.name}</CardTitle>
               <div className="mt-2 flex items-center gap-3">
-                <Badge variant="secondary">{file.category}</Badge>
+                <span
+                  className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold"
+                  style={getCategoryStyle(file.category)}
+                >
+                  {file.category}
+                </span>
                 <span className="text-sm text-gray-500">
                   {formatFileSize(file.size)}
                 </span>

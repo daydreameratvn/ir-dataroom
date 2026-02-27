@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { DataroomTabs } from "@/components/dataroom/DataroomTabs";
+import { Shield } from "lucide-react";
 
 export default async function DataroomLayout({
   children,
@@ -39,6 +41,11 @@ export default async function DataroomLayout({
 
   const ndaAccepted = investor.status === "nda_accepted";
 
+  // Check if user is also an admin (for "Back to Admin" button)
+  const isAlsoAdmin = await prisma.adminUser.findUnique({
+    where: { email: session.user.email },
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="sticky top-0 z-50 bg-white shadow-sm">
@@ -50,6 +57,15 @@ export default async function DataroomLayout({
             className="h-8 w-auto"
           />
           <div className="flex items-center gap-4">
+            {isAlsoAdmin && (
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700 transition-colors"
+              >
+                <Shield className="h-3.5 w-3.5" />
+                Back to Admin
+              </Link>
+            )}
             <span className="text-sm text-gray-600">
               {session.user.email}
             </span>

@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Trash2, RefreshCw } from "lucide-react";
+import { CATEGORIES, getCategoryStyle } from "@/lib/categories";
 
 interface DataroomFile {
   id: string;
@@ -32,8 +33,6 @@ interface DataroomFile {
   category: string;
   uploadedAt: string;
 }
-
-const CATEGORIES = ["Financials", "Product", "Legal", "Team", "Other"];
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return bytes + " B";
@@ -226,7 +225,17 @@ export function FileManager() {
                 <TableBody>
                   {categoryFiles.map((file) => (
                     <TableRow key={file.id}>
-                      <TableCell className="font-medium">{file.name}</TableCell>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          {file.name}
+                          <span
+                            className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold"
+                            style={getCategoryStyle(file.category)}
+                          >
+                            {file.category}
+                          </span>
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <Badge variant="outline">{file.mimeType}</Badge>
                       </TableCell>

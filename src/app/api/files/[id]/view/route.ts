@@ -49,7 +49,13 @@ export async function GET(
   try {
     let buffer: Buffer;
 
-    if (admin) {
+    // SECURE BY DEFAULT: Always watermark files.
+    // Only skip watermark for admin when explicitly requesting clean copy (?clean=true).
+    // This ensures watermarks are never accidentally omitted for investors.
+    const cleanRequested = req.nextUrl.searchParams.get("clean") === "true";
+    const skipWatermark = admin && !investor && cleanRequested;
+
+    if (skipWatermark) {
       buffer = await fs.readFile(filePath);
     } else if (file.mimeType === "application/pdf") {
       try {
@@ -64,7 +70,7 @@ export async function GET(
           filePath,
           email,
           file.id,
-          investor!.id
+          investor?.id || "admin"
         );
         buffer = await fs.readFile(cachedPath);
       } catch (err) {

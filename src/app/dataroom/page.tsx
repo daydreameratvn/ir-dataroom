@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FileText, FileSpreadsheet, Video, File } from "lucide-react";
+import { getCategoryStyle } from "@/lib/categories";
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return bytes + " B";
@@ -87,11 +88,16 @@ export default async function DataroomPage() {
                 </Link>
                 <CardContent>
                   <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-500">
-                      <p>{formatFileSize(file.size)}</p>
-                      <p>
-                        {new Date(file.uploadedAt).toLocaleDateString()}
-                      </p>
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold"
+                        style={getCategoryStyle(file.category)}
+                      >
+                        {file.category}
+                      </span>
+                      <span className="text-sm text-gray-400">
+                        {formatFileSize(file.size)}
+                      </span>
                     </div>
                     <Button variant="outline" size="sm" asChild>
                       <a href={`/api/files/${file.id}/download`}>Download</a>

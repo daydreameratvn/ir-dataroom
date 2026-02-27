@@ -55,8 +55,14 @@ export async function GET(
     let buffer: Buffer;
     const contentType = file.mimeType;
 
-    if (admin) {
-      // Admin download: no watermark
+    // SECURE BY DEFAULT: Always watermark files.
+    // Only skip watermark for admin-only users when explicitly requesting clean copy (?clean=true).
+    // If user is both admin AND investor, watermarks are always applied.
+    const cleanRequested = req.nextUrl.searchParams.get("clean") === "true";
+    const skipWatermark = admin && !investor && cleanRequested;
+
+    if (skipWatermark) {
+      // Admin-only clean download
       buffer = await fs.readFile(filePath);
     } else if (file.mimeType === "application/pdf") {
       try {
@@ -81,7 +87,7 @@ export async function GET(
           filePath,
           email,
           file.id,
-          investor!.id
+          investor?.id || "admin"
         );
         buffer = await fs.readFile(cachedPath);
       } catch (err) {

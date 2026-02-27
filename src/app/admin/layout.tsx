@@ -9,6 +9,7 @@ import {
   FolderOpen,
   BarChart3,
   Settings,
+  Eye,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
@@ -70,6 +71,15 @@ export default async function AdminLayout({
             );
           })}
         </nav>
+        <div className="px-3 pb-3">
+          <Link
+            href="/dataroom"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium bg-pink-600 text-white hover:bg-pink-500 transition-colors"
+          >
+            <Eye className="h-4 w-4" />
+            Investor View
+          </Link>
+        </div>
         <Separator className="bg-zinc-800" />
         <div className="p-4">
           <SignOutButton />
