@@ -129,7 +129,6 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
 * **Storage:** Amazon EFS (Elastic File System) — persistent, encrypted, `generalPurpose` performance mode, `elastic` throughput. Mount targets in both private subnets. Access point at `/doltgres-data` (UID/GID 0). EFS mounted at `/data/doltgres` (not `/var/lib/doltgres`) to avoid conflict with Docker VOLUME declaration. Config `data_dir: "/data/doltgres"` directs all database writes to EFS. Data survives task restarts and redeployments.
 * **IAM:** Task role has `elasticfilesystem:ClientMount`, `ClientWrite`, `ClientRootAccess` on the EFS filesystem. Transit encryption enabled with IAM authorization.
 * **Deployment:** `minimumHealthyPercent: 0`, `maximumPercent: 100`, AZ rebalancing disabled — stops old task before starting new to avoid EFS lock conflicts (Doltgres holds exclusive file locks).
-* **NLB Integration:** ECS service `loadBalancers` auto-registers task IP with NLB target group (`banyan-prod-nlb-doltgres-tg`). DDN Cloud connects via NLB port 5433 → container port 5432.
 * **Volumes:** 2 volumes — `doltgres-data` (EFS, `/data/doltgres`), `doltgres-config` (ephemeral, `/var/lib/doltgres` for config.yaml).
 * **Init Container** (`busybox`): Writes `config.yaml` (with `user`, `listener`, `data_dir`, `behavior`, `postgres_replication` sections) to ephemeral shared volume at `/var/lib/doltgres/`.
 * **Replication Config:**
@@ -143,7 +142,7 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
 * **Secrets:** Replicator credentials stored in Secrets Manager (`banyan-prod-doltgres-credentials`) with:
   * `replicator_username`, `replicator_password` — for RDS logical replication
   * `rds_connection_uri` — replicator connection to RDS
-  * `connection_uri` — NDC connector connection to Doltgres (`postgres@doltgres.ddn.internal:5432/postgres`)
+  * `connection_uri` — direct connection to Doltgres (`postgres@doltgres.ddn.internal:5432/postgres`)
 
 #### Doltgres Access
 

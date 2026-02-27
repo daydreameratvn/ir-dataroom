@@ -219,7 +219,7 @@ AWS infrastructure defined with [Pulumi](https://www.pulumi.com) (TypeScript). P
 | Resource | Details |
 |----------|---------|
 | **Networking** | VPC `10.68.0.0/16`, 2 AZs, 6 subnets (public/private/isolated) |
-| **Database** | RDS PostgreSQL 16, `db.t4g.medium`, 50GB gp3 |
+| **Database** | RDS PostgreSQL 17, `db.t4g.medium`, 50GB gp3 |
 | **Compute** | ECS Fargate — Hasura v3 Engine + NDC Postgres connector |
 | **Load Balancer** | ALB with HTTPS (TLS 1.3) |
 | **Service Discovery** | AWS Cloud Map (`ddn.internal`) |
