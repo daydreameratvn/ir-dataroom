@@ -157,8 +157,14 @@ export function InvestorManager() {
         body: JSON.stringify({ email: newEmail.trim(), name: newName.trim() || null, firm: newFirm.trim() || null, skipNda }),
       });
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || "Failed to add investor");
+        let message = "Failed to add investor";
+        try {
+          const err = await res.json();
+          message = err.error || message;
+        } catch {
+          // Server returned non-JSON (e.g. HTML 500 page)
+        }
+        throw new Error(message);
       }
       toast({ title: "Success", description: "Investor added successfully." });
       setNewEmail("");
