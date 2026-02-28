@@ -402,6 +402,16 @@ const translations = {
     settings: '设置',
     role: '角色',
     switchOrganization: '切换组织',
+    security: '安全',
+    passkey: {
+      title: '通行密钥',
+      description: '使用生物识别或设备 PIN 码登录，无需密码。',
+      register: '注册通行密钥',
+      registering: '注册中...',
+      success: '通行密钥注册成功',
+      failed: '通行密钥注册失败',
+      cancelled: '通行密钥注册已取消',
+    },
     login: {
       continueWithGoogle: '使用 Google 登录',
       continueWithMicrosoft: '使用 Microsoft 登录',

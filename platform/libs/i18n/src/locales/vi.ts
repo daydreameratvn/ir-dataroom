@@ -402,6 +402,16 @@ const translations = {
     settings: 'Cài đặt',
     role: 'Vai trò',
     switchOrganization: 'Chuyển tổ chức',
+    security: 'Bảo mật',
+    passkey: {
+      title: 'Passkey',
+      description: 'Đăng nhập bằng sinh trắc học hoặc mã PIN thiết bị thay vì mật khẩu.',
+      register: 'Đăng ký Passkey',
+      registering: 'Đang đăng ký...',
+      success: 'Đăng ký Passkey thành công',
+      failed: 'Đăng ký Passkey thất bại',
+      cancelled: 'Đăng ký Passkey đã bị hủy',
+    },
     login: {
       continueWithGoogle: 'Đăng nhập bằng Google',
       continueWithMicrosoft: 'Đăng nhập bằng Microsoft',

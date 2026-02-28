@@ -413,6 +413,16 @@ const translations = {
     settings: 'Settings',
     role: 'Role',
     switchOrganization: 'Switch Organization',
+    security: 'Security',
+    passkey: {
+      title: 'Passkeys',
+      description: 'Sign in with biometrics or device PIN instead of a password.',
+      register: 'Register Passkey',
+      registering: 'Registering...',
+      success: 'Passkey registered successfully',
+      failed: 'Failed to register passkey',
+      cancelled: 'Passkey registration cancelled',
+    },
     login: {
       continueWithGoogle: 'Continue with Google',
       continueWithMicrosoft: 'Continue with Microsoft',

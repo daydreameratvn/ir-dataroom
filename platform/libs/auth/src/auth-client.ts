@@ -1,5 +1,8 @@
 import type { User } from '@papaya/shared-types';
-import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/browser';
+import type {
+  PublicKeyCredentialCreationOptionsJSON,
+  PublicKeyCredentialRequestOptionsJSON,
+} from '@simplewebauthn/browser';
 
 let _authBaseUrl = '/auth';
 
@@ -110,7 +113,7 @@ export async function verifyPasskeyLogin(
 
 export async function getPasskeyRegisterOptions(
   accessToken: string,
-): Promise<Record<string, unknown>> {
+): Promise<PublicKeyCredentialCreationOptionsJSON> {
   return authRequest('/passkey/register/options', {
     method: 'POST',
     headers: { Authorization: `Bearer ${accessToken}` },

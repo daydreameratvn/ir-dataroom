@@ -6,6 +6,8 @@ export {
   configureAuthClient,
   startImpersonation,
   endImpersonation,
+  getPasskeyRegisterOptions,
+  verifyPasskeyRegister,
 } from './auth-client';
 export {
   getAccessToken,

@@ -402,6 +402,16 @@ const translations = {
     settings: 'การตั้งค่า',
     role: 'บทบาท',
     switchOrganization: 'เปลี่ยนองค์กร',
+    security: 'ความปลอดภัย',
+    passkey: {
+      title: 'Passkey',
+      description: 'เข้าสู่ระบบด้วยไบโอเมตริกซ์หรือ PIN อุปกรณ์แทนรหัสผ่าน',
+      register: 'ลงทะเบียน Passkey',
+      registering: 'กำลังลงทะเบียน...',
+      success: 'ลงทะเบียน Passkey สำเร็จ',
+      failed: 'ลงทะเบียน Passkey ล้มเหลว',
+      cancelled: 'การลงทะเบียน Passkey ถูกยกเลิก',
+    },
     login: {
       continueWithGoogle: 'เข้าสู่ระบบด้วย Google',
       continueWithMicrosoft: 'เข้าสู่ระบบด้วย Microsoft',
