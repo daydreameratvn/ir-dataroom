@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Settings, ScrollText } from 'lucide-react';
+import { ScrollText } from 'lucide-react';
 import {
   PageHeader,
   EmptyState,
@@ -11,6 +11,7 @@ import {
 } from '@papaya/shared-ui';
 import UserTable from './components/UserTable';
 import ErrorTracker from './components/ErrorTracker';
+import IdentityProviders from './components/IdentityProviders';
 
 export default function AdminPage() {
   const { t } = useTranslation();
@@ -32,12 +33,7 @@ export default function AdminPage() {
           <UserTable />
         </TabsContent>
         <TabsContent value="settings" className="mt-4">
-          <EmptyState
-            icon={<Settings className="h-6 w-6" />}
-            title={t('admin.settingsTitle')}
-            description={t('admin.settingsDesc')}
-            action={<Button variant="outline">{t('common.getStarted')}</Button>}
-          />
+          <IdentityProviders />
         </TabsContent>
         <TabsContent value="audit" className="mt-4">
           <EmptyState
