@@ -20,6 +20,7 @@ echo "Target:  $TARGET"
 echo ""
 
 # ----- Helper: get Pulumi stack output -----
+# Outputs are nested under "stackOutputs" as a JSON object
 get_output() {
   local key="$1"
   cd "$REPO_ROOT/rootstock"
@@ -27,7 +28,8 @@ get_output() {
     --name /banyan/pulumi/config-passphrase \
     --with-decryption --region "$REGION" \
     --query Parameter.Value --output text)
-  pulumi stack output "$key" 2>/dev/null
+  pulumi stack select prod 2>/dev/null
+  pulumi stack output stackOutputs 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin)['$key'])"
 }
 
 # =============================================================
@@ -43,8 +45,8 @@ deploy_auth() {
   aws ecr get-login-password --region "$REGION" \
     | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
 
-  # Build from repo root (Dockerfile references auth/ and platform/)
-  docker build -t "$ECR_URL:latest" -f "$REPO_ROOT/auth/Dockerfile" "$REPO_ROOT"
+  # Build from repo root (Dockerfile references auth/, agents/, and platform/)
+  docker build --platform linux/amd64 -t "$ECR_URL:latest" -f "$REPO_ROOT/auth/Dockerfile" "$REPO_ROOT"
 
   echo ">>> Pushing to ECR..."
   docker push "$ECR_URL:latest"
