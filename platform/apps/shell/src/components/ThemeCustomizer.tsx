@@ -6,7 +6,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
   SheetTrigger,
 } from '@papaya/shared-ui';
 import {
@@ -34,8 +33,6 @@ export default function ThemeCustomizer() {
     setRadius(DEFAULT_RADIUS);
   }
 
-  const activeColorTheme = colorThemes.find((ct) => ct.name === colorTheme);
-
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -48,20 +45,15 @@ export default function ThemeCustomizer() {
       </SheetTrigger>
 
       <SheetContent className="w-80 overflow-y-auto">
-        <SheetHeader className="pb-0">
-          <SheetTitle className="text-base">{t('theme.customize')}</SheetTitle>
-          <SheetDescription className="text-xs leading-relaxed">
-            {t('theme.customizeDesc')}
-          </SheetDescription>
+        <SheetHeader>
+          <SheetTitle>{t('theme.customize')}</SheetTitle>
         </SheetHeader>
 
-        <div className="mt-5 flex flex-col gap-5">
+        <div className="px-4 pb-4 flex flex-col gap-5">
           {/* ── Color theme ── */}
           <section>
-            <h4 className="mb-3 text-xs font-medium text-muted-foreground">
-              {t('theme.color')}
-            </h4>
-            <div className="flex items-center justify-between px-1">
+            <h4 className="mb-2 text-[13px] font-medium">{t('theme.color')}</h4>
+            <div className="grid grid-cols-2 gap-2">
               {colorThemes.map((ct) => {
                 const isActive = colorTheme === ct.name;
                 const swatch =
@@ -71,43 +63,36 @@ export default function ThemeCustomizer() {
                   <button
                     key={ct.name}
                     onClick={() => setColorTheme(ct.name)}
-                    className="group flex flex-col items-center gap-1.5"
+                    className={`flex items-center gap-2.5 rounded-lg border px-3 py-2 text-[13px] transition-colors ${
+                      isActive
+                        ? 'border-primary bg-primary/5 font-medium'
+                        : 'border-border hover:bg-accent'
+                    }`}
                   >
                     <span
-                      className={`flex h-6 w-6 items-center justify-center rounded-full transition-transform group-hover:scale-110 ${
-                        isActive ? 'ring-2 ring-offset-2 ring-offset-background' : ''
-                      }`}
-                      style={{
-                        backgroundColor: swatch,
-                        ...(isActive ? { ['--tw-ring-color' as string]: swatch } : {}),
-                      }}
+                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                      style={{ backgroundColor: swatch }}
                     >
                       {isActive && (
                         <Check className="h-3 w-3 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]" />
                       )}
                     </span>
+                    {t(ct.labelKey)}
                   </button>
                 );
               })}
             </div>
-            {activeColorTheme && (
-              <p className="mt-2 text-center text-[11px] text-muted-foreground">
-                {t(activeColorTheme.labelKey)}
-              </p>
-            )}
           </section>
 
           {/* ── Border radius ── */}
           <section>
-            <h4 className="mb-3 text-xs font-medium text-muted-foreground">
-              {t('theme.radius')}
-            </h4>
+            <h4 className="mb-2 text-[13px] font-medium">{t('theme.radius')}</h4>
             <div className="grid grid-cols-5 gap-1.5">
               {radiusOptions.map((r) => (
                 <button
                   key={r}
                   onClick={() => setRadius(r)}
-                  className={`flex flex-col items-center gap-1 rounded-lg border py-2 text-[11px] transition-colors ${
+                  className={`flex flex-col items-center gap-1 rounded-lg border py-2 text-xs transition-colors ${
                     radius === r
                       ? 'border-primary bg-primary/5 font-medium text-primary'
                       : 'border-border hover:bg-accent'
@@ -125,9 +110,7 @@ export default function ThemeCustomizer() {
 
           {/* ── Mode (light / dark / system) ── */}
           <section>
-            <h4 className="mb-3 text-xs font-medium text-muted-foreground">
-              {t('theme.mode')}
-            </h4>
+            <h4 className="mb-2 text-[13px] font-medium">{t('theme.mode')}</h4>
             <div className="grid grid-cols-3 gap-1.5">
               {modeOptions.map((option) => {
                 const isActive = theme === option.value;
