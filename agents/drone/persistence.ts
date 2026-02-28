@@ -65,7 +65,7 @@ export interface DroneRunResult {
 // ---------------------------------------------------------------------------
 
 const INSERT_DRONE_RUN = gql`
-  mutation InsertDroneRun($object: InsertDroneRunsObject!) {
+  mutation InsertDroneRun($object: InsertDroneRunsObjectInput!) {
     insertDroneRuns(objects: [$object]) {
       returning {
         id
@@ -75,19 +75,15 @@ const INSERT_DRONE_RUN = gql`
 `;
 
 const UPDATE_DRONE_RUN = gql`
-  mutation UpdateDroneRun($id: Uuid!, $update: UpdateColumnDroneRunsUpdateColumns!) {
-    updateDroneRunsById(id: $id, updateColumns: $update) {
-      id
-      status
-      processedCount
-      successCount
-      errorCount
+  mutation UpdateDroneRun($id: Uuid!, $update: UpdateDroneRunsByIdUpdateColumnsInput!) {
+    updateDroneRunsById(keyId: $id, updateColumns: $update) {
+      affectedRows
     }
   }
 `;
 
 const INSERT_DRONE_RUN_RESULT = gql`
-  mutation InsertDroneRunResult($object: InsertDroneRunResultsObject!) {
+  mutation InsertDroneRunResult($object: InsertDroneRunResultsObjectInput!) {
     insertDroneRunResults(objects: [$object]) {
       returning {
         id
@@ -103,8 +99,8 @@ const INSERT_DRONE_RUN_RESULT = gql`
 const GET_DRONE_RUNS = gql`
   query GetDroneRuns($limit: Int!, $offset: Int!) {
     droneRuns(
-      where: { deletedAt: { _isNull: true } }
-      orderBy: [{ createdAt: Desc }]
+      where: { deletedAt: { _is_null: true } }
+      order_by: [{ createdAt: Desc }]
       limit: $limit
       offset: $offset
     ) {
@@ -124,7 +120,7 @@ const GET_DRONE_RUNS = gql`
       durationMs
       createdAt
     }
-    droneRunsAggregate(where: { deletedAt: { _isNull: true } }) {
+    droneRunsAggregate(filter_input: { where: { deletedAt: { _is_null: true } } }) {
       _count
     }
   }
@@ -155,8 +151,8 @@ const GET_DRONE_RUN_BY_ID = gql`
 const GET_DRONE_RUN_RESULTS = gql`
   query GetDroneRunResults($runId: Uuid!, $limit: Int!, $offset: Int!) {
     droneRunResults(
-      where: { runId: { _eq: $runId }, deletedAt: { _isNull: true } }
-      orderBy: [{ createdAt: Asc }]
+      where: { runId: { _eq: $runId }, deletedAt: { _is_null: true } }
+      order_by: [{ createdAt: Asc }]
       limit: $limit
       offset: $offset
     ) {
@@ -177,7 +173,7 @@ const GET_DRONE_RUN_RESULTS = gql`
       createdAt
     }
     droneRunResultsAggregate(
-      where: { runId: { _eq: $runId }, deletedAt: { _isNull: true } }
+      filter_input: { where: { runId: { _eq: $runId }, deletedAt: { _is_null: true } } }
     ) {
       _count
     }
@@ -187,8 +183,8 @@ const GET_DRONE_RUN_RESULTS = gql`
 const GET_DRONE_SCHEDULES = gql`
   query GetDroneSchedules {
     droneSchedules(
-      where: { deletedAt: { _isNull: true } }
-      orderBy: [{ createdAt: Desc }]
+      where: { deletedAt: { _is_null: true } }
+      order_by: [{ createdAt: Desc }]
     ) {
       id
       name
@@ -207,7 +203,7 @@ const GET_DRONE_SCHEDULES = gql`
 `;
 
 const INSERT_DRONE_SCHEDULE = gql`
-  mutation InsertDroneSchedule($object: InsertDroneSchedulesObject!) {
+  mutation InsertDroneSchedule($object: InsertDroneSchedulesObjectInput!) {
     insertDroneSchedules(objects: [$object]) {
       returning {
         id
@@ -218,7 +214,7 @@ const INSERT_DRONE_SCHEDULE = gql`
 
 const GET_DRONE_STATS = gql`
   query GetDroneStats {
-    droneRuns(where: { deletedAt: { _isNull: true } }) {
+    droneRuns(where: { deletedAt: { _is_null: true } }) {
       status
       successCount
       deniedCount
@@ -298,7 +294,6 @@ export async function updateDroneRunProgress(
     skippedCount: number;
   },
 ): Promise<void> {
-  // Use a raw mutation since the update structure may vary
   await getClient().mutate({
     mutation: gql`
       mutation UpdateRunProgress(
@@ -310,7 +305,7 @@ export async function updateDroneRunProgress(
         $skipped: Int!
       ) {
         updateDroneRunsById(
-          id: $id
+          keyId: $id
           updateColumns: {
             processedCount: { set: $processed }
             successCount: { set: $success }
@@ -320,7 +315,7 @@ export async function updateDroneRunProgress(
             updatedAt: { set: "${new Date().toISOString()}" }
           }
         ) {
-          id
+          affectedRows
         }
       }
     `,
@@ -344,7 +339,7 @@ export async function completeDroneRun(
     mutation: gql`
       mutation CompleteRun($id: Uuid!) {
         updateDroneRunsById(
-          id: $id
+          keyId: $id
           updateColumns: {
             status: { set: "${status}" }
             completedAt: { set: "${new Date().toISOString()}" }
@@ -352,7 +347,7 @@ export async function completeDroneRun(
             updatedAt: { set: "${new Date().toISOString()}" }
           }
         ) {
-          id
+          affectedRows
         }
       }
     `,
@@ -467,10 +462,10 @@ export async function updateDroneSchedule(
     mutation: gql`
       mutation UpdateDroneSchedule($id: Uuid!) {
         updateDroneSchedulesById(
-          id: $id
+          keyId: $id
           updateColumns: { ${updates.join(", ")} }
         ) {
-          id
+          affectedRows
         }
       }
     `,
@@ -485,14 +480,14 @@ export async function softDeleteDroneSchedule(id: string, userId?: string): Prom
     mutation: gql`
       mutation SoftDeleteDroneSchedule($id: Uuid!) {
         updateDroneSchedulesById(
-          id: $id
+          keyId: $id
           updateColumns: {
             deletedAt: { set: "${now}" }
             ${deletedByField}
             updatedAt: { set: "${now}" }
           }
         ) {
-          id
+          affectedRows
         }
       }
     `,
