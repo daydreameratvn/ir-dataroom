@@ -145,36 +145,22 @@ export function isClaimDroneEligible(claim: {
   return { eligible: true, reason: tierLabel };
 }
 
-// GraphQL query via DDN supergraph — Apple subgraph fields are prefixed with `apple_`.
-// InProgress + OutPatient + NON_LIFE claims, newest first, over-fetch for post-filtering.
+// GraphQL query via DDN supergraph — banyan_pg connector, Claims model.
+// Submitted/under_review/ai_processing claims, newest first, over-fetch for post-filtering.
 const GetDroneEligibleClaims = graphql(`
   query GetDroneEligibleClaims($limit: Int!) {
-    apple_claim_cases(
+    claims(
       where: {
-        claim_case_status: { value: { _eq: InProgress } }
-        insured_benefit_type: { value: { _eq: OutPatient } }
-        type: { _eq: "NON_LIFE" }
-        genesis_claim_id: { _is_null: true }
-        is_direct_billing: { _eq: false }
+        status: { _in: ["submitted", "under_review", "ai_processing"] }
+        deletedAt: { _is_null: true }
       }
       limit: $limit
-      order_by: { created_at: desc }
+      order_by: { createdAt: Desc }
     ) {
       id
-      code
-      treatment_method
-      insured_benefit_type {
-        value
-      }
-      claim_case_input_diagnoses {
-        icd {
-          value
-        }
-      }
-      claim_case_assessed_diagnoses {
-        icd {
-          value
-        }
+      claimNumber
+      claimDiagnoses(where: { deletedAt: { _is_null: true } }) {
+        code
       }
     }
   }
@@ -188,7 +174,7 @@ export interface EligibleClaim {
 }
 
 /**
- * Fetches InProgress OutPatient claims and post-filters for eligibility.
+ * Fetches eligible claims and post-filters by ICD codes.
  * Over-fetches 20x batchSize (min 200) to account for claims without ICD codes.
  */
 export async function fetchDroneEligibleClaims(batchSize: number, tier: DroneTier = 1): Promise<EligibleClaim[]> {
@@ -199,33 +185,23 @@ export async function fetchDroneEligibleClaims(batchSize: number, tier: DroneTie
     fetchPolicy: "no-cache",
   });
 
-  const claims = data?.apple_claim_cases ?? [];
+  const claims = data?.claims ?? [];
   const eligible: EligibleClaim[] = [];
 
   for (const claim of claims) {
     if (eligible.length >= batchSize) break;
 
-    // Use input diagnoses (primary), fall back to assessed diagnoses
-    const inputIcds = (claim.claim_case_input_diagnoses ?? [])
-      .map((d) => d.icd?.value)
+    const icdCodes = (claim.claimDiagnoses ?? [])
+      .map((d) => d.code)
       .filter((v): v is string => v != null);
-    const assessedIcds = (claim.claim_case_assessed_diagnoses ?? [])
-      .map((d) => d.icd?.value)
-      .filter((v): v is string => v != null);
-    const icdCodes = inputIcds.length > 0 ? inputIcds : assessedIcds;
 
-    const result = isClaimDroneEligible({
-      icdCodes,
-      treatmentMethod: claim.treatment_method,
-      insuredBenefitType: claim.insured_benefit_type?.value,
-    }, tier);
+    const result = isClaimDroneEligible({ icdCodes }, tier);
 
     if (result.eligible) {
       eligible.push({
         id: claim.id,
-        code: claim.code,
-        benefitType: claim.insured_benefit_type?.value,
-        icdCodes: icdCodes,
+        code: claim.claimNumber,
+        icdCodes,
       });
     }
   }

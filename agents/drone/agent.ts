@@ -41,18 +41,18 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
   // 1. Pre-fetch claim documents
   const { data } = await client.query({
     query: graphql(`
-      query DroneClaimDocumentsV2($where: claim_documents_bool_exp!) {
-        claim_documents(where: $where) {
+      query DroneClaimDocumentsV2($where: ClaimDocumentsBoolExp!) {
+        claimDocuments(where: $where) {
           id
-          file { id bucket_name_v2 bucket_object_key url }
+          fileUrl
         }
       }
     `),
     variables: {
       where: {
-        claim_case: { code: { _eq: claimCode } },
-        file: { original_file_id: { _is_null: true } },
-        type: { _nin: ["SignOffForm"] },
+        claim: { claimNumber: { _eq: claimCode } },
+        documentType: { _neq: "SignOffForm" },
+        deletedAt: { _is_null: true },
       },
     },
   });
@@ -66,13 +66,13 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
 
   // Detect file types and prepare files for both models
   const fileInfos = (await BPromise.map(
-    data?.claim_documents ?? [],
+    data?.claimDocuments ?? [],
     async (document) => {
       try {
-        if (document.file?.url == null) return null;
-        const fileType = await fileTypeFromStream(got.stream(document.file.url));
+        if (document.fileUrl == null) return null;
+        const fileType = await fileTypeFromStream(got.stream(document.fileUrl));
         if (fileType == null) return null;
-        return { url: document.file.url, mimeType: fileType.mime, id: document.id };
+        return { url: document.fileUrl, mimeType: fileType.mime, id: document.id };
       } catch {
         return null;
       }
@@ -165,19 +165,9 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
   }
 
   // 3. Check if saveDetailForm fields are already populated
-  const { data: claimData } = await client.query({
-    query: graphql(`
-      query DroneClaimDetailCheckV2($code: bpchar!) {
-        apple_claim_cases(where: { code: { _eq: $code } }, limit: 1) {
-          physical_examination_date
-          treatment_method
-        }
-      }
-    `),
-    variables: { code: claimCode },
-  });
-  const claimCase = claimData?.apple_claim_cases?.[0];
-  const hasDetailData = !!(claimCase?.physical_examination_date && claimCase?.treatment_method);
+  // The new schema doesn't have physical_examination_date or treatment_method on claims,
+  // so we always include saveDetailFormTool and let the agent decide.
+  const hasDetailData = false;
 
   // 4. Build tool array — NO approval wrapping, drone is fully autonomous
   const skipCompliance = options?.skipCompliance ?? false;

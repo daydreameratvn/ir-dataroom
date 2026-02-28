@@ -23,12 +23,11 @@ const DOCUMENT_REQUIREMENTS: Record<string, { required: string[] }> = {
 };
 
 const CompliancePreCheckQuery = graphql(`
-  query DroneCompliancePreCheck($claimCode: bpchar!) {
-    apple_claim_cases(where: { code: { _eq: $claimCode } }, limit: 1) {
+  query DroneCompliancePreCheck($claimNumber: String1!) {
+    claims(where: { claimNumber: { _eq: $claimNumber }, deletedAt: { _is_null: true } }, limit: 1) {
       id
-      insured_benefit_type { value }
-      claim_documents(where: { deleted_at: { _is_null: true } }) {
-        type
+      claimDocuments(where: { deletedAt: { _is_null: true } }) {
+        documentType
       }
     }
   }
@@ -37,23 +36,25 @@ const CompliancePreCheckQuery = graphql(`
 /**
  * Fast compliance pre-check: ~50ms GraphQL query + deterministic logic.
  * Returns null if compliant, or a message string if non-compliant.
+ * Note: Drone only processes OutPatient claims (filtered at eligibility stage),
+ * so we hardcode OutPatient document requirements here.
  */
 async function fastComplianceCheck(claimCode: string): Promise<string | null> {
   const { data } = await getClient().query({
     query: CompliancePreCheckQuery,
-    variables: { claimCode },
+    variables: { claimNumber: claimCode },
   });
 
-  const claim = data?.apple_claim_cases?.[0];
+  const claim = data?.claims?.[0];
   if (!claim) return "Claim not found";
 
-  const benefitType = claim.insured_benefit_type?.value;
-  if (!benefitType) return "No benefit type";
+  // Drone only processes OutPatient claims — hardcode the benefit type
+  const benefitType = "OutPatient";
 
-  const requirements = DOCUMENT_REQUIREMENTS[benefitType as string];
+  const requirements = DOCUMENT_REQUIREMENTS[benefitType];
   if (!requirements) return null; // Unknown benefit type — let agent handle
 
-  const presentTypes = claim.claim_documents.map((d) => String(d.type));
+  const presentTypes = claim.claimDocuments.map((d) => String(d.documentType));
   const missing = requirements.required.filter((t) => !presentTypes.includes(t));
 
   if (missing.length > 0) {
@@ -348,19 +349,23 @@ export async function processDroneClaim(
   options?: { tier?: 1 | 2 },
 ): Promise<{ status: "success" | "error" | "skipped" | "denied"; message?: string }> {
   // Skip if claim already has human-assessed benefits (don't override human work)
+  // Check if claim status indicates it's already been assessed or has an approved amount
   const { data: detailData } = await getClient().query({
     query: graphql(`
-      query DroneCheckExistingAssessment($claimCaseId: uuid!) {
-        claim_case_details(where: { claim_case_id: { _eq: $claimCaseId }, deleted_at: { _is_null: true } }) {
+      query DroneCheckExistingAssessment($claimCaseId: Uuid!) {
+        claimsById(id: $claimCaseId) {
           id
-          total_paid_amount
+          status
+          amountApproved
         }
       }
     `),
     variables: { claimCaseId },
     fetchPolicy: "no-cache",
   });
-  if (detailData?.claim_case_details?.length > 0) {
+  const assessedStatuses = ["assessed", "approved", "settled", "paid", "rejected"];
+  const existingClaim = detailData?.claimsById;
+  if (existingClaim && (assessedStatuses.includes(existingClaim.status ?? "") || existingClaim.amountApproved != null)) {
     return { status: "skipped", message: "Claim already has assessed benefits — not overriding" };
   }
 
@@ -373,26 +378,22 @@ export async function processDroneClaim(
     return { status: "skipped", message: complianceFail };
   }
 
-  // ── Check certificate history exists (required for balance & assessBenefit) ──
-  const { data: certData } = await getClient().query({
+  // ── Check policy exists (required for balance & assessBenefit) ──
+  const { data: policyData } = await getClient().query({
     query: graphql(`
-      query DroneCheckCertHistory($claimCaseId: uuid!) {
-        apple_claim_cases(where: { claim_case_id: { _eq: $claimCaseId } }, limit: 1) {
-          insured_certificate {
-            insured_certificate_histories(where: { deleted_at: { _is_null: true } }, limit: 1) {
-              id
-            }
-          }
+      query DroneCheckPolicy($claimCaseId: Uuid!) {
+        claimsById(id: $claimCaseId) {
+          policyId
         }
       }
     `),
     variables: { claimCaseId },
     fetchPolicy: "no-cache",
   });
-  const histories = certData?.apple_claim_cases?.[0]?.insured_certificate?.insured_certificate_histories ?? [];
-  if (histories.length === 0) {
-    console.log(`[Drone] ${claimCode} skipped: no insured_certificate_histories`);
-    return { status: "skipped", message: "No insured certificate history — cannot assess benefit balance" };
+  const policyId = policyData?.claimsById?.policyId;
+  if (!policyId) {
+    console.log(`[Drone] ${claimCode} skipped: no linked policy`);
+    return { status: "skipped", message: "No linked policy — cannot assess benefit balance" };
   }
 
   try {
