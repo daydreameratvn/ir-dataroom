@@ -8,7 +8,9 @@ import {
   SheetTitle,
   SheetDescription,
   SheetTrigger,
-  Separator,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@papaya/shared-ui';
 import {
   colorThemes,
@@ -46,64 +48,68 @@ export default function ThemeCustomizer() {
         </button>
       </SheetTrigger>
 
-      <SheetContent className="w-80 overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>{t('theme.customize')}</SheetTitle>
-          <SheetDescription>{t('theme.customizeDesc')}</SheetDescription>
+      <SheetContent className="w-72 overflow-y-auto">
+        <SheetHeader className="pb-1">
+          <SheetTitle className="text-base">{t('theme.customize')}</SheetTitle>
+          <SheetDescription className="text-xs">
+            {t('theme.customizeDesc')}
+          </SheetDescription>
         </SheetHeader>
 
-        <div className="mt-6 flex flex-col gap-6">
+        <div className="mt-4 flex flex-col gap-5">
           {/* ── Color theme ── */}
           <section>
-            <h4 className="mb-3 text-sm font-medium">{t('theme.color')}</h4>
-            <div className="grid grid-cols-3 gap-2">
+            <h4 className="mb-2.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              {t('theme.color')}
+            </h4>
+            <div className="flex flex-wrap gap-2">
               {colorThemes.map((ct) => {
                 const isActive = colorTheme === ct.name;
                 const swatch =
                   resolvedTheme === 'dark' ? ct.activeColor.dark : ct.activeColor.light;
 
                 return (
-                  <button
-                    key={ct.name}
-                    onClick={() => setColorTheme(ct.name)}
-                    className={`flex items-center gap-2 rounded-md border px-3 py-2 text-xs transition-colors ${
-                      isActive
-                        ? 'border-primary bg-primary/5 font-medium'
-                        : 'border-border hover:border-foreground/20'
-                    }`}
-                  >
-                    <span
-                      className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border"
-                      style={{ backgroundColor: swatch, borderColor: swatch }}
-                    >
-                      {isActive && <Check className="h-2.5 w-2.5 text-white" />}
-                    </span>
-                    <span className="truncate">{t(ct.labelKey)}</span>
-                  </button>
+                  <Tooltip key={ct.name}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => setColorTheme(ct.name)}
+                        className={`relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all ${
+                          isActive
+                            ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
+                            : 'hover:scale-110'
+                        }`}
+                        style={{ backgroundColor: swatch }}
+                      >
+                        {isActive && <Check className="h-3.5 w-3.5 text-white drop-shadow-sm" />}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="text-xs">
+                      {t(ct.labelKey)}
+                    </TooltipContent>
+                  </Tooltip>
                 );
               })}
             </div>
           </section>
 
-          <Separator />
-
           {/* ── Border radius ── */}
           <section>
-            <h4 className="mb-3 text-sm font-medium">{t('theme.radius')}</h4>
-            <div className="grid grid-cols-5 gap-2">
+            <h4 className="mb-2.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              {t('theme.radius')}
+            </h4>
+            <div className="flex gap-1.5">
               {radiusOptions.map((r) => (
                 <button
                   key={r}
                   onClick={() => setRadius(r)}
-                  className={`flex flex-col items-center gap-1.5 rounded-md border px-2 py-2 text-xs transition-colors ${
+                  className={`flex flex-1 flex-col items-center gap-1 rounded-md border py-1.5 text-[11px] transition-colors ${
                     radius === r
-                      ? 'border-primary bg-primary/5 font-medium'
+                      ? 'border-primary bg-primary/5 font-medium text-primary'
                       : 'border-border hover:border-foreground/20'
                   }`}
                 >
-                  {/* Mini preview square with the radius applied */}
                   <span
-                    className="h-5 w-5 border-2 border-foreground/40"
+                    className={`h-4 w-4 border-2 ${radius === r ? 'border-primary' : 'border-foreground/30'}`}
                     style={{ borderRadius: `${r * 6}px` }}
                   />
                   <span>{r}</span>
@@ -112,21 +118,21 @@ export default function ThemeCustomizer() {
             </div>
           </section>
 
-          <Separator />
-
           {/* ── Mode (light / dark / system) ── */}
           <section>
-            <h4 className="mb-3 text-sm font-medium">{t('theme.mode')}</h4>
-            <div className="grid grid-cols-3 gap-2">
+            <h4 className="mb-2.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              {t('theme.mode')}
+            </h4>
+            <div className="flex gap-1.5">
               {modeOptions.map((option) => {
                 const isActive = theme === option.value;
                 return (
                   <button
                     key={option.value}
                     onClick={() => setTheme(option.value)}
-                    className={`flex flex-col items-center gap-1.5 rounded-md border px-3 py-2 text-xs transition-colors ${
+                    className={`flex flex-1 flex-col items-center gap-1 rounded-md border py-2 text-xs transition-colors ${
                       isActive
-                        ? 'border-primary bg-primary/5 font-medium'
+                        ? 'border-primary bg-primary/5 font-medium text-primary'
                         : 'border-border hover:border-foreground/20'
                     }`}
                   >
@@ -138,11 +144,14 @@ export default function ThemeCustomizer() {
             </div>
           </section>
 
-          <Separator />
-
           {/* ── Reset ── */}
-          <Button variant="outline" size="sm" onClick={handleReset} className="w-full gap-2">
-            <RotateCcw className="h-3.5 w-3.5" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleReset}
+            className="w-full gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <RotateCcw className="h-3 w-3" />
             {t('theme.reset')}
           </Button>
         </div>
