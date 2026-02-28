@@ -14,6 +14,7 @@ export interface NavItem {
 export interface NavGroup {
   id: string;
   labelKey: string;
+  groupIcon?: string;
   items: NavItem[];
 }
 

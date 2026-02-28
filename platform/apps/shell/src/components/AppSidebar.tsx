@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
@@ -12,20 +12,18 @@ import {
   Settings,
   Bot,
   Briefcase,
-  ChevronRight,
-  PanelLeftClose,
-  PanelLeft,
+  Brain,
   Sparkles,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
   cn,
-  Button,
   ScrollArea,
   Separator,
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
   Avatar,
   AvatarFallback,
 } from '@papaya/shared-ui';
@@ -45,29 +43,20 @@ const iconMap: Record<string, LucideIcon> = {
   Settings,
   Bot,
   Briefcase,
+  Brain,
 };
 
 export interface AppSidebarProps {
-  collapsed: boolean;
-  onToggle: () => void;
   onOpenFatima?: () => void;
 }
 
-export default function AppSidebar({ collapsed, onToggle, onOpenFatima }: AppSidebarProps) {
+export default function AppSidebar({ onOpenFatima }: AppSidebarProps) {
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
   const { tenant } = useTenant();
   const { user } = useAuth();
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set(['claims', 'policies']));
-
-  function toggleExpanded(id: string) {
-    setExpandedItems((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
+  const [openFlyout, setOpenFlyout] = useState<string | null>(null);
 
   function isActive(path: string | undefined) {
     if (!path) return false;
@@ -75,9 +64,13 @@ export default function AppSidebar({ collapsed, onToggle, onOpenFatima }: AppSid
     return location.pathname.startsWith(path);
   }
 
-  function isGroupActive(item: NavItem): boolean {
+  function isItemActive(item: NavItem): boolean {
     if (item.path && isActive(item.path)) return true;
     return item.children?.some((child) => isActive(child.path)) ?? false;
+  }
+
+  function isNavGroupActive(group: NavGroup): boolean {
+    return group.items.some(isItemActive);
   }
 
   function shouldShowItem(item: NavItem): boolean {
@@ -88,93 +81,33 @@ export default function AppSidebar({ collapsed, onToggle, onOpenFatima }: AppSid
     return true;
   }
 
-  function renderNavItem(item: NavItem) {
-    if (!shouldShowItem(item)) return null;
-    const Icon = item.icon ? iconMap[item.icon] : undefined;
-    const hasChildren = item.children && item.children.length > 0;
-    const active = isGroupActive(item);
-    const expanded = expandedItems.has(item.id);
+  const closeFlyout = useCallback(() => setOpenFlyout(null), []);
 
-    if (hasChildren) {
-      return (
-        <Collapsible key={item.id} open={expanded} onOpenChange={() => toggleExpanded(item.id)}>
-          <CollapsibleTrigger asChild>
-            <button
-              className={cn(
-                'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
-                active && 'text-foreground',
-                !active && 'text-muted-foreground',
-                collapsed && 'justify-center px-2'
-              )}
-            >
-              {Icon && <Icon className="h-4 w-4 flex-shrink-0" />}
-              {!collapsed && (
-                <>
-                  <span className="flex-1 text-left">{t(item.labelKey)}</span>
-                  <ChevronRight className={cn('h-3.5 w-3.5 transition-transform', expanded && 'rotate-90')} />
-                </>
-              )}
-            </button>
-          </CollapsibleTrigger>
-          {!collapsed && (
-            <CollapsibleContent>
-              <div className="ml-4 mt-1 space-y-0.5 border-l pl-3">
-                {item.children!.map((child) => {
-                  if (!shouldShowItem(child)) return null;
-                  const childActive = isActive(child.path);
-                  return (
-                    <Link
-                      key={child.id}
-                      to={child.path ?? '#'}
-                      className={cn(
-                        'block rounded-md px-3 py-1.5 text-sm transition-colors hover:bg-accent',
-                        childActive
-                          ? 'font-medium text-foreground bg-accent'
-                          : 'text-muted-foreground'
-                      )}
-                    >
-                      {t(child.labelKey)}
-                    </Link>
-                  );
-                })}
-              </div>
-            </CollapsibleContent>
-          )}
-        </Collapsible>
-      );
+  // Close flyout on Escape
+  useEffect(() => {
+    if (!openFlyout) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setOpenFlyout(null);
+      }
     }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [openFlyout]);
 
-    return (
-      <Link
-        key={item.id}
-        to={item.path ?? '#'}
-        className={cn(
-          'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
-          active ? 'bg-accent text-foreground' : 'text-muted-foreground',
-          collapsed && 'justify-center px-2'
-        )}
-      >
-        {Icon && <Icon className="h-4 w-4 flex-shrink-0" />}
-        {!collapsed && <span>{t(item.labelKey)}</span>}
-      </Link>
-    );
+  // Close flyout on route change
+  useEffect(() => {
+    setOpenFlyout(null);
+  }, [location.pathname]);
+
+  function toggleFlyout(groupId: string) {
+    setOpenFlyout((prev) => (prev === groupId ? null : groupId));
   }
 
-  function renderGroup(group: NavGroup) {
-    const visibleItems = group.items.filter(shouldShowItem);
-    if (visibleItems.length === 0) return null;
-
-    return (
-      <div key={group.id} className="space-y-1">
-        {!collapsed && (
-          <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-            {t(group.labelKey)}
-          </p>
-        )}
-        {visibleItems.map(renderNavItem)}
-      </div>
-    );
-  }
+  // Dashboard is the only item in the 'main' group — it's a direct link in the rail
+  const categoryGroups = navigationGroups.filter((g) => g.id !== 'main');
+  const activeGroup = categoryGroups.find(isNavGroupActive);
 
   const initials = user?.name
     .split(' ')
@@ -183,122 +116,264 @@ export default function AppSidebar({ collapsed, onToggle, onOpenFatima }: AppSid
     .toUpperCase()
     .slice(0, 2) ?? '?';
 
+  const flyoutGroup = openFlyout ? categoryGroups.find((g) => g.id === openFlyout) : null;
+
   return (
-    <aside
-      className={cn(
-        'flex h-screen flex-col border-r bg-background transition-all duration-200',
-        collapsed ? 'w-16' : 'w-64'
-      )}
-    >
-      {/* Header — Oasis branding */}
-      <div className={cn('flex h-14 items-center border-b px-3', collapsed ? 'justify-center' : 'justify-between')}>
-        {!collapsed && (
-          <div className="flex items-center gap-2 overflow-hidden">
-            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-papaya text-white font-bold text-sm shadow-sm">
+    <TooltipProvider delayDuration={300}>
+      <div className="relative flex h-screen flex-shrink-0">
+        {/* Icon Rail — always visible, 48px */}
+        <aside className="flex h-screen w-12 flex-col border-r bg-background">
+          {/* Logo */}
+          <Link
+            to="/"
+            className="flex h-14 items-center justify-center border-b"
+          >
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-papaya text-white font-bold text-xs shadow-sm">
               O
             </div>
-            <span className="truncate text-sm font-semibold">{t('app.name')}</span>
+          </Link>
+
+          {/* Navigation icons */}
+          <nav className="flex flex-1 flex-col items-center gap-1 py-2">
+            {/* Dashboard — direct link, no flyout */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  to="/"
+                  className={cn(
+                    'relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-accent/50',
+                    isActive('/') && location.pathname === '/' && 'bg-accent text-foreground',
+                    !(isActive('/') && location.pathname === '/') && 'text-muted-foreground'
+                  )}
+                >
+                  {isActive('/') && location.pathname === '/' && (
+                    <div className="absolute left-0 top-1.5 h-6 w-0.5 rounded-r bg-papaya" />
+                  )}
+                  <LayoutDashboard className="h-[18px] w-[18px]" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={8}>
+                {t('nav.dashboard')}
+              </TooltipContent>
+            </Tooltip>
+
+            <Separator className="my-1 w-6" />
+
+            {/* Category groups — open flyout on click */}
+            {categoryGroups.map((group) => {
+              const GroupIcon = group.groupIcon ? iconMap[group.groupIcon] : undefined;
+              const groupActive = isNavGroupActive(group);
+              const flyoutOpen = openFlyout === group.id;
+
+              if (!GroupIcon) return null;
+
+              return (
+                <Tooltip key={group.id}>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => toggleFlyout(group.id)}
+                      className={cn(
+                        'relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-accent/50',
+                        (groupActive || flyoutOpen) && 'bg-accent text-foreground',
+                        !(groupActive || flyoutOpen) && 'text-muted-foreground'
+                      )}
+                    >
+                      {groupActive && (
+                        <div className="absolute left-0 top-1.5 h-6 w-0.5 rounded-r bg-papaya" />
+                      )}
+                      <GroupIcon className="h-[18px] w-[18px]" />
+                    </button>
+                  </TooltipTrigger>
+                  {!flyoutOpen && (
+                    <TooltipContent side="right" sideOffset={8}>
+                      {t(group.labelKey)}
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              );
+            })}
+          </nav>
+
+          {/* Bottom section */}
+          <div className="flex flex-col items-center gap-1 border-t py-2">
+            {/* AI Agents link */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  to="/ai-agents"
+                  className={cn(
+                    'relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-accent/50',
+                    isActive('/ai-agents') && 'bg-accent text-foreground',
+                    !isActive('/ai-agents') && 'text-muted-foreground'
+                  )}
+                >
+                  {isActive('/ai-agents') && (
+                    <div className="absolute left-0 top-1.5 h-6 w-0.5 rounded-r bg-papaya" />
+                  )}
+                  <Bot className="h-[18px] w-[18px]" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={8}>
+                {t('nav.aiAgents')}
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Fatima button */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={onOpenFatima}
+                  className="relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-accent/50"
+                >
+                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-sm">
+                    <Sparkles className="h-3 w-3" />
+                  </div>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={8}>
+                <div className="flex items-center gap-2">
+                  <span>{t('fatima.askFatima')}</span>
+                  <kbd className="inline-flex h-4 items-center gap-0.5 rounded border bg-background/80 px-1 font-mono text-[10px] font-medium text-muted-foreground">
+                    <span className="text-[10px]">⌘</span>J
+                  </kbd>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+
+            {/* User avatar */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => navigate('/profile')}
+                  className="mt-1 flex h-9 w-9 items-center justify-center"
+                >
+                  <Avatar className="h-7 w-7">
+                    <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
+                  </Avatar>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={8}>
+                {user?.name ?? t('nav.profile')}
+              </TooltipContent>
+            </Tooltip>
           </div>
+        </aside>
+
+        {/* Flyout overlay — click to dismiss */}
+        {openFlyout && (
+          <div
+            className="fixed inset-0 z-30"
+            onClick={closeFlyout}
+            aria-hidden="true"
+          />
         )}
-        {collapsed && (
-          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-papaya text-white font-bold text-sm shadow-sm">
-            O
-          </div>
-        )}
-        {!collapsed && (
-          <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={onToggle}>
-            <PanelLeftClose className="h-4 w-4" />
-          </Button>
-        )}
+
+        {/* Flyout Panel */}
+        <div
+          className={cn(
+            'absolute left-12 top-0 z-40 h-screen w-60 border-r bg-background shadow-lg',
+            'transition-all duration-200 ease-out',
+            openFlyout
+              ? 'translate-x-0 opacity-100'
+              : '-translate-x-2 opacity-0 pointer-events-none'
+          )}
+        >
+          {flyoutGroup && (
+            <FlyoutContent
+              group={flyoutGroup}
+              shouldShowItem={shouldShowItem}
+              isActive={isActive}
+              isItemActive={isItemActive}
+              onNavigate={closeFlyout}
+              t={t}
+            />
+          )}
+        </div>
+      </div>
+    </TooltipProvider>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Flyout Content                                                            */
+/* -------------------------------------------------------------------------- */
+
+interface FlyoutContentProps {
+  group: NavGroup;
+  shouldShowItem: (item: NavItem) => boolean;
+  isActive: (path: string | undefined) => boolean;
+  isItemActive: (item: NavItem) => boolean;
+  onNavigate: () => void;
+  t: (key: string) => string;
+}
+
+function FlyoutContent({ group, shouldShowItem, isActive, isItemActive, onNavigate, t }: FlyoutContentProps) {
+  const visibleItems = group.items.filter(shouldShowItem);
+
+  return (
+    <div className="flex h-full flex-col">
+      {/* Header */}
+      <div className="flex h-14 items-center border-b px-4">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          {t(group.labelKey)}
+        </h2>
       </div>
 
-      {/* Toggle button when collapsed */}
-      {collapsed && (
-        <div className="flex justify-center py-2">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onToggle}>
-            <PanelLeft className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
-
-      {/* Navigation */}
-      <ScrollArea className="min-h-0 flex-1 px-2 py-3">
+      {/* Items */}
+      <ScrollArea className="flex-1 px-2 py-3">
         <div className="space-y-4">
-          {navigationGroups.map(renderGroup)}
+          {visibleItems.map((item) => {
+            const hasChildren = item.children && item.children.length > 0;
+
+            if (hasChildren) {
+              return (
+                <div key={item.id} className="space-y-1">
+                  <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                    {t(item.labelKey)}
+                  </p>
+                  {item.children!.map((child) => {
+                    if (!shouldShowItem(child)) return null;
+                    const childActive = isActive(child.path);
+                    return (
+                      <Link
+                        key={child.id}
+                        to={child.path ?? '#'}
+                        onClick={onNavigate}
+                        className={cn(
+                          'block rounded-md px-3 py-1.5 text-sm transition-colors hover:bg-accent',
+                          childActive
+                            ? 'font-medium text-foreground bg-accent'
+                            : 'text-muted-foreground'
+                        )}
+                      >
+                        {t(child.labelKey)}
+                      </Link>
+                    );
+                  })}
+                </div>
+              );
+            }
+
+            // Direct link item (no children)
+            const active = isItemActive(item);
+            return (
+              <Link
+                key={item.id}
+                to={item.path ?? '#'}
+                onClick={onNavigate}
+                className={cn(
+                  'block rounded-md px-3 py-1.5 text-sm transition-colors hover:bg-accent',
+                  active
+                    ? 'font-medium text-foreground bg-accent'
+                    : 'text-muted-foreground'
+                )}
+              >
+                {t(item.labelKey)}
+              </Link>
+            );
+          })}
         </div>
-
-        <Separator className="my-3" />
-
-        {/* AI Agents Link */}
-        <Link
-          to="/ai-agents"
-          className={cn(
-            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
-            isActive('/ai-agents') ? 'bg-accent text-foreground' : 'text-muted-foreground',
-            collapsed && 'justify-center px-2'
-          )}
-        >
-          <Bot className="h-4 w-4 flex-shrink-0" />
-          {!collapsed && <span>{t('nav.aiAgents')}</span>}
-        </Link>
-
-        {/* Fatima Link */}
-        <Link
-          to="/fatima"
-          className={cn(
-            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
-            isActive('/fatima') ? 'bg-accent text-foreground' : 'text-muted-foreground',
-            collapsed && 'justify-center px-2'
-          )}
-        >
-          <Sparkles className="h-4 w-4 flex-shrink-0" />
-          {!collapsed && <span>{t('fatima.name')}</span>}
-        </Link>
       </ScrollArea>
-
-      {/* Fatima quick-access button */}
-      <div className={cn('border-t px-2 py-2', collapsed && 'flex justify-center')}>
-        <button
-          onClick={onOpenFatima}
-          className={cn(
-            'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all',
-            'bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 text-foreground',
-            'hover:from-violet-500/20 hover:to-fuchsia-500/20',
-            collapsed && 'justify-center px-2'
-          )}
-        >
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-sm">
-            <Sparkles className="h-3 w-3" />
-          </div>
-          {!collapsed && (
-            <>
-              <span className="flex-1 text-left">{t('fatima.askFatima')}</span>
-              <kbd className="inline-flex h-5 items-center gap-0.5 rounded border bg-background/80 px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-                <span className="text-xs">⌘</span>J
-              </kbd>
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Footer - User */}
-      <div className={cn('border-t p-3', collapsed && 'flex justify-center')}>
-        {collapsed ? (
-          <Avatar className="h-8 w-8">
-            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
-          </Avatar>
-        ) : (
-          <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8 flex-shrink-0">
-              <AvatarFallback className="text-xs">{initials}</AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{user?.name}</p>
-              <p className="truncate text-xs text-muted-foreground">{user?.title}</p>
-            </div>
-          </div>
-        )}
-      </div>
-    </aside>
+    </div>
   );
 }

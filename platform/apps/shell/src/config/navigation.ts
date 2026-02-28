@@ -4,6 +4,7 @@ export const navigationGroups: NavGroup[] = [
   {
     id: 'main',
     labelKey: 'nav.main',
+    groupIcon: 'LayoutDashboard',
     items: [
       {
         id: 'dashboard',
@@ -16,6 +17,7 @@ export const navigationGroups: NavGroup[] = [
   {
     id: 'operations',
     labelKey: 'nav.operations',
+    groupIcon: 'FileText',
     items: [
       {
         id: 'claims',
@@ -57,6 +59,7 @@ export const navigationGroups: NavGroup[] = [
   {
     id: 'intelligence',
     labelKey: 'nav.intelligence',
+    groupIcon: 'Brain',
     items: [
       {
         id: 'fwa',
@@ -87,6 +90,7 @@ export const navigationGroups: NavGroup[] = [
   {
     id: 'management',
     labelKey: 'nav.management',
+    groupIcon: 'Settings',
     items: [
       {
         id: 'providers',

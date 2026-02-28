@@ -9,7 +9,6 @@ import CommandPalette from './features/command-palette/CommandPalette';
 import FatimaPanel from './features/fatima/FatimaPanel';
 
 export default function App() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [fatimaOpen, setFatimaOpen] = useState(false);
   const { isImpersonating } = useAuth();
 
@@ -29,11 +28,7 @@ export default function App() {
     <>
       <ImpersonationBanner />
       <div className={cn('flex h-screen overflow-hidden', isImpersonating && 'pt-10')}>
-        <AppSidebar
-          collapsed={sidebarCollapsed}
-          onToggle={() => setSidebarCollapsed((prev) => !prev)}
-          onOpenFatima={() => setFatimaOpen(true)}
-        />
+        <AppSidebar onOpenFatima={() => setFatimaOpen(true)} />
 
         <div className="flex flex-1 flex-col overflow-hidden">
           <TopBar onOpenCommandPalette={() => {/* handled by ⌘K in CommandPalette */}} />
