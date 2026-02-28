@@ -19,6 +19,7 @@ import {
   Timer,
   RefreshCw,
 } from 'lucide-react';
+import NewDataBanner from '../../components/NewDataBanner';
 import {
   Badge,
   Button,
@@ -64,6 +65,7 @@ import {
   updateSchedule,
 } from './api';
 import useDroneRuns from './hooks/useDroneRuns';
+import useBackgroundPoll from '../../hooks/useBackgroundPoll';
 import DroneProgress from './components/DroneProgress';
 import ScheduleDialog from './components/ScheduleDialog';
 
@@ -531,15 +533,8 @@ function ResultsTab() {
 
   return (
     <div className="space-y-4">
-      {/* New data banner */}
       {hasNewData && (
-        <div className="flex items-center justify-between rounded-md border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300">
-          <span>New run data is available.</span>
-          <Button variant="outline" size="sm" onClick={refetch} className="ml-4 gap-1.5">
-            <RefreshCw className="h-3.5 w-3.5" />
-            Refresh
-          </Button>
-        </div>
+        <NewDataBanner message="New run data is available." onRefresh={refetch} />
       )}
 
       <div className="flex items-center justify-between">
@@ -769,43 +764,53 @@ function SchedulesTab() {
   const [error, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<DroneSchedule | null>(null);
-  const [hasNewData, setHasNewData] = useState(false);
-  const snapshotRef = useRef<string | null>(null);
+  const [fetchKey, setFetchKey] = useState(0);
 
-  const fetchSchedules = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const result = await listSchedules();
-      setSchedules(result);
-      setHasNewData(false);
-      snapshotRef.current = JSON.stringify(result.map((s) => `${s.id}:${s.enabled}:${s.lastRunAt}`));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch schedules');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const pollFingerprint = useCallback(
+    (result: DroneSchedule[]) =>
+      JSON.stringify(result.map((s) => `${s.id}:${s.enabled}:${s.lastRunAt}`)),
+    [],
+  );
+
+  const { hasNewData, setSnapshot, clearNewData } = useBackgroundPoll({
+    fetchFn: listSchedules,
+    fingerprint: pollFingerprint,
+  });
+
+  const fetchSchedules = useCallback(() => {
+    clearNewData();
+    setFetchKey((prev) => prev + 1);
+  }, [clearNewData]);
 
   useEffect(() => {
-    fetchSchedules();
-  }, [fetchSchedules]);
+    let cancelled = false;
 
-  // Background poll for schedule changes
-  useEffect(() => {
-    const interval = setInterval(async () => {
+    async function doFetch() {
+      setIsLoading(true);
+      setError(null);
       try {
         const result = await listSchedules();
-        const fingerprint = JSON.stringify(result.map((s) => `${s.id}:${s.enabled}:${s.lastRunAt}`));
-        if (snapshotRef.current && fingerprint !== snapshotRef.current) {
-          setHasNewData(true);
+        if (!cancelled) {
+          setSchedules(result);
+          setSnapshot(result);
         }
-      } catch {
-        // Silent
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to fetch schedules');
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
-    }, 30_000);
-    return () => clearInterval(interval);
-  }, []);
+    }
+
+    doFetch();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchKey, setSnapshot]);
 
   async function handleToggleEnabled(schedule: DroneSchedule) {
     try {
@@ -857,15 +862,8 @@ function SchedulesTab() {
 
   return (
     <div className="space-y-4">
-      {/* New data banner */}
       {hasNewData && (
-        <div className="flex items-center justify-between rounded-md border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300">
-          <span>Schedule data has been updated.</span>
-          <Button variant="outline" size="sm" onClick={fetchSchedules} className="ml-4 gap-1.5">
-            <RefreshCw className="h-3.5 w-3.5" />
-            Refresh
-          </Button>
-        </div>
+        <NewDataBanner message="Schedule data has been updated." onRefresh={fetchSchedules} />
       )}
 
       <div className="flex items-center justify-between">

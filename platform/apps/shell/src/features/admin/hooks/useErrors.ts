@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { listErrors, type ErrorReport, type ListErrorsParams } from '../error-api';
+import useBackgroundPoll from '../../../hooks/useBackgroundPoll';
 
 interface UseErrorsParams {
   tenantId?: string;
@@ -19,16 +20,44 @@ interface UseErrorsReturn {
   hasMore: boolean;
   isLoading: boolean;
   error: string | null;
+  hasNewData: boolean;
   refetch: () => void;
   setPage: (page: number) => void;
 }
 
+type ListErrorsResult = { data: ErrorReport[]; total: number; page: number; pageSize: number; hasMore: boolean };
+
 export default function useErrors(params: UseErrorsParams): UseErrorsReturn {
-  const [data, setData] = useState<{ data: ErrorReport[]; total: number; page: number; pageSize: number; hasMore: boolean } | null>(null);
+  const [data, setData] = useState<ListErrorsResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(params.page ?? 1);
   const [fetchKey, setFetchKey] = useState(0);
+
+  // Background poll for new data
+  const pollFetchFn = useCallback(
+    () => listErrors({
+      tenantId: params.tenantId,
+      source: params.source,
+      status: params.status,
+      severity: params.severity,
+      search: params.search,
+      page: 1,
+      limit: 1,
+    }),
+    [params.tenantId, params.source, params.status, params.severity, params.search],
+  );
+
+  const pollFingerprint = useCallback(
+    (result: ListErrorsResult) =>
+      `${result.total}:${result.data[0]?.id ?? ''}`,
+    [],
+  );
+
+  const { hasNewData, setSnapshot, clearNewData } = useBackgroundPoll({
+    fetchFn: pollFetchFn,
+    fingerprint: pollFingerprint,
+  });
 
   // Reset page when filters change
   useEffect(() => {
@@ -36,8 +65,9 @@ export default function useErrors(params: UseErrorsParams): UseErrorsReturn {
   }, [params.tenantId, params.source, params.status, params.severity, params.search]);
 
   const refetch = useCallback(() => {
+    clearNewData();
     setFetchKey((prev) => prev + 1);
-  }, []);
+  }, [clearNewData]);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,6 +91,7 @@ export default function useErrors(params: UseErrorsParams): UseErrorsReturn {
 
         if (!cancelled) {
           setData(result);
+          setSnapshot(result);
         }
       } catch (err) {
         if (!cancelled) {
@@ -87,6 +118,7 @@ export default function useErrors(params: UseErrorsParams): UseErrorsReturn {
     params.limit,
     page,
     fetchKey,
+    setSnapshot,
   ]);
 
   return {
@@ -97,6 +129,7 @@ export default function useErrors(params: UseErrorsParams): UseErrorsReturn {
     hasMore: data?.hasMore ?? false,
     isLoading,
     error,
+    hasNewData,
     refetch,
     setPage,
   };

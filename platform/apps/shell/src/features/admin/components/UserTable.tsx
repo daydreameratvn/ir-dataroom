@@ -47,6 +47,7 @@ import {
 import { useAuth } from '@papaya/auth';
 import useUsers from '../hooks/useUsers';
 import { deleteUser, setUserImpersonatable, type AdminUser } from '../api';
+import NewDataBanner from '../../../components/NewDataBanner';
 import UserDialog from './UserDialog';
 import TenantFilter from './TenantFilter';
 
@@ -131,6 +132,7 @@ export default function UserTable() {
     hasMore,
     isLoading,
     error,
+    hasNewData,
     refetch,
     setPage,
   } = useUsers({
@@ -371,6 +373,10 @@ export default function UserTable() {
       {/* Super admin tenant filter */}
       {isSuperAdmin && (
         <TenantFilter value={tenantFilter} onChange={setTenantFilter} />
+      )}
+
+      {hasNewData && (
+        <NewDataBanner message="User data has been updated." onRefresh={refetch} />
       )}
 
       {/* Toolbar: Search + Filters + Add button */}

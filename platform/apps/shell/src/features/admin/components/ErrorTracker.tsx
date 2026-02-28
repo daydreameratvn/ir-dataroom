@@ -32,6 +32,7 @@ import {
 import { useAuth } from '@papaya/auth';
 import useErrors from '../hooks/useErrors';
 import { updateErrorStatus, triggerAutoFix, type ErrorReport } from '../error-api';
+import NewDataBanner from '../../../components/NewDataBanner';
 import ErrorDetailDialog from './ErrorDetailDialog';
 
 // ── Style maps ──
@@ -145,6 +146,7 @@ export default function ErrorTracker() {
     hasMore,
     isLoading,
     error,
+    hasNewData,
     refetch,
     setPage,
   } = useErrors({
@@ -296,6 +298,10 @@ export default function ErrorTracker() {
 
   return (
     <div className="space-y-4">
+      {hasNewData && (
+        <NewDataBanner message="New error reports are available." onRefresh={refetch} />
+      )}
+
       {/* Toolbar: Search + Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="flex flex-1 items-center gap-3">

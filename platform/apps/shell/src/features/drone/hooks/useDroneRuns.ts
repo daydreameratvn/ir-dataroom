@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { PaginatedResponse } from '@papaya/shared-types';
 import type { DroneRun, DroneTier } from '../types';
 import { listRuns } from '../api';
+import useBackgroundPoll from '../../../hooks/useBackgroundPoll';
 
 const POLL_INTERVAL = 15_000; // 15 seconds
 
@@ -28,12 +29,23 @@ export default function useDroneRuns(params?: UseDroneRunsParams): UseDroneRunsR
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [fetchKey, setFetchKey] = useState(0);
-  const [hasNewData, setHasNewData] = useState(false);
 
-  // Track current snapshot for background comparison
-  const snapshotRef = useRef<{ total: number; latestId: string | null }>({
-    total: 0,
-    latestId: null,
+  // Background poll for new data
+  const pollFetchFn = useCallback(
+    () => listRuns({ page: 1, limit: 1, status: params?.status, tier: params?.tier }),
+    [params?.status, params?.tier],
+  );
+
+  const pollFingerprint = useCallback(
+    (result: PaginatedResponse<DroneRun>) =>
+      `${result.total}:${result.data[0]?.id ?? ''}`,
+    [],
+  );
+
+  const { hasNewData, setSnapshot, clearNewData } = useBackgroundPoll({
+    fetchFn: pollFetchFn,
+    fingerprint: pollFingerprint,
+    interval: POLL_INTERVAL,
   });
 
   // Reset page when filters change
@@ -42,9 +54,9 @@ export default function useDroneRuns(params?: UseDroneRunsParams): UseDroneRunsR
   }, [params?.status, params?.tier]);
 
   const refetch = useCallback(() => {
-    setHasNewData(false);
+    clearNewData();
     setFetchKey((prev) => prev + 1);
-  }, []);
+  }, [clearNewData]);
 
   // Primary fetch — updates visible data
   useEffect(() => {
@@ -64,11 +76,7 @@ export default function useDroneRuns(params?: UseDroneRunsParams): UseDroneRunsR
 
         if (!cancelled) {
           setData(result);
-          setHasNewData(false);
-          snapshotRef.current = {
-            total: result.total,
-            latestId: result.data[0]?.id ?? null,
-          };
+          setSnapshot(result);
         }
       } catch (err) {
         if (!cancelled) {
@@ -86,33 +94,7 @@ export default function useDroneRuns(params?: UseDroneRunsParams): UseDroneRunsR
     return () => {
       cancelled = true;
     };
-  }, [params?.status, params?.tier, params?.limit, page, fetchKey]);
-
-  // Background poll — checks for new data without updating visible state
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const result = await listRuns({
-          page: 1,
-          limit: 1,
-          status: params?.status,
-          tier: params?.tier,
-        });
-
-        const newTotal = result.total;
-        const newLatestId = result.data[0]?.id ?? null;
-        const snap = snapshotRef.current;
-
-        if (newTotal !== snap.total || newLatestId !== snap.latestId) {
-          setHasNewData(true);
-        }
-      } catch {
-        // Silent — don't disrupt the user for poll failures
-      }
-    }, POLL_INTERVAL);
-
-    return () => clearInterval(interval);
-  }, [params?.status, params?.tier]);
+  }, [params?.status, params?.tier, params?.limit, page, fetchKey, setSnapshot]);
 
   return {
     runs: data?.data ?? [],

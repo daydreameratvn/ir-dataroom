@@ -10,6 +10,7 @@ import {
   TableRow,
 } from '@papaya/shared-ui';
 import usePendingAssessments from '../hooks/usePendingAssessments';
+import NewDataBanner from '../../../components/NewDataBanner';
 
 interface PendingTabProps {
   onSelectChat: (chatId: string, claimCode: string) => void;
@@ -25,10 +26,14 @@ function formatTime(timestamp: number): string {
 }
 
 export default function PendingTab({ onSelectChat }: PendingTabProps) {
-  const { pending, isLoading, error, refetch } = usePendingAssessments();
+  const { pending, isLoading, error, hasNewData, refetch } = usePendingAssessments();
 
   return (
     <div className="space-y-4">
+      {hasNewData && (
+        <NewDataBanner message="New pending assessments are available." onRefresh={refetch} />
+      )}
+
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">
           {pending.length} pending approval{pending.length !== 1 ? 's' : ''}
