@@ -1,31 +1,39 @@
 FROM oven/bun:1 AS builder
 
-WORKDIR /app
+WORKDIR /repo
 
-# Build context is repo root — copy auth service files
-COPY auth/package.json auth/bun.lock* ./
+# Install auth service dependencies
+COPY auth/package.json auth/bun.lock* ./auth/
+RUN cd auth && bun install --frozen-lockfile --production
+
+# Install root dependencies (needed by agents imported from auth routes)
+COPY package.json bun.lock* ./
 RUN bun install --frozen-lockfile --production
 
-COPY auth/src/ ./src/
-COPY auth/tsconfig.json ./
+# Copy source
+COPY auth/src/ ./auth/src/
+COPY auth/tsconfig.json ./auth/
+COPY agents/ ./agents/
 
 # Include Fatima knowledge base
-COPY platform/docs/oasis-guide.md ./oasis-guide.md
+COPY platform/docs/oasis-guide.md ./platform/docs/oasis-guide.md
 
 FROM oven/bun:1-slim
 
-WORKDIR /app
+WORKDIR /repo
 
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/src ./src
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/oasis-guide.md ./oasis-guide.md
+COPY --from=builder /repo/auth/node_modules ./auth/node_modules
+COPY --from=builder /repo/node_modules ./node_modules
+COPY --from=builder /repo/auth/src ./auth/src
+COPY --from=builder /repo/auth/package.json ./auth/
+COPY --from=builder /repo/agents ./agents
+COPY --from=builder /repo/platform/docs/oasis-guide.md ./platform/docs/oasis-guide.md
 
 ENV NODE_ENV=production
 ENV PORT=4000
-ENV OASIS_GUIDE_PATH=/app/oasis-guide.md
+ENV OASIS_GUIDE_PATH=/repo/platform/docs/oasis-guide.md
 
 EXPOSE 4000
 
 USER bun
-CMD ["bun", "run", "src/index.ts"]
+CMD ["bun", "run", "auth/src/index.ts"]
