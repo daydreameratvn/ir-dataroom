@@ -49,16 +49,16 @@ export default function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate('/profile')}>
+        <DropdownMenuItem onSelect={() => navigate('/profile')}>
           <UserIcon className="mr-2 h-4 w-4" />
           {t('auth.profile')}
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => navigate('/profile')}>
           <Settings className="mr-2 h-4 w-4" />
           {t('auth.settings')}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={signOut} className="text-destructive">
+        <DropdownMenuItem onSelect={signOut} className="text-destructive">
           <LogOut className="mr-2 h-4 w-4" />
           {t('auth.signOut')}
         </DropdownMenuItem>
