@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { reportError } from '@papaya/auth';
+import ErrorPage from './ErrorPage';
 
 interface ErrorBoundaryProps {
   fallback?: ReactNode;
@@ -37,16 +38,11 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
     if (this.state.hasError) {
       return (
         this.props.fallback ?? (
-          <div className="flex flex-col items-center justify-center gap-4 p-8">
-            <h2 className="text-lg font-semibold text-destructive">Something went wrong</h2>
-            <p className="text-sm text-muted-foreground">{this.state.error?.message}</p>
-            <button
-              className="rounded bg-primary px-4 py-2 text-sm text-primary-foreground"
-              onClick={() => this.setState({ hasError: false, error: null })}
-            >
-              Try again
-            </button>
-          </div>
+          <ErrorPage
+            variant="crash"
+            error={this.state.error}
+            onRetry={() => this.setState({ hasError: false, error: null })}
+          />
         )
       );
     }

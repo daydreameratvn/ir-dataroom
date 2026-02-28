@@ -2,6 +2,7 @@ import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
 import App from './App';
 import { ProtectedRoute, LoginPage } from '@papaya/auth';
+import ErrorPage from './components/ErrorPage';
 
 // Feature pages
 const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage'));
@@ -126,6 +127,12 @@ export const routes: RouteObject[] = [
       {
         path: 'system-status',
         element: <StatusPage />,
+      },
+
+      // 404 catch-all (inside authenticated layout)
+      {
+        path: '*',
+        element: <ErrorPage variant="not-found" />,
       },
     ],
   },
