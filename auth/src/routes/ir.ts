@@ -137,8 +137,10 @@ const ir = new Hono<{
 // ADMIN ROUTES — requireAuth + requireAdmin
 // ═══════════════════════════════════════════════════════════════════════════
 
-ir.use("/ir/rounds*", requireAuth, requireAdmin);
+ir.use("/ir/rounds", requireAuth, requireAdmin);
+ir.use("/ir/rounds/*", requireAuth, requireAdmin);
 ir.use("/ir/documents/*", requireAuth, requireAdmin);
+ir.use("/ir/investors", requireAuth, requireAdmin);
 ir.use("/ir/investors/*", requireAuth, requireAdmin);
 ir.use("/ir/stats", requireAuth, requireAdmin);
 
@@ -663,7 +665,8 @@ ir.post("/ir/portal/token/refresh", async (c) => {
 
 // ── Portal Protected Routes ──────────────────────────────────────────────
 
-ir.use("/ir/portal/rounds*", requireInvestor);
+ir.use("/ir/portal/rounds", requireInvestor);
+ir.use("/ir/portal/rounds/*", requireInvestor);
 
 ir.get("/ir/portal/rounds", async (c) => {
   const investor = c.get("investor");

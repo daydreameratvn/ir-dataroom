@@ -178,7 +178,7 @@ export async function createRound(
       data.slug,
       data.status ?? "draft",
       data.description ?? null,
-      data.configuration ? JSON.stringify(data.configuration) : null,
+      JSON.stringify(data.configuration ?? {}),
       data.targetRaise ?? null,
       data.currency ?? "USD",
       data.startedAt ?? null,
