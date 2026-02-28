@@ -145,10 +145,11 @@ export function isClaimDroneEligible(claim: {
   return { eligible: true, reason: tierLabel };
 }
 
-// GraphQL query: InProgress + OutPatient + NON_LIFE claims, newest first, over-fetch for post-filtering
+// GraphQL query via DDN supergraph — Apple subgraph fields are prefixed with `apple_`.
+// InProgress + OutPatient + NON_LIFE claims, newest first, over-fetch for post-filtering.
 const GetDroneEligibleClaims = graphql(`
   query GetDroneEligibleClaims($limit: Int!) {
-    claim_cases(
+    apple_claim_cases(
       where: {
         claim_case_status: { value: { _eq: InProgress } }
         insured_benefit_type: { value: { _eq: OutPatient } }
@@ -198,7 +199,7 @@ export async function fetchDroneEligibleClaims(batchSize: number, tier: DroneTie
     fetchPolicy: "no-cache",
   });
 
-  const claims = data?.claim_cases ?? [];
+  const claims = data?.apple_claim_cases ?? [];
   const eligible: EligibleClaim[] = [];
 
   for (const claim of claims) {

@@ -168,7 +168,7 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
   const { data: claimData } = await client.query({
     query: graphql(`
       query DroneClaimDetailCheckV2($code: bpchar!) {
-        claim_cases(where: { code: { _eq: $code } }, limit: 1) {
+        apple_claim_cases(where: { code: { _eq: $code } }, limit: 1) {
           physical_examination_date
           treatment_method
         }
@@ -176,7 +176,7 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
     `),
     variables: { code: claimCode },
   });
-  const claimCase = claimData?.claim_cases?.[0];
+  const claimCase = claimData?.apple_claim_cases?.[0];
   const hasDetailData = !!(claimCase?.physical_examination_date && claimCase?.treatment_method);
 
   // 4. Build tool array — NO approval wrapping, drone is fully autonomous

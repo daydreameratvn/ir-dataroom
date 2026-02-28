@@ -24,7 +24,7 @@ const DOCUMENT_REQUIREMENTS: Record<string, { required: string[] }> = {
 
 const CompliancePreCheckQuery = graphql(`
   query DroneCompliancePreCheck($claimCode: bpchar!) {
-    claim_cases(where: { code: { _eq: $claimCode } }, limit: 1) {
+    apple_claim_cases(where: { code: { _eq: $claimCode } }, limit: 1) {
       id
       insured_benefit_type { value }
       claim_documents(where: { deleted_at: { _is_null: true } }) {
@@ -44,7 +44,7 @@ async function fastComplianceCheck(claimCode: string): Promise<string | null> {
     variables: { claimCode },
   });
 
-  const claim = data?.claim_cases?.[0];
+  const claim = data?.apple_claim_cases?.[0];
   if (!claim) return "Claim not found";
 
   const benefitType = claim.insured_benefit_type?.value;
@@ -377,7 +377,7 @@ export async function processDroneClaim(
   const { data: certData } = await getClient().query({
     query: graphql(`
       query DroneCheckCertHistory($claimCaseId: uuid!) {
-        claim_cases(where: { claim_case_id: { _eq: $claimCaseId } }, limit: 1) {
+        apple_claim_cases(where: { claim_case_id: { _eq: $claimCaseId } }, limit: 1) {
           insured_certificate {
             insured_certificate_histories(where: { deleted_at: { _is_null: true } }, limit: 1) {
               id
@@ -389,7 +389,7 @@ export async function processDroneClaim(
     variables: { claimCaseId },
     fetchPolicy: "no-cache",
   });
-  const histories = certData?.claim_cases?.[0]?.insured_certificate?.insured_certificate_histories ?? [];
+  const histories = certData?.apple_claim_cases?.[0]?.insured_certificate?.insured_certificate_histories ?? [];
   if (histories.length === 0) {
     console.log(`[Drone] ${claimCode} skipped: no insured_certificate_histories`);
     return { status: "skipped", message: "No insured certificate history — cannot assess benefit balance" };
