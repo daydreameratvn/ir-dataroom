@@ -15,6 +15,9 @@ COPY auth/src/ ./auth/src/
 COPY auth/tsconfig.json ./auth/
 COPY agents/ ./agents/
 
+# Include local @papaya/graphql shim (used by agents)
+COPY packages/graphql/ ./node_modules/@papaya/graphql/
+
 # Include Fatima knowledge base
 COPY platform/docs/oasis-guide.md ./platform/docs/oasis-guide.md
 
