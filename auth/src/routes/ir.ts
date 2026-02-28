@@ -671,7 +671,19 @@ ir.get("/ir/portal/rounds", async (c) => {
   const investor = c.get("investor");
 
   try {
-    const rounds = await listRoundsForInvestor(investor.sub);
+    const investorRounds = await listRoundsForInvestor(investor.sub);
+    // Map to the Round shape the frontend expects
+    const rounds = investorRounds.map((ir) => ({
+      id: ir.roundId,
+      slug: ir.roundSlug,
+      name: ir.roundName,
+      description: null,
+      status: ir.roundStatus,
+      targetRaise: null,
+      currency: null,
+      startedAt: null,
+      closedAt: null,
+    }));
     return c.json({ data: rounds });
   } catch (err) {
     console.error("[IR Portal] Error listing investor rounds:", err);
