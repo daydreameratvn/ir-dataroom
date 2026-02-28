@@ -145,22 +145,36 @@ export function isClaimDroneEligible(claim: {
   return { eligible: true, reason: tierLabel };
 }
 
-// GraphQL query via DDN supergraph — banyan_pg connector, Claims model.
-// Submitted/under_review/ai_processing claims, newest first, over-fetch for post-filtering.
+// GraphQL query via DDN supergraph — Apple subgraph, claim_cases model.
+// InProgress OutPatient NON_LIFE claims, newest first, over-fetch for ICD post-filtering.
 const GetDroneEligibleClaims = graphql(`
   query GetDroneEligibleClaims($limit: Int!) {
-    claims(
+    apple_claim_cases(
       where: {
-        status: { _in: ["submitted", "under_review", "ai_processing"] }
-        deletedAt: { _is_null: true }
+        claim_case_status: { value: { _eq: InProgress } }
+        insured_benefit_type: { value: { _eq: OutPatient } }
+        type: { _eq: "NON_LIFE" }
+        genesis_claim_id: { _is_null: true }
+        is_direct_billing: { _eq: false }
       }
       limit: $limit
-      order_by: { createdAt: Desc }
+      order_by: { created_at: desc }
     ) {
       id
-      claimNumber
-      claimDiagnoses(where: { deletedAt: { _is_null: true } }) {
-        code
+      code
+      treatment_method
+      insured_benefit_type {
+        value
+      }
+      claim_case_input_diagnoses {
+        icd {
+          value
+        }
+      }
+      claim_case_assessed_diagnoses {
+        icd {
+          value
+        }
       }
     }
   }
@@ -174,8 +188,8 @@ export interface EligibleClaim {
 }
 
 /**
- * Fetches eligible claims and post-filters by ICD codes.
- * Over-fetches 20x batchSize (min 200) to account for claims without ICD codes.
+ * Fetches eligible claims from Apple subgraph and post-filters by ICD codes.
+ * Over-fetches 20x batchSize (min 200) to account for claims with non-matching ICD codes.
  */
 export async function fetchDroneEligibleClaims(batchSize: number, tier: DroneTier = 1): Promise<EligibleClaim[]> {
   const client = getClient();
@@ -185,22 +199,32 @@ export async function fetchDroneEligibleClaims(batchSize: number, tier: DroneTie
     fetchPolicy: "no-cache",
   });
 
-  const claims = data?.claims ?? [];
+  const claims = data?.apple_claim_cases ?? [];
   const eligible: EligibleClaim[] = [];
 
   for (const claim of claims) {
     if (eligible.length >= batchSize) break;
 
-    const icdCodes = (claim.claimDiagnoses ?? [])
-      .map((d) => d.code)
-      .filter((v): v is string => v != null);
+    // Use input diagnoses first, fall back to assessed diagnoses
+    const inputIcds = (claim.claim_case_input_diagnoses ?? [])
+      .map((d: any) => d.icd?.value)
+      .filter((v: any): v is string => v != null);
+    const assessedIcds = (claim.claim_case_assessed_diagnoses ?? [])
+      .map((d: any) => d.icd?.value)
+      .filter((v: any): v is string => v != null);
+    const icdCodes = inputIcds.length > 0 ? inputIcds : assessedIcds;
 
-    const result = isClaimDroneEligible({ icdCodes }, tier);
+    const result = isClaimDroneEligible({
+      icdCodes,
+      treatmentMethod: claim.treatment_method,
+      insuredBenefitType: claim.insured_benefit_type?.value,
+    }, tier);
 
     if (result.eligible) {
       eligible.push({
         id: claim.id,
-        code: claim.claimNumber,
+        code: claim.code,
+        benefitType: claim.insured_benefit_type?.value,
         icdCodes,
       });
     }
