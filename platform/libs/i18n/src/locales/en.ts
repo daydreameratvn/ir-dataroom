@@ -451,6 +451,15 @@ const translations = {
       invalidCode: 'Invalid code',
       passkeyCancelled: 'Passkey authentication cancelled',
       passkeyFailed: 'Passkey authentication failed',
+      errors: {
+        auth_failed: 'Authentication failed. Please try again.',
+        missing_params: 'Something went wrong during sign-in. Please try again.',
+        invalid_state: 'Your sign-in session expired. Please try again.',
+        user_not_found: 'No account found for this email. Contact your administrator.',
+        unsupported_provider: 'This sign-in method is not supported.',
+        session_expired: 'Your session has expired. Please sign in again.',
+        unknown: 'Something went wrong. Please try again.',
+      },
     },
   },
 

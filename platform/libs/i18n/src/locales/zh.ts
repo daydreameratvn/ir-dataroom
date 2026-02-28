@@ -440,6 +440,15 @@ const translations = {
       invalidCode: '验证码无效',
       passkeyCancelled: '通行密钥验证已取消',
       passkeyFailed: '通行密钥验证失败',
+      errors: {
+        auth_failed: '认证失败，请重试。',
+        missing_params: '登录过程中出现错误，请重试。',
+        invalid_state: '登录会话已过期，请重试。',
+        user_not_found: '未找到此邮箱对应的账户，请联系管理员。',
+        unsupported_provider: '不支持此登录方式。',
+        session_expired: '您的会话已过期，请重新登录。',
+        unknown: '出现错误，请重试。',
+      },
     },
   },
 

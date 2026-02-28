@@ -440,6 +440,15 @@ const translations = {
       invalidCode: 'Mã không hợp lệ',
       passkeyCancelled: 'Xác thực Passkey đã bị hủy',
       passkeyFailed: 'Xác thực Passkey thất bại',
+      errors: {
+        auth_failed: 'Xác thực thất bại. Vui lòng thử lại.',
+        missing_params: 'Có lỗi xảy ra trong quá trình đăng nhập. Vui lòng thử lại.',
+        invalid_state: 'Phiên đăng nhập đã hết hạn. Vui lòng thử lại.',
+        user_not_found: 'Không tìm thấy tài khoản cho email này. Liên hệ quản trị viên.',
+        unsupported_provider: 'Phương thức đăng nhập này không được hỗ trợ.',
+        session_expired: 'Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại.',
+        unknown: 'Có lỗi xảy ra. Vui lòng thử lại.',
+      },
     },
   },
 

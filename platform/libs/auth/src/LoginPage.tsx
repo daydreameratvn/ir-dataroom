@@ -113,7 +113,10 @@ export default function LoginPage() {
   const returnUrl = (location.state as LocationState)?.from?.pathname || '/';
 
   const searchParams = new URLSearchParams(location.search);
-  const ssoError = searchParams.get('error');
+  const ssoErrorCode = searchParams.get('error');
+  const ssoError = ssoErrorCode
+    ? t(`auth.login.errors.${ssoErrorCode}`, { defaultValue: t('auth.login.errors.unknown') })
+    : null;
 
   async function handleSendOtp() {
     setError(null);
@@ -142,7 +145,7 @@ export default function LoginPage() {
       signIn(result.user, result.accessToken, result.expiresAt);
       navigate(returnUrl, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('auth.login.invalidCode'));
+      setError(t('auth.login.invalidCode'));
     } finally {
       setIsSubmitting(false);
     }
@@ -161,7 +164,7 @@ export default function LoginPage() {
       if (err instanceof Error && err.name === 'NotAllowedError') {
         setError(t('auth.login.passkeyCancelled'));
       } else {
-        setError(err instanceof Error ? err.message : t('auth.login.passkeyFailed'));
+        setError(t('auth.login.passkeyFailed'));
       }
     } finally {
       setIsSubmitting(false);
