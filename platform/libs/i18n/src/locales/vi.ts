@@ -92,6 +92,10 @@ const translations = {
     designSystem: 'Hệ thống thiết kế',
     aiAgents: 'Trợ lý AI',
     drone: 'Drone',
+    ir: 'Quan hệ nhà đầu tư',
+    irRounds: 'Vòng gọi vốn',
+    irInvestors: 'Nhà đầu tư',
+    irAnalytics: 'Phân tích',
   },
 
   dashboard: {

@@ -92,6 +92,10 @@ const translations = {
     designSystem: 'ระบบออกแบบ',
     aiAgents: 'เอไอเอเจนท์',
     drone: 'Drone',
+    ir: 'นักลงทุนสัมพันธ์',
+    irRounds: 'รอบการระดมทุน',
+    irInvestors: 'นักลงทุน',
+    irAnalytics: 'การวิเคราะห์',
   },
 
   dashboard: {

@@ -103,6 +103,10 @@ const translations = {
     // AI
     aiAgents: 'AI Agents',
     drone: 'Drone',
+    ir: 'Investor Relations',
+    irRounds: 'Rounds',
+    irInvestors: 'Investors',
+    irAnalytics: 'Analytics',
   },
 
   dashboard: {

@@ -92,6 +92,10 @@ const translations = {
     designSystem: '设计系统',
     aiAgents: 'AI智能体',
     drone: 'Drone',
+    ir: '投资者关系',
+    irRounds: '融资轮次',
+    irInvestors: '投资者',
+    irAnalytics: '分析',
   },
 
   dashboard: {
