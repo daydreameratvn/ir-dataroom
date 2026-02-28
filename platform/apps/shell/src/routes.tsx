@@ -19,6 +19,7 @@ const DronePage = lazy(() => import('./features/drone/DronePage'));
 const IRPage = lazy(() => import('./features/ir/IRPage'));
 const DesignSystemPage = lazy(() => import('./features/design-system/DesignSystemPage'));
 const StatusPage = lazy(() => import('./features/status/StatusPage'));
+const ProfilePage = lazy(() => import('./features/profile/ProfilePage'));
 const StatusPagePublic = lazy(() => import('./features/status/StatusPagePublic'));
 
 // Remote app routes are injected dynamically in bootstrap.tsx via remotes.tsx.
@@ -121,6 +122,12 @@ export const routes: RouteObject[] = [
       {
         path: 'design-system',
         element: <DesignSystemPage />,
+      },
+
+      // User Profile
+      {
+        path: 'profile',
+        element: <ProfilePage />,
       },
 
       // System Status (authenticated view)

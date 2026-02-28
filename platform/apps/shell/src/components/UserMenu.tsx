@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { LogOut, UserIcon, Settings } from 'lucide-react';
 import {
   Avatar,
@@ -15,6 +16,7 @@ import { useAuth } from '@papaya/auth';
 
 export default function UserMenu() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
 
   if (!user) return null;
@@ -47,7 +49,7 @@ export default function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/profile')}>
           <UserIcon className="mr-2 h-4 w-4" />
           {t('auth.profile')}
         </DropdownMenuItem>
