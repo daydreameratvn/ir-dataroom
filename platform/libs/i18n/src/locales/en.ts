@@ -318,6 +318,8 @@ const translations = {
       impersonate: 'Impersonate',
       allowImpersonation: 'Allow Impersonation',
       disallowImpersonation: 'Disallow Impersonation',
+      grantCanImpersonate: 'Grant Impersonation Rights',
+      revokeCanImpersonate: 'Revoke Impersonation Rights',
     },
     searchPlaceholder: 'Search by name or email...',
     filters: {

@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Loader2,
   Eye,
+  EyeOff,
   ShieldCheck,
   ShieldOff,
 } from 'lucide-react';
@@ -46,7 +47,7 @@ import {
 } from '@papaya/shared-ui';
 import { useAuth } from '@papaya/auth';
 import useUsers from '../hooks/useUsers';
-import { deleteUser, setUserImpersonatable, type AdminUser } from '../api';
+import { deleteUser, setUserImpersonatable, setUserCanImpersonate, type AdminUser } from '../api';
 import NewDataBanner from '../../../components/NewDataBanner';
 import UserDialog from './UserDialog';
 import TenantFilter from './TenantFilter';
@@ -204,6 +205,15 @@ export default function UserTable() {
     }
   }
 
+  async function handleToggleCanImpersonate(user: AdminUser) {
+    try {
+      await setUserCanImpersonate(user.id, !user.canImpersonate);
+      refetch();
+    } catch {
+      // Error handling could be improved with a toast
+    }
+  }
+
   // ── Relative time formatter ──
   function formatRelativeTime(dateString: string | undefined): string {
     if (!dateString) return t('admin.lastLogin.never');
@@ -340,7 +350,22 @@ export default function UserTable() {
                     )}
                   </DropdownMenuItem>
                 )}
-                {isSuperAdmin && !isSelf && user.isImpersonatable && (
+                {isSuperAdmin && !isSelf && (
+                  <DropdownMenuItem onClick={() => handleToggleCanImpersonate(user)}>
+                    {user.canImpersonate ? (
+                      <>
+                        <EyeOff className="mr-2 h-4 w-4" />
+                        {t('admin.table.revokeCanImpersonate')}
+                      </>
+                    ) : (
+                      <>
+                        <Eye className="mr-2 h-4 w-4" />
+                        {t('admin.table.grantCanImpersonate')}
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                )}
+                {currentUser?.canImpersonate && !isSelf && user.isImpersonatable && (
                   <DropdownMenuItem onClick={() => handleImpersonateClick(user)}>
                     <Eye className="mr-2 h-4 w-4" />
                     {t('admin.table.impersonate')}

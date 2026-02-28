@@ -77,6 +77,7 @@ token.post("/token/refresh", async (c) => {
     role: roles.role,
     allowedRoles: roles.allowedRoles,
     impersonatorId: session.impersonatorId,
+    canImpersonate: user.canImpersonate,
   });
 
   // Set the appropriate cookie
@@ -102,6 +103,7 @@ token.post("/token/refresh", async (c) => {
       tenantId: user.tenantId,
       userType: user.userType,
       userLevel: user.userLevel,
+      canImpersonate: user.canImpersonate,
     },
   };
 

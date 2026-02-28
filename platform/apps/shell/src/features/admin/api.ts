@@ -135,3 +135,16 @@ export async function setUserImpersonatable(userId: string, impersonatable: bool
     throw new Error(String(message));
   }
 }
+
+export async function setUserCanImpersonate(userId: string, canImpersonate: boolean): Promise<void> {
+  const response = await fetch(`${BASE}/users/${userId}/can-impersonate`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify({ canImpersonate }),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const message = (body as Record<string, unknown>).error ?? response.statusText;
+    throw new Error(String(message));
+  }
+}

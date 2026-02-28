@@ -307,6 +307,8 @@ const translations = {
       impersonate: 'สวมบทบาท',
       allowImpersonation: 'อนุญาตการสวมบทบาท',
       disallowImpersonation: 'ยกเลิกการอนุญาตสวมบทบาท',
+      grantCanImpersonate: 'ให้สิทธิ์สวมบทบาท',
+      revokeCanImpersonate: 'ถอนสิทธิ์สวมบทบาท',
     },
     searchPlaceholder: 'ค้นหาตามชื่อหรืออีเมล...',
     filters: {

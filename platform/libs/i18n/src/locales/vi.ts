@@ -307,6 +307,8 @@ const translations = {
       impersonate: 'Mạo danh',
       allowImpersonation: 'Cho phép mạo danh',
       disallowImpersonation: 'Không cho phép mạo danh',
+      grantCanImpersonate: 'Cấp quyền mạo danh',
+      revokeCanImpersonate: 'Thu hồi quyền mạo danh',
     },
     searchPlaceholder: 'Tìm theo tên hoặc email...',
     filters: {

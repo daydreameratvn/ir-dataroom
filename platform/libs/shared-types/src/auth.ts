@@ -14,6 +14,7 @@ export interface User {
   department?: string;
   locale?: string;
   isImpersonatable?: boolean;
+  canImpersonate?: boolean;
 }
 
 export interface AuthSession {

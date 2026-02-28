@@ -9,6 +9,7 @@ export interface AuthUser {
   userLevel: string;
   phone?: string;
   isImpersonatable: boolean;
+  canImpersonate: boolean;
 }
 
 interface UserRow {
@@ -20,6 +21,7 @@ interface UserRow {
   user_level: string;
   phone: string | null;
   is_impersonatable: boolean;
+  can_impersonate: boolean;
 }
 
 const ROLE_HIERARCHY = ["admin", "executive", "manager", "staff", "viewer"];
@@ -50,6 +52,7 @@ function rowToUser(row: UserRow): AuthUser {
     userLevel: row.user_level,
     phone: row.phone ?? undefined,
     isImpersonatable: row.is_impersonatable ?? false,
+    canImpersonate: row.can_impersonate ?? false,
   };
 }
 
@@ -59,7 +62,7 @@ export async function findUserByIdentity(
   providerUserId: string
 ): Promise<AuthUser | null> {
   const result = await query<UserRow>(
-    `SELECT u.id, u.email, u.name, u.tenant_id, u.user_type, u.user_level, u.phone, u.is_impersonatable
+    `SELECT u.id, u.email, u.name, u.tenant_id, u.user_type, u.user_level, u.phone, u.is_impersonatable, u.can_impersonate
      FROM auth_identities ai
      JOIN users u ON u.id = ai.user_id AND u.deleted_at IS NULL
      WHERE ai.tenant_id = $1
@@ -78,7 +81,7 @@ export async function findUserByEmail(
   email: string
 ): Promise<AuthUser | null> {
   const result = await query<UserRow>(
-    `SELECT id, email, name, tenant_id, user_type, user_level, phone, is_impersonatable
+    `SELECT id, email, name, tenant_id, user_type, user_level, phone, is_impersonatable, can_impersonate
      FROM users
      WHERE tenant_id = $1 AND email = $2 AND deleted_at IS NULL`,
     [tenantId, email]
@@ -93,7 +96,7 @@ export async function findUserByPhone(
   phone: string
 ): Promise<AuthUser | null> {
   const result = await query<UserRow>(
-    `SELECT id, email, name, tenant_id, user_type, user_level, phone, is_impersonatable
+    `SELECT id, email, name, tenant_id, user_type, user_level, phone, is_impersonatable, can_impersonate
      FROM users
      WHERE tenant_id = $1 AND phone = $2 AND deleted_at IS NULL`,
     [tenantId, phone]
@@ -105,7 +108,7 @@ export async function findUserByPhone(
 
 export async function findUserById(userId: string): Promise<AuthUser | null> {
   const result = await query<UserRow>(
-    `SELECT id, email, name, tenant_id, user_type, user_level, phone, is_impersonatable
+    `SELECT id, email, name, tenant_id, user_type, user_level, phone, is_impersonatable, can_impersonate
      FROM users
      WHERE id = $1 AND deleted_at IS NULL`,
     [userId]
@@ -201,7 +204,7 @@ export async function autoProvisionUser(opts: {
        (id, tenant_id, email, name, user_type, user_level,
         directory_provider_id, directory_sync_id)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-     RETURNING id, email, name, tenant_id, user_type, user_level, phone, is_impersonatable`,
+     RETURNING id, email, name, tenant_id, user_type, user_level, phone, is_impersonatable, can_impersonate`,
     [
       id,
       opts.tenantId,
@@ -251,7 +254,7 @@ interface AdminUserRow extends UserRow {
   last_login_at: string | null;
   created_at: string;
   created_by_name: string | null;
-  // is_impersonatable is inherited from UserRow
+  // is_impersonatable and can_impersonate are inherited from UserRow
 }
 
 function rowToAdminUser(row: AdminUserRow): AdminUserView {
@@ -303,7 +306,7 @@ export async function listUsers(opts: ListUsersOptions): Promise<ListUsersResult
 
   const dataResult = await query<AdminUserRow>(
     `SELECT u.id, u.email, u.name, u.tenant_id, u.user_type, u.user_level, u.phone,
-            u.title, u.department, u.locale, u.last_login_at, u.created_at, u.is_impersonatable,
+            u.title, u.department, u.locale, u.last_login_at, u.created_at, u.is_impersonatable, u.can_impersonate,
             cb.name AS created_by_name
      FROM users u
      LEFT JOIN users cb ON cb.id = u.created_by
@@ -340,7 +343,7 @@ export async function createUser(opts: {
   const result = await query<AdminUserRow>(
     `INSERT INTO users (id, tenant_id, email, name, phone, user_type, user_level, title, department, locale, created_by, updated_by)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $11)
-     RETURNING id, email, name, tenant_id, user_type, user_level, phone, title, department, locale, last_login_at, created_at, is_impersonatable`,
+     RETURNING id, email, name, tenant_id, user_type, user_level, phone, title, department, locale, last_login_at, created_at, is_impersonatable, can_impersonate`,
     [
       id,
       opts.tenantId,
@@ -407,7 +410,7 @@ export async function updateUser(
     `UPDATE users
      SET ${setClauses.join(", ")}
      WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL
-     RETURNING id, email, name, tenant_id, user_type, user_level, phone, title, department, locale, last_login_at, created_at, is_impersonatable`,
+     RETURNING id, email, name, tenant_id, user_type, user_level, phone, title, department, locale, last_login_at, created_at, is_impersonatable, can_impersonate`,
     params
   );
 
@@ -436,7 +439,7 @@ export async function findAdminUserById(
 ): Promise<AdminUserView | null> {
   const result = await query<AdminUserRow>(
     `SELECT id, email, name, tenant_id, user_type, user_level, phone,
-            title, department, locale, last_login_at, created_at, is_impersonatable
+            title, department, locale, last_login_at, created_at, is_impersonatable, can_impersonate
      FROM users
      WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
     [userId, tenantId]
@@ -495,12 +498,28 @@ export async function setImpersonatable(
   return result.rowCount !== null && result.rowCount > 0;
 }
 
+export async function setCanImpersonate(
+  userId: string,
+  tenantId: string,
+  value: boolean,
+  updatedBy: string
+): Promise<boolean> {
+  const result = await query(
+    `UPDATE users
+     SET can_impersonate = $3, updated_at = now(), updated_by = $4
+     WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
+    [userId, tenantId, value, updatedBy]
+  );
+
+  return result.rowCount !== null && result.rowCount > 0;
+}
+
 export async function findAdminUserByIdAnyTenant(
   userId: string
 ): Promise<AdminUserView | null> {
   const result = await query<AdminUserRow>(
     `SELECT id, email, name, tenant_id, user_type, user_level, phone,
-            title, department, locale, last_login_at, created_at, is_impersonatable
+            title, department, locale, last_login_at, created_at, is_impersonatable, can_impersonate
      FROM users
      WHERE id = $1 AND deleted_at IS NULL`,
     [userId]

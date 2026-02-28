@@ -18,6 +18,7 @@ export interface TokenPayload {
   role: string;
   allowedRoles: string[];
   impersonatorId?: string;
+  canImpersonate?: boolean;
 }
 
 let cachedSecret: Uint8Array | null = null;
@@ -50,6 +51,10 @@ export async function signAccessToken(payload: TokenPayload): Promise<string> {
     claims.impersonatorId = payload.impersonatorId;
   }
 
+  if (payload.canImpersonate) {
+    claims.canImpersonate = true;
+  }
+
   return new SignJWT(claims)
     .setProtectedHeader({ alg: "HS256", typ: "JWT" })
     .setSubject(payload.sub)
@@ -69,6 +74,7 @@ export async function verifyAccessToken(
     ] as HasuraClaims;
 
     const impersonatorId = (payload as Record<string, unknown>).impersonatorId as string | undefined;
+    const canImpersonate = (payload as Record<string, unknown>).canImpersonate as boolean | undefined;
 
     return {
       sub: payload.sub!,
@@ -79,6 +85,7 @@ export async function verifyAccessToken(
       role: claims["x-hasura-default-role"],
       allowedRoles: claims["x-hasura-allowed-roles"],
       ...(impersonatorId ? { impersonatorId } : {}),
+      ...(canImpersonate ? { canImpersonate } : {}),
     };
   } catch {
     return null;

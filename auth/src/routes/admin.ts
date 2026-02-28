@@ -16,6 +16,7 @@ import {
   findUserByEmail,
   listTenants,
   setImpersonatable,
+  setCanImpersonate,
   getUserRoles,
 } from "../services/user.ts";
 import type { TokenPayload } from "../services/jwt.ts";
@@ -243,6 +244,31 @@ admin.get("/admin/tenants", async (c) => {
   return c.json({ data: tenants });
 });
 
+// PUT /auth/admin/users/:id/can-impersonate — Toggle can_impersonate flag (super admin only)
+admin.put("/admin/users/:id/can-impersonate", async (c) => {
+  const user = c.get("user");
+
+  if (!isSuperAdmin(user)) {
+    return c.json({ error: "Super admin access required" }, 403);
+  }
+
+  const userId = c.req.param("id");
+  const body = await c.req.json<{ canImpersonate: boolean }>();
+
+  if (typeof body.canImpersonate !== "boolean") {
+    return c.json({ error: "canImpersonate (boolean) is required" }, 400);
+  }
+
+  const tenantId = getEffectiveTenantId(c);
+  const updated = await setCanImpersonate(userId, tenantId, body.canImpersonate, user.sub);
+
+  if (!updated) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  return c.json({ success: true });
+});
+
 // PUT /auth/admin/users/:id/impersonatable — Toggle impersonatable flag (super admin only)
 admin.put("/admin/users/:id/impersonatable", async (c) => {
   const user = c.get("user");
@@ -268,12 +294,15 @@ admin.put("/admin/users/:id/impersonatable", async (c) => {
   return c.json({ success: true });
 });
 
-// POST /auth/admin/impersonate/:userId — Start impersonation (super admin only)
+// POST /auth/admin/impersonate/:userId — Start impersonation
+// Requires can_impersonate flag on the actor's user record
 admin.post("/admin/impersonate/:userId", async (c) => {
   const actor = c.get("user");
 
-  if (!isSuperAdmin(actor)) {
-    return c.json({ error: "Super admin access required" }, 403);
+  // Load actor's full user record to check can_impersonate flag
+  const actorUser = await findAdminUserByIdAnyTenant(actor.sub);
+  if (!actorUser?.canImpersonate) {
+    return c.json({ error: "You are not authorized to impersonate users" }, 403);
   }
 
   const targetUserId = c.req.param("userId");

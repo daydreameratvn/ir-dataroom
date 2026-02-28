@@ -130,6 +130,7 @@ otp.post("/otp/verify", async (c) => {
     userType: user.userType,
     role: roles.role,
     allowedRoles: roles.allowedRoles,
+    canImpersonate: user.canImpersonate,
   });
 
   const refreshToken = generateRefreshToken();

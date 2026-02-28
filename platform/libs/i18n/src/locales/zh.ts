@@ -307,6 +307,8 @@ const translations = {
       impersonate: '模拟身份',
       allowImpersonation: '允许身份模拟',
       disallowImpersonation: '禁止身份模拟',
+      grantCanImpersonate: '授予模拟权限',
+      revokeCanImpersonate: '撤销模拟权限',
     },
     searchPlaceholder: '按姓名或邮箱搜索...',
     filters: {
