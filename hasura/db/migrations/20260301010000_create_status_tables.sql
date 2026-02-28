@@ -87,10 +87,11 @@ CREATE TABLE status_service_overrides (
   deleted_by UUID REFERENCES users(id)
 );
 
--- Only one active (non-deleted, non-expired) override per service
+-- Only one active (non-deleted) override per service where ends_at is open-ended
+-- Expiration is enforced at application level; this prevents duplicate open overrides
 CREATE UNIQUE INDEX idx_status_service_overrides_active
   ON status_service_overrides (service_name)
-  WHERE deleted_at IS NULL AND (ends_at IS NULL OR ends_at > now());
+  WHERE deleted_at IS NULL AND ends_at IS NULL;
 
 CREATE INDEX idx_status_service_overrides_deleted_at ON status_service_overrides (deleted_at);
 
