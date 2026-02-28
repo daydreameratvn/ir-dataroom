@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { SignJWT, jwtVerify } from "jose";
-import { requireAuth, requireAdmin, getEffectiveTenantId, getClientInfo } from "../middleware.ts";
+import { requireAuth, requireAdmin, getEffectiveTenantId, getClientInfo, getTenantId } from "../middleware.ts";
 import { getJwtKey, authConfig } from "../config.ts";
 import { createOtpRequest, verifyOtp, sendEmailOtp } from "../services/otp.ts";
 import {
@@ -547,8 +547,7 @@ ir.post("/ir/portal/otp/request", async (c) => {
     return c.json({ error: "email is required" }, 400);
   }
 
-  // Default tenant for investor portal
-  const tenantId = c.req.header("x-tenant-id") || "papaya-demo";
+  const tenantId = getTenantId(c);
 
   try {
     // Verify investor exists
@@ -581,7 +580,7 @@ ir.post("/ir/portal/otp/verify", async (c) => {
     return c.json({ error: "email and code are required" }, 400);
   }
 
-  const tenantId = c.req.header("x-tenant-id") || "papaya-demo";
+  const tenantId = getTenantId(c);
 
   try {
     const result = await verifyOtp({
