@@ -1,0 +1,148 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityProviderTypes
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: IdentityProviderTypes
+    inputTypeName: IdentityProviderTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: identity_provider_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityProviderTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityProviderTypesAggExp
+  operand:
+    object:
+      aggregatedType: IdentityProviderTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityProviderTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityProviderTypesOrderByExp
+  operand:
+    object:
+      orderedType: IdentityProviderTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: IdentityProviderTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityProviderTypes
+  objectType: IdentityProviderTypes
+  source:
+    dataConnectorName: banyan_pg
+    collection: identity_provider_types
+  filterExpressionType: IdentityProviderTypesBoolExp
+  aggregateExpression: IdentityProviderTypesAggExp
+  orderByExpression: IdentityProviderTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityProviderTypes
+      subscription:
+        rootField: identityProviderTypes
+    selectUniques:
+      - queryRootField: identityProviderTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: identityProviderTypesByValue
+    filterInputTypeName: IdentityProviderTypesFilterInput
+    aggregate:
+      queryRootField: identityProviderTypesAggregate
+      subscription:
+        rootField: identityProviderTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityProviderTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenantIdentityProviders
+  sourceType: IdentityProviderTypes
+  target:
+    model:
+      name: TenantIdentityProviders
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: TenantIdentityProvidersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: providerType
+  graphql:
+    aggregateFieldName: tenantIdentityProvidersAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityProviderTypesBoolExp
+  operand:
+    object:
+      type: IdentityProviderTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: tenantIdentityProviders
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityProviderTypesBoolExp

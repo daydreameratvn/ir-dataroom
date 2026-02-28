@@ -1,0 +1,440 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: TenantIdentityProviders
+  fields:
+    - name: adminEmail
+      type: String_1
+    - name: autoJoinEnabled
+      type: Boolean_1!
+    - name: autoJoinUserLevel
+      type: String_1
+    - name: autoJoinUserType
+      type: String_1
+    - name: autoOffboardEnabled
+      type: Boolean_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: displayName
+      type: String_1!
+    - name: domains
+      type: "[String_1!]!"
+    - name: googleCustomerId
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: isActive
+      type: Boolean_1!
+    - name: lastSyncAt
+      type: Timestamptz
+    - name: lastSyncError
+      type: String_1
+    - name: lastSyncStatus
+      type: String_1
+    - name: providerType
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: TenantIdentityProviders
+    inputTypeName: TenantIdentityProvidersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: tenant_identity_providers
+      fieldMapping:
+        adminEmail:
+          column:
+            name: admin_email
+        autoJoinEnabled:
+          column:
+            name: auto_join_enabled
+        autoJoinUserLevel:
+          column:
+            name: auto_join_user_level
+        autoJoinUserType:
+          column:
+            name: auto_join_user_type
+        autoOffboardEnabled:
+          column:
+            name: auto_offboard_enabled
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        displayName:
+          column:
+            name: display_name
+        domains:
+          column:
+            name: domains
+        googleCustomerId:
+          column:
+            name: google_customer_id
+        id:
+          column:
+            name: id
+        isActive:
+          column:
+            name: is_active
+        lastSyncAt:
+          column:
+            name: last_sync_at
+        lastSyncError:
+          column:
+            name: last_sync_error
+        lastSyncStatus:
+          column:
+            name: last_sync_status
+        providerType:
+          column:
+            name: provider_type
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: TenantIdentityProviders
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - adminEmail
+          - autoJoinEnabled
+          - autoJoinUserLevel
+          - autoJoinUserType
+          - autoOffboardEnabled
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - displayName
+          - domains
+          - googleCustomerId
+          - id
+          - isActive
+          - lastSyncAt
+          - lastSyncError
+          - lastSyncStatus
+          - providerType
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: TenantIdentityProvidersAggExp
+  operand:
+    object:
+      aggregatedType: TenantIdentityProviders
+      aggregatableFields:
+        - fieldName: adminEmail
+          aggregateExpression: TextAggExp
+        - fieldName: autoJoinEnabled
+          aggregateExpression: BoolAggExp
+        - fieldName: autoJoinUserLevel
+          aggregateExpression: TextAggExp
+        - fieldName: autoJoinUserType
+          aggregateExpression: TextAggExp
+        - fieldName: autoOffboardEnabled
+          aggregateExpression: BoolAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: displayName
+          aggregateExpression: TextAggExp
+        - fieldName: googleCustomerId
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isActive
+          aggregateExpression: BoolAggExp
+        - fieldName: lastSyncAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: lastSyncError
+          aggregateExpression: TextAggExp
+        - fieldName: lastSyncStatus
+          aggregateExpression: TextAggExp
+        - fieldName: providerType
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: TenantIdentityProvidersAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: TenantIdentityProviders
+  objectType: TenantIdentityProviders
+  source:
+    dataConnectorName: banyan_pg
+    collection: tenant_identity_providers
+  filterExpressionType: TenantIdentityProvidersBoolExp
+  aggregateExpression: TenantIdentityProvidersAggExp
+  orderByExpression: TenantIdentityProvidersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: tenantIdentityProviders
+      subscription:
+        rootField: tenantIdentityProviders
+    selectUniques:
+      - queryRootField: tenantIdentityProvidersById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: tenantIdentityProvidersById
+    filterInputTypeName: TenantIdentityProvidersFilterInput
+    aggregate:
+      queryRootField: tenantIdentityProvidersAggregate
+      subscription:
+        rootField: tenantIdentityProvidersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: TenantIdentityProviders
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: directorySyncLogs
+  sourceType: TenantIdentityProviders
+  target:
+    model:
+      name: DirectorySyncLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: DirectorySyncLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: providerId
+  graphql:
+    aggregateFieldName: directorySyncLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityProviderType
+  sourceType: TenantIdentityProviders
+  target:
+    model:
+      name: IdentityProviderTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: providerType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: TenantIdentityProviders
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: users
+  sourceType: TenantIdentityProviders
+  target:
+    model:
+      name: Users
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: UsersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: directoryProviderId
+  graphql:
+    aggregateFieldName: usersAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: TenantIdentityProvidersBoolExp
+  operand:
+    object:
+      type: TenantIdentityProviders
+      comparableFields:
+        - fieldName: adminEmail
+          booleanExpressionType: TextBoolExp
+        - fieldName: autoJoinEnabled
+          booleanExpressionType: BoolBoolExp
+        - fieldName: autoJoinUserLevel
+          booleanExpressionType: TextBoolExp
+        - fieldName: autoJoinUserType
+          booleanExpressionType: TextBoolExp
+        - fieldName: autoOffboardEnabled
+          booleanExpressionType: BoolBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: displayName
+          booleanExpressionType: TextBoolExp
+        - fieldName: googleCustomerId
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isActive
+          booleanExpressionType: BoolBoolExp
+        - fieldName: lastSyncAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: lastSyncError
+          booleanExpressionType: TextBoolExp
+        - fieldName: lastSyncStatus
+          booleanExpressionType: TextBoolExp
+        - fieldName: providerType
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: directorySyncLogs
+        - relationshipName: identityProviderType
+        - relationshipName: tenant
+        - relationshipName: users
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: TenantIdentityProvidersBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: TenantIdentityProvidersOrderByExp
+  operand:
+    object:
+      orderedType: TenantIdentityProviders
+      orderableFields:
+        - fieldName: adminEmail
+          orderByExpression: String1OrderByExp
+        - fieldName: autoJoinEnabled
+          orderByExpression: BoolOrderByExp
+        - fieldName: autoJoinUserLevel
+          orderByExpression: String1OrderByExp
+        - fieldName: autoJoinUserType
+          orderByExpression: String1OrderByExp
+        - fieldName: autoOffboardEnabled
+          orderByExpression: BoolOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: displayName
+          orderByExpression: String1OrderByExp
+        - fieldName: googleCustomerId
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isActive
+          orderByExpression: BoolOrderByExp
+        - fieldName: lastSyncAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: lastSyncError
+          orderByExpression: String1OrderByExp
+        - fieldName: lastSyncStatus
+          orderByExpression: String1OrderByExp
+        - fieldName: providerType
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityProviderType
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: TenantIdentityProvidersOrderByExp

@@ -14,6 +14,10 @@ definition:
       type: Timestamptz
     - name: department
       type: String_1
+    - name: directoryProviderId
+      type: Uuid
+    - name: directorySyncId
+      type: String_1
     - name: email
       type: String_1!
     - name: id
@@ -60,6 +64,12 @@ definition:
         department:
           column:
             name: department
+        directoryProviderId:
+          column:
+            name: directory_provider_id
+        directorySyncId:
+          column:
+            name: directory_sync_id
         email:
           column:
             name: email
@@ -111,6 +121,8 @@ definition:
           - createdBy
           - deletedAt
           - department
+          - directoryProviderId
+          - directorySyncId
           - email
           - id
           - lastLoginAt
@@ -142,6 +154,10 @@ definition:
         - fieldName: deletedAt
           aggregateExpression: TimestamptzAggExp
         - fieldName: department
+          aggregateExpression: TextAggExp
+        - fieldName: directoryProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: directorySyncId
           aggregateExpression: TextAggExp
         - fieldName: email
           aggregateExpression: TextAggExp
@@ -598,6 +614,24 @@ definition:
           - fieldName: value
 
 ---
+kind: Relationship
+version: v1
+definition:
+  name: directoryProvider
+  sourceType: Users
+  target:
+    model:
+      name: TenantIdentityProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: directoryProviderId
+      target:
+        modelField:
+          - fieldName: id
+
+---
 kind: BooleanExpressionType
 version: v1
 definition:
@@ -615,6 +649,10 @@ definition:
         - fieldName: deletedAt
           booleanExpressionType: TimestamptzBoolExp
         - fieldName: department
+          booleanExpressionType: TextBoolExp
+        - fieldName: directoryProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: directorySyncId
           booleanExpressionType: TextBoolExp
         - fieldName: email
           booleanExpressionType: TextBoolExp
@@ -643,6 +681,7 @@ definition:
       comparableRelationships:
         - relationshipName: agentSessions
         - relationshipName: auditLogs
+        - relationshipName: directoryProvider
         - relationshipName: authIdentities
         - relationshipName: authLoginAttempts
         - relationshipName: authPasskeys
@@ -685,6 +724,10 @@ definition:
           orderByExpression: TimestamptzOrderByExp
         - fieldName: department
           orderByExpression: String1OrderByExp
+        - fieldName: directoryProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: directorySyncId
+          orderByExpression: String1OrderByExp
         - fieldName: email
           orderByExpression: String1OrderByExp
         - fieldName: id
@@ -710,6 +753,7 @@ definition:
         - fieldName: userType
           orderByExpression: String1OrderByExp
       orderableRelationships:
+        - relationshipName: directoryProvider
         - relationshipName: tenant
         - relationshipName: userLevelByUserLevel
         - relationshipName: userTypeByUserType
