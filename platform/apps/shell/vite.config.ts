@@ -4,6 +4,23 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { federation } from '@module-federation/vite';
 import path from 'node:path';
+import fs from 'node:fs';
+
+const BUILD_ID = Date.now().toString();
+
+/**
+ * Emit a build-id.txt alongside the bundle so the running app can poll
+ * for new deployments and prompt the user to reload.
+ */
+function emitBuildId(): Plugin {
+  return {
+    name: 'emit-build-id',
+    writeBundle(options) {
+      const dir = options.dir ?? path.resolve(__dirname, 'dist');
+      fs.writeFileSync(path.join(dir, 'build-id.txt'), BUILD_ID);
+    },
+  };
+}
 
 /**
  * Inject modulepreload hints for the bootstrap chunk (loaded via dynamic import).
@@ -44,10 +61,14 @@ function preloadBootstrap(): Plugin {
 }
 
 export default defineConfig({
+  define: {
+    __BUILD_ID__: JSON.stringify(BUILD_ID),
+  },
   plugins: [
     react(),
     tailwindcss(),
     preloadBootstrap(),
+    emitBuildId(),
     federation({
       name: 'shell',
       manifest: true,
