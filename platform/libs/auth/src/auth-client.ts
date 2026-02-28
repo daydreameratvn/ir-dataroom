@@ -1,4 +1,5 @@
 import type { User } from '@papaya/shared-types';
+import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/browser';
 
 let _authBaseUrl = '/auth';
 
@@ -87,7 +88,7 @@ export async function verifyOtp(
 // Passkey
 export async function getPasskeyLoginOptions(
   tenantId: string,
-): Promise<{ challengeKey: string; [key: string]: unknown }> {
+): Promise<PublicKeyCredentialRequestOptionsJSON & { challengeKey: string }> {
   return authRequest('/passkey/login/options', {
     method: 'POST',
     headers: { 'x-tenant-id': tenantId },

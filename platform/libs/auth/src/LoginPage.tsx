@@ -11,6 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@papaya/shared-ui';
+import { startAuthentication } from '@simplewebauthn/browser';
 import { useAuth } from './AuthProvider';
 import {
   getSSOUrl,
@@ -152,18 +153,16 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       const options = await getPasskeyLoginOptions(tenantId);
-      const credential = await navigator.credentials.get({
-        publicKey: options as unknown as PublicKeyCredentialRequestOptions,
-      });
-      if (!credential) {
-        setError(t('auth.login.passkeyCancelled'));
-        return;
-      }
+      const credential = await startAuthentication({ optionsJSON: options });
       const result = await verifyPasskeyLogin(options.challengeKey, credential, tenantId);
       signIn(result.user, result.accessToken, result.expiresAt);
       navigate(returnUrl, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('auth.login.passkeyFailed'));
+      if (err instanceof Error && err.name === 'NotAllowedError') {
+        setError(t('auth.login.passkeyCancelled'));
+      } else {
+        setError(err instanceof Error ? err.message : t('auth.login.passkeyFailed'));
+      }
     } finally {
       setIsSubmitting(false);
     }
