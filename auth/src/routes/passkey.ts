@@ -7,6 +7,9 @@ import {
   generateAuthOptions,
   verifyAuthResponse,
   findUserByCredentialId,
+  listUserPasskeys,
+  deletePasskey,
+  renamePasskey,
 } from "../services/passkey.ts";
 import {
   findUserById,
@@ -72,6 +75,12 @@ passkey.post("/passkey/register/verify", requireAuth, async (c) => {
 
   const { credential } = verification.registrationInfo;
 
+  // Prevent duplicate registration of the same credential
+  const existing = await findUserByCredentialId(credential.id);
+  if (existing) {
+    return c.json({ error: "This device is already registered" }, 409);
+  }
+
   await storePasskey({
     tenantId: user.tenantId,
     userId: user.sub,
@@ -82,6 +91,39 @@ passkey.post("/passkey/register/verify", requireAuth, async (c) => {
     transports: credential.transports?.join(","),
   });
 
+  return c.json({ success: true });
+});
+
+// GET /auth/passkey/list — requires auth
+passkey.get("/passkey/list", requireAuth, async (c) => {
+  const user = c.get("user");
+  const passkeys = await listUserPasskeys(user.sub, user.tenantId);
+  return c.json({ passkeys });
+});
+
+// DELETE /auth/passkey/:id — requires auth
+passkey.delete("/passkey/:id", requireAuth, async (c) => {
+  const user = c.get("user");
+  const passkeyId = c.req.param("id");
+  const deleted = await deletePasskey(passkeyId, user.sub, user.tenantId);
+  if (!deleted) {
+    return c.json({ error: "Passkey not found" }, 404);
+  }
+  return c.json({ success: true });
+});
+
+// PATCH /auth/passkey/:id — requires auth (rename)
+passkey.patch("/passkey/:id", requireAuth, async (c) => {
+  const user = c.get("user");
+  const passkeyId = c.req.param("id");
+  const body = await c.req.json<{ deviceName: string }>();
+  if (!body.deviceName?.trim()) {
+    return c.json({ error: "Device name is required" }, 400);
+  }
+  const updated = await renamePasskey(passkeyId, user.sub, user.tenantId, body.deviceName.trim());
+  if (!updated) {
+    return c.json({ error: "Passkey not found" }, 404);
+  }
   return c.json({ success: true });
 });
 

@@ -4,11 +4,16 @@ export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as LoginPage } from './LoginPage';
 export {
   configureAuthClient,
+  AuthError,
   startImpersonation,
   endImpersonation,
   getPasskeyRegisterOptions,
   verifyPasskeyRegister,
+  listPasskeys,
+  deletePasskey,
+  renamePasskey,
 } from './auth-client';
+export type { PasskeyInfo } from './auth-client';
 export {
   getAccessToken,
   setAccessToken,

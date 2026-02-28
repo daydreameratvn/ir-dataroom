@@ -35,7 +35,7 @@ interface GoogleTokenResponse {
 
 export async function getAdminConsentUrl(state: string): Promise<string> {
   const config = await getOAuthConfig("google");
-  const baseUrl = process.env.AUTH_BASE_URL || "https://api.papaya.insure";
+  const baseUrl = process.env.AUTH_BASE_URL || "https://oasis.papaya.asia";
   const redirectUri = `${baseUrl}/auth/admin/directory/callback/google`;
 
   const params = new URLSearchParams({
@@ -54,7 +54,7 @@ export async function exchangeAdminConsentCode(
   code: string
 ): Promise<{ accessToken: string; refreshToken: string; email: string }> {
   const config = await getOAuthConfig("google");
-  const baseUrl = process.env.AUTH_BASE_URL || "https://api.papaya.insure";
+  const baseUrl = process.env.AUTH_BASE_URL || "https://oasis.papaya.asia";
   const redirectUri = `${baseUrl}/auth/admin/directory/callback/google`;
 
   const tokenResp = await fetch(GOOGLE_TOKEN_URL, {

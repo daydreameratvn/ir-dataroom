@@ -123,11 +123,51 @@ export async function getPasskeyRegisterOptions(
 export async function verifyPasskeyRegister(
   response: unknown,
   accessToken: string,
+  deviceName?: string,
 ): Promise<{ success: boolean }> {
   return authRequest('/passkey/register/verify', {
     method: 'POST',
     headers: { Authorization: `Bearer ${accessToken}` },
-    body: JSON.stringify(response),
+    body: JSON.stringify({ ...response as Record<string, unknown>, deviceName }),
+  });
+}
+
+export interface PasskeyInfo {
+  id: string;
+  credentialId: string;
+  deviceName: string | null;
+  createdAt: string;
+  lastUsedAt: string | null;
+}
+
+export async function listPasskeys(
+  accessToken: string,
+): Promise<{ passkeys: PasskeyInfo[] }> {
+  return authRequest('/passkey/list', {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+}
+
+export async function deletePasskey(
+  passkeyId: string,
+  accessToken: string,
+): Promise<{ success: boolean }> {
+  return authRequest(`/passkey/${passkeyId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+}
+
+export async function renamePasskey(
+  passkeyId: string,
+  deviceName: string,
+  accessToken: string,
+): Promise<{ success: boolean }> {
+  return authRequest(`/passkey/${passkeyId}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify({ deviceName }),
   });
 }
 

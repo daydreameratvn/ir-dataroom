@@ -181,6 +181,70 @@ export async function verifyAuthResponse(
   };
 }
 
+export interface PasskeyInfo {
+  id: string;
+  credentialId: string;
+  deviceName: string | null;
+  createdAt: string;
+  lastUsedAt: string | null;
+}
+
+export async function listUserPasskeys(
+  userId: string,
+  tenantId: string
+): Promise<PasskeyInfo[]> {
+  const result = await query<{
+    id: string;
+    credential_id: string;
+    device_name: string | null;
+    created_at: string;
+    last_used_at: string | null;
+  }>(
+    `SELECT id, credential_id, device_name, created_at, last_used_at
+     FROM auth_passkeys
+     WHERE user_id = $1 AND tenant_id = $2 AND deleted_at IS NULL
+     ORDER BY created_at DESC`,
+    [userId, tenantId]
+  );
+
+  return result.rows.map((row) => ({
+    id: row.id,
+    credentialId: row.credential_id,
+    deviceName: row.device_name,
+    createdAt: row.created_at,
+    lastUsedAt: row.last_used_at,
+  }));
+}
+
+export async function deletePasskey(
+  passkeyId: string,
+  userId: string,
+  tenantId: string
+): Promise<boolean> {
+  const result = await query(
+    `UPDATE auth_passkeys
+     SET deleted_at = now(), deleted_by = $3
+     WHERE id = $1 AND user_id = $3 AND tenant_id = $2 AND deleted_at IS NULL`,
+    [passkeyId, tenantId, userId]
+  );
+  return (result.rowCount ?? 0) > 0;
+}
+
+export async function renamePasskey(
+  passkeyId: string,
+  userId: string,
+  tenantId: string,
+  deviceName: string
+): Promise<boolean> {
+  const result = await query(
+    `UPDATE auth_passkeys
+     SET device_name = $4, updated_at = now(), updated_by = $3
+     WHERE id = $1 AND user_id = $3 AND tenant_id = $2 AND deleted_at IS NULL`,
+    [passkeyId, tenantId, userId, deviceName]
+  );
+  return (result.rowCount ?? 0) > 0;
+}
+
 export async function findUserByCredentialId(
   credentialId: string
 ): Promise<{ userId: string; tenantId: string } | null> {

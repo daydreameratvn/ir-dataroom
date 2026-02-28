@@ -90,7 +90,7 @@ export async function getOAuthConfig(
     getSSMParam(`${prefix}/client-secret`),
   ]);
 
-  const baseUrl = process.env.AUTH_BASE_URL || "https://api.papaya.insure";
+  const baseUrl = process.env.AUTH_BASE_URL || "https://oasis.papaya.asia";
   const redirectUri = `${baseUrl}/auth/callback/${provider}`;
 
   cachedOAuthConfigs[provider] = { clientId, clientSecret, redirectUri };
@@ -104,6 +104,6 @@ export const authConfig = {
   otpExpiry: 10 * 60 * 1000, // 10 minutes
   otpMaxAttempts: 5,
   rpName: "Papaya Insurance",
-  rpId: process.env.RP_ID || "papaya.insure",
-  rpOrigin: process.env.RP_ORIGIN || "https://app.papaya.insure",
+  rpId: process.env.RP_ID || "papaya.asia",
+  rpOrigin: process.env.RP_ORIGIN || "https://oasis.papaya.asia",
 };

@@ -202,7 +202,7 @@ directory.get("/admin/directory/callback/google", async (c) => {
   const error = c.req.query("error");
 
   const frontendBase =
-    process.env.RP_ORIGIN || "https://app.papaya.insure";
+    process.env.RP_ORIGIN || "https://oasis.papaya.asia";
 
   if (error) {
     return c.redirect(
