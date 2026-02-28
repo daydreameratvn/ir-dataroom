@@ -13,6 +13,8 @@ import statusRoutes from "./routes/status.ts";
 import drone from "./routes/drone.ts";
 import fwa from "./routes/fwa.ts";
 import ir from "./routes/ir.ts";
+import directoryRoutes from "./routes/directory.ts";
+import { startSyncScheduler } from "./services/sync-scheduler.ts";
 
 const app = new Hono();
 
@@ -45,6 +47,7 @@ app.route("/auth", statusRoutes);
 app.route("/auth", drone);
 app.route("/auth", fwa);
 app.route("/auth", ir);
+app.route("/auth", directoryRoutes);
 
 // Global error handler — auto-reports unhandled errors
 app.onError(async (err, c) => {
@@ -65,6 +68,11 @@ app.onError(async (err, c) => {
 });
 
 console.log(`Auth service starting on port ${authConfig.port}`);
+
+// Start background directory sync scheduler in production
+if (process.env.NODE_ENV !== "test") {
+  startSyncScheduler();
+}
 
 export default {
   port: authConfig.port,

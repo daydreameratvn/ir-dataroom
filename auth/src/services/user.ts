@@ -160,6 +160,62 @@ export async function recordLoginAttempt(opts: {
   );
 }
 
+// ---------- Directory auto-join ----------
+
+interface AutoJoinProviderRow {
+  id: string;
+  auto_join_user_type: string;
+  auto_join_user_level: string;
+}
+
+export async function findAutoJoinProvider(
+  domain: string,
+  tenantId: string
+): Promise<AutoJoinProviderRow | null> {
+  const result = await query<AutoJoinProviderRow>(
+    `SELECT id, auto_join_user_type, auto_join_user_level
+     FROM tenant_identity_providers
+     WHERE tenant_id = $1
+       AND $2 = ANY(domains)
+       AND auto_join_enabled = true
+       AND is_active = true
+       AND deleted_at IS NULL
+     LIMIT 1`,
+    [tenantId, domain.toLowerCase()]
+  );
+  return result.rows[0] ?? null;
+}
+
+export async function autoProvisionUser(opts: {
+  tenantId: string;
+  email: string;
+  name: string;
+  userType: string;
+  userLevel: string;
+  directoryProviderId: string;
+  directorySyncId?: string;
+}): Promise<AuthUser> {
+  const id = crypto.randomUUID();
+  const result = await query<UserRow>(
+    `INSERT INTO users
+       (id, tenant_id, email, name, user_type, user_level,
+        directory_provider_id, directory_sync_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+     RETURNING id, email, name, tenant_id, user_type, user_level, phone, is_impersonatable`,
+    [
+      id,
+      opts.tenantId,
+      opts.email,
+      opts.name,
+      opts.userType,
+      opts.userLevel,
+      opts.directoryProviderId,
+      opts.directorySyncId ?? null,
+    ]
+  );
+  return rowToUser(result.rows[0]!);
+}
+
 // ---------- Admin user management ----------
 
 export interface AdminUserView extends AuthUser {

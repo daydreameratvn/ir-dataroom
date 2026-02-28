@@ -18,6 +18,8 @@ import {
   updateLastLogin,
   recordLoginAttempt,
   getUserRoles,
+  findAutoJoinProvider,
+  autoProvisionUser,
 } from "../services/user.ts";
 import { signAccessToken } from "../services/jwt.ts";
 import {
@@ -149,6 +151,26 @@ sso.get("/callback/:provider", async (c) => {
       user = await findUserByEmail(tenantId, email);
       if (user) {
         await linkIdentity(tenantId, user.id, provider, providerUserId);
+      }
+    }
+
+    // Auto-join: if no user found, check if domain auto-provisioning is configured
+    if (!user) {
+      const emailDomain = email.split("@")[1];
+      if (emailDomain) {
+        const autoJoinProvider = await findAutoJoinProvider(emailDomain, tenantId);
+        if (autoJoinProvider) {
+          user = await autoProvisionUser({
+            tenantId,
+            email,
+            name,
+            userType: autoJoinProvider.auto_join_user_type,
+            userLevel: autoJoinProvider.auto_join_user_level,
+            directoryProviderId: autoJoinProvider.id,
+            directorySyncId: providerUserId,
+          });
+          await linkIdentity(tenantId, user.id, provider, providerUserId);
+        }
       }
     }
 
