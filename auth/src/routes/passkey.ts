@@ -45,7 +45,7 @@ passkey.post("/passkey/register/options", requireAuth, async (c) => {
 
   const options = await generateRegOptions(
     user.sub,
-    user.name,
+    user.email,
     user.tenantId
   );
 
@@ -75,7 +75,7 @@ passkey.post("/passkey/register/verify", requireAuth, async (c) => {
   await storePasskey({
     tenantId: user.tenantId,
     userId: user.sub,
-    credentialId: Buffer.from(credential.id).toString("base64url"),
+    credentialId: credential.id,
     publicKey: Buffer.from(credential.publicKey).toString("base64url"),
     signCount: credential.counter,
     deviceName: (body as Record<string, string>).deviceName,
