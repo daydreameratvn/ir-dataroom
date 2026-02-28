@@ -10,6 +10,7 @@ import {
   SheetTrigger,
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from '@papaya/shared-ui';
 import {
@@ -62,6 +63,7 @@ export default function ThemeCustomizer() {
             <h4 className="mb-2.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
               {t('theme.color')}
             </h4>
+            <TooltipProvider delayDuration={300}>
             <div className="flex flex-wrap gap-2">
               {colorThemes.map((ct) => {
                 const isActive = colorTheme === ct.name;
@@ -90,6 +92,7 @@ export default function ThemeCustomizer() {
                 );
               })}
             </div>
+            </TooltipProvider>
           </section>
 
           {/* ── Border radius ── */}
