@@ -212,7 +212,7 @@ export const banyanAuthTaskDef = new aws.ecs.TaskDefinition("banyan-prod-auth-ta
             { name: "PORT", value: "4000" },
             { name: "NODE_ENV", value: "production" },
             { name: "AWS_REGION", value: "ap-southeast-1" },
-            { name: "RP_ID", value: "oasis.papaya.asia" },
+            { name: "RP_ID", value: "papaya.asia" },
             { name: "RP_ORIGIN", value: "https://oasis.papaya.asia" },
             { name: "AUTH_BASE_URL", value: "https://oasis.papaya.asia" },
             { name: "OTP_FROM_EMAIL", value: "noreply@papaya.asia" },
