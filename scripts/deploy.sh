@@ -20,26 +20,12 @@ echo "Region:  $REGION"
 echo "Target:  $TARGET"
 echo ""
 
-# ----- Helper: get Pulumi stack output -----
-# Outputs are nested under "stackOutputs" as a JSON object
-get_output() {
-  local key="$1"
-  cd "$REPO_ROOT/rootstock"
-  export PULUMI_CONFIG_PASSPHRASE=$(aws ssm get-parameter \
-    --name /banyan/pulumi/config-passphrase \
-    --with-decryption --region "$REGION" \
-    --query Parameter.Value --output text)
-  pulumi stack select prod 2>/dev/null
-  pulumi stack output stackOutputs 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin)['$key'])"
-}
-
 # =============================================================
 # Deploy Auth Service
 # =============================================================
 deploy_auth() {
   echo ">>> Building auth Docker image..."
-  local ECR_URL
-  ECR_URL=$(get_output AuthEcrRepoUrl)
+  local ECR_URL="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/banyan-auth"
   echo "ECR: $ECR_URL"
 
   # Login to ECR
@@ -72,10 +58,8 @@ deploy_frontend() {
   bun install
   bun run build
 
-  local BUCKET
-  BUCKET=$(get_output FrontendBucketName)
-  local CF_ID
-  CF_ID=$(get_output CloudFrontDistributionId)
+  local BUCKET="banyan-prod-frontend"
+  local CF_ID="E1SZ4G9NL7U0ZA"
 
   echo ">>> Uploading to S3 ($BUCKET)..."
   # Shell app is the main frontend build output
@@ -96,9 +80,7 @@ deploy_frontend() {
     --paths "/*" \
     --query 'Invalidation.Id' --output text
 
-  local CF_DOMAIN
-  CF_DOMAIN=$(get_output CloudFrontDomainName)
-  echo ">>> Frontend deployed at https://$CF_DOMAIN"
+  echo ">>> Frontend deployed at https://oasis.papaya.asia"
 }
 
 # =============================================================
