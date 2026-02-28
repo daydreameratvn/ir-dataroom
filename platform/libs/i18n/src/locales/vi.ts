@@ -304,6 +304,9 @@ const translations = {
       openMenu: 'Mở menu',
       edit: 'Chỉnh sửa',
       delete: 'Xóa',
+      impersonate: 'Mạo danh',
+      allowImpersonation: 'Cho phép mạo danh',
+      disallowImpersonation: 'Không cho phép mạo danh',
     },
     searchPlaceholder: 'Tìm theo tên hoặc email...',
     filters: {
@@ -343,6 +346,12 @@ const translations = {
       title: 'Xóa người dùng',
       description: 'Bạn có chắc muốn xóa {{name}}? Hành động này không thể hoàn tác.',
       deleting: 'Đang xóa...',
+    },
+    impersonateDialog: {
+      title: 'Mạo danh người dùng',
+      description: 'Bạn sẽ xem Oasis với tư cách {{name}}. Mọi hành động sẽ được ghi lại.',
+      confirm: 'Bắt đầu mạo danh',
+      impersonating: 'Đang mạo danh...',
     },
     form: {
       name: 'Tên',

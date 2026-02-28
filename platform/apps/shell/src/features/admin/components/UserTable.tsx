@@ -10,6 +10,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  Eye,
+  ShieldCheck,
+  ShieldOff,
 } from 'lucide-react';
 import type { UserType, UserLevel } from '@papaya/shared-types';
 import {
@@ -43,7 +46,7 @@ import {
 } from '@papaya/shared-ui';
 import { useAuth } from '@papaya/auth';
 import useUsers from '../hooks/useUsers';
-import { deleteUser, type AdminUser } from '../api';
+import { deleteUser, setUserImpersonatable, type AdminUser } from '../api';
 import UserDialog from './UserDialog';
 import TenantFilter from './TenantFilter';
 
@@ -95,6 +98,12 @@ export default function UserTable() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingUser, setDeletingUser] = useState<AdminUser | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // ── Impersonation state ──
+  const [impersonateDialogOpen, setImpersonateDialogOpen] = useState(false);
+  const [impersonatingUser, setImpersonatingUser] = useState<AdminUser | null>(null);
+  const [isImpersonating, setIsImpersonating] = useState(false);
+  const { startImpersonation } = useAuth();
 
   // ── Debounced search ──
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -164,6 +173,35 @@ export default function UserTable() {
     }
   }
 
+  function handleImpersonateClick(user: AdminUser) {
+    setImpersonatingUser(user);
+    setImpersonateDialogOpen(true);
+  }
+
+  async function handleConfirmImpersonate() {
+    if (!impersonatingUser) return;
+
+    setIsImpersonating(true);
+    try {
+      await startImpersonation(impersonatingUser.id);
+      setImpersonateDialogOpen(false);
+      setImpersonatingUser(null);
+    } catch {
+      // Error handling could be improved with a toast
+    } finally {
+      setIsImpersonating(false);
+    }
+  }
+
+  async function handleToggleImpersonatable(user: AdminUser) {
+    try {
+      await setUserImpersonatable(user.id, !user.isImpersonatable);
+      refetch();
+    } catch {
+      // Error handling could be improved with a toast
+    }
+  }
+
   // ── Relative time formatter ──
   function formatRelativeTime(dateString: string | undefined): string {
     if (!dateString) return t('admin.lastLogin.never');
@@ -198,7 +236,12 @@ export default function UserTable() {
                 <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
               </Avatar>
               <div className="min-w-0">
-                <div className="truncate text-sm font-medium">{user.name}</div>
+                <div className="flex items-center gap-1.5 truncate text-sm font-medium">
+                  {user.name}
+                  {user.isImpersonatable && (
+                    <Eye className="h-3 w-3 shrink-0 text-muted-foreground/50" />
+                  )}
+                </div>
                 <div className="truncate text-xs text-muted-foreground">{user.email}</div>
               </div>
             </div>
@@ -280,6 +323,27 @@ export default function UserTable() {
                   <Pencil className="mr-2 h-4 w-4" />
                   {t('admin.table.edit')}
                 </DropdownMenuItem>
+                {isSuperAdmin && !isSelf && (
+                  <DropdownMenuItem onClick={() => handleToggleImpersonatable(user)}>
+                    {user.isImpersonatable ? (
+                      <>
+                        <ShieldOff className="mr-2 h-4 w-4" />
+                        {t('admin.table.disallowImpersonation')}
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                        {t('admin.table.allowImpersonation')}
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                )}
+                {isSuperAdmin && !isSelf && user.isImpersonatable && (
+                  <DropdownMenuItem onClick={() => handleImpersonateClick(user)}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    {t('admin.table.impersonate')}
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   onClick={() => handleDeleteClick(user)}
                   disabled={isSelf}
@@ -473,6 +537,30 @@ export default function UserTable() {
               disabled={isDeleting}
             >
               {isDeleting ? t('admin.deleteDialog.deleting') : t('common.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Impersonate confirmation */}
+      <AlertDialog open={impersonateDialogOpen} onOpenChange={setImpersonateDialogOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('admin.impersonateDialog.title')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('admin.impersonateDialog.description', { name: impersonatingUser?.name })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isImpersonating}>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-amber-600 text-white hover:bg-amber-700"
+              onClick={handleConfirmImpersonate}
+              disabled={isImpersonating}
+            >
+              {isImpersonating
+                ? t('admin.impersonateDialog.impersonating')
+                : t('admin.impersonateDialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -304,6 +304,9 @@ const translations = {
       openMenu: '打开菜单',
       edit: '编辑',
       delete: '删除',
+      impersonate: '模拟身份',
+      allowImpersonation: '允许身份模拟',
+      disallowImpersonation: '禁止身份模拟',
     },
     searchPlaceholder: '按姓名或邮箱搜索...',
     filters: {
@@ -343,6 +346,12 @@ const translations = {
       title: '删除用户',
       description: '确定要删除 {{name}} 吗？此操作无法撤销。',
       deleting: '删除中...',
+    },
+    impersonateDialog: {
+      title: '模拟用户身份',
+      description: '您将以 {{name}} 的身份查看 Oasis。所有操作将被记录。',
+      confirm: '开始模拟',
+      impersonating: '正在模拟...',
     },
     form: {
       name: '姓名',

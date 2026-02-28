@@ -315,6 +315,9 @@ const translations = {
       openMenu: 'Open menu',
       edit: 'Edit',
       delete: 'Delete',
+      impersonate: 'Impersonate',
+      allowImpersonation: 'Allow Impersonation',
+      disallowImpersonation: 'Disallow Impersonation',
     },
     searchPlaceholder: 'Search by name or email...',
     filters: {
@@ -354,6 +357,12 @@ const translations = {
       title: 'Delete User',
       description: 'Are you sure you want to delete {{name}}? This action cannot be undone.',
       deleting: 'Deleting...',
+    },
+    impersonateDialog: {
+      title: 'Impersonate User',
+      description: 'You will view Oasis as {{name}}. All actions will be logged.',
+      confirm: 'Start Impersonation',
+      impersonating: 'Impersonating...',
     },
     form: {
       name: 'Name',

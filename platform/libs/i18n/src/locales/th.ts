@@ -304,6 +304,9 @@ const translations = {
       openMenu: 'เปิดเมนู',
       edit: 'แก้ไข',
       delete: 'ลบ',
+      impersonate: 'สวมบทบาท',
+      allowImpersonation: 'อนุญาตการสวมบทบาท',
+      disallowImpersonation: 'ยกเลิกการอนุญาตสวมบทบาท',
     },
     searchPlaceholder: 'ค้นหาตามชื่อหรืออีเมล...',
     filters: {
@@ -343,6 +346,12 @@ const translations = {
       title: 'ลบผู้ใช้',
       description: 'คุณแน่ใจหรือไม่ว่าต้องการลบ {{name}}? การดำเนินการนี้ไม่สามารถยกเลิกได้',
       deleting: 'กำลังลบ...',
+    },
+    impersonateDialog: {
+      title: 'สวมบทบาทผู้ใช้',
+      description: 'คุณจะเห็น Oasis ในมุมมองของ {{name}} การดำเนินการทั้งหมดจะถูกบันทึก',
+      confirm: 'เริ่มสวมบทบาท',
+      impersonating: 'กำลังสวมบทบาท...',
     },
     form: {
       name: 'ชื่อ',
