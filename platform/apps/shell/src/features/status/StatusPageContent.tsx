@@ -24,42 +24,19 @@ import {
   Server,
   Loader2,
   RefreshCw,
+  Wrench,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
-
-/* ── Types ── */
-
-type ServiceStatus = 'operational' | 'degraded' | 'outage' | 'maintenance';
-
-interface ServiceHealth {
-  name: string;
-  status: ServiceStatus;
-  latencyMs: number | null;
-  message?: string;
-}
-
-interface Service extends ServiceHealth {
-  description: string;
-  icon: React.ReactNode;
-  dailyStatus: ServiceStatus[];
-  uptime: number;
-}
-
-interface IncidentSummary {
-  id: string;
-  title: string;
-  status: string;
-  severity: string;
-  source: string;
-  createdAt: string;
-  lastSeenAt: string;
-  occurrenceCount: number;
-}
-
-interface StatusResponse {
-  services: ServiceHealth[];
-  incidents: IncidentSummary[];
-  checkedAt: string;
-}
+import type {
+  ServiceStatus,
+  ServiceHealth,
+  Service,
+  StatusResponse,
+  StatusIncident,
+  DailyStatus,
+  ServiceOverride,
+} from './types';
 
 /* ── Service metadata (icons, descriptions) ── */
 
@@ -86,7 +63,7 @@ const SERVICE_META: Record<string, { description: string; icon: React.ReactNode 
   },
 };
 
-/* ── Generate synthetic daily status from current status ── */
+/* ── Synthetic fallback (used when no real uptime history exists yet) ── */
 
 function generateDailyStatus(currentStatus: ServiceStatus): ServiceStatus[] {
   const days: ServiceStatus[] = [];
@@ -99,7 +76,6 @@ function generateDailyStatus(currentStatus: ServiceStatus): ServiceStatus[] {
       days.push('operational');
     }
   }
-  // Ensure last day reflects current status
   days[89] = currentStatus;
   return days;
 }
@@ -107,6 +83,33 @@ function generateDailyStatus(currentStatus: ServiceStatus): ServiceStatus[] {
 function computeUptime(dailyStatus: ServiceStatus[]): number {
   const operational = dailyStatus.filter((s) => s === 'operational').length;
   return parseFloat(((operational / dailyStatus.length) * 100).toFixed(2));
+}
+
+/* ── Build per-service daily status from uptimeHistory ── */
+
+function buildDailyStatusFromHistory(
+  serviceName: string,
+  uptimeHistory: DailyStatus[],
+): ServiceStatus[] {
+  // Create a map of date -> status for this service
+  const dateStatusMap = new Map<string, ServiceStatus>();
+  for (const day of uptimeHistory) {
+    const svc = day.services.find((s) => s.name === serviceName);
+    if (svc) {
+      dateStatusMap.set(day.date, svc.status as ServiceStatus);
+    }
+  }
+
+  // Build 90-day array (oldest first)
+  const days: ServiceStatus[] = [];
+  const today = new Date();
+  for (let i = 89; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toISOString().split('T')[0]!;
+    days.push(dateStatusMap.get(dateStr) ?? 'operational');
+  }
+  return days;
 }
 
 /* ── Data fetching hook ── */
@@ -133,7 +136,6 @@ function useStatusData() {
 
   useEffect(() => {
     fetchStatus();
-    // Auto-refresh every 60 seconds
     const interval = setInterval(fetchStatus, 60_000);
     return () => clearInterval(interval);
   }, [fetchStatus]);
@@ -143,13 +145,20 @@ function useStatusData() {
 
 /* ── Merge API data with UI metadata ── */
 
-function buildServices(healthData: ServiceHealth[]): Service[] {
+function buildServices(
+  healthData: ServiceHealth[],
+  uptimeHistory: DailyStatus[],
+): Service[] {
+  const hasHistory = uptimeHistory.length > 0;
+
   return healthData.map((svc) => {
     const meta = SERVICE_META[svc.name] ?? {
       description: '',
       icon: <Server className="h-4 w-4" />,
     };
-    const dailyStatus = generateDailyStatus(svc.status);
+    const dailyStatus = hasHistory
+      ? buildDailyStatusFromHistory(svc.name, uptimeHistory)
+      : generateDailyStatus(svc.status);
     return {
       ...svc,
       description: meta.description,
@@ -196,8 +205,6 @@ function useStatusConfig() {
     minor: { label: t('status.severityLabels.minor'), variant: 'secondary' },
     major: { label: t('status.severityLabels.major'), variant: 'default' },
     critical: { label: t('status.severityLabels.critical'), variant: 'destructive' },
-    warning: { label: 'Warning', variant: 'secondary' },
-    error: { label: 'Error', variant: 'default' },
   };
 
   const overallStatusMessages: Record<ServiceStatus, { title: string; subtitle: string; icon: React.ReactNode }> = {
@@ -228,20 +235,9 @@ function useStatusConfig() {
 
 const incidentStatusConfig: Record<string, { icon: React.ReactNode; color: string }> = {
   resolved: { icon: <CheckCircle2 className="h-4 w-4" />, color: 'text-emerald-600' },
-  new: { icon: <AlertTriangle className="h-4 w-4" />, color: 'text-red-600' },
-  acknowledged: { icon: <Activity className="h-4 w-4" />, color: 'text-blue-600' },
-  auto_fix_pending: { icon: <Clock className="h-4 w-4" />, color: 'text-purple-600' },
-  auto_fix_pr_created: { icon: <CheckCircle2 className="h-4 w-4" />, color: 'text-purple-600' },
-  ignored: { icon: <XCircle className="h-4 w-4" />, color: 'text-gray-500' },
-  wont_fix: { icon: <XCircle className="h-4 w-4" />, color: 'text-gray-500' },
-};
-
-const SOURCE_LABELS: Record<string, string> = {
-  frontend_boundary: 'Frontend',
-  frontend_unhandled: 'Frontend',
-  backend_unhandled: 'Backend',
-  backend_api: 'API',
-  agent: 'Agent',
+  investigating: { icon: <AlertTriangle className="h-4 w-4" />, color: 'text-red-600' },
+  identified: { icon: <Activity className="h-4 w-4" />, color: 'text-amber-600' },
+  monitoring: { icon: <Clock className="h-4 w-4" />, color: 'text-blue-600' },
 };
 
 function getOverallStatus(svcs: Service[]): ServiceStatus {
@@ -295,7 +291,12 @@ function UptimeBar({ dailyStatus }: { dailyStatus: ServiceStatus[] }) {
 
 /* ── Service Row ── */
 
-function ServiceRow({ service }: { service: Service }) {
+interface ServiceRowProps {
+  service: Service;
+  override?: ServiceOverride;
+}
+
+function ServiceRow({ service, override }: ServiceRowProps) {
   const { t } = useTranslation();
   const { statusConfig } = useStatusConfig();
   const config = statusConfig[service.status];
@@ -314,6 +315,12 @@ function ServiceRow({ service }: { service: Service }) {
                 <span className="text-[10px] font-mono text-muted-foreground/50">
                   {service.latencyMs}ms
                 </span>
+              )}
+              {override && (
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 gap-1">
+                  <Wrench className="h-2.5 w-2.5" />
+                  Override
+                </Badge>
               )}
             </div>
             <p className="text-xs text-muted-foreground truncate">{service.description}</p>
@@ -347,45 +354,58 @@ function ServiceRow({ service }: { service: Service }) {
 
 /* ── Incident Card ── */
 
-function IncidentCard({ incident }: { incident: IncidentSummary }) {
+function IncidentCard({ incident }: { incident: StatusIncident }) {
+  const { t } = useTranslation();
   const { severityConfig } = useStatusConfig();
+  const [expanded, setExpanded] = useState(false);
   const sConfig = severityConfig[incident.severity] ?? { label: incident.severity, variant: 'secondary' as const };
   const iConfig = incidentStatusConfig[incident.status] ?? { icon: <AlertTriangle className="h-4 w-4" />, color: 'text-amber-600' };
-  const sourceLabel = SOURCE_LABELS[incident.source] ?? incident.source;
 
   return (
     <div className="relative pl-6 pb-8 last:pb-0">
       {/* Timeline connector */}
       <div className="absolute left-[7px] top-6 bottom-0 w-px bg-border last:hidden" />
       <div className={cn('absolute left-0 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-background border-2',
-        incident.status === 'resolved' || incident.status === 'ignored' || incident.status === 'wont_fix'
-          ? 'border-emerald-400'
-          : 'border-amber-400'
+        incident.status === 'resolved' ? 'border-emerald-400' : 'border-amber-400'
       )} />
 
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
-          <h4 className="text-sm font-medium text-foreground line-clamp-2">{incident.title}</h4>
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center gap-1 text-sm font-medium text-foreground hover:text-papaya transition-colors line-clamp-2"
+          >
+            {expanded ? <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 flex-shrink-0" />}
+            {incident.title}
+          </button>
           <Badge variant={sConfig.variant} className="text-[10px] px-1.5 py-0">
             {sConfig.label}
           </Badge>
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-            {sourceLabel}
-          </Badge>
+          {incident.affectedServices.length > 0 && (
+            <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+              {incident.affectedServices.join(', ')}
+            </Badge>
+          )}
         </div>
 
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span className={cn('inline-flex items-center gap-1', iConfig.color)}>
             {iConfig.icon}
-            <span className="capitalize font-medium">{incident.status.replace(/_/g, ' ')}</span>
+            <span className="capitalize font-medium">{incident.status}</span>
           </span>
-          <span>{new Date(incident.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
-          {incident.occurrenceCount > 1 && (
-            <span className="text-muted-foreground/60">
-              {incident.occurrenceCount} occurrences
+          <span>{new Date(incident.startedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+          {incident.resolvedAt && (
+            <span className="text-emerald-600">
+              {t('status.resolved', { time: new Date(incident.resolvedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) })}
             </span>
           )}
         </div>
+
+        {expanded && incident.description && (
+          <p className="text-xs text-muted-foreground pl-5 pt-1">
+            {incident.description}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -398,10 +418,15 @@ export default function StatusPageContent() {
   const { overallStatusMessages } = useStatusConfig();
   const { data, isLoading, error, refetch } = useStatusData();
 
-  // Build service list from API data
-  const services = data ? buildServices(data.services) : [];
-  const incidents = data?.incidents ?? [];
+  // Build service list from API data with real uptime history
+  const uptimeHistory = data?.uptimeHistory ?? [];
+  const services = data ? buildServices(data.services, uptimeHistory) : [];
+  const incidents: StatusIncident[] = data?.incidents ?? [];
+  const overrides: ServiceOverride[] = data?.overrides ?? [];
   const checkedAt = data?.checkedAt;
+
+  // Build override lookup
+  const overrideMap = new Map<string, ServiceOverride>(overrides.map((o) => [o.serviceName, o]));
 
   const overall = services.length > 0 ? getOverallStatus(services) : 'operational';
   const banner = overallStatusMessages[overall];
@@ -410,9 +435,7 @@ export default function StatusPageContent() {
   const overallUptime = services.length > 0
     ? (services.reduce((sum, s) => sum + s.uptime, 0) / services.length).toFixed(2)
     : '--';
-  const activeIncidents = incidents.filter(
-    (i) => i.status !== 'resolved' && i.status !== 'ignored' && i.status !== 'wont_fix',
-  ).length;
+  const activeIncidents = incidents.filter((i) => i.status !== 'resolved').length;
 
   if (isLoading && !data) {
     return (
@@ -507,7 +530,11 @@ export default function StatusPageContent() {
           </div>
           <div className="divide-y">
             {services.map((service) => (
-              <ServiceRow key={service.name} service={service} />
+              <ServiceRow
+                key={service.name}
+                service={service}
+                override={overrideMap.get(service.name)}
+              />
             ))}
           </div>
         </CardContent>
