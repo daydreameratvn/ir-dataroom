@@ -4,23 +4,46 @@ import App from './App';
 import { ProtectedRoute, LoginPage } from '@papaya/auth';
 import ErrorPage from './components/ErrorPage';
 
+/**
+ * Wraps a dynamic import so that chunk-load failures (stale hashes after
+ * a new deployment) trigger a single hard reload to pick up the new assets.
+ * Uses sessionStorage to prevent infinite reload loops.
+ */
+function lazyWithReload<T extends { default: React.ComponentType }>(
+  factory: () => Promise<T>,
+) {
+  return lazy(() =>
+    factory().catch((err: unknown) => {
+      const key = 'chunk-reload';
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1');
+        window.location.reload();
+        // Return a never-resolving promise so React doesn't render the error
+        return new Promise<T>(() => {});
+      }
+      sessionStorage.removeItem(key);
+      throw err;
+    }),
+  );
+}
+
 // Feature pages
-const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage'));
-const ClaimsPage = lazy(() => import('./features/claims/ClaimsPage'));
-const PoliciesPage = lazy(() => import('./features/policies/PoliciesPage'));
-const UnderwritingPage = lazy(() => import('./features/underwriting/UnderwritingPage'));
-const FWAPage = lazy(() => import('./features/fwa/FWAPage'));
-const ProvidersPage = lazy(() => import('./features/providers/ProvidersPage'));
-const ReportingPage = lazy(() => import('./features/reporting/ReportingPage'));
-const AdminPage = lazy(() => import('./features/admin/AdminPage'));
-const AIAgentsPage = lazy(() => import('./features/ai-agents/AIAgentsPage'));
-const FatimaPage = lazy(() => import('./features/fatima/FatimaPage'));
-const DronePage = lazy(() => import('./features/drone/DronePage'));
-const IRPage = lazy(() => import('./features/ir/IRPage'));
-const DesignSystemPage = lazy(() => import('./features/design-system/DesignSystemPage'));
-const StatusPage = lazy(() => import('./features/status/StatusPage'));
-const ProfilePage = lazy(() => import('./features/profile/ProfilePage'));
-const StatusPagePublic = lazy(() => import('./features/status/StatusPagePublic'));
+const DashboardPage = lazyWithReload(() => import('./features/dashboard/DashboardPage'));
+const ClaimsPage = lazyWithReload(() => import('./features/claims/ClaimsPage'));
+const PoliciesPage = lazyWithReload(() => import('./features/policies/PoliciesPage'));
+const UnderwritingPage = lazyWithReload(() => import('./features/underwriting/UnderwritingPage'));
+const FWAPage = lazyWithReload(() => import('./features/fwa/FWAPage'));
+const ProvidersPage = lazyWithReload(() => import('./features/providers/ProvidersPage'));
+const ReportingPage = lazyWithReload(() => import('./features/reporting/ReportingPage'));
+const AdminPage = lazyWithReload(() => import('./features/admin/AdminPage'));
+const AIAgentsPage = lazyWithReload(() => import('./features/ai-agents/AIAgentsPage'));
+const FatimaPage = lazyWithReload(() => import('./features/fatima/FatimaPage'));
+const DronePage = lazyWithReload(() => import('./features/drone/DronePage'));
+const IRPage = lazyWithReload(() => import('./features/ir/IRPage'));
+const DesignSystemPage = lazyWithReload(() => import('./features/design-system/DesignSystemPage'));
+const StatusPage = lazyWithReload(() => import('./features/status/StatusPage'));
+const ProfilePage = lazyWithReload(() => import('./features/profile/ProfilePage'));
+const StatusPagePublic = lazyWithReload(() => import('./features/status/StatusPagePublic'));
 
 // Remote app routes are injected dynamically in bootstrap.tsx via remotes.tsx.
 // They cannot be statically imported here because Vite and MF would fail to resolve
