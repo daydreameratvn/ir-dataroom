@@ -58,6 +58,11 @@ export const routes: RouteObject[] = [
                   },
                 ],
               },
+              // Catch-all: redirect unknown paths to round selection
+              {
+                path: '*',
+                element: <Navigate to="/" replace />,
+              },
             ],
           },
         ],
