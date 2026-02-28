@@ -3,7 +3,9 @@ import App from './App';
 import LoginPage from './features/auth/LoginPage';
 import OTPVerifyPage from './features/auth/OTPVerifyPage';
 import InvestorLayout from './features/components/InvestorLayout';
+import NotFoundPage from './features/components/NotFoundPage';
 import RoundSelectPage from './features/rounds/RoundSelectPage';
+import ProfilePage from './features/profile/ProfilePage';
 import DataroomPage from './features/dataroom/DataroomPage';
 import DocumentViewer from './features/dataroom/DocumentViewer';
 import NDAPage from './features/nda/NDAPage';
@@ -37,6 +39,10 @@ export const routes: RouteObject[] = [
                 element: <RoundSelectPage />,
               },
               {
+                path: 'profile',
+                element: <ProfilePage />,
+              },
+              {
                 path: 'rounds/:slug',
                 element: <RoundGuard />,
                 children: [
@@ -58,10 +64,9 @@ export const routes: RouteObject[] = [
                   },
                 ],
               },
-              // Catch-all: redirect unknown paths to round selection
               {
                 path: '*',
-                element: <Navigate to="/" replace />,
+                element: <NotFoundPage />,
               },
             ],
           },

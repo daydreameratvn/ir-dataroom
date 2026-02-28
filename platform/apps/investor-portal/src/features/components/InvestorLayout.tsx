@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { Button } from '@papaya/shared-ui';
 import { LogOut } from 'lucide-react';
 import { useInvestorAuth } from '@/providers/InvestorAuthProvider';
@@ -24,7 +24,7 @@ export default function InvestorLayout() {
           {/* User Info + Logout */}
           <div className="flex items-center gap-3">
             {investor && (
-              <div className="hidden text-right sm:block">
+              <Link to="/profile" className="hidden text-right sm:block hover:opacity-80">
                 <p className="text-sm font-medium text-foreground">
                   {investor.name}
                 </p>
@@ -33,7 +33,7 @@ export default function InvestorLayout() {
                     {investor.firm}
                   </p>
                 )}
-              </div>
+              </Link>
             )}
             <Button
               variant="ghost"
