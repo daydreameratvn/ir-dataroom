@@ -1,5 +1,22 @@
 import { Hono } from "hono";
 import { query } from "../db/pool.ts";
+import { requireAuth, requireAdmin } from "../middleware.ts";
+import {
+  createIncident,
+  getIncidentById,
+  listIncidents,
+  listActiveIncidents,
+  updateIncident,
+  resolveIncident,
+  softDeleteIncident,
+  postUpdate,
+} from "../services/status-incident.ts";
+import { recordSnapshot, getDailyStatusHistory } from "../services/status-snapshot.ts";
+import {
+  getActiveOverrides,
+  setOverride,
+  clearOverride,
+} from "../services/status-override.ts";
 
 const status = new Hono();
 
@@ -10,17 +27,6 @@ interface ServiceHealth {
   status: ServiceStatus;
   latencyMs: number | null;
   message?: string;
-}
-
-interface IncidentSummary {
-  id: string;
-  title: string;
-  status: string;
-  severity: string;
-  source: string;
-  createdAt: string;
-  lastSeenAt: string;
-  occurrenceCount: number;
 }
 
 async function checkDatabase(): Promise<ServiceHealth> {
@@ -175,52 +181,19 @@ async function checkPlatform(): Promise<ServiceHealth> {
   }
 }
 
-async function getRecentIncidents(): Promise<IncidentSummary[]> {
-  try {
-    const result = await query<{
-      id: string;
-      message: string;
-      status: string;
-      severity: string;
-      source: string;
-      created_at: string;
-      last_seen_at: string;
-      occurrence_count: number;
-    }>(
-      `SELECT id, message, status, severity, source, created_at, last_seen_at, occurrence_count
-       FROM error_reports
-       WHERE deleted_at IS NULL
-         AND severity IN ('critical', 'error')
-         AND created_at > now() - interval '7 days'
-       ORDER BY last_seen_at DESC
-       LIMIT 10`
-    );
-
-    return result.rows.map((r) => ({
-      id: r.id,
-      title: r.message,
-      status: r.status,
-      severity: r.severity,
-      source: r.source,
-      createdAt: r.created_at,
-      lastSeenAt: r.last_seen_at,
-      occurrenceCount: r.occurrence_count,
-    }));
-  } catch {
-    return [];
-  }
-}
-
 // GET /status — Public system status (no auth required)
 status.get("/status", async (c) => {
-  // Run health checks concurrently
-  const [platform, db, hasura, bedrock, incidents] = await Promise.all([
-    checkPlatform(),
-    checkDatabase(),
-    checkHasura(),
-    checkBedrock(),
-    getRecentIncidents(),
-  ]);
+  // Run health checks and fetch data concurrently
+  const [platform, db, hasura, bedrock, incidents, uptimeHistory, overrides] =
+    await Promise.all([
+      checkPlatform(),
+      checkDatabase(),
+      checkHasura(),
+      checkBedrock(),
+      listActiveIncidents(),
+      getDailyStatusHistory(90),
+      getActiveOverrides(),
+    ]);
 
   // Auth service is operational if we're responding
   const auth: ServiceHealth = {
@@ -229,13 +202,173 @@ status.get("/status", async (c) => {
     latencyMs: 0,
   };
 
-  const services = [platform, auth, hasura, bedrock, db];
+  let services: ServiceHealth[] = [platform, auth, hasura, bedrock, db];
+
+  // Apply active overrides — override status wins over live check
+  const overrideMap = new Map(overrides.map((o) => [o.serviceName, o]));
+  services = services.map((svc) => {
+    const override = overrideMap.get(svc.name);
+    if (override) {
+      return {
+        ...svc,
+        status: override.status as ServiceStatus,
+        message: override.reason ?? svc.message,
+      };
+    }
+    return svc;
+  });
+
+  // Record snapshot (non-blocking, throttled)
+  recordSnapshot(
+    services.map((s) => ({ name: s.name, status: s.status, latencyMs: s.latencyMs }))
+  );
 
   return c.json({
     services,
     incidents,
+    uptimeHistory,
+    overrides,
     checkedAt: new Date().toISOString(),
   });
 });
+
+// ── Admin routes ──
+
+const admin = new Hono();
+admin.use("*", requireAuth, requireAdmin);
+
+// GET /incidents — List incidents (paginated)
+admin.get("/", async (c) => {
+  const statusFilter = c.req.query("status");
+  const severity = c.req.query("severity");
+  const page = parseInt(c.req.query("page") ?? "1", 10);
+  const limit = parseInt(c.req.query("limit") ?? "20", 10);
+
+  const result = await listIncidents({ status: statusFilter, severity, page, limit });
+  return c.json(result);
+});
+
+// POST /incidents — Create incident
+admin.post("/", async (c) => {
+  const body = await c.req.json<{
+    title: string;
+    description?: string;
+    severity: string;
+    affectedServices: string[];
+    startedAt?: string;
+  }>();
+
+  if (!body.title || !body.severity || !body.affectedServices) {
+    return c.json({ error: "title, severity, and affectedServices are required" }, 400);
+  }
+
+  const user = c.get("user");
+  const incident = await createIncident(body, user.sub);
+  return c.json(incident, 201);
+});
+
+// GET /incidents/overrides — List active overrides
+admin.get("/overrides", async (c) => {
+  const result = await getActiveOverrides();
+  return c.json({ overrides: result });
+});
+
+// POST /incidents/overrides — Set service override
+admin.post("/overrides", async (c) => {
+  const body = await c.req.json<{
+    serviceName: string;
+    status: string;
+    reason?: string;
+    startsAt?: string;
+    endsAt?: string;
+  }>();
+
+  if (!body.serviceName || !body.status) {
+    return c.json({ error: "serviceName and status are required" }, 400);
+  }
+
+  const user = c.get("user");
+  const override = await setOverride(body, user.sub);
+  return c.json(override, 201);
+});
+
+// DELETE /incidents/overrides/:serviceName — Clear override
+admin.delete("/overrides/:serviceName", async (c) => {
+  const serviceName = c.req.param("serviceName");
+  const user = c.get("user");
+  const cleared = await clearOverride(serviceName, user.sub);
+  if (!cleared) {
+    return c.json({ error: "No active override found" }, 404);
+  }
+  return c.json({ ok: true });
+});
+
+// GET /incidents/:id — Get incident with updates
+admin.get("/:id", async (c) => {
+  const id = c.req.param("id");
+  const incident = await getIncidentById(id);
+  if (!incident) {
+    return c.json({ error: "Incident not found" }, 404);
+  }
+  return c.json(incident);
+});
+
+// PUT /incidents/:id — Update incident metadata
+admin.put("/:id", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json<{
+    title?: string;
+    description?: string;
+    severity?: string;
+    affectedServices?: string[];
+    status?: string;
+  }>();
+
+  const user = c.get("user");
+  const incident = await updateIncident(id, body, user.sub);
+  if (!incident) {
+    return c.json({ error: "Incident not found" }, 404);
+  }
+  return c.json(incident);
+});
+
+// POST /incidents/:id/updates — Post timeline update
+admin.post("/:id/updates", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json<{ status: string; message: string }>();
+
+  if (!body.status || !body.message) {
+    return c.json({ error: "status and message are required" }, 400);
+  }
+
+  const user = c.get("user");
+  const update = await postUpdate(id, body.status, body.message, user.sub);
+  return c.json(update, 201);
+});
+
+// POST /incidents/:id/resolve — Resolve incident
+admin.post("/:id/resolve", async (c) => {
+  const id = c.req.param("id");
+  const user = c.get("user");
+  const incident = await resolveIncident(id, user.sub);
+  if (!incident) {
+    return c.json({ error: "Incident not found" }, 404);
+  }
+  return c.json(incident);
+});
+
+// DELETE /incidents/:id — Soft delete
+admin.delete("/:id", async (c) => {
+  const id = c.req.param("id");
+  const user = c.get("user");
+  const deleted = await softDeleteIncident(id, user.sub);
+  if (!deleted) {
+    return c.json({ error: "Incident not found" }, 404);
+  }
+  return c.json({ ok: true });
+});
+
+// Mount admin routes under /incidents
+status.route("/incidents", admin);
 
 export default status;
