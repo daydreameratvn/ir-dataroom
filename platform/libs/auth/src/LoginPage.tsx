@@ -79,23 +79,6 @@ function GlobeIcon() {
   );
 }
 
-/* ── Divider ── */
-
-function OrDivider({ text }: { text: string }) {
-  return (
-    <div className="relative my-6">
-      <div className="absolute inset-0 flex items-center">
-        <div className="w-full border-t border-papaya-border/60" />
-      </div>
-      <div className="relative flex justify-center">
-        <span className="bg-white px-4 text-[11px] font-medium uppercase tracking-[0.15em] text-papaya-muted/50">
-          {text}
-        </span>
-      </div>
-    </div>
-  );
-}
-
 export default function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -172,110 +155,97 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex min-h-screen bg-white overflow-hidden">
       {/* ── Left: Brand Panel (desktop) ── */}
-      <div className="hidden lg:flex relative flex-col justify-between overflow-hidden w-[520px] min-w-[520px] bg-papaya-darkest">
-        {/* Gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-br from-papaya-dark/80 via-papaya-darkest to-black/90" />
-
-        {/* Topographic contour lines */}
-        <svg
-          width="100%"
-          height="100%"
-          viewBox="0 0 520 900"
-          fill="none"
-          preserveAspectRatio="xMidYMid slice"
-          className="absolute inset-0"
-        >
-          <g stroke="rgba(237,27,85,0.07)" strokeWidth="1" fill="none">
-            <circle cx="400" cy="240" r="60" />
-            <circle cx="400" cy="240" r="120" />
-            <circle cx="400" cy="240" r="190" />
-            <circle cx="400" cy="240" r="270" />
-            <circle cx="400" cy="240" r="360" />
-            <circle cx="90" cy="680" r="50" />
-            <circle cx="90" cy="680" r="110" />
-            <circle cx="90" cy="680" r="180" />
-            <circle cx="90" cy="680" r="260" />
-            <circle cx="260" cy="480" r="35" />
-            <circle cx="260" cy="480" r="80" />
-            <circle cx="260" cy="480" r="135" />
-          </g>
-        </svg>
-
-        {/* Accent glow */}
-        <div className="absolute top-[15%] -left-20 w-[350px] h-[350px] rounded-full bg-papaya/15 blur-[120px]" />
-        <div className="absolute bottom-[20%] right-0 w-[280px] h-[280px] rounded-full bg-papaya/8 blur-[100px]" />
-
-        {/* Top: Logo */}
-        <div className="relative z-10 p-12">
-          <h1 className="text-[3.2rem] leading-none font-bold text-white tracking-tight">
-            Oasis
-          </h1>
-          <p className="mt-2.5 text-[11px] font-light tracking-[0.25em] uppercase text-white/30">
-            by Papaya
-          </p>
+      <div className="hidden lg:flex relative flex-col justify-between w-[45%] max-w-[640px] bg-papaya-darkest p-16">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-papaya-darkest">
+          {/* Main gradient wash */}
+          <div className="absolute inset-0 bg-gradient-to-br from-papaya-darker via-papaya-darkest to-black" />
+          
+          {/* Colorful accent orbs */}
+          <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-papaya/10 blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-blue-900/20 blur-[100px]" />
+          
+          {/* Subtle noise texture overlay */}
+          <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiLz4KPC9zdmc+')] [mask-image:linear-gradient(to_bottom,transparent,black)]" />
         </div>
 
-        {/* Middle: Tagline */}
-        <div className="relative z-10 px-12">
-          <p className="text-[1.35rem] leading-relaxed text-white/50 font-light">
-            Where insurance operations
-            <br />
-            find clarity.
-          </p>
-          <div className="mt-6 h-px w-16 bg-gradient-to-r from-papaya/40 to-transparent" />
+        {/* Contour lines (decorative) */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+          <svg className="absolute w-full h-full text-papaya" viewBox="0 0 100 100" preserveAspectRatio="none">
+             <path d="M0 100 C 20 0 50 0 100 100 Z" fill="none" stroke="currentColor" strokeWidth="0.5" className="opacity-10 translate-y-10" />
+             <path d="M0 100 C 30 20 70 20 100 100 Z" fill="none" stroke="currentColor" strokeWidth="0.5" className="opacity-20 translate-y-5" />
+             <path d="M0 100 C 40 40 60 40 100 100 Z" fill="none" stroke="currentColor" strokeWidth="0.5" className="opacity-30" />
+          </svg>
         </div>
 
-        {/* Bottom: Copyright */}
-        <p className="relative z-10 p-12 text-[11px] font-light tracking-wide text-white/15">
-          &copy; 2026 Papaya
-        </p>
+        {/* Content Layer */}
+        <div className="relative z-10 flex flex-col h-full justify-between">
+          <div>
+            <h1 className="text-5xl font-bold text-white tracking-tighter mb-2">
+              Oasis
+            </h1>
+            <div className="flex items-center gap-3">
+              <div className="h-px w-8 bg-papaya"></div>
+              <p className="text-xs font-medium tracking-[0.3em] uppercase text-white/60">
+                by Papaya
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            <blockquote className="text-2xl font-light leading-relaxed text-white/90">
+              "Insurance infrastructure for the <span className="text-papaya font-normal">modern world</span>. Designed for clarity, built for scale."
+            </blockquote>
+          </div>
+
+          <div className="flex items-center justify-between text-xs text-white/30 font-medium tracking-wide uppercase">
+            <p>© 2026 Papaya</p>
+            <p>v3.0.0</p>
+          </div>
+        </div>
       </div>
 
       {/* ── Right: Form Panel ── */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 relative">
-        {/* Subtle background texture for the form side */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--color-papaya-lightest)_0%,_transparent_50%)] opacity-60" />
-
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-12 relative bg-white">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.4]" />
+        
         {/* Language switcher */}
         <LoginLanguageSwitcher />
 
-        <div className="relative w-full max-w-[400px]">
+        <div className="relative w-full max-w-[420px] bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_8px_rgba(0,0,0,0.04),0_12px_24px_rgba(0,0,0,0.04)]">
           {/* Mobile logo */}
-          <div className="lg:hidden mb-12 text-center">
-            <h1 className="text-4xl font-bold text-papaya tracking-tight">
-              Oasis
-            </h1>
-            <p className="mt-1.5 text-[11px] font-light tracking-[0.2em] uppercase text-papaya-muted/70">
-              by Papaya
-            </p>
+          <div className="lg:hidden mb-10 text-center">
+            <h1 className="text-3xl font-bold text-papaya tracking-tight">Oasis</h1>
+            <p className="mt-1 text-[10px] font-medium tracking-[0.2em] uppercase text-papaya-muted/70">by Papaya</p>
           </div>
 
           {/* Heading */}
-          <div className="mb-8">
+          <div className="mb-8 text-center lg:text-left">
             <h2 className="text-2xl font-bold tracking-tight text-[#111316]">
               {t('common.welcome')}
             </h2>
-            <p className="mt-2 text-sm text-papaya-muted">
+            <p className="mt-2 text-[15px] text-papaya-muted">
               {t('auth.login.subtitle')}
             </p>
           </div>
 
           {/* Error */}
           {(error || ssoError) && (
-            <div className="mb-6 flex items-start gap-3 p-3.5 rounded-xl border border-destructive/20 bg-destructive/5">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(0 84% 60%)" strokeWidth="2" className="shrink-0 mt-0.5">
+            <div className="mb-6 flex items-start gap-3 p-4 rounded-xl border border-destructive/20 bg-destructive/5 animate-in fade-in slide-in-from-top-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-destructive shrink-0 mt-0.5">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
-              <p className="text-[13px] leading-snug text-destructive">{error || ssoError}</p>
+              <p className="text-sm font-medium text-destructive">{error || ssoError}</p>
             </div>
           )}
 
           {step === 'choose' && (
-            <>
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               {/* SSO Buttons */}
               <div className="flex flex-col gap-3">
                 <SSOButton href={getSSOUrl('google', tenantId, returnUrl)} icon={<GoogleIcon />} label={t('auth.login.continueWithGoogle')} />
@@ -283,22 +253,33 @@ export default function LoginPage() {
                 <SSOButton href={getSSOUrl('apple', tenantId, returnUrl)} icon={<AppleIcon />} label={t('auth.login.continueWithApple')} />
               </div>
 
-              <OrDivider text={t('auth.login.or')} />
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-papaya-border/60" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-white px-3 text-[10px] font-medium uppercase tracking-widest text-papaya-muted/50">
+                    {t('auth.login.or')}
+                  </span>
+                </div>
+              </div>
 
               {/* OTP Section */}
-              <form onSubmit={(e) => { e.preventDefault(); handleSendOtp(); }} className="flex flex-col gap-3">
-                <Input
-                  type="text"
-                  placeholder={`${t('auth.login.emailPlaceholder')} / ${t('auth.login.phonePlaceholder')}`}
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  className="h-12 rounded-xl border-papaya-border bg-white px-4 text-sm text-[#111316] placeholder:text-papaya-muted/50 focus-visible:border-papaya/40 focus-visible:ring-papaya/15 focus-visible:ring-2"
-                />
+              <form onSubmit={(e) => { e.preventDefault(); handleSendOtp(); }} className="flex flex-col gap-4">
+                <div className="space-y-1.5">
+                  <Input
+                    type="text"
+                    placeholder={`${t('auth.login.emailPlaceholder')} / ${t('auth.login.phonePlaceholder')}`}
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                    className="h-12 rounded-xl border-papaya-border bg-white px-4 text-[15px] text-[#111316] placeholder:text-papaya-muted/50 focus-visible:border-papaya focus-visible:ring-4 focus-visible:ring-papaya/10 transition-all shadow-sm"
+                  />
+                </div>
 
                 <Button
                   type="submit"
                   disabled={isSubmitting || !destination}
-                  className="w-full h-12 rounded-xl bg-papaya text-white text-sm font-semibold shadow-[0_1px_2px_rgba(237,27,85,0.2),0_4px_12px_rgba(237,27,85,0.15)] hover:bg-[#d9184e] hover:shadow-[0_1px_2px_rgba(237,27,85,0.25),0_6px_16px_rgba(237,27,85,0.2)] active:scale-[0.99] transition-all disabled:opacity-40 disabled:shadow-none"
+                  className="w-full h-12 rounded-xl bg-gradient-to-r from-papaya to-[#D9184E] text-white text-[15px] font-semibold shadow-lg shadow-papaya/25 hover:shadow-xl hover:shadow-papaya/30 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 disabled:shadow-none disabled:scale-100"
                 >
                   {isSubmitting ? t('common.loading') : t('auth.login.sendCode')}
                 </Button>
@@ -307,48 +288,54 @@ export default function LoginPage() {
               {/* Passkey */}
               {typeof window !== 'undefined' && window.PublicKeyCredential && (
                 <>
-                  <OrDivider text={t('auth.login.or')} />
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-dashed border-papaya-border" />
+                    </div>
+                  </div>
 
                   <Button
                     type="button"
                     variant="outline"
                     onClick={handlePasskeyLogin}
                     disabled={isSubmitting}
-                    className="w-full h-12 rounded-xl border-papaya-border bg-white text-sm font-medium text-papaya-muted hover:border-papaya/30 hover:text-[#111316] hover:bg-papaya-lightest/50 transition-all"
+                    className="w-full h-12 rounded-xl border-papaya-border bg-white text-sm font-medium text-papaya-muted hover:border-papaya/40 hover:text-[#111316] hover:bg-papaya-lightest/30 transition-all"
                   >
                     <KeyIcon />
-                    {t('auth.login.usePasskey')}
+                    <span className="ml-2">{t('auth.login.usePasskey')}</span>
                   </Button>
                 </>
               )}
-            </>
+            </div>
           )}
 
           {/* OTP Verify Step */}
           {step === 'otp-verify' && (
-            <form onSubmit={(e) => { e.preventDefault(); handleVerifyOtp(); }} className="flex flex-col gap-5">
-              <div className="p-4 rounded-xl border border-papaya-border/60 bg-papaya-lightest/30">
-                <p className="text-[13px] text-papaya-muted">
+            <form onSubmit={(e) => { e.preventDefault(); handleVerifyOtp(); }} className="flex flex-col gap-6 animate-in fade-in slide-in-from-right-4 duration-500">
+              <div className="p-4 rounded-xl border border-papaya/10 bg-papaya-lightest/50">
+                <p className="text-sm text-papaya-muted text-center">
                   {t('auth.login.codeSentTo', { destination })}
                 </p>
               </div>
 
-              <Input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                maxLength={6}
-                placeholder="000000"
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                autoFocus
-                className="h-16 rounded-xl border-papaya-border bg-white text-3xl text-center tracking-[0.5em] text-[#111316] focus-visible:border-papaya/40 focus-visible:ring-papaya/15 focus-visible:ring-2"
-              />
+              <div className="flex justify-center">
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={6}
+                  placeholder="000000"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                  autoFocus
+                  className="w-full h-16 rounded-xl border-papaya-border bg-white text-3xl font-mono text-center tracking-[0.5em] text-[#111316] placeholder:text-papaya-border focus-visible:border-papaya focus-visible:ring-4 focus-visible:ring-papaya/10 transition-all shadow-sm"
+                />
+              </div>
 
               <Button
                 type="submit"
                 disabled={isSubmitting || code.length !== 6}
-                className="w-full h-12 rounded-xl bg-papaya text-white text-sm font-semibold shadow-[0_1px_2px_rgba(237,27,85,0.2),0_4px_12px_rgba(237,27,85,0.15)] hover:bg-[#d9184e] hover:shadow-[0_1px_2px_rgba(237,27,85,0.25),0_6px_16px_rgba(237,27,85,0.2)] active:scale-[0.99] transition-all disabled:opacity-40 disabled:shadow-none"
+                className="w-full h-12 rounded-xl bg-gradient-to-r from-papaya to-[#D9184E] text-white text-[15px] font-semibold shadow-lg shadow-papaya/25 hover:shadow-xl hover:shadow-papaya/30 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 disabled:shadow-none disabled:scale-100"
               >
                 {isSubmitting ? t('common.loading') : t('auth.login.verify')}
               </Button>
@@ -357,7 +344,7 @@ export default function LoginPage() {
                 type="button"
                 variant="ghost"
                 onClick={() => { setStep('choose'); setCode(''); setOtpSent(false); setError(null); }}
-                className="w-full text-[13px] font-medium text-papaya-muted hover:text-[#111316]"
+                className="w-full text-sm font-medium text-papaya-muted hover:text-[#111316] hover:bg-transparent"
               >
                 &larr; {t('common.back')}
               </Button>
@@ -381,9 +368,9 @@ function SSOButton({ href, icon, label }: SSOButtonProps) {
   return (
     <a
       href={href}
-      className="flex items-center gap-4 rounded-xl border border-papaya-border/70 bg-white px-4 py-3.5 text-sm font-medium text-[#111316] shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:border-papaya/25 hover:shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:bg-papaya-lightest/30 active:scale-[0.995] transition-all"
+      className="group flex items-center gap-3 rounded-xl border border-papaya-border/80 bg-white px-4 py-3 text-[14px] font-medium text-[#111316] shadow-sm hover:border-papaya/40 hover:shadow-md hover:bg-papaya-lightest/10 active:scale-[0.99] transition-all"
     >
-      <span className="flex items-center justify-center w-5 h-5 shrink-0">{icon}</span>
+      <span className="flex items-center justify-center w-5 h-5 shrink-0 transition-transform group-hover:scale-110">{icon}</span>
       <span>{label}</span>
     </a>
   );
@@ -396,22 +383,22 @@ function LoginLanguageSwitcher() {
   const currentLang = (i18n.language || 'en') as SupportedLanguage;
 
   return (
-    <div className="absolute top-5 right-6 z-20">
+    <div className="absolute top-6 right-6 z-20">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button type="button" className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-medium text-papaya-muted/70 hover:text-papaya-muted hover:bg-papaya-lightest/50 transition-colors outline-none">
+          <button type="button" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium text-papaya-muted bg-white/50 hover:bg-white hover:text-[#111316] hover:shadow-md transition-all outline-none border border-transparent hover:border-papaya-border/50">
             <GlobeIcon />
             {languageNames[currentLang]}
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="min-w-[140px]">
+        <DropdownMenuContent align="end" className="min-w-[140px] p-1 rounded-xl shadow-xl border-papaya-border/50 bg-white/95 backdrop-blur-sm">
           {supportedLanguages.map((lang) => (
             <DropdownMenuItem
               key={lang}
               onClick={() => i18n.changeLanguage(lang)}
               className={cn(
-                'text-[13px] cursor-pointer',
-                currentLang === lang && 'font-semibold text-papaya'
+                'text-[13px] cursor-pointer rounded-lg px-3 py-2 my-0.5',
+                currentLang === lang ? 'bg-papaya-lightest text-papaya font-medium' : 'text-papaya-muted hover:text-[#111316] hover:bg-gray-50'
               )}
             >
               {languageNames[lang]}
