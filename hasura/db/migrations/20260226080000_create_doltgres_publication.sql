@@ -9,7 +9,7 @@
 CREATE ROLE doltgres_replicator WITH LOGIN PASSWORD 'PLACEHOLDER_SET_BY_PULUMI';
 GRANT rds_replication TO doltgres_replicator;
 
-GRANT CONNECT ON DATABASE banyan TO doltgres_replicator;
+GRANT CONNECT ON DATABASE postgres TO doltgres_replicator;
 GRANT USAGE ON SCHEMA public TO doltgres_replicator;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO doltgres_replicator;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO doltgres_replicator;
