@@ -17,13 +17,14 @@ interface AuthResponse {
 }
 
 async function authRequest<T>(path: string, options?: RequestInit): Promise<T> {
+  const { headers: optionHeaders, ...restOptions } = options ?? {};
   const response = await fetch(`${_authBaseUrl}${path}`, {
     credentials: 'include',
+    ...restOptions,
     headers: {
       'Content-Type': 'application/json',
-      ...options?.headers,
+      ...(optionHeaders as Record<string, string>),
     },
-    ...options,
   });
 
   if (!response.ok) {

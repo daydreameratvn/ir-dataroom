@@ -223,7 +223,7 @@ export async function deletePasskey(
 ): Promise<boolean> {
   const result = await query(
     `UPDATE auth_passkeys
-     SET deleted_at = now(), deleted_by = $3
+     SET deleted_at = now(), deleted_by = $3, updated_at = now(), updated_by = $3
      WHERE id = $1 AND user_id = $3 AND tenant_id = $2 AND deleted_at IS NULL`,
     [passkeyId, tenantId, userId]
   );
