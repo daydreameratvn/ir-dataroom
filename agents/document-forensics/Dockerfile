@@ -38,14 +38,20 @@ COPY tsconfig.json ./tsconfig.json
 # ── Stage 3: Runtime ──────────────────────────────────────────
 FROM python:3.10-slim AS runtime
 
-# System dependencies for sharp (libvips) and general use
+# System dependencies for sharp (libvips), OpenCV, and general use
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       libvips42 \
+      libgl1 \
+      libglib2.0-0 \
       ca-certificates \
       curl \
       unzip && \
     rm -rf /var/lib/apt/lists/*
+
+# Install uv (needed at runtime — python-bridge.ts calls `uv run`)
+COPY --from=python-deps /usr/local/bin/uv /usr/local/bin/uv
+COPY --from=python-deps /usr/local/bin/uvx /usr/local/bin/uvx
 
 # Install Bun
 RUN curl -fsSL https://bun.sh/install | bash
@@ -53,7 +59,7 @@ ENV PATH="/root/.bun/bin:${PATH}"
 
 WORKDIR /app
 
-# Copy Python venv + source from stage 1
+# Copy Python venv + source from stage 1 (includes .venv created by uv sync)
 COPY --from=python-deps /app/agents/document-forensics/python/ ./agents/document-forensics/python/
 
 # Copy TruFor weights (baked in during build — must exist in build context)
