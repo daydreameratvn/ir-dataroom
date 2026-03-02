@@ -5,6 +5,7 @@ import type {
   Document,
   DocumentCategory,
   Investor,
+  InvestorEngagement,
   InvestorRound,
   InvestorRoundStatus,
   NdaTemplate,
@@ -211,19 +212,47 @@ export interface CreateDocumentPayload {
   name: string;
   description?: string;
   category: DocumentCategory;
+  mimeType?: string;
   watermarkEnabled?: boolean;
 }
 
 export async function createDocument(
   roundId: string,
   payload: CreateDocumentPayload
-): Promise<{ id: string }> {
+): Promise<{ id: string; uploadUrl?: string }> {
   const response = await fetch(`${BASE}/rounds/${roundId}/documents`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(payload),
   });
-  return handleResponse<{ id: string }>(response);
+  return handleResponse<{ id: string; uploadUrl?: string }>(response);
+}
+
+export async function getDocumentUploadUrl(
+  docId: string,
+  fileName: string,
+  mimeType: string
+): Promise<{ uploadUrl: string; s3Key: string }> {
+  const response = await fetch(`${BASE}/documents/${docId}/upload-url`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ fileName, mimeType }),
+  });
+  return handleResponse<{ uploadUrl: string; s3Key: string }>(response);
+}
+
+/**
+ * Upload a file directly to S3 using a presigned URL.
+ */
+export async function uploadFileToS3(uploadUrl: string, file: File): Promise<void> {
+  const response = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': file.type },
+    body: file,
+  });
+  if (!response.ok) {
+    throw new Error('Failed to upload file to S3');
+  }
 }
 
 export interface UpdateDocumentPayload {
@@ -284,6 +313,14 @@ export async function createNda(roundId: string, content: string): Promise<NdaTe
 export async function getRoundAnalytics(roundId: string): Promise<RoundAnalytics> {
   const response = await fetch(`${BASE}/rounds/${roundId}/analytics`, { headers: getHeaders() });
   return handleResponse<RoundAnalytics>(response);
+}
+
+// ── Engagement ──
+
+export async function getRoundEngagement(roundId: string): Promise<InvestorEngagement[]> {
+  const response = await fetch(`${BASE}/rounds/${roundId}/engagement`, { headers: getHeaders() });
+  const result = await handleResponse<{ data: InvestorEngagement[] }>(response);
+  return result.data;
 }
 
 // ── Access Logs ──

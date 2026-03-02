@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@papaya/shared-ui';
 import { CheckCircle2, Download, Loader2, ShieldCheck } from 'lucide-react';
-import { getRound, acceptNda, downloadNda } from '@/lib/api';
+import { getRound, acceptNda, downloadNdaPdf } from '@/lib/api';
 
 export default function NDAPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -31,13 +31,11 @@ export default function NDAPage() {
     if (!slug) return;
     setIsDownloading(true);
     try {
-      const ndaData = await downloadNda(slug);
-      // Create a text file download with NDA content
-      const blob = new Blob([ndaData.content], { type: 'text/plain;charset=utf-8' });
+      const blob = await downloadNdaPdf(slug);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `NDA-v${ndaData.version}-${ndaData.investorName.replace(/\s+/g, '_')}.txt`;
+      a.download = `NDA-${data?.round.name ?? slug}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

@@ -365,6 +365,99 @@ export async function getRoundAnalytics(
   };
 }
 
+// ── Engagement signals ──
+
+export interface InvestorEngagement {
+  investorId: string;
+  investorEmail: string;
+  investorName: string;
+  investorFirm: string | null;
+  roundId: string;
+  status: string;
+  ndaAcceptedAt: string | null;
+  ndaRequired: boolean;
+  invitedAt: string | null;
+  lastActiveAt: string | null;
+  totalViews: number;
+  totalDownloads: number;
+  uniqueFilesViewed: number;
+  totalTimeSpent: number;
+}
+
+/**
+ * Get engagement data for all investors in a round.
+ * Aggregates access log data to compute views, downloads, time spent, last active.
+ */
+export async function getInvestorEngagement(
+  roundId: string
+): Promise<InvestorEngagement[]> {
+  const result = await query<{
+    investor_id: string;
+    investor_email: string;
+    investor_name: string;
+    investor_firm: string | null;
+    round_id: string;
+    status: string;
+    nda_accepted_at: string | null;
+    nda_required: boolean;
+    invited_at: string | null;
+    last_active_at: string | null;
+    total_views: string;
+    total_downloads: string;
+    unique_files_viewed: string;
+    total_time_spent: string;
+  }>(
+    `SELECT
+       inv.id AS investor_id,
+       inv.email AS investor_email,
+       inv.name AS investor_name,
+       inv.firm AS investor_firm,
+       ir.round_id,
+       ir.status,
+       ir.nda_accepted_at,
+       ir.nda_required,
+       ir.invited_at,
+       ir.last_access_at AS last_active_at,
+       COALESCE(agg.total_views, 0) AS total_views,
+       COALESCE(agg.total_downloads, 0) AS total_downloads,
+       COALESCE(agg.unique_files_viewed, 0) AS unique_files_viewed,
+       COALESCE(agg.total_time_spent, 0) AS total_time_spent
+     FROM ir_investor_rounds ir
+     JOIN ir_investors inv ON inv.id = ir.investor_id AND inv.deleted_at IS NULL
+     LEFT JOIN LATERAL (
+       SELECT
+         COUNT(*) FILTER (WHERE al.action = 'view') AS total_views,
+         COUNT(*) FILTER (WHERE al.action = 'download') AS total_downloads,
+         COUNT(DISTINCT al.document_id) FILTER (WHERE al.action = 'view') AS unique_files_viewed,
+         COALESCE(SUM(al.duration_seconds) FILTER (WHERE al.action = 'view'), 0) AS total_time_spent
+       FROM ir_access_logs al
+       WHERE al.investor_id = inv.id
+         AND al.round_id = ir.round_id
+         AND al.deleted_at IS NULL
+     ) agg ON true
+     WHERE ir.round_id = $1 AND ir.deleted_at IS NULL
+     ORDER BY ir.created_at DESC`,
+    [roundId]
+  );
+
+  return result.rows.map((row) => ({
+    investorId: row.investor_id,
+    investorEmail: row.investor_email,
+    investorName: row.investor_name,
+    investorFirm: row.investor_firm,
+    roundId: row.round_id,
+    status: row.status,
+    ndaAcceptedAt: row.nda_accepted_at,
+    ndaRequired: row.nda_required,
+    invitedAt: row.invited_at,
+    lastActiveAt: row.last_active_at,
+    totalViews: parseInt(row.total_views, 10),
+    totalDownloads: parseInt(row.total_downloads, 10),
+    uniqueFilesViewed: parseInt(row.unique_files_viewed, 10),
+    totalTimeSpent: parseInt(row.total_time_spent, 10),
+  }));
+}
+
 export async function getOverallStats(
   tenantId: string
 ): Promise<OverallStats> {

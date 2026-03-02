@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Plus, RefreshCw, Trash2, Send } from 'lucide-react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
+import { Plus, RefreshCw, Trash2, Send, Building2 } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -16,13 +16,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@papaya/shared-ui';
-import type { InvestorRound, InvestorRoundStatus } from '../types';
+import type { InvestorRound, InvestorRoundStatus, InvestorEngagement, EngagementSignal } from '../types';
 import {
   listRoundInvestors,
   updateInvestorStatus,
   removeInvestorFromRound,
   sendInvitation,
+  getRoundEngagement,
 } from '../api';
 import InvestorStatusBadge from './InvestorStatusBadge';
 import InvestorInviteDialog from './InvestorInviteDialog';
@@ -53,22 +57,124 @@ function formatDate(dateStr: string | null): string {
   }).format(new Date(dateStr));
 }
 
+function getDaysAgo(dateStr: string | null): string {
+  if (!dateStr) return 'Never';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  if (days === 0) return 'Today';
+  if (days === 1) return '1d ago';
+  return `${days}d ago`;
+}
+
+// ── Engagement signal computation ──
+
+function getSignal(eng: InvestorEngagement): EngagementSignal | null {
+  if (['termsheet_sent', 'termsheet_signed', 'docs_out', 'dropped'].includes(eng.status)) return null;
+
+  const daysSinceActive = eng.lastActiveAt
+    ? Math.floor((Date.now() - new Date(eng.lastActiveAt).getTime()) / 86400000)
+    : Infinity;
+  const hasActivity = eng.totalViews > 0 || eng.totalDownloads > 0;
+
+  if (!hasActivity) {
+    return { label: 'New', color: '#9ca3af', tip: 'No activity yet.', rec: 'Send intro email or share dataroom link' };
+  }
+  if (daysSinceActive >= 14) {
+    return { label: 'Cold', color: '#ef4444', tip: 'Inactive 14+ days.', rec: 'Send follow-up to re-engage' };
+  }
+  if (eng.totalDownloads > 0 && daysSinceActive < 7) {
+    return { label: 'Hot', color: '#22c55e', tip: 'Downloading files.', rec: 'Send termsheet or schedule call' };
+  }
+  if ((eng.totalViews >= 5 || eng.totalDownloads >= 2 || eng.totalTimeSpent >= 300) && daysSinceActive < 14) {
+    return { label: 'Engaged', color: '#3b82f6', tip: 'Strong engagement.', rec: 'Prioritize \u2014 share key materials' };
+  }
+  if (eng.totalViews > 0 && eng.totalDownloads === 0 && daysSinceActive < 7) {
+    return { label: 'Warming', color: '#eab308', tip: 'Browsing, no downloads.', rec: 'Nudge with highlights or Q&A' };
+  }
+
+  return null;
+}
+
+// ── Firm grouping ──
+
+const FREE_EMAIL_DOMAINS = new Set([
+  'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
+  'icloud.com', 'mail.com', 'protonmail.com', 'proton.me', 'zoho.com',
+  'yandex.com', 'live.com', 'msn.com', 'me.com', 'hey.com',
+]);
+
+function getInferredFirm(email: string, firm: string | null): string | null {
+  if (firm) return firm.toLowerCase().trim();
+  const domain = email.split('@')[1]?.toLowerCase();
+  if (!domain || FREE_EMAIL_DOMAINS.has(domain)) return null;
+  return domain;
+}
+
+function getFirmGroupLabel(email: string, firm: string | null): string | null {
+  if (firm) return firm;
+  const domain = email.split('@')[1]?.toLowerCase();
+  if (!domain || FREE_EMAIL_DOMAINS.has(domain)) return null;
+  const name = domain.split('.')[0];
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+type InvestorWithEngagement = InvestorRound & Partial<InvestorEngagement>;
+
+function groupByFirm(investors: InvestorWithEngagement[]): InvestorWithEngagement[] {
+  const firmMap = new Map<string, InvestorWithEngagement[]>();
+  const ungrouped: InvestorWithEngagement[] = [];
+
+  for (const inv of investors) {
+    const firm = getInferredFirm(inv.investorEmail, inv.investorFirm);
+    if (firm) {
+      const list = firmMap.get(firm) || [];
+      list.push(inv);
+      firmMap.set(firm, list);
+    } else {
+      ungrouped.push(inv);
+    }
+  }
+
+  const sortedFirms = Array.from(firmMap.entries()).sort((a, b) => {
+    if (b[1].length !== a[1].length) return b[1].length - a[1].length;
+    return a[0].localeCompare(b[0]);
+  });
+
+  const result: InvestorWithEngagement[] = [];
+  for (const [, group] of sortedFirms) {
+    result.push(...group);
+  }
+  result.push(...ungrouped);
+  return result;
+}
+
 export default function InvestorTable({ roundId }: InvestorTableProps) {
   const [investors, setInvestors] = useState<InvestorRound[]>([]);
+  const [engagement, setEngagement] = useState<Map<string, InvestorEngagement>>(new Map());
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [groupedByFirm, setGroupedByFirm] = useState(false);
   const limit = 20;
 
   const fetchInvestors = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await listRoundInvestors(roundId, { page, limit });
+      const [result, engagementData] = await Promise.all([
+        listRoundInvestors(roundId, { page, limit }),
+        getRoundEngagement(roundId).catch(() => [] as InvestorEngagement[]),
+      ]);
       setInvestors(result.data);
       setTotal(result.total);
+
+      const engMap = new Map<string, InvestorEngagement>();
+      for (const eng of engagementData) {
+        engMap.set(eng.investorId, eng);
+      }
+      setEngagement(engMap);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch investors');
     } finally {
@@ -111,6 +217,16 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
     }
   }
 
+  // Merge investor round data with engagement data
+  const investorsWithEngagement: InvestorWithEngagement[] = investors.map((inv) => {
+    const eng = engagement.get(inv.investorId);
+    return { ...inv, ...eng };
+  });
+
+  const displayInvestors = groupedByFirm
+    ? groupByFirm(investorsWithEngagement)
+    : investorsWithEngagement;
+
   const totalPages = Math.ceil(total / limit);
 
   return (
@@ -120,6 +236,16 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
           {total} investor{total !== 1 ? 's' : ''} in this round
         </h3>
         <div className="flex items-center gap-2">
+          <Button
+            variant={groupedByFirm ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setGroupedByFirm((prev) => !prev)}
+            className="gap-1.5"
+            title="Group investors from the same firm together (auto-detects by email domain)"
+          >
+            <Building2 className="h-3.5 w-3.5" />
+            {groupedByFirm ? 'Grouped by Firm' : 'Group by Firm'}
+          </Button>
           <Button variant="outline" size="sm" onClick={fetchInvestors} className="gap-1.5">
             <RefreshCw className="h-3.5 w-3.5" />
             Refresh
@@ -156,80 +282,152 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
                 <TableHead>Email</TableHead>
                 <TableHead>Firm</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Invited</TableHead>
-                <TableHead>NDA Accepted</TableHead>
-                <TableHead>Last Access</TableHead>
-                <TableHead className="text-right">Access Count</TableHead>
+                <TableHead>NDA</TableHead>
+                <TableHead>Last Active</TableHead>
+                <TableHead>Signal</TableHead>
+                <TableHead>Recommendation</TableHead>
                 <TableHead className="w-32">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {investors.map((inv) => (
-                <TableRow key={inv.id}>
-                  <TableCell className="font-medium">{inv.investorName}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {inv.investorEmail}
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {inv.investorFirm ?? (
-                      <span className="text-muted-foreground">-</span>
+              {displayInvestors.map((inv, idx, arr) => {
+                const firmLabel = groupedByFirm ? getFirmGroupLabel(inv.investorEmail, inv.investorFirm) : null;
+                const prevFirmLabel =
+                  groupedByFirm && idx > 0
+                    ? getFirmGroupLabel(arr[idx - 1].investorEmail, arr[idx - 1].investorFirm)
+                    : null;
+                const showFirmHeader = groupedByFirm && firmLabel && firmLabel !== prevFirmLabel;
+                const showUngroupedHeader =
+                  groupedByFirm &&
+                  !firmLabel &&
+                  idx > 0 &&
+                  getFirmGroupLabel(arr[idx - 1].investorEmail, arr[idx - 1].investorFirm) !== null;
+
+                const eng: InvestorEngagement | undefined = engagement.get(inv.investorId);
+                const signal = eng ? getSignal(eng) : null;
+
+                return (
+                  <Fragment key={inv.id}>
+                    {showFirmHeader && (
+                      <TableRow className="bg-muted/50 hover:bg-muted/50">
+                        <TableCell colSpan={9} className="py-1.5 px-4">
+                          <div className="flex items-center gap-2">
+                            <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                              {firmLabel}
+                            </span>
+                            <span className="text-xs text-muted-foreground/60">
+                              ({arr.filter((i) => getFirmGroupLabel(i.investorEmail, i.investorFirm) === firmLabel).length})
+                            </span>
+                          </div>
+                        </TableCell>
+                      </TableRow>
                     )}
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      value={inv.status}
-                      onValueChange={(v) => handleStatusChange(inv.id, v as InvestorRoundStatus)}
-                    >
-                      <SelectTrigger className="h-7 w-40 text-xs">
-                        <InvestorStatusBadge status={inv.status} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {INVESTOR_STATUSES.map((s) => (
-                          <SelectItem key={s} value={s}>
-                            <InvestorStatusBadge status={s} />
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {formatDate(inv.invitedAt)}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {formatDate(inv.ndaAcceptedAt)}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {formatDate(inv.lastAccessAt)}
-                  </TableCell>
-                  <TableCell className="text-right text-sm">
-                    <Badge variant="outline" className="text-xs">
-                      {inv.accessCount}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSendInvite(inv.investorId)}
-                        className="h-7 px-2 text-xs"
-                        title="Send invitation email"
-                      >
-                        <Send className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemove(inv.id)}
-                        className="h-7 px-2 text-xs text-red-600 hover:text-red-700"
-                        title="Remove from round"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    {showUngroupedHeader && (
+                      <TableRow className="bg-muted/50 hover:bg-muted/50">
+                        <TableCell colSpan={9} className="py-1.5 px-4">
+                          <span className="text-xs font-semibold text-muted-foreground/60 uppercase tracking-wide">
+                            Individual / Personal Email
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    <TableRow>
+                      <TableCell className="font-medium">{inv.investorName}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {inv.investorEmail}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {inv.investorFirm ?? (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Select
+                          value={inv.status}
+                          onValueChange={(v) => handleStatusChange(inv.id, v as InvestorRoundStatus)}
+                        >
+                          <SelectTrigger className="h-7 w-40 text-xs">
+                            <InvestorStatusBadge status={inv.status} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {INVESTOR_STATUSES.map((s) => (
+                              <SelectItem key={s} value={s}>
+                                <InvestorStatusBadge status={s} />
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {inv.ndaAcceptedAt
+                          ? formatDate(inv.ndaAcceptedAt)
+                          : !inv.ndaRequired
+                            ? <span className="text-xs text-blue-600">Offline</span>
+                            : 'Pending'}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {getDaysAgo(eng?.lastActiveAt ?? inv.lastAccessAt)}
+                      </TableCell>
+                      <TableCell>
+                        {signal ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center gap-1.5 cursor-help">
+                                <span
+                                  className="inline-block rounded-full"
+                                  style={{ width: 8, height: 8, backgroundColor: signal.color }}
+                                />
+                                <span className="text-xs font-medium" style={{ color: signal.color }}>
+                                  {signal.label}
+                                </span>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-xs">{signal.tip}</p>
+                              <p className="text-xs mt-0.5 text-muted-foreground">
+                                {eng?.totalViews ?? 0} views &bull; {eng?.totalDownloads ?? 0} downloads &bull;{' '}
+                                {Math.round((eng?.totalTimeSpent ?? 0) / 60)}m spent
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">&mdash;</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {signal ? (
+                          <span className="text-xs text-muted-foreground">{signal.rec}</span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">&mdash;</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleSendInvite(inv.investorId)}
+                            className="h-7 px-2 text-xs"
+                            title="Send invitation email"
+                          >
+                            <Send className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemove(inv.id)}
+                            className="h-7 px-2 text-xs text-red-600 hover:text-red-700"
+                            title="Remove from round"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  </Fragment>
+                );
+              })}
             </TableBody>
           </Table>
         </div>

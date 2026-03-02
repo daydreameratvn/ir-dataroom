@@ -144,3 +144,29 @@ export interface OverallStats {
   totalViews: number;
   uniqueViewers: number;
 }
+
+// ── Engagement Signals ──
+
+export interface InvestorEngagement {
+  investorId: string;
+  investorEmail: string;
+  investorName: string;
+  investorFirm: string | null;
+  roundId: string;
+  status: string;
+  ndaAcceptedAt: string | null;
+  ndaRequired: boolean;
+  invitedAt: string | null;
+  lastActiveAt: string | null;
+  totalViews: number;
+  totalDownloads: number;
+  uniqueFilesViewed: number;
+  totalTimeSpent: number;
+}
+
+export interface EngagementSignal {
+  label: string;
+  color: string;
+  tip: string;
+  rec: string;
+}

@@ -47,7 +47,15 @@ import {
   getOverallStats,
   updateAccessLogDuration,
   exportAccessLogsCSV,
+  getInvestorEngagement,
 } from "../services/ir-access-log.ts";
+import {
+  generateUploadUrl,
+  generateViewUrl,
+  downloadFileBuffer,
+} from "../services/ir-s3.ts";
+import { watermarkFile } from "../services/ir-watermark.ts";
+import { generateSignedNdaPdf } from "../services/ir-nda-pdf.ts";
 
 // ---------------------------------------------------------------------------
 // Investor JWT helpers (separate from platform JWTs)
@@ -335,10 +343,74 @@ ir.post("/ir/rounds/:id/documents", async (c) => {
 
   try {
     const result = await createDocument(tenantId, roundId, body, user.sub);
-    return c.json(result, 201);
+
+    // If mimeType is provided, generate a presigned upload URL
+    let uploadUrl: string | null = null;
+    if (body.mimeType && body.name) {
+      const s3Result = await generateUploadUrl({
+        tenantId,
+        roundId,
+        docId: result.id,
+        fileName: body.name,
+        mimeType: body.mimeType,
+      });
+      uploadUrl = s3Result.uploadUrl;
+
+      // Update the document with S3 metadata
+      await updateDocument(
+        result.id,
+        { s3Key: s3Result.s3Key, s3Bucket: s3Result.s3Bucket },
+        user.sub
+      );
+    }
+
+    return c.json({ ...result, uploadUrl }, 201);
   } catch (err) {
     console.error("[IR API] Error creating document:", err);
     return c.json({ error: "Failed to create document" }, 500);
+  }
+});
+
+// ── Document Upload URL (for re-upload / replace) ────────────────────────
+
+ir.post("/ir/documents/:id/upload-url", async (c) => {
+  const user = c.get("user");
+  const tenantId = getEffectiveTenantId(c);
+  const id = c.req.param("id");
+  const body = await c.req.json<{ fileName: string; mimeType: string }>();
+
+  if (!body.fileName || !body.mimeType) {
+    return c.json({ error: "fileName and mimeType are required" }, 400);
+  }
+
+  try {
+    const doc = await getDocumentById(id);
+    if (!doc) return c.json({ error: "Document not found" }, 404);
+
+    const s3Result = await generateUploadUrl({
+      tenantId,
+      roundId: doc.roundId,
+      docId: id,
+      fileName: body.fileName,
+      mimeType: body.mimeType,
+    });
+
+    // Update the document with new S3 key/bucket + file metadata
+    await updateDocument(
+      id,
+      {
+        s3Key: s3Result.s3Key,
+        s3Bucket: s3Result.s3Bucket,
+        mimeType: body.mimeType,
+        name: body.fileName,
+      },
+      user.sub
+    );
+
+    return c.json({ uploadUrl: s3Result.uploadUrl, s3Key: s3Result.s3Key });
+  } catch (err) {
+    console.error("[IR API] Error generating upload URL:", err);
+    return c.json({ error: "Failed to generate upload URL" }, 500);
   }
 });
 
@@ -418,6 +490,18 @@ ir.get("/ir/rounds/:id/analytics", async (c) => {
   }
 });
 
+ir.get("/ir/rounds/:id/engagement", async (c) => {
+  const roundId = c.req.param("id");
+
+  try {
+    const engagement = await getInvestorEngagement(roundId);
+    return c.json({ data: engagement });
+  } catch (err) {
+    console.error("[IR API] Error fetching engagement:", err);
+    return c.json({ error: "Failed to fetch engagement signals" }, 500);
+  }
+});
+
 ir.get("/ir/rounds/:id/access-logs", async (c) => {
   const roundId = c.req.param("id");
   const page = parseInt(c.req.query("page") || "1", 10);
@@ -490,7 +574,10 @@ ir.post("/ir/investors/:id/invite", async (c) => {
     const investor = await getInvestorById(id);
     if (!investor) return c.json({ error: "Investor not found" }, 404);
 
-    // Send invitation email via SES
+    const firstName = investor.name?.split(" ")[0] || "there";
+    const portalUrl = process.env.IR_PORTAL_URL || "https://investors.papaya.asia";
+
+    // Send invitation / welcome email via SES
     const fromEmail = process.env.OTP_FROM_EMAIL || "noreply@papaya.asia";
     const { SESClient, SendEmailCommand } = await import("@aws-sdk/client-ses");
     const ses = new SESClient({ region: process.env.AWS_REGION || "ap-southeast-1" });
@@ -500,27 +587,45 @@ ir.post("/ir/investors/:id/invite", async (c) => {
         Source: fromEmail,
         Destination: { ToAddresses: [investor.email] },
         Message: {
-          Subject: { Data: "You've been invited to Papaya's investor dataroom" },
+          Subject: { Data: "You're Invited \u2014 Papaya Investor Dataroom" },
           Body: {
             Html: {
               Data: `
-                <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 24px;">
-                  <h2 style="color: #1a1a1a;">Investor Dataroom Access</h2>
-                  <p>Hi ${investor.name},</p>
-                  <p>You've been invited to access Papaya's investor dataroom. Click the link below to get started:</p>
-                  <p style="margin: 24px 0;">
-                    <a href="https://investors.papaya.asia" style="background-color: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
-                      Access Dataroom
+                <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; color: #333;">
+                  <div style="text-align: center; margin-bottom: 24px;">
+                    <img src="https://papaya.asia/logo.png" alt="Papaya" height="40" style="height: 40px;" />
+                  </div>
+                  <h2 style="color: #1a1a1a; font-size: 22px; margin-bottom: 16px;">Welcome to the Dataroom</h2>
+                  <p style="font-size: 15px; line-height: 1.6;">Hi ${firstName},</p>
+                  <p style="font-size: 15px; line-height: 1.6;">
+                    You've been invited to access Papaya's investor dataroom.
+                    Inside you'll find key documents, financials, and materials
+                    relevant to our fundraising round.
+                  </p>
+                  <p style="text-align: center; margin: 32px 0;">
+                    <a href="${portalUrl}" style="display: inline-block; background-color: #ED1B55; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                      Enter Dataroom
                     </a>
                   </p>
-                  <p style="color: #666;">You'll be asked to verify your email address before accessing documents.</p>
+                  <div style="background: #f8f9fa; border-radius: 8px; padding: 16px; margin: 24px 0;">
+                    <p style="font-size: 13px; color: #666; margin: 0;">
+                      <strong>How to sign in:</strong> Click the button above, enter your email
+                      (<em>${investor.email}</em>), and we'll send you a one-time code.
+                      No password needed.
+                    </p>
+                  </div>
+                  <p style="font-size: 14px; color: #666; line-height: 1.6;">
+                    If you have any questions, feel free to reply to this email.
+                  </p>
                   <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
-                  <p style="color: #999; font-size: 12px;">Papaya Insurance</p>
+                  <p style="color: #999; font-size: 12px; text-align: center;">
+                    Papaya Insurance &bull; Confidential
+                  </p>
                 </div>
               `,
             },
             Text: {
-              Data: `Hi ${investor.name},\n\nYou've been invited to access Papaya's investor dataroom.\n\nVisit https://investors.papaya.asia to get started.\n\nPapaya Insurance`,
+              Data: `Hi ${firstName},\n\nYou've been invited to access Papaya's investor dataroom.\n\nVisit ${portalUrl} and sign in with your email (${investor.email}). We'll send you a one-time code — no password needed.\n\nIf you have any questions, reply to this email.\n\nPapaya Insurance`,
             },
           },
         },
@@ -811,10 +916,48 @@ ir.get("/ir/portal/rounds/:slug/documents/:docId/view", async (c) => {
     // Auto-promote investor to 'active' on first file access
     await promoteToActiveIfNeeded(investorRound.id).catch(() => {});
 
-    // Generate presigned URL (placeholder — S3 integration in Phase 6)
-    const presignedUrl = doc.s3Key
-      ? `https://${doc.s3Bucket}.s3.ap-southeast-1.amazonaws.com/${doc.s3Key}`
-      : null;
+    let presignedUrl: string | null = null;
+
+    if (doc.s3Key) {
+      // If watermark is enabled, download → watermark → return as blob
+      if (doc.watermarkEnabled && (doc.mimeType === "application/pdf" || doc.mimeType?.includes("spreadsheet") || doc.mimeType?.includes("excel"))) {
+        try {
+          const { buffer } = await downloadFileBuffer({ s3Key: doc.s3Key, s3Bucket: doc.s3Bucket ?? undefined });
+          const watermarked = await watermarkFile(buffer, doc.mimeType, investor.email);
+          if (watermarked) {
+            // Log view and return access log ID for duration tracking
+            const { ipAddress, userAgent } = getClientInfo(c);
+            const accessLog = await logAccess(investor.tenantId, {
+              investorId: investor.sub,
+              roundId: round.id,
+              documentId: docId,
+              action: "view",
+              ipAddress,
+              userAgent,
+            }).catch(() => null);
+
+            const headers: Record<string, string> = {
+              "Content-Type": doc.mimeType || "application/octet-stream",
+              "Content-Disposition": `inline; filename="${doc.name}"`,
+              "Content-Length": watermarked.length.toString(),
+            };
+            if (accessLog) {
+              headers["X-Access-Log-Id"] = accessLog.id;
+            }
+
+            return new Response(new Uint8Array(watermarked), { status: 200, headers });
+          }
+        } catch (err) {
+          console.error("[IR Portal] Watermark failed, falling back to presigned URL:", err);
+        }
+      }
+
+      // No watermark needed or watermark failed — use presigned URL
+      presignedUrl = await generateViewUrl({
+        s3Key: doc.s3Key,
+        s3Bucket: doc.s3Bucket ?? undefined,
+      });
+    }
 
     // Log view and return access log ID for duration tracking
     const { ipAddress, userAgent } = getClientInfo(c);
@@ -863,11 +1006,6 @@ ir.get("/ir/portal/rounds/:slug/documents/:docId/download", async (c) => {
     // Auto-promote investor to 'active' on first file access
     await promoteToActiveIfNeeded(investorRound.id).catch(() => {});
 
-    // Generate presigned URL (placeholder — S3 integration in Phase 6)
-    const presignedUrl = doc.s3Key
-      ? `https://${doc.s3Bucket}.s3.ap-southeast-1.amazonaws.com/${doc.s3Key}`
-      : null;
-
     // Log download
     const { ipAddress, userAgent } = getClientInfo(c);
     await logAccess(investor.tenantId, {
@@ -879,7 +1017,37 @@ ir.get("/ir/portal/rounds/:slug/documents/:docId/download", async (c) => {
       userAgent,
     }).catch(() => {});
 
-    return c.json({ url: presignedUrl, document: doc });
+    if (doc.s3Key) {
+      // If watermark is enabled, download → watermark → stream back
+      if (doc.watermarkEnabled) {
+        try {
+          const { buffer } = await downloadFileBuffer({ s3Key: doc.s3Key, s3Bucket: doc.s3Bucket ?? undefined });
+          const watermarked = await watermarkFile(buffer, doc.mimeType, investor.email);
+          if (watermarked) {
+            return new Response(new Uint8Array(watermarked), {
+              status: 200,
+              headers: {
+                "Content-Type": doc.mimeType || "application/octet-stream",
+                "Content-Disposition": `attachment; filename="${doc.name}"`,
+                "Content-Length": watermarked.length.toString(),
+              },
+            });
+          }
+        } catch (err) {
+          console.error("[IR Portal] Watermark failed, falling back to presigned URL:", err);
+        }
+      }
+
+      // No watermark or watermark failed — use presigned download URL
+      const presignedUrl = await generateViewUrl({
+        s3Key: doc.s3Key,
+        s3Bucket: doc.s3Bucket ?? undefined,
+        downloadAs: doc.name,
+      });
+      return c.json({ url: presignedUrl, document: doc });
+    }
+
+    return c.json({ url: null, document: doc });
   } catch (err) {
     console.error("[IR Portal] Error downloading document:", err);
     return c.json({ error: "Failed to get download URL" }, 500);
@@ -931,6 +1099,7 @@ ir.post("/ir/portal/tracking", async (c) => {
 ir.get("/ir/portal/rounds/:slug/nda/download", requireInvestor, async (c) => {
   const investor = c.get("investor");
   const slug = c.req.param("slug");
+  const format = c.req.query("format"); // "pdf" or "json" (default: "pdf")
 
   try {
     const round = await getRoundBySlug(investor.tenantId, slug);
@@ -952,13 +1121,35 @@ ir.get("/ir/portal/rounds/:slug/nda/download", requireInvestor, async (c) => {
       return c.json({ error: "NDA template not found" }, 404);
     }
 
-    return c.json({
-      content: ndaTemplate.content,
-      version: ndaTemplate.version,
-      acceptedAt: investorRound.ndaAcceptedAt,
-      investorName: investor.name,
-      investorEmail: investor.email,
-      ipAddress: investorRound.ndaIpAddress,
+    // Return JSON if requested
+    if (format === "json") {
+      return c.json({
+        content: ndaTemplate.content,
+        version: ndaTemplate.version,
+        acceptedAt: investorRound.ndaAcceptedAt,
+        investorName: investor.name,
+        investorEmail: investor.email,
+        ipAddress: investorRound.ndaIpAddress,
+      });
+    }
+
+    // Generate signed NDA as PDF (default)
+    const investorRecord = await getInvestorById(investor.sub);
+    const pdfBuffer = await generateSignedNdaPdf(ndaTemplate.content, {
+      email: investor.email,
+      name: investor.name,
+      firm: investorRecord?.firm ?? null,
+      ndaAcceptedAt: investorRound.ndaAcceptedAt,
+      ndaIpAddress: investorRound.ndaIpAddress,
+    });
+
+    return new Response(new Uint8Array(pdfBuffer), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="NDA-${round.name}-${investor.email}.pdf"`,
+        "Content-Length": pdfBuffer.length.toString(),
+      },
     });
   } catch (err) {
     console.error("[IR Portal] Error downloading NDA:", err);

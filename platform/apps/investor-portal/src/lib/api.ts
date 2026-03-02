@@ -181,8 +181,38 @@ export interface NdaDownload {
   ipAddress: string | null;
 }
 
+/**
+ * Download the signed NDA as a PDF (default) or JSON.
+ * The backend returns a PDF binary by default (format=pdf).
+ */
+export async function downloadNdaPdf(slug: string): Promise<Blob> {
+  const token = getToken();
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${BASE}/rounds/${encodeURIComponent(slug)}/nda/download`, {
+    headers,
+  });
+
+  if (res.status === 401) {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem('investor_info');
+    window.location.href = '/login';
+    throw new Error('Unauthorized');
+  }
+
+  if (!res.ok) {
+    throw new Error('Failed to download NDA');
+  }
+
+  return res.blob();
+}
+
+/** Download NDA as JSON (for backward compatibility) */
 export function downloadNda(slug: string): Promise<NdaDownload> {
-  return apiFetch(`/rounds/${encodeURIComponent(slug)}/nda/download`);
+  return apiFetch(`/rounds/${encodeURIComponent(slug)}/nda/download?format=json`);
 }
 
 // ── Documents ──
@@ -204,6 +234,8 @@ export interface DocumentUrlResponse {
   url: string | null;
   document: Document;
   accessLogId?: string;
+  /** When the server returns a watermarked blob instead of a URL, this holds the blob URL */
+  blobUrl?: string;
 }
 
 export async function listDocuments(
@@ -221,11 +253,59 @@ export async function getDocumentViewUrl(
   slug: string,
   docId: string,
 ): Promise<DocumentUrlResponse> {
-  const res = await apiFetchRaw(
-    `/rounds/${encodeURIComponent(slug)}/documents/${encodeURIComponent(docId)}/view`,
+  const token = getToken();
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(
+    `${BASE}/rounds/${encodeURIComponent(slug)}/documents/${encodeURIComponent(docId)}/view`,
+    { headers },
   );
 
+  if (res.status === 401) {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem('investor_info');
+    window.location.href = '/login';
+    throw new Error('Unauthorized');
+  }
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error((body as { error?: string }).error ?? `Request failed: ${res.status}`);
+  }
+
   const accessLogId = res.headers.get('X-Access-Log-Id') ?? undefined;
+  const contentType = res.headers.get('Content-Type') ?? '';
+
+  // Check if the response is a watermarked binary (PDF/Excel) or JSON with presigned URL
+  if (contentType.includes('application/pdf') || contentType.includes('spreadsheet') || contentType.includes('excel') || contentType.includes('octet-stream')) {
+    // Server returned a watermarked file as binary
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const docName = res.headers.get('Content-Disposition')?.match(/filename="?(.+?)"?$/)?.[1] ?? 'document';
+
+    return {
+      url: blobUrl,
+      blobUrl,
+      document: {
+        id: docId,
+        name: docName,
+        description: null,
+        category: '',
+        mimeType: contentType.split(';')[0],
+        fileSizeBytes: blob.size,
+        s3Key: null,
+        sortOrder: 0,
+        watermarkEnabled: true,
+        createdAt: '',
+      },
+      accessLogId,
+    };
+  }
+
+  // JSON response with presigned URL
   const body = (await res.json()) as { url: string | null; document: Document };
 
   return {
@@ -234,13 +314,60 @@ export async function getDocumentViewUrl(
   };
 }
 
-export function getDocumentDownloadUrl(
+export async function getDocumentDownloadUrl(
   slug: string,
   docId: string,
-): Promise<DocumentUrlResponse> {
-  return apiFetch(
-    `/rounds/${encodeURIComponent(slug)}/documents/${encodeURIComponent(docId)}/download`,
+): Promise<DocumentUrlResponse & { blob?: Blob }> {
+  const token = getToken();
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(
+    `${BASE}/rounds/${encodeURIComponent(slug)}/documents/${encodeURIComponent(docId)}/download`,
+    { headers },
   );
+
+  if (res.status === 401) {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem('investor_info');
+    window.location.href = '/login';
+    throw new Error('Unauthorized');
+  }
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error((body as { error?: string }).error ?? `Request failed: ${res.status}`);
+  }
+
+  const contentType = res.headers.get('Content-Type') ?? '';
+
+  // Check if the response is a watermarked binary
+  if (!contentType.includes('application/json')) {
+    const blob = await res.blob();
+    const docName = res.headers.get('Content-Disposition')?.match(/filename="?(.+?)"?$/)?.[1] ?? 'document';
+
+    return {
+      url: null,
+      blob,
+      document: {
+        id: docId,
+        name: docName,
+        description: null,
+        category: '',
+        mimeType: contentType.split(';')[0],
+        fileSizeBytes: blob.size,
+        s3Key: null,
+        sortOrder: 0,
+        watermarkEnabled: true,
+        createdAt: '',
+      },
+    };
+  }
+
+  // JSON response with presigned URL
+  return res.json() as Promise<DocumentUrlResponse>;
 }
 
 export function trackView(

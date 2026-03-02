@@ -31,6 +31,15 @@ export default function DocumentViewer() {
     }
   }, [data?.accessLogId]);
 
+  // Clean up blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (data?.blobUrl) {
+        URL.revokeObjectURL(data.blobUrl);
+      }
+    };
+  }, [data?.blobUrl]);
+
   // Track view duration with heartbeat
   const sendHeartbeat = useCallback(() => {
     const logId = accessLogIdRef.current;
@@ -72,6 +81,21 @@ export default function DocumentViewer() {
     if (!slug || !id) return;
     try {
       const result = await getDocumentDownloadUrl(slug, id);
+
+      // If the server returned a watermarked blob directly
+      if ('blob' in result && result.blob) {
+        const blobUrl = URL.createObjectURL(result.blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = result.document.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+        return;
+      }
+
+      // Otherwise open the presigned URL
       if (result.url) {
         window.open(result.url, '_blank');
       }
