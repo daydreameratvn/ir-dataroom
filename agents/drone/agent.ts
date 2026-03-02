@@ -21,6 +21,8 @@ import {
   insuredTool,
   medicalProviderTool,
   medicalProvidersTool,
+  policyDocFetchTool,
+  policyDocSearchTool,
   saveDetailFormTool,
 } from "../shared/tools/index.ts";
 import { invokeComplianceAgentTool } from "../claim-assessor/tools/document-compliance.ts";
@@ -183,6 +185,8 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
     icdTool,
     ...(!skipCompliance ? [invokeComplianceAgentTool] : []),
     googleSearchTool,
+    policyDocSearchTool,
+    policyDocFetchTool,
     ...(!hasDetailData ? [saveDetailFormTool] : []),
   ];
 
@@ -265,6 +269,13 @@ ${(options?.tier ?? 1) === 1
 
     **Pre-analyzed Document Data**:
       The claim documents (PDFs) have been pre-analyzed by Gemini Flash AI. The structured extraction — including invoice line items, prescription items, test results, cross-checks, and an EXCLUSION VERDICT — will be injected as a [DOCUMENT ANALYSIS] message after data gathering is done. This is your PRIMARY source for document content. You MUST use the EXCLUSION VERDICT to determine non_paid_amount.
+
+    **Policy Document Lookup**:
+      When you need to check policy terms, coverage conditions, exclusion clauses, or benefit limits:
+      1. Call policyDocSearch with the claim code to find available policy documents (contracts, T&C, amendments).
+      2. Call policyDocFetch with the relevant file ID to read the document text.
+      3. Use the extracted text to verify coverage rules, exclusion clauses, and benefit conditions.
+      Only fetch documents when needed — e.g., when determining if a specific item/drug/test is covered by policy terms.
 
     **Assessment Workflow (MUST complete ALL steps)**:
       ${skipCompliance ? "" : "1. Call invokeComplianceAgent first (see above).\n      "}2. Call claim tool to get claim data. Pay attention to past claims from same insured — note any non_paid_amount > 0 and their assessment_summary for drug exclusion history.

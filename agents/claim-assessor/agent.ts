@@ -27,6 +27,8 @@ import {
   issuePendingCodesTool,
   medicalProviderTool,
   medicalProvidersTool,
+  policyDocFetchTool,
+  policyDocSearchTool,
   addSlackReactionTool,
   saveDetailFormTool,
   sendSlackMessageTool,
@@ -111,6 +113,8 @@ export async function createClaimAssessorAgent(claimCode: string) {
     getInsurerPendingCodeMappingTool,
     issuePendingCodesTool,
     googleSearchTool,
+    policyDocSearchTool,
+    policyDocFetchTool,
     sendSlackMessageTool,
     addSlackReactionTool,
     ...(!hasDetailData ? [saveDetailFormTool] : []),
@@ -159,6 +163,13 @@ export async function createClaimAssessorAgent(claimCode: string) {
           - Medical test results must be present to explain the tests.
           - Positive test results are assessed as covered, bundled into physical examination benefits for Out Patient cases.
           - Tất cả chi phí cận lâm sàng kết quả dương tính sẽ được chi trả chung quyền lợi khám ngoại trú.
+
+    **Policy Document Lookup**:
+      When you need to check policy terms, coverage conditions, exclusion clauses, or benefit limits:
+      1. Call policyDocSearch with the claim code to find available policy documents (contracts, T&C, amendments).
+      2. Call policyDocFetch with the relevant file ID to read the document text.
+      3. Use the extracted text to verify coverage rules, exclusion clauses, and benefit conditions.
+      Only fetch documents when needed — e.g., when determining if a specific item/drug/test is covered by policy terms.
 
     **Assessment Workflow (MUST complete ALL steps, do NOT stop until approve)**:
       1. Skip saveDetailForm if claim already has diagnosis, medical_provider, and assessed_diagnoses populated. Only call it when these fields are missing.

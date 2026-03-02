@@ -218,6 +218,7 @@ export const banyanAuthTaskDef = new aws.ecs.TaskDefinition("banyan-prod-auth-ta
             { name: "OTP_FROM_EMAIL", value: "noreply@papaya.asia" },
             { name: "DB_SECRET_NAME", value: "banyan-prod-db-credentials" },
             { name: "JWT_SECRET_NAME", value: "banyan-prod-jwt-secret" },
+            { name: "DRIVE_POLICY_ROOT_ID", value: "1HeLlO86_ZlhtQJCWy9NK_zSk7aOoghuZ" },
           ],
           logConfiguration: {
             logDriver: "awslogs",

@@ -11,4 +11,5 @@ export {
   getPendingCodeTemplatesTool,
   issuePendingCodesTool,
 } from "./pending-codes.ts";
+export { policyDocFetchTool, policyDocSearchTool } from "./policy-doc.ts";
 export { addSlackReactionTool, sendSlackMessageTool } from "./slack.ts";
