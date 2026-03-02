@@ -28,7 +28,7 @@ if (!folder) {
 const inputDir = resolve(folder);
 const caseName = basename(inputDir);
 const OUTPUT_BASE = "/Volumes/work/git/papaya-org/test-cases-v2-output";
-const outputDir = join(OUTPUT_BASE, caseName);
+const outputDir = join(OUTPUT_BASE, `${caseName}-local`);
 mkdirSync(outputDir, { recursive: true });
 
 // ── Image scanning ───────────────────────────────────────────────────────────

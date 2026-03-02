@@ -75,7 +75,7 @@ COPY --from=bun-builder /app/package.json ./package.json
 # Environment
 ENV NODE_ENV=production
 ENV PORT=4001
-ENV PYTHON_BRIDGE_TIMEOUT=120000
+ENV PYTHON_BRIDGE_TIMEOUT=300000
 
 EXPOSE 4001
 

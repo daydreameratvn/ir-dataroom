@@ -207,7 +207,7 @@ export const banyanForensicsTaskDef = new aws.ecs.TaskDefinition(
               { name: "PORT", value: "4001" },
               { name: "NODE_ENV", value: "production" },
               { name: "AWS_REGION", value: "ap-southeast-1" },
-              { name: "PYTHON_BRIDGE_TIMEOUT", value: "120000" },
+              { name: "PYTHON_BRIDGE_TIMEOUT", value: "300000" },
             ],
             logConfiguration: {
               logDriver: "awslogs",
