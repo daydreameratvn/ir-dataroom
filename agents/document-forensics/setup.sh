@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PYTHON_DIR="$SCRIPT_DIR/python"
 WEIGHTS_DIR="$PYTHON_DIR/weights/trufor"
 WEIGHTS_FILE="$WEIGHTS_DIR/trufor.pth.tar"
-WEIGHTS_URL="https://www.grip.unina.it/download/prog/TruFor/TruFor_weights.pth"
+S3_WEIGHTS="s3://banyan-ml-weights/trufor/trufor.pth.tar"
 
 echo "=== Document Forensics Setup ==="
 
@@ -23,7 +23,7 @@ else
     exit 1
 fi
 
-# Step 2: Download TruFor weights
+# Step 2: Download TruFor weights from S3
 echo ""
 echo "Step 2: Checking TruFor weights..."
 mkdir -p "$WEIGHTS_DIR"
@@ -31,15 +31,12 @@ mkdir -p "$WEIGHTS_DIR"
 if [ -f "$WEIGHTS_FILE" ]; then
     echo "  ✓ Weights already present at $WEIGHTS_FILE"
 else
-    echo "  Downloading TruFor weights (~281 MB)..."
-    echo "  URL: $WEIGHTS_URL"
-    if command -v curl &> /dev/null; then
-        curl -L -o "$WEIGHTS_FILE" "$WEIGHTS_URL"
-    elif command -v wget &> /dev/null; then
-        wget -O "$WEIGHTS_FILE" "$WEIGHTS_URL"
+    echo "  Downloading TruFor weights from S3 (~268 MB)..."
+    if command -v aws &> /dev/null; then
+        aws s3 cp "$S3_WEIGHTS" "$WEIGHTS_FILE"
     else
-        echo "  ✗ Neither curl nor wget found. Download manually:"
-        echo "    $WEIGHTS_URL → $WEIGHTS_FILE"
+        echo "  ✗ AWS CLI not found. Install with: brew install awscli"
+        echo "  Or download manually: aws s3 cp $S3_WEIGHTS $WEIGHTS_FILE"
         exit 1
     fi
     echo "  ✓ Weights downloaded"
