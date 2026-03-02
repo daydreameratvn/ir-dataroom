@@ -402,6 +402,7 @@ echo ""
 # ----------------------------------------------------------
 echo "=== Quick Reference ==="
 echo ""
+echo "  Full local dev:      bun run dev  (tunnel + auth + frontend)"
 echo "  Platform dev:        cd platform && bun run dev"
 echo "  Auth dev:            cd auth && bun run dev"
 echo "  Hasura tunnel:       bun run hasura:tunnel"

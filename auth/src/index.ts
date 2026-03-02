@@ -23,7 +23,7 @@ const app = new Hono();
 app.use(
   "*",
   cors({
-    origin: [authConfig.rpOrigin, "http://localhost:3000", "http://localhost:3003", "https://investors.papaya.asia", "https://phoenix.papaya.asia"],
+    origin: [authConfig.rpOrigin, "http://localhost:3000", "http://localhost:3003", "http://oasis.localhost:1355", "https://investors.papaya.asia", "https://phoenix.papaya.asia"],
     credentials: true,
     allowHeaders: ["Content-Type", "Authorization", "x-tenant-id"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
