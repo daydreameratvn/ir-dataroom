@@ -67,6 +67,15 @@ export default function DocumentViewer() {
     }
   }, [data?.accessLogId]);
 
+  // Clean up blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (data?.blobUrl) {
+        URL.revokeObjectURL(data.blobUrl);
+      }
+    };
+  }, [data?.blobUrl]);
+
   // Track view duration with heartbeat
   const sendHeartbeat = useCallback(() => {
     const logId = accessLogIdRef.current;
