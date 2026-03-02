@@ -172,6 +172,22 @@ export async function updateInvestorStatus(
   }
 }
 
+export async function updateInvestorProfile(
+  investorId: string,
+  data: { name?: string; firm?: string; title?: string }
+): Promise<void> {
+  const response = await fetch(`${BASE}/investors/${investorId}`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const message = (body as Record<string, unknown>).error ?? response.statusText;
+    throw new Error(String(message));
+  }
+}
+
 export async function removeInvestorFromRound(
   roundId: string,
   investorRoundId: string

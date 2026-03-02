@@ -317,6 +317,29 @@ ir.delete("/ir/rounds/:rid/investors/:iid", async (c) => {
   }
 });
 
+// ── Update investor profile (name, firm, title, etc.) ──
+
+ir.put("/ir/investors/:id", async (c) => {
+  const user = c.get("user");
+  const id = c.req.param("id");
+  const body = await c.req.json<{ name?: string; firm?: string; title?: string }>();
+
+  if (!body.name && !body.firm && !body.title) {
+    return c.json({ error: "At least one field is required" }, 400);
+  }
+
+  try {
+    const updated = await updateInvestor(id, body, user.sub);
+    if (!updated) {
+      return c.json({ error: "Investor not found" }, 404);
+    }
+    return c.json({ success: true, data: updated });
+  } catch (err) {
+    console.error("[IR API] Error updating investor:", err);
+    return c.json({ error: "Failed to update investor" }, 500);
+  }
+});
+
 // ── Round Documents ──────────────────────────────────────────────────────
 
 ir.get("/ir/rounds/:id/documents", async (c) => {

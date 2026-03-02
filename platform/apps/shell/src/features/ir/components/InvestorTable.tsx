@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useState } from 'react';
-import { Plus, RefreshCw, Trash2, Send, Building2 } from 'lucide-react';
+import { Plus, RefreshCw, Trash2, Send, Building2, Pencil, Check, X } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,15 +9,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  Badge,
   Button,
   Card,
   CardContent,
+  Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
   Table,
   TableBody,
   TableCell,
@@ -32,6 +31,7 @@ import type { InvestorRound, InvestorRoundStatus, InvestorEngagement, Engagement
 import {
   listRoundInvestors,
   updateInvestorStatus,
+  updateInvestorProfile,
   removeInvestorFromRound,
   sendInvitation,
   getRoundEngagement,
@@ -53,17 +53,6 @@ const INVESTOR_STATUSES: InvestorRoundStatus[] = [
   'docs_out',
   'dropped',
 ];
-
-function formatDate(dateStr: string | null): string {
-  if (!dateStr) return '-';
-  return new Intl.DateTimeFormat('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(dateStr));
-}
 
 function getDaysAgo(dateStr: string | null): string {
   if (!dateStr) return 'Never';
@@ -156,6 +145,69 @@ function groupByFirm(investors: InvestorWithEngagement[]): InvestorWithEngagemen
   return result;
 }
 
+// ── Inline editable cell (matches prototype's EditableCell) ──
+
+function EditableCell({
+  value,
+  placeholder,
+  onSave,
+}: {
+  value: string | null;
+  placeholder: string;
+  onSave: (newValue: string | null) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value || '');
+
+  const handleSave = () => {
+    const trimmed = draft.trim();
+    const newVal = trimmed || null;
+    if (newVal !== value) {
+      onSave(newVal);
+    }
+    setEditing(false);
+  };
+
+  const handleCancel = () => {
+    setDraft(value || '');
+    setEditing(false);
+  };
+
+  if (editing) {
+    return (
+      <div className="flex items-center gap-1">
+        <Input
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleSave();
+            if (e.key === 'Escape') handleCancel();
+          }}
+          className="h-7 text-sm w-32"
+          autoFocus
+          placeholder={placeholder}
+        />
+        <button onClick={handleSave} className="text-green-600 hover:text-green-800">
+          <Check className="h-3.5 w-3.5" />
+        </button>
+        <button onClick={handleCancel} className="text-muted-foreground hover:text-foreground">
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => { setDraft(value || ''); setEditing(true); }}
+      className="group flex items-center gap-1 text-left hover:text-blue-600"
+    >
+      <span>{value || '-'}</span>
+      <Pencil className="h-3 w-3 text-muted-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+    </button>
+  );
+}
+
 export default function InvestorTable({ roundId }: InvestorTableProps) {
   const [investors, setInvestors] = useState<InvestorRound[]>([]);
   const [engagement, setEngagement] = useState<Map<string, InvestorEngagement>>(new Map());
@@ -166,6 +218,7 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [groupedByFirm, setGroupedByFirm] = useState(false);
   const [removeTarget, setRemoveTarget] = useState<InvestorRound | null>(null);
+  const [dropTarget, setDropTarget] = useState<InvestorRound | null>(null);
   const limit = 20;
 
   const fetchInvestors = useCallback(async () => {
@@ -195,13 +248,46 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
     fetchInvestors();
   }, [fetchInvestors]);
 
-  async function handleStatusChange(investorRoundId: string, newStatus: InvestorRoundStatus) {
+  async function handleStatusChange(inv: InvestorRound, newStatus: InvestorRoundStatus) {
+    if (newStatus === 'dropped') {
+      setDropTarget(inv);
+      return;
+    }
     try {
-      await updateInvestorStatus(roundId, investorRoundId, newStatus);
+      await updateInvestorStatus(roundId, inv.id, newStatus);
       setInvestors((prev) =>
-        prev.map((inv) =>
-          inv.id === investorRoundId ? { ...inv, status: newStatus } : inv
-        )
+        prev.map((i) => (i.id === inv.id ? { ...i, status: newStatus } : i))
+      );
+    } catch {
+      fetchInvestors();
+    }
+  }
+
+  async function handleDropConfirmed() {
+    if (!dropTarget) return;
+    const investorRoundId = dropTarget.id;
+    setDropTarget(null);
+    try {
+      await updateInvestorStatus(roundId, investorRoundId, 'dropped');
+      setInvestors((prev) =>
+        prev.map((i) => (i.id === investorRoundId ? { ...i, status: 'dropped' as InvestorRoundStatus } : i))
+      );
+    } catch {
+      fetchInvestors();
+    }
+  }
+
+  async function handleFieldUpdate(investorId: string, field: 'name' | 'firm', value: string | null) {
+    try {
+      await updateInvestorProfile(investorId, { [field]: value });
+      // Optimistically update local state
+      setInvestors((prev) =>
+        prev.map((inv) => {
+          if (inv.investorId !== investorId) return inv;
+          if (field === 'name') return { ...inv, investorName: value ?? inv.investorName };
+          if (field === 'firm') return { ...inv, investorFirm: value };
+          return inv;
+        })
       );
     } catch {
       fetchInvestors();
@@ -290,15 +376,15 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Name</TableHead>
                 <TableHead>Firm</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>NDA</TableHead>
                 <TableHead>Last Active</TableHead>
                 <TableHead>Signal</TableHead>
                 <TableHead>Recommendation</TableHead>
-                <TableHead className="w-32">Actions</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -345,35 +431,48 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
                       </TableRow>
                     )}
                     <TableRow>
-                      <TableCell className="font-medium">{inv.investorName}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
+                      <TableCell className="font-medium">
                         {inv.investorEmail}
                       </TableCell>
-                      <TableCell className="text-sm">
-                        {inv.investorFirm ?? (
-                          <span className="text-muted-foreground">-</span>
-                        )}
+                      <TableCell>
+                        <EditableCell
+                          value={inv.investorName}
+                          placeholder="Name"
+                          onSave={(val) => handleFieldUpdate(inv.investorId, 'name', val)}
+                        />
                       </TableCell>
                       <TableCell>
-                        <Select
-                          value={inv.status}
-                          onValueChange={(v) => handleStatusChange(inv.id, v as InvestorRoundStatus)}
-                        >
-                          <SelectTrigger className="h-7 w-40 text-xs">
-                            <InvestorStatusBadge status={inv.status} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {INVESTOR_STATUSES.map((s) => (
-                              <SelectItem key={s} value={s}>
-                                <InvestorStatusBadge status={s} />
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <EditableCell
+                          value={inv.investorFirm}
+                          placeholder="Firm"
+                          onSave={(val) => handleFieldUpdate(inv.investorId, 'firm', val)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <Select
+                            value={inv.status}
+                            onValueChange={(v) => handleStatusChange(inv, v as InvestorRoundStatus)}
+                          >
+                            <SelectTrigger className="h-7 w-40 text-xs">
+                              <InvestorStatusBadge status={inv.status} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {INVESTOR_STATUSES.map((s) => (
+                                <SelectItem key={s} value={s}>
+                                  <InvestorStatusBadge status={s} />
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {(inv.status === 'dropped') && (
+                            <p className="text-[11px] text-red-500 mt-0.5">Access revoked</p>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
                         {inv.ndaAcceptedAt
-                          ? formatDate(inv.ndaAcceptedAt)
+                          ? new Date(inv.ndaAcceptedAt).toLocaleDateString()
                           : !inv.ndaRequired
                             ? <span className="text-xs text-blue-600">Offline</span>
                             : 'Pending'}
@@ -415,7 +514,7 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
                         )}
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-1">
+                        <div className="flex items-center justify-end gap-1">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -495,6 +594,28 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
               className="bg-red-600 text-white hover:bg-red-700"
             >
               Remove Investor
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Drop investor confirmation (revoke access) */}
+      <AlertDialog open={!!dropTarget} onOpenChange={(open) => !open && setDropTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Drop Investor</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to drop <strong>{dropTarget?.investorName}</strong> (
+              {dropTarget?.investorEmail})? This will revoke all their dataroom access.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDropConfirmed}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Drop &amp; Revoke Access
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
