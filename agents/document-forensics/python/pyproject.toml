@@ -1,0 +1,36 @@
+[project]
+name = "document-forensics"
+version = "0.1.0"
+description = "Python bridge for TruFor deep learning forensics + EasyOCR"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.1.0",
+    "torchvision>=0.16.0",
+    "numpy>=1.24.0",
+    "opencv-python>=4.8.0",
+    "Pillow>=10.0.0",
+    "scipy>=1.10.0",
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0",
+    "easyocr>=1.7.2",
+    "timm>=0.9.0",
+    "einops>=0.7.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+# Do not install the project itself — only manage its dependencies.
+package = false
+
+# CPU-only PyTorch to keep size reasonable on non-GPU machines.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+torchvision = [{ index = "pytorch-cpu" }]
