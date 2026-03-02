@@ -147,7 +147,7 @@ export default function AccessLogTable({ roundId }: AccessLogTableProps) {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {log.documentId ?? '-'}
+                    {log.documentName ?? (log.documentId ? log.documentId.slice(0, 8) + '...' : '-')}
                   </TableCell>
                   <TableCell className="font-mono text-xs text-muted-foreground">
                     {log.ipAddress ?? '-'}

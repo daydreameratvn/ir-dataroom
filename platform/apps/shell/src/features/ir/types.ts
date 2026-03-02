@@ -115,6 +115,7 @@ export interface AccessLog {
   investorId: string;
   roundId: string;
   documentId: string | null;
+  documentName: string | null;
   action: string;
   ipAddress: string | null;
   userAgent: string | null;
@@ -124,6 +125,18 @@ export interface AccessLog {
   investorEmail: string;
 }
 
+export interface RecentActivity {
+  id: string;
+  investorName: string;
+  investorEmail: string;
+  roundName: string;
+  roundSlug: string;
+  documentName: string | null;
+  action: string;
+  durationSeconds: number | null;
+  createdAt: string;
+}
+
 // ── Analytics ──
 
 export interface RoundAnalytics {
@@ -131,7 +144,7 @@ export interface RoundAnalytics {
   uniqueViewers: number;
   viewsPerDocument: { documentId: string; documentName: string; views: number }[];
   viewsOverTime: { date: string; views: number }[];
-  topInvestors: { investorId: string; investorName: string; actions: number; totalDuration: number }[];
+  topInvestors: { investorId: string; investorName: string; investorEmail: string; totalActions: number; totalDuration: number }[];
 }
 
 // ── Overall Stats ──

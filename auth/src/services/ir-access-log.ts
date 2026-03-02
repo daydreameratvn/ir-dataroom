@@ -19,6 +19,7 @@ interface AccessLogRow {
 interface AccessLogWithInvestorRow extends AccessLogRow {
   investor_name: string;
   investor_email: string;
+  document_name: string | null;
 }
 
 // ── Domain types (camelCase) ──
@@ -40,6 +41,7 @@ export interface AccessLog {
 export interface AccessLogWithInvestor extends AccessLog {
   investorName: string;
   investorEmail: string;
+  documentName: string | null;
 }
 
 export interface RoundAnalytics {
@@ -84,6 +86,7 @@ function rowToAccessLogWithInvestor(
     ...rowToAccessLog(row),
     investorName: row.investor_name,
     investorEmail: row.investor_email,
+    documentName: row.document_name ?? null,
   };
 }
 
@@ -253,9 +256,11 @@ export async function listAccessLogs(
     `SELECT al.id, al.tenant_id, al.investor_id, al.round_id, al.document_id,
             al.action, al.ip_address, al.user_agent, al.duration_seconds, al.metadata,
             al.created_at,
-            inv.name AS investor_name, inv.email AS investor_email
+            inv.name AS investor_name, inv.email AS investor_email,
+            d.name AS document_name
      FROM ir_access_logs al
      JOIN ir_investors inv ON inv.id = al.investor_id
+     LEFT JOIN ir_documents d ON d.id = al.document_id
      WHERE ${where}
      ORDER BY al.created_at DESC
      LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
@@ -455,6 +460,71 @@ export async function getInvestorEngagement(
     totalDownloads: parseInt(row.total_downloads, 10),
     uniqueFilesViewed: parseInt(row.unique_files_viewed, 10),
     totalTimeSpent: parseInt(row.total_time_spent, 10),
+  }));
+}
+
+// ── Recent Activity (global) ──
+
+export interface RecentActivityEntry {
+  id: string;
+  investorName: string;
+  investorEmail: string;
+  roundName: string;
+  roundSlug: string;
+  documentName: string | null;
+  action: string;
+  durationSeconds: number | null;
+  createdAt: string;
+}
+
+/**
+ * Get recent activity across ALL rounds for a tenant.
+ * Returns the most recent access log entries with enriched data.
+ */
+export async function getRecentActivity(
+  tenantId: string,
+  limit = 20
+): Promise<RecentActivityEntry[]> {
+  const result = await query<{
+    id: string;
+    investor_name: string;
+    investor_email: string;
+    round_name: string;
+    round_slug: string;
+    document_name: string | null;
+    action: string;
+    duration_seconds: number | null;
+    created_at: string;
+  }>(
+    `SELECT al.id,
+            inv.name AS investor_name,
+            inv.email AS investor_email,
+            r.name AS round_name,
+            r.slug AS round_slug,
+            d.name AS document_name,
+            al.action,
+            al.duration_seconds,
+            al.created_at
+     FROM ir_access_logs al
+     JOIN ir_investors inv ON inv.id = al.investor_id
+     JOIN ir_rounds r ON r.id = al.round_id
+     LEFT JOIN ir_documents d ON d.id = al.document_id
+     WHERE al.tenant_id = $1 AND al.deleted_at IS NULL
+     ORDER BY al.created_at DESC
+     LIMIT $2`,
+    [tenantId, limit]
+  );
+
+  return result.rows.map((row) => ({
+    id: row.id,
+    investorName: row.investor_name,
+    investorEmail: row.investor_email,
+    roundName: row.round_name,
+    roundSlug: row.round_slug,
+    documentName: row.document_name,
+    action: row.action,
+    durationSeconds: row.duration_seconds,
+    createdAt: row.created_at,
   }));
 }
 

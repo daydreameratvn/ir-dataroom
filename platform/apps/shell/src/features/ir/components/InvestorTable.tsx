@@ -1,6 +1,14 @@
 import { Fragment, useCallback, useEffect, useState } from 'react';
 import { Plus, RefreshCw, Trash2, Send, Building2 } from 'lucide-react';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -157,6 +165,7 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
   const [error, setError] = useState<string | null>(null);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [groupedByFirm, setGroupedByFirm] = useState(false);
+  const [removeTarget, setRemoveTarget] = useState<InvestorRound | null>(null);
   const limit = 20;
 
   const fetchInvestors = useCallback(async () => {
@@ -199,7 +208,10 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
     }
   }
 
-  async function handleRemove(investorRoundId: string) {
+  async function handleRemoveConfirmed() {
+    if (!removeTarget) return;
+    const investorRoundId = removeTarget.id;
+    setRemoveTarget(null);
     try {
       await removeInvestorFromRound(roundId, investorRoundId);
       setInvestors((prev) => prev.filter((inv) => inv.id !== investorRoundId));
@@ -416,7 +428,7 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleRemove(inv.id)}
+                            onClick={() => setRemoveTarget(inv)}
                             className="h-7 px-2 text-xs text-red-600 hover:text-red-700"
                             title="Remove from round"
                           >
@@ -464,6 +476,29 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
         roundId={roundId}
         onAdded={fetchInvestors}
       />
+
+      {/* Remove investor confirmation */}
+      <AlertDialog open={!!removeTarget} onOpenChange={(open) => !open && setRemoveTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Investor</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove <strong>{removeTarget?.investorName}</strong> (
+              {removeTarget?.investorEmail}) from this round? Their access will be revoked
+              immediately.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleRemoveConfirmed}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Remove Investor
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

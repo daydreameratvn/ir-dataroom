@@ -9,8 +9,19 @@ import {
   FileText,
   Users,
   Eye,
+  Trash2,
+  Clock,
+  Activity,
 } from 'lucide-react';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -29,8 +40,8 @@ import {
   TableHeader,
   TableRow,
 } from '@papaya/shared-ui';
-import type { Investor, OverallStats, Round } from './types';
-import { getStats, listRounds, getRound, listAllInvestors } from './api';
+import type { Investor, OverallStats, RecentActivity, Round } from './types';
+import { getStats, listRounds, getRound, listAllInvestors, deleteRound, getRecentActivity } from './api';
 import RoundStatusBadge from './components/RoundStatusBadge';
 import RoundCreateDialog from './components/RoundCreateDialog';
 import InvestorTable from './components/InvestorTable';
@@ -60,11 +71,28 @@ function formatCurrency(amount: number | null, currency: string | null): string 
   }).format(amount);
 }
 
+function formatTimeAgo(dateStr: string): string {
+  const now = Date.now();
+  const then = new Date(dateStr).getTime();
+  const diffMs = now - then;
+  const diffSeconds = Math.floor(diffMs / 1000);
+
+  if (diffSeconds < 60) return 'just now';
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  if (diffMinutes < 60) return `${diffMinutes}m ago`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return formatDate(dateStr);
+}
+
 // ── Main Page ──
 
 export default function IRPage() {
   const [stats, setStats] = useState<OverallStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [selectedRoundId, setSelectedRoundId] = useState<string | null>(null);
   const [selectedRound, setSelectedRound] = useState<Round | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -72,8 +100,12 @@ export default function IRPage() {
   const fetchStats = useCallback(async () => {
     setStatsLoading(true);
     try {
-      const result = await getStats();
-      setStats(result);
+      const [statsResult, activityResult] = await Promise.all([
+        getStats(),
+        getRecentActivity(15).catch(() => [] as RecentActivity[]),
+      ]);
+      setStats(statsResult);
+      setRecentActivity(activityResult);
     } catch {
       // Stats are non-critical, silently fail
     } finally {
@@ -89,8 +121,12 @@ export default function IRPage() {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const result = await getStats();
-        setStats(result);
+        const [statsResult, activityResult] = await Promise.all([
+          getStats(),
+          getRecentActivity(15).catch(() => [] as RecentActivity[]),
+        ]);
+        setStats(statsResult);
+        setRecentActivity(activityResult);
       } catch {
         // Silent
       }
@@ -129,6 +165,12 @@ export default function IRPage() {
     }
   }
 
+  function handleRoundDeleted() {
+    setSelectedRoundId(null);
+    setSelectedRound(null);
+    fetchStats();
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -142,7 +184,7 @@ export default function IRPage() {
       />
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard
           label="Total Rounds"
           value={statsLoading ? '-' : (stats?.totalRounds ?? 0)}
@@ -163,7 +205,70 @@ export default function IRPage() {
           value={statsLoading ? '-' : (stats?.totalDocuments ?? 0)}
           icon={<FileText className="h-4 w-4" />}
         />
+        <StatCard
+          label="Total Views"
+          value={statsLoading ? '-' : (stats?.totalViews ?? 0).toLocaleString()}
+          icon={<Eye className="h-4 w-4" />}
+        />
+        <StatCard
+          label="Unique Viewers"
+          value={statsLoading ? '-' : (stats?.uniqueViewers ?? 0).toLocaleString()}
+          icon={<Activity className="h-4 w-4" />}
+        />
       </div>
+
+      {/* Recent Activity - only show on dashboard (no round selected) */}
+      {!selectedRoundId && recentActivity.length > 0 && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="mb-4 flex items-center gap-2">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <h4 className="text-sm font-medium">Recent Activity</h4>
+            </div>
+            <div className="space-y-2">
+              {recentActivity.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="flex items-center justify-between rounded-md border px-3 py-2 text-sm"
+                >
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <Badge
+                      className={`shrink-0 text-[10px] ${
+                        entry.action === 'view'
+                          ? 'bg-blue-100 text-blue-700'
+                          : entry.action === 'download'
+                            ? 'bg-emerald-100 text-emerald-700'
+                            : entry.action === 'nda_accept'
+                              ? 'bg-teal-100 text-teal-700'
+                              : entry.action === 'login'
+                                ? 'bg-violet-100 text-violet-700'
+                                : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      {entry.action}
+                    </Badge>
+                    <span className="truncate">
+                      <span className="font-medium">{entry.investorName}</span>
+                      {entry.documentName && (
+                        <span className="text-muted-foreground">
+                          {' — '}
+                          {entry.documentName}
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0 ml-4">
+                    <span className="text-xs text-muted-foreground">{entry.roundName}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {formatTimeAgo(entry.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Content area */}
       {selectedRoundId && selectedRound ? (
@@ -171,6 +276,7 @@ export default function IRPage() {
           round={selectedRound}
           onBack={handleBackToList}
           onSaved={handleRoundSaved}
+          onDeleted={handleRoundDeleted}
         />
       ) : (
         <Tabs defaultValue="rounds" className="space-y-4">
@@ -343,21 +449,48 @@ interface RoundDetailViewProps {
   round: Round;
   onBack: () => void;
   onSaved: () => void;
+  onDeleted: () => void;
 }
 
-function RoundDetailView({ round, onBack, onSaved }: RoundDetailViewProps) {
+function RoundDetailView({ round, onBack, onSaved, onDeleted }: RoundDetailViewProps) {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  async function handleDeleteRound() {
+    setIsDeleting(true);
+    try {
+      await deleteRound(round.id);
+      setDeleteDialogOpen(false);
+      onDeleted();
+    } catch {
+      // Failed to delete
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <div className="space-y-4">
       {/* Back button and round header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
-          <ArrowLeft className="h-4 w-4" />
-          Back to Rounds
-        </Button>
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold">{round.name}</h2>
-          <RoundStatusBadge status={round.status} />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Rounds
+          </Button>
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-semibold">{round.name}</h2>
+            <RoundStatusBadge status={round.status} />
+          </div>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 text-red-600 hover:bg-red-50 hover:text-red-700"
+          onClick={() => setDeleteDialogOpen(true)}
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+          Delete Round
+        </Button>
       </div>
 
       {round.description && (
@@ -408,6 +541,30 @@ function RoundDetailView({ round, onBack, onSaved }: RoundDetailViewProps) {
           <RoundConfiguration round={round} onSaved={onSaved} />
         </TabsContent>
       </Tabs>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Round</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>{round.name}</strong>? This will remove all
+              associated investors, documents, NDA templates, and access logs. This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteRound}
+              disabled={isDeleting}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete Round'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

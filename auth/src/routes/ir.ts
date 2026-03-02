@@ -48,6 +48,7 @@ import {
   updateAccessLogDuration,
   exportAccessLogsCSV,
   getInvestorEngagement,
+  getRecentActivity,
 } from "../services/ir-access-log.ts";
 import {
   generateUploadUrl,
@@ -547,6 +548,21 @@ ir.get("/ir/stats", async (c) => {
   } catch (err) {
     console.error("[IR API] Error fetching IR stats:", err);
     return c.json({ error: "Failed to fetch stats" }, 500);
+  }
+});
+
+// ── Recent Activity (global) ─────────────────────────────────────────────
+
+ir.get("/ir/recent-activity", async (c) => {
+  const tenantId = getEffectiveTenantId(c);
+  const limit = parseInt(c.req.query("limit") || "20", 10);
+
+  try {
+    const activity = await getRecentActivity(tenantId, Math.min(limit, 50));
+    return c.json({ data: activity });
+  } catch (err) {
+    console.error("[IR API] Error fetching recent activity:", err);
+    return c.json({ error: "Failed to fetch recent activity" }, 500);
   }
 });
 

@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { FileText, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Badge,
   Button,
   Card,
@@ -75,6 +83,7 @@ export default function DocumentManager({ roundId }: DocumentManagerProps) {
   const [error, setError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<DocumentCategory | 'all'>('all');
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Document | null>(null);
 
   const fetchDocuments = useCallback(async () => {
     setIsLoading(true);
@@ -95,7 +104,10 @@ export default function DocumentManager({ roundId }: DocumentManagerProps) {
     fetchDocuments();
   }, [fetchDocuments]);
 
-  async function handleDelete(docId: string) {
+  async function handleDeleteConfirmed() {
+    if (!deleteTarget) return;
+    const docId = deleteTarget.id;
+    setDeleteTarget(null);
     try {
       await deleteDocument(docId);
       setDocuments((prev) => prev.filter((d) => d.id !== docId));
@@ -206,7 +218,7 @@ export default function DocumentManager({ roundId }: DocumentManagerProps) {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleDelete(doc.id)}
+                            onClick={() => setDeleteTarget(doc)}
                             className="h-7 px-2 text-xs text-red-600 hover:text-red-700"
                           >
                             <Trash2 className="h-3 w-3" />
@@ -228,6 +240,28 @@ export default function DocumentManager({ roundId }: DocumentManagerProps) {
         roundId={roundId}
         onCreated={fetchDocuments}
       />
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Document</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>{deleteTarget?.name}</strong>? This will
+              remove the document and its file from storage. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirmed}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Delete Document
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

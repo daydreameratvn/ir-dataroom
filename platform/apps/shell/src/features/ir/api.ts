@@ -10,6 +10,7 @@ import type {
   InvestorRoundStatus,
   NdaTemplate,
   OverallStats,
+  RecentActivity,
   Round,
   RoundAnalytics,
   RoundStatus,
@@ -391,4 +392,14 @@ export async function sendInvitation(investorId: string): Promise<void> {
     const message = (body as Record<string, unknown>).error ?? response.statusText;
     throw new Error(String(message));
   }
+}
+
+// ── Recent Activity ──
+
+export async function getRecentActivity(limit = 20): Promise<RecentActivity[]> {
+  const response = await fetch(`${BASE}/recent-activity?limit=${limit}`, {
+    headers: getHeaders(),
+  });
+  const result = await handleResponse<{ data: RecentActivity[] }>(response);
+  return result.data;
 }
