@@ -5,8 +5,8 @@ set -euo pipefail
 # Banyan Deploy Script
 #
 # Deploys the frontend (S3 + CloudFront), auth service (ECR + ECS),
-# and investor portal (S3 + CloudFront).
-# Usage: AWS_PROFILE=banyan bash scripts/deploy.sh [frontend|auth|investor-portal|all]
+# investor portal (S3 + CloudFront), and phoenix (S3 + CloudFront).
+# Usage: AWS_PROFILE=banyan bash scripts/deploy.sh [frontend|auth|investor-portal|phoenix|all]
 # =============================================================
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -117,6 +117,39 @@ deploy_investor_portal() {
 }
 
 # =============================================================
+# Deploy Phoenix
+# =============================================================
+deploy_phoenix() {
+  echo ">>> Building phoenix..."
+  cd "$REPO_ROOT/platform/apps/phoenix"
+  bun install
+  bun run build
+
+  local BUCKET="banyan-prod-phoenix"
+  local CF_ID="E3T5K7ZJ6Q0J76"
+
+  echo ">>> Uploading to S3 ($BUCKET)..."
+  aws s3 sync "$REPO_ROOT/platform/apps/phoenix/dist/" "s3://$BUCKET/" \
+    --delete \
+    --cache-control "public, max-age=31536000, immutable" \
+    --region "$REGION"
+
+  # index.html should not be cached
+  aws s3 cp "$REPO_ROOT/platform/apps/phoenix/dist/index.html" "s3://$BUCKET/index.html" \
+    --cache-control "no-cache, no-store, must-revalidate" \
+    --content-type "text/html" \
+    --region "$REGION"
+
+  echo ">>> Invalidating CloudFront ($CF_ID)..."
+  aws cloudfront create-invalidation \
+    --distribution-id "$CF_ID" \
+    --paths "/*" \
+    --query 'Invalidation.Id' --output text
+
+  echo ">>> Phoenix deployed at https://phoenix.papaya.asia"
+}
+
+# =============================================================
 # Run
 # =============================================================
 case "$TARGET" in
@@ -129,13 +162,17 @@ case "$TARGET" in
   investor-portal)
     deploy_investor_portal
     ;;
+  phoenix)
+    deploy_phoenix
+    ;;
   all)
     deploy_auth
     deploy_frontend
     deploy_investor_portal
+    deploy_phoenix
     ;;
   *)
-    echo "Usage: $0 [frontend|auth|investor-portal|all]"
+    echo "Usage: $0 [frontend|auth|investor-portal|phoenix|all]"
     exit 1
     ;;
 esac

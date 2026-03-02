@@ -185,7 +185,18 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
   * SPA routing: 403/404 → `/index.html`.
   * PriceClass_200, HTTP/2+3, CloudFront default certificate.
 
-### 2.10 S3 Metadata Bucket
+### 2.10 Phoenix Portal (CloudFront + S3)
+
+* **S3 Bucket:** `banyan-prod-phoenix` — private, OAC access only.
+* **CloudFront Distribution:** `phoenix.papaya.asia`
+  * S3 origin (default): Static assets via OAC (CachingOptimized + CORS-S3Origin).
+  * ALB origin (`/auth/*`): HTTP origin, CachingDisabled + AllViewer policies.
+  * SPA routing: 403/404 → `/index.html`.
+  * PriceClass_200, HTTP/2+3, TLS 1.2+.
+  * ACM certificate: `arn:aws:acm:us-east-1:812652266901:certificate/f446a33f-1c60-4fc8-8049-fd7d67af67a3` (wildcard `*.papaya.asia`).
+* **DNS:** CNAME `phoenix.papaya.asia` → CloudFront domain (Route 53 in account `089192911254`).
+
+### 2.11 S3 Metadata Bucket
 
 * **Bucket:** `banyan-hasura-metadata` (created manually, not managed by Pulumi).
 * **Purpose:** Stores the Hasura OpenDD metadata files that the engine loads at startup.
@@ -195,7 +206,7 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
 * **Deployment Flow:** The `hasura:deploy` script uploads these files to S3, then triggers ECS service restarts. The engine init container downloads them from S3 at task startup.
 * **Access:** ECS task role has `s3:GetObject` permission scoped to `arn:aws:s3:::banyan-hasura-metadata/*`.
 
-### 2.11 JWT Authentication
+### 2.12 JWT Authentication
 
 * **HMAC Key:** Random 32-byte key generated via `@pulumi/random` `RandomBytes`, base64-encoded.
 * **Secret Storage:** Secrets Manager (`banyan-prod-jwt-secret`) stores `{ "key": "<base64>" }`.
@@ -260,6 +271,9 @@ new aws.Provider("banyan-aws-provider", {
 * `DomainName`: Domain name
 * `CertificateArn`: ACM certificate ARN
 * `CertValidationCname`: DNS CNAME records for cert validation
+* `PhoenixBucketName`: S3 bucket for Phoenix static assets
+* `PhoenixCloudFrontDistributionId`: CloudFront distribution ID for Phoenix
+* `PhoenixCloudFrontDomainName`: CloudFront domain name for Phoenix
 
 ---
 
@@ -295,7 +309,8 @@ rootstock/
     ├── ecs-auth.ts              # Auth service task def + ECS service
     ├── nlb-rds-proxy.ts         # NLB, target group, listener, SSM param
     ├── github-oidc.ts           # GitHub Actions OIDC provider and deploy role
-    └── doltgres.ts              # Doltgres Fargate + EFS + SG + Secrets + Cloud Map + NLB integration
+    ├── doltgres.ts              # Doltgres Fargate + EFS + SG + Secrets + Cloud Map + NLB integration
+    └── phoenix.ts               # Phoenix portal: S3, OAC, CloudFront (phoenix.papaya.asia)
 ```
 
 ---

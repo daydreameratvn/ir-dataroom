@@ -13,6 +13,7 @@ import statusRoutes from "./routes/status.ts";
 import drone from "./routes/drone.ts";
 import fwa from "./routes/fwa.ts";
 import ir from "./routes/ir.ts";
+import phoenix from "./routes/phoenix.ts";
 import directoryRoutes from "./routes/directory.ts";
 import { startSyncScheduler } from "./services/sync-scheduler.ts";
 
@@ -22,7 +23,7 @@ const app = new Hono();
 app.use(
   "*",
   cors({
-    origin: [authConfig.rpOrigin, "http://localhost:3000", "https://investors.papaya.asia"],
+    origin: [authConfig.rpOrigin, "http://localhost:3000", "http://localhost:3003", "https://investors.papaya.asia", "https://phoenix.papaya.asia"],
     credentials: true,
     allowHeaders: ["Content-Type", "Authorization", "x-tenant-id"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -47,6 +48,7 @@ app.route("/auth", statusRoutes);
 app.route("/auth", drone);
 app.route("/auth", fwa);
 app.route("/auth", ir);
+app.route("/auth", phoenix);
 app.route("/auth", directoryRoutes);
 
 // Global error handler — auto-reports unhandled errors
