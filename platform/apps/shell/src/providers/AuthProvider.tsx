@@ -10,7 +10,7 @@ interface AuthContextValue {
 
 const mockUser: User = {
   id: 'user-001',
-  email: 'admin@papaya.insure',
+  email: 'admin@papaya.asia',
   name: 'Sarah Chen',
   avatarUrl: undefined,
   userType: 'insurer',

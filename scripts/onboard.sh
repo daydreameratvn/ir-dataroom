@@ -176,6 +176,15 @@ if command -v gcloud &>/dev/null; then
   GCLOUD_VERSION=$(gcloud --version 2>/dev/null | head -1 | sed 's/Google Cloud SDK //')
   ok "gcloud CLI v${GCLOUD_VERSION}"
 
+  GCP_PROJECT=$(gcloud config get-value project 2>/dev/null || echo "")
+  if [ "$GCP_PROJECT" = "banyan-489002" ]; then
+    ok "GCP project: banyan-489002"
+  elif [ -n "$GCP_PROJECT" ]; then
+    warn "GCP project is '${GCP_PROJECT}' — expected 'banyan-489002'. Run: gcloud config set project banyan-489002"
+  else
+    warn "GCP project not set — run: gcloud config set project banyan-489002"
+  fi
+
   if gcloud auth print-access-token &>/dev/null 2>&1; then
     ok "GCP authenticated"
   else

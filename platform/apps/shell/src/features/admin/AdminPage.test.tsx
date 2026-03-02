@@ -9,7 +9,7 @@ vi.mock('@papaya/auth', () => ({
   useAuth: () => ({
     user: {
       id: 'user-001',
-      email: 'admin@papaya.insure',
+      email: 'admin@papaya.asia',
       name: 'Sarah Chen',
       userType: 'insurer',
       userLevel: 'admin',

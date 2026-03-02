@@ -21,7 +21,7 @@ This checks for required tools, correct versions, installed dependencies, and th
 - **Local Runtime**: Bun
 - **Package Manager**: Bun (all sub-apps including platform/)
 - **Server Runtime**: Node.js
-- **Cloud Provider**: AWS, GCP
+- **Cloud Provider**: AWS, GCP (project: `banyan-489002`)
 - **GraphQL**: Hasura DDN Cloud (managed v3) — see `hasura/CLAUDE.md`
 - **IaC**: Pulumi for permanent infrastructure (VPC, subnets, RDS, NLB); SST for application (agent) deployment
 - **AI Agents**: [pi-mono](https://github.com/badlogic/pi-mono) (`pi-ai` + `pi-agent-core` + `pi-coding-agent`), Claude via AWS Bedrock — see `agents/CLAUDE.md`
