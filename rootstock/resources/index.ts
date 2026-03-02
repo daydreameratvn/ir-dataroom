@@ -11,6 +11,7 @@ export * from "./nlb-rds-proxy.ts";
 export * from "./auth-secrets.ts";
 export * from "./ecr.ts";
 export * from "./ecs-auth.ts";
+export * from "./ecs-forensics.ts";
 export * from "./frontend.ts";
 export * from "./github-oidc.ts";
 export * from "./cloud-map.ts";

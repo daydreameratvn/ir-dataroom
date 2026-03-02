@@ -36,8 +36,8 @@ Create a multi-AZ network foundation spanning 2 Availability Zones (`ap-southeas
 |--------|------|----|------|---------|
 | banyan-prod-public-1a | 10.68.0.0/24 | 1a | Public | ALB, NLB, NAT Gateway |
 | banyan-prod-public-1b | 10.68.1.0/24 | 1b | Public | ALB, NLB |
-| banyan-prod-private-1a | 10.68.10.0/24 | 1a | Private | ECS Fargate (auth, Doltgres) |
-| banyan-prod-private-1b | 10.68.11.0/24 | 1b | Private | ECS Fargate (auth) |
+| banyan-prod-private-1a | 10.68.10.0/24 | 1a | Private | ECS Fargate (auth, forensics, Doltgres) |
+| banyan-prod-private-1b | 10.68.11.0/24 | 1b | Private | ECS Fargate (auth, forensics) |
 | banyan-prod-isolated-1a | 10.68.20.0/24 | 1a | Isolated | RDS |
 | banyan-prod-isolated-1b | 10.68.21.0/24 | 1b | Isolated | RDS |
 
@@ -57,6 +57,7 @@ No CIDR blocks for internal traffic — use Security Group referencing exclusive
 | `banyan-prod-rds-sg` | TCP 5432 | NLB SG, Bastion SG, Auth SG, Doltgres SG |
 | `banyan-prod-bastion-sg` | (none — SSM only) | — |
 | `banyan-prod-auth-sg` | TCP 4000 | ALB SG |
+| `banyan-prod-forensics-sg` | TCP 4001 | ALB SG |
 | `banyan-prod-nlb-sg` | TCP 5432 | 0.0.0.0/0 |
 | `banyan-prod-doltgres-sg` | TCP 5432 | RDS SG, Bastion SG |
 | `banyan-prod-doltgres-efs-sg` | TCP 2049 (NFS) | Doltgres SG |
@@ -116,7 +117,7 @@ All security groups allow all outbound traffic (required for NAT, ECR image pull
 
 ### 2.5 Compute Layer (Amazon ECS Fargate)
 
-ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatch log groups with 30-day retention: `/ecs/banyan-prod/engine` and `/ecs/banyan-prod/ndc`.
+ECS Cluster `banyan-prod-cluster` with Container Insights enabled. CloudWatch log groups with 30-day retention: `/ecs/banyan-prod/auth`, `/ecs/banyan-prod/forensics`.
 
 #### Doltgres Logical Replica
 
@@ -176,7 +177,22 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
 * **Security Group:** `banyan-prod-auth-sg` — inbound TCP 4000 from ALB SG, outbound all.
 * **IAM Permissions:** SES, SNS, SSM, Bedrock (InvokeModel, InvokeModelWithResponseStream).
 
-### 2.9 Frontend Hosting (CloudFront + S3)
+### 2.9 Document Forensics Service (ECS Fargate)
+
+* **Image:** `<account>.dkr.ecr.ap-southeast-1.amazonaws.com/banyan-document-forensics:latest`
+* **ECR Repository:** `banyan-document-forensics` (lifecycle policy: keep last 10 untagged images)
+* **Resources:** 2048 CPU / 8192 MB memory (x86_64) — heavier due to PyTorch + TruFor model weights (~268 MB).
+* **Desired Count:** 1 task.
+* **Port:** Container port `4001`.
+* **Health Check:** `/forensics/health` on port 4001 (interval 30s, unhealthy threshold 5, timeout 10s).
+* **Load Balancing:** ALB listener rule `/forensics/*` (priority 200).
+* **Security Group:** `banyan-prod-forensics-sg` — inbound TCP 4001 from ALB SG, outbound all. No RDS access needed.
+* **IAM Permissions:** SSM read for `/banyan/forensics/*`.
+* **Secrets:** `GEMINI_API_KEY` loaded from SSM at startup (`/banyan/forensics/gemini-api-key`).
+* **Runtime:** Python 3.10 (TruFor inference) + Bun (TypeScript HTTP server). TruFor weights baked into Docker image.
+* **Deregistration Delay:** 120s (allow in-flight requests to complete).
+
+### 2.10 Frontend Hosting (CloudFront + S3)
 
 * **S3 Bucket:** `banyan-prod-frontend` — private, OAC access only.
 * **CloudFront Distribution:** `d2y563mglh62j8.cloudfront.net` (E1SZ4G9NL7U0ZA)
@@ -195,6 +211,7 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. Two CloudWatc
   * PriceClass_200, HTTP/2+3, TLS 1.2+.
   * ACM certificate: `arn:aws:acm:us-east-1:812652266901:certificate/f446a33f-1c60-4fc8-8049-fd7d67af67a3` (wildcard `*.papaya.asia`).
 * **DNS:** CNAME `phoenix.papaya.asia` → CloudFront domain (Route 53 in account `089192911254`).
+
 
 ### 2.11 S3 Metadata Bucket
 
@@ -274,6 +291,8 @@ new aws.Provider("banyan-aws-provider", {
 * `PhoenixBucketName`: S3 bucket for Phoenix static assets
 * `PhoenixCloudFrontDistributionId`: CloudFront distribution ID for Phoenix
 * `PhoenixCloudFrontDomainName`: CloudFront domain name for Phoenix
+* `AuthEcrRepoUrl`: ECR repository URL for the auth service
+* `ForensicsEcrRepoUrl`: ECR repository URL for the document forensics service
 
 ---
 
@@ -307,6 +326,7 @@ rootstock/
     ├── alb.ts                   # ALB, HTTP redirect, HTTPS listener (404 default)
     ├── auth-secrets.ts          # OAuth SSM parameters
     ├── ecs-auth.ts              # Auth service task def + ECS service
+    ├── ecs-forensics.ts         # Document forensics ECR + task def + ECS service
     ├── nlb-rds-proxy.ts         # NLB, target group, listener, SSM param
     ├── github-oidc.ts           # GitHub Actions OIDC provider and deploy role
     ├── doltgres.ts              # Doltgres Fargate + EFS + SG + Secrets + Cloud Map + NLB integration
@@ -315,19 +335,20 @@ rootstock/
 
 ---
 
-## 6. Cost Estimate (~$230/month)
+## 6. Cost Estimate (~$310/month)
 
 | Component | Monthly | % of Total |
 |-----------|---------|-----------|
-| RDS PostgreSQL 17 (db.t4g.medium + 50GB gp3) | $81.36 | 35% |
-| NAT Gateway (1 NAT + ~10GB data) | $43.66 | 19% |
-| Doltgres Fargate (1 task: 1024 CPU / 2048 MB, x86_64) | $37.18 | 16% |
-| ALB (hourly + ~1 LCU) | $24.24 | 11% |
-| NLB (RDS proxy for DDN Cloud) | $20.00 | 9% |
+| Forensics Fargate (1 task: 2048 CPU / 8192 MB, x86_64) | $85.00 | 28% |
+| RDS PostgreSQL 17 (db.t4g.medium + 50GB gp3) | $81.36 | 26% |
+| NAT Gateway (1 NAT + ~10GB data) | $43.66 | 14% |
+| Doltgres Fargate (1 task: 1024 CPU / 2048 MB, x86_64) | $37.18 | 12% |
+| ALB (hourly + ~1 LCU) | $24.24 | 8% |
+| NLB (RDS proxy for DDN Cloud) | $20.00 | 6% |
 | Doltgres EFS (elastic, ~10 GB est.) | $3.00 | 1% |
 | Bastion (t4g.nano, on-demand) | $3.07 | 1% |
 | ACM Certificate | $0.00 | 0% |
-| Other (Secrets Manager, Cloud Map, CloudWatch, SSM) | $2.50 | <1% |
-| **Total** | **~$220/mo** | |
+| Other (Secrets Manager, Cloud Map, CloudWatch, ECR, SSM) | $5.00 | <2% |
+| **Total** | **~$305/mo** | |
 
 **Cost optimization paths:** RDS Reserved Instance (~30-40% savings), Fargate Savings Plans (~20%), reduce to 1 task per service (~50% Fargate savings).

@@ -64,4 +64,5 @@ export const stackOutputs = {
 
   // ECR
   AuthEcrRepoUrl: resources.banyanAuthEcrRepo.repositoryUrl,
+  ForensicsEcrRepoUrl: resources.banyanForensicsEcrRepo.repositoryUrl,
 };

@@ -5,8 +5,9 @@ set -euo pipefail
 # Banyan Deploy Script
 #
 # Deploys the frontend (S3 + CloudFront), auth service (ECR + ECS),
-# investor portal (S3 + CloudFront), and phoenix (S3 + CloudFront).
-# Usage: AWS_PROFILE=banyan bash scripts/deploy.sh [frontend|auth|investor-portal|phoenix|all]
+# document forensics service (ECR + ECS), investor portal (S3 + CloudFront),
+# and phoenix (S3 + CloudFront).
+# Usage: AWS_PROFILE=banyan bash scripts/deploy.sh [frontend|auth|forensics|investor-portal|phoenix|all]
 # =============================================================
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -47,6 +48,49 @@ deploy_auth() {
     --query 'service.serviceName' --output text
 
   echo ">>> Auth deployed. ECS will roll out new tasks."
+}
+
+# =============================================================
+# Deploy Document Forensics Service
+# =============================================================
+deploy_forensics() {
+  echo ">>> Building document-forensics Docker image..."
+  local ECR_URL="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/banyan-document-forensics"
+  echo "ECR: $ECR_URL"
+
+  # Login to ECR
+  aws ecr get-login-password --region "$REGION" \
+    | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
+
+  # Download TruFor weights from S3 if not present locally
+  local WEIGHTS_DIR="$REPO_ROOT/agents/document-forensics/python/weights/trufor"
+  local WEIGHTS_FILE="$WEIGHTS_DIR/trufor.pth.tar"
+  if [ ! -f "$WEIGHTS_FILE" ]; then
+    echo ">>> Downloading TruFor weights from S3 (~268 MB)..."
+    mkdir -p "$WEIGHTS_DIR"
+    aws s3 cp "s3://banyan-ml-weights/trufor/trufor.pth.tar" "$WEIGHTS_FILE"
+  else
+    echo ">>> TruFor weights already present"
+  fi
+
+  # Build from repo root (Dockerfile references agents/document-forensics/)
+  docker build --platform linux/amd64 \
+    -t "$ECR_URL:latest" \
+    -f "$REPO_ROOT/agents/document-forensics/Dockerfile" \
+    "$REPO_ROOT"
+
+  echo ">>> Pushing to ECR..."
+  docker push "$ECR_URL:latest"
+
+  echo ">>> Forcing ECS service update..."
+  aws ecs update-service \
+    --cluster banyan-prod-cluster \
+    --service banyan-prod-forensics-service \
+    --force-new-deployment \
+    --region "$REGION" \
+    --query 'service.serviceName' --output text
+
+  echo ">>> Document forensics deployed. ECS will roll out new tasks."
 }
 
 # =============================================================
@@ -162,6 +206,9 @@ case "$TARGET" in
   investor-portal)
     deploy_investor_portal
     ;;
+  forensics)
+    deploy_forensics
+    ;;
   phoenix)
     deploy_phoenix
     ;;
@@ -169,10 +216,11 @@ case "$TARGET" in
     deploy_auth
     deploy_frontend
     deploy_investor_portal
+    deploy_forensics
     deploy_phoenix
     ;;
   *)
-    echo "Usage: $0 [frontend|auth|investor-portal|phoenix|all]"
+    echo "Usage: $0 [frontend|auth|forensics|investor-portal|phoenix|all]"
     exit 1
     ;;
 esac
