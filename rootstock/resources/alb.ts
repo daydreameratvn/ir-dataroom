@@ -14,6 +14,7 @@ export const banyanAlb = new aws.lb.LoadBalancer("banyan-prod-alb", {
   loadBalancerType: "application",
   securityGroups: [banyanAlbSg.id],
   subnets: banyanPublicSubnets.map((s) => s.id),
+  idleTimeout: 180, // TruFor inference can take 60-120s on first run
   tags: mergeTags({ Name: "banyan-prod-alb", Component: "alb" }),
 });
 

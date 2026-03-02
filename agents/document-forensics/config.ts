@@ -29,8 +29,13 @@ export const PYTHON_BRIDGE_TIMEOUT = Number(
   process.env.PYTHON_BRIDGE_TIMEOUT ?? 120_000,
 );
 
-/** Google Generative AI API key (required for Gemini extraction engine). */
-export const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? '';
+/**
+ * Google Generative AI API key (required for Gemini extraction engine).
+ * Read lazily from process.env so SSM can populate it after module load.
+ */
+export function getGeminiApiKey(): string {
+  return process.env.GEMINI_API_KEY ?? '';
+}
 
 export function ensureOutputDir(): string {
   mkdirSync(OUTPUT_DIR, { recursive: true });

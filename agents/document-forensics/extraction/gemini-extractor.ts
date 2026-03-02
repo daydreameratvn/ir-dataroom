@@ -15,7 +15,7 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 import { z } from 'zod';
 import sharp from 'sharp';
 
-import { GEMINI_API_KEY } from '../config.ts';
+import { getGeminiApiKey } from '../config.ts';
 import { FIELD_TYPES } from './types.ts';
 import type { ExtractedField, ExtractionResult, UsageStats } from './types.ts';
 
@@ -176,7 +176,7 @@ export class GeminiExtractor {
   private ai: GoogleGenAI;
 
   constructor(apiKey?: string) {
-    const key = apiKey ?? GEMINI_API_KEY;
+    const key = apiKey ?? getGeminiApiKey();
     if (!key) {
       throw new Error(
         'GEMINI_API_KEY is not set. Set the environment variable to use Gemini extraction.',

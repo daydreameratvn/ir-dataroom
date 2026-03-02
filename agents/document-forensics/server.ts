@@ -65,13 +65,12 @@ async function warmup(): Promise<void> {
   console.log(`[server] Warmup complete. Ready: ${ready}`);
 }
 
-// ── Base64 → temp file helper ───────────────────────────────────────────────
+// ── Temp file helpers ───────────────────────────────────────────────────────
 
-function base64ToTempFile(b64: string): string {
+function writeTempFile(data: Buffer | Uint8Array, ext: string): string {
   mkdirSync(TMP_DIR, { recursive: true });
-  const filePath = join(TMP_DIR, `${randomUUID()}.img`);
-  const buffer = Buffer.from(b64, "base64");
-  writeFileSync(filePath, buffer);
+  const filePath = join(TMP_DIR, `${randomUUID()}${ext}`);
+  writeFileSync(filePath, data);
   return filePath;
 }
 
@@ -81,6 +80,61 @@ function cleanupTempFile(path: string): void {
   } catch {
     // ignore cleanup errors
   }
+}
+
+/**
+ * Extract image from request body. Supports:
+ *   - multipart/form-data  → file upload in "image" field, JSON options in "options" field
+ *   - application/json     → { image_base64, image_path, ...options }
+ *
+ * Returns the parsed options + a tempFile path to clean up (if created).
+ */
+async function extractImage<T extends Record<string, unknown>>(
+  req: Request,
+): Promise<{ opts: T; tempFile?: string }> {
+  const contentType = req.headers.get("content-type") ?? "";
+
+  if (contentType.includes("multipart/form-data")) {
+    const form = await req.formData();
+    const file = form.get("image");
+    const optionsRaw = form.get("options");
+
+    if (!file || !(file instanceof File)) {
+      return { opts: {} as T };
+    }
+
+    const ext = extFromMime(file.type) || extFromName(file.name) || ".img";
+    const buf = Buffer.from(await file.arrayBuffer());
+    const tempFile = writeTempFile(buf, ext);
+    const opts = optionsRaw ? (JSON.parse(String(optionsRaw)) as T) : ({} as T);
+    (opts as Record<string, unknown>).image_path = tempFile;
+    return { opts, tempFile };
+  }
+
+  // JSON body (base64 or image_path)
+  const body = (await req.json()) as T & { image_base64?: string };
+  if (!body.image_path && body.image_base64) {
+    const tempFile = writeTempFile(Buffer.from(body.image_base64, "base64"), ".img");
+    (body as Record<string, unknown>).image_path = tempFile;
+    delete body.image_base64;
+    return { opts: body, tempFile };
+  }
+
+  return { opts: body };
+}
+
+function extFromMime(mime: string): string {
+  if (mime.includes("jpeg") || mime.includes("jpg")) return ".jpg";
+  if (mime.includes("png")) return ".png";
+  if (mime.includes("webp")) return ".webp";
+  if (mime.includes("pdf")) return ".pdf";
+  if (mime.includes("tiff")) return ".tiff";
+  return "";
+}
+
+function extFromName(name: string): string {
+  const dot = name.lastIndexOf(".");
+  return dot >= 0 ? name.slice(dot) : "";
 }
 
 // ── JSON helpers ────────────────────────────────────────────────────────────
@@ -96,23 +150,13 @@ function errorResponse(message: string, status: number): Response {
   return jsonResponse({ error: message }, status);
 }
 
-async function parseJsonBody<T>(req: Request): Promise<T> {
-  return (await req.json()) as T;
-}
-
 // ── Route handlers ──────────────────────────────────────────────────────────
 
 async function handleAnalyzeRoute(req: Request): Promise<Response> {
-  const body = await parseJsonBody<AnalyzeRequest & { image_base64?: string }>(req);
-  let tempFile: string | undefined;
+  const { opts, tempFile } = await extractImage<AnalyzeRequest>(req);
 
   try {
-    if (!body.image_path && body.image_base64) {
-      tempFile = base64ToTempFile(body.image_base64);
-      body.image_path = tempFile;
-    }
-
-    const result = await handleAnalyze(body);
+    const result = await handleAnalyze(opts);
     return jsonResponse(result, result.success ? 200 : 422);
   } finally {
     if (tempFile) cleanupTempFile(tempFile);
@@ -120,15 +164,20 @@ async function handleAnalyzeRoute(req: Request): Promise<Response> {
 }
 
 async function handleBatchRoute(req: Request): Promise<Response> {
-  const body = await parseJsonBody<BatchRequest>(req);
+  const body = (await req.json()) as BatchRequest;
   const result = await handleBatch(body);
   return jsonResponse(result, result.success ? 200 : 422);
 }
 
 async function handleExtractRoute(req: Request): Promise<Response> {
-  const body = await parseJsonBody<ExtractFieldsRequest>(req);
-  const result = await handleExtractFields(body);
-  return jsonResponse(result, result.success ? 200 : 422);
+  const { opts, tempFile } = await extractImage<ExtractFieldsRequest>(req);
+
+  try {
+    const result = await handleExtractFields(opts);
+    return jsonResponse(result, result.success ? 200 : 422);
+  } finally {
+    if (tempFile) cleanupTempFile(tempFile);
+  }
 }
 
 // ── Server ──────────────────────────────────────────────────────────────────
