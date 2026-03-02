@@ -12,6 +12,7 @@
 import { existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import sharp from 'sharp';
+import { PYTHON_PROJECT_PATH } from '../config.ts';
 import type { ExtractedField, ExtractionResult } from './types.ts';
 
 // ── Python inline script ─────────────────────────────────────────────────────
@@ -44,17 +45,16 @@ print(json.dumps(raw_items, ensure_ascii=False))
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function getPythonPath(): string {
-  return process.env.EASYOCR_PYTHON ?? 'python3';
-}
-
 function getLangs(): string {
   return process.env.EASYOCR_LANG ?? 'vi,en';
 }
 
-function runPython(pythonPath: string, script: string, args: string[]): Promise<string> {
+function runPython(script: string, args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
-    const proc = spawn(pythonPath, ['-c', script, ...args]);
+    // Use `uv run` to run inside the bundled Python venv
+    const proc = spawn('uv', ['run', '--project', PYTHON_PROJECT_PATH, 'python', '-c', script, ...args], {
+      cwd: PYTHON_PROJECT_PATH,
+    });
 
     const stdout: Buffer[] = [];
     const stderr: Buffer[] = [];
@@ -94,7 +94,7 @@ export class EasyOCRExtractor {
     const imageWidth  = meta.width  ?? 0;
     const imageHeight = meta.height ?? 0;
 
-    const step1Out = await runPython(getPythonPath(), EASYOCR_SCRIPT, [
+    const step1Out = await runPython(EASYOCR_SCRIPT, [
       imagePath,
       this.langs,
     ]);

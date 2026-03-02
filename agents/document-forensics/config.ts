@@ -1,13 +1,24 @@
 /**
  * Configuration for the document forensics service.
+ *
+ * Reads .env from service root if present (local dev).
  */
 
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, existsSync, readFileSync } from 'node:fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Auto-load .env from service root (Bun loads it in CLI, but ensure it works everywhere)
+const _envPath = resolve(__dirname, '.env');
+if (existsSync(_envPath)) {
+  for (const line of readFileSync(_envPath, 'utf8').split('\n')) {
+    const m = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.+?)\s*$/);
+    if (m && !process.env[m[1]!]) process.env[m[1]!] = m[2]!;
+  }
+}
 
 /** Root of the document-forensics service. */
 export const SERVICE_ROOT = __dirname;
@@ -28,6 +39,13 @@ export const MAX_IMAGE_SIZE = 4096;
 export const PYTHON_BRIDGE_TIMEOUT = Number(
   process.env.PYTHON_BRIDGE_TIMEOUT ?? 120_000,
 );
+
+/** OCR engine: 'easyocr' (default, free, local) or 'gemini' (cloud, paid). */
+export type OcrEngine = 'easyocr' | 'gemini';
+export function getOcrEngine(): OcrEngine {
+  const v = process.env.OCR_ENGINE ?? 'easyocr';
+  return v === 'gemini' ? 'gemini' : 'easyocr';
+}
 
 /**
  * Google Generative AI API key (required for Gemini extraction engine).

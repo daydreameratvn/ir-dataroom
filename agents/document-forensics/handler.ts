@@ -16,7 +16,7 @@ import {
 export interface AnalyzeRequest {
   image_path?: string;
   image_base64?: string;
-  ocr_engine?: 'gemini' | 'easyocr';
+  ocr_engine?: 'easyocr' | 'gemini';
   device?: string;
   output_dir?: string;
 }
@@ -30,7 +30,7 @@ export interface BatchRequest {
 
 export interface ExtractFieldsRequest {
   image_path: string;
-  ocr_engine?: 'gemini';
+  ocr_engine?: 'easyocr' | 'gemini';
 }
 
 // ── Handlers ──────────────────────────────────────────────────────────────────
@@ -63,7 +63,7 @@ export async function handleAnalyze(
     imagePath,
     request.output_dir,
     request.device ?? 'auto',
-    request.ocr_engine ?? 'gemini',
+    request.ocr_engine,
   );
 }
 
@@ -104,6 +104,6 @@ export async function handleExtractFields(
 ): Promise<FieldExtractionResult> {
   return extractDocumentFields(
     request.image_path,
-    request.ocr_engine ?? 'gemini',
+    request.ocr_engine,
   );
 }

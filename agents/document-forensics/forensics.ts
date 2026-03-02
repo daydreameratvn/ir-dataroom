@@ -10,9 +10,13 @@ import { promisify } from 'node:util';
 import { mkdirSync } from 'node:fs';
 
 import sharp from 'sharp';
-import { PYTHON_PROJECT_PATH, PYTHON_BRIDGE_TIMEOUT, ensureOutputDir } from './config.ts';
+import { PYTHON_PROJECT_PATH, PYTHON_BRIDGE_TIMEOUT, ensureOutputDir, getOcrEngine } from './config.ts';
+import type { OcrEngine } from './config.ts';
 import { GeminiExtractor } from './extraction/gemini-extractor.ts';
+import { EasyOCRExtractor } from './extraction/easyocr-extractor.ts';
 import { scoreFieldsAgainstHeatmap, computeVerdict } from './extraction/field-scorer.ts';
+import { KEY_FIELDS } from './extraction/types.ts';
+import type { ExtractionResult } from './extraction/types.ts';
 import type { FieldResult, DocumentForensicsResult, BatchForensicsResult, FieldExtractionResult } from './types.ts';
 
 const execFileAsync = promisify(execFile);
@@ -130,18 +134,92 @@ except Exception as e:
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Gemini hybrid pipeline
+// Heatmap visualization (JET colormap blended on original image)
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function runGeminiDocumentForensics(
+/** OpenCV JET colormap LUT — maps 0–255 → [R,G,B]. */
+function jetColor(v: number): [number, number, number] {
+  const t = v / 255;
+  const r = Math.min(255, Math.max(0, Math.round(255 * (t < 0.375 ? 0 : t < 0.625 ? (t - 0.375) * 4 : t < 0.875 ? 1 : 1 - (t - 0.875) * 4))));
+  const g = Math.min(255, Math.max(0, Math.round(255 * (t < 0.125 ? 0 : t < 0.375 ? (t - 0.125) * 4 : t < 0.625 ? 1 : t < 0.875 ? 1 - (t - 0.625) * 4 : 0))));
+  const b = Math.min(255, Math.max(0, Math.round(255 * (t < 0.125 ? (t + 0.125) * 4 : t < 0.375 ? 1 : t < 0.625 ? 1 - (t - 0.375) * 4 : 0))));
+  return [r, g, b];
+}
+
+/**
+ * Blend TruFor heatmap onto the original image using JET colormap.
+ * Matches the Python: cv2.addWeighted(image, 0.6, hm_colored, 0.4, 0)
+ * Returns base64-encoded PNG.
+ */
+async function blendHeatmapOverlay(
+  imagePath: string,
+  heatmap: Float32Array,
+  hmW: number,
+  hmH: number,
+  imgW: number,
+  imgH: number,
+): Promise<string> {
+  // Normalize heatmap 0–255
+  let hMin = Infinity, hMax = -Infinity;
+  for (let i = 0; i < heatmap.length; i++) {
+    if (heatmap[i]! < hMin) hMin = heatmap[i]!;
+    if (heatmap[i]! > hMax) hMax = heatmap[i]!;
+  }
+  const range = hMax - hMin > 1e-6 ? hMax - hMin : 1;
+
+  // Build JET-colored RGBA heatmap at heatmap resolution
+  const jetBuf = Buffer.alloc(hmW * hmH * 3);
+  for (let i = 0; i < heatmap.length; i++) {
+    const norm = Math.round(((heatmap[i]! - hMin) / range) * 255);
+    const [r, g, b] = jetColor(norm);
+    jetBuf[i * 3] = r;
+    jetBuf[i * 3 + 1] = g;
+    jetBuf[i * 3 + 2] = b;
+  }
+
+  // Resize JET heatmap to match original image dimensions
+  const jetResized = await sharp(jetBuf, {
+    raw: { width: hmW, height: hmH, channels: 3 },
+  }).resize(imgW, imgH, { fit: 'fill' }).raw().toBuffer();
+
+  // Load original image as raw RGB
+  const original = await sharp(imagePath)
+    .resize(imgW, imgH, { fit: 'fill' })
+    .removeAlpha()
+    .raw()
+    .toBuffer();
+
+  // Blend: 60% original + 40% heatmap
+  const blended = Buffer.alloc(imgW * imgH * 3);
+  for (let i = 0; i < blended.length; i++) {
+    blended[i] = Math.round(original[i]! * 0.6 + jetResized[i]! * 0.4);
+  }
+
+  const pngBuf = await sharp(blended, {
+    raw: { width: imgW, height: imgH, channels: 3 },
+  }).png().toBuffer();
+
+  return pngBuf.toString('base64');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OCR + TruFor hybrid pipeline
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function runHybridForensics(
   imagePath: string,
   _outputDir: string | null,
   device: string,
+  ocrEngine: OcrEngine = 'easyocr',
 ): Promise<DocumentForensicsResult> {
-  let extractionResult;
+  // Step 1: OCR extraction (EasyOCR or Gemini)
+  let extractionResult: ExtractionResult;
   try {
-    const extractor = new GeminiExtractor();
-    extractionResult = await extractor.extract(imagePath);
+    if (ocrEngine === 'gemini') {
+      extractionResult = await new GeminiExtractor().extract(imagePath);
+    } else {
+      extractionResult = await new EasyOCRExtractor().extract(imagePath);
+    }
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     return {
@@ -165,25 +243,25 @@ async function runGeminiDocumentForensics(
   // Step 2: TruFor raw heatmap
   const truforResult = await runTruForRaw(imagePath, device);
 
-  // Encode TruFor heatmap as grayscale PNG base64
+  // Blend TruFor heatmap (JET colormap) onto original image as PNG overlay
   let heatmapPngB64: string | null = null;
   if (truforResult.heatmap && truforResult.width > 0 && truforResult.height > 0) {
     try {
-      const uint8 = Buffer.alloc(truforResult.heatmap.length);
-      for (let i = 0; i < truforResult.heatmap.length; i++) {
-        uint8[i] = Math.min(255, Math.round(truforResult.heatmap[i]! * 255));
-      }
-      const pngBuf = await sharp(uint8, {
-        raw: { width: truforResult.width, height: truforResult.height, channels: 1 },
-      }).png().toBuffer();
-      heatmapPngB64 = pngBuf.toString('base64');
+      heatmapPngB64 = await blendHeatmapOverlay(
+        imagePath,
+        truforResult.heatmap,
+        truforResult.width,
+        truforResult.height,
+        image_width,
+        image_height,
+      );
     } catch { /* skip heatmap if encoding fails */ }
   }
 
-  // Step 3: Score fields against heatmap
-  let scoredFields: FieldResult[];
+  // Step 3: Score ALL fields against heatmap (needed for verdict computation)
+  let allScoredFields: FieldResult[];
   if (truforResult.heatmap && truforResult.width > 0 && truforResult.height > 0) {
-    scoredFields = scoreFieldsAgainstHeatmap(
+    allScoredFields = scoreFieldsAgainstHeatmap(
       extractedFields,
       truforResult.heatmap,
       truforResult.width,
@@ -192,7 +270,7 @@ async function runGeminiDocumentForensics(
       image_height,
     );
   } else {
-    scoredFields = extractedFields.map((f) => ({
+    allScoredFields = extractedFields.map((f) => ({
       type: f.label,
       risk_weight: 0.5,
       text: f.text.slice(0, 100),
@@ -202,17 +280,22 @@ async function runGeminiDocumentForensics(
     }));
   }
 
-  // Step 4: Compute verdict
-  const { verdict, overall_score, risk_level } = computeVerdict(scoredFields);
+  // Step 4: Compute verdict from ALL fields
+  const { verdict, overall_score, risk_level } = computeVerdict(allScoredFields);
 
-  const highestRisk = scoredFields.length > 0
-    ? scoredFields.reduce((a, b) =>
+  // For Gemini: filter to key fields only. For EasyOCR: keep all fields (no semantic labels).
+  const keyFields = ocrEngine === 'gemini'
+    ? allScoredFields.filter((f) => KEY_FIELDS.has(f.type))
+    : allScoredFields;
+
+  const highestRisk = keyFields.length > 0
+    ? keyFields.reduce((a, b) =>
         a.scores.anomaly >= b.scores.anomaly ? a : b,
       )
     : null;
 
   const notes: string[] = [
-    `Gemini extracted ${extractedFields.length} fields`,
+    `${ocrEngine} extracted ${extractedFields.length} fields, ${keyFields.length} key regions`,
   ];
   if (truforResult.success && truforResult.heatmap) {
     notes.push(`TruFor heatmap generated (mean=${truforResult.global_score.toFixed(3)})`);
@@ -232,8 +315,8 @@ async function runGeminiDocumentForensics(
     },
     image: { path: imagePath, width: image_width, height: image_height },
     ocr_analysis: {
-      total_fields: scoredFields.length,
-      field_types_found: [...new Set(scoredFields.map((f) => f.type))],
+      total_fields: extractedFields.length,
+      field_types_found: [...new Set(allScoredFields.map((f) => f.type))],
     },
     highest_risk_field: highestRisk
       ? {
@@ -243,11 +326,11 @@ async function runGeminiDocumentForensics(
           scores: highestRisk.scores,
         }
       : null,
-    fields: scoredFields,
+    fields: keyFields,
     visualization_path: null,
     heatmap_b64: heatmapPngB64,
     notes,
-    ocr_engine: 'gemini',
+    ocr_engine: ocrEngine,
   };
 }
 
@@ -262,11 +345,12 @@ export async function advancedDocumentForensics(
   imagePath: string,
   outputDir?: string,
   device: string = 'auto',
-  ocrEngine: string = 'gemini',
+  ocrEngine?: OcrEngine,
   includeVisualization: boolean = true,
 ): Promise<DocumentForensicsResult> {
+  const engine = ocrEngine ?? getOcrEngine();
   const outDir = includeVisualization ? outputDir ?? ensureOutputDir() : null;
-  return runGeminiDocumentForensics(imagePath, outDir, device);
+  return runHybridForensics(imagePath, outDir, device, engine);
 }
 
 /**
@@ -274,24 +358,13 @@ export async function advancedDocumentForensics(
  */
 export async function extractDocumentFields(
   imagePath: string,
-  ocrEngine: string = 'gemini',
+  ocrEngine?: OcrEngine,
   documentType: string = 'auto',
 ): Promise<FieldExtractionResult> {
-  if (ocrEngine !== 'gemini') {
-    return {
-      success: false,
-      engine: ocrEngine,
-      document_type: documentType,
-      image: { path: imagePath, width: 0, height: 0 },
-      fields: [],
-      total_fields: 0,
-      processing_time_ms: 0,
-      error: `Unsupported engine for standalone extraction: ${ocrEngine}. Use "gemini".`,
-    };
-  }
+  const engine = ocrEngine ?? getOcrEngine();
 
   try {
-    const extractor = new GeminiExtractor();
+    const extractor = engine === 'gemini' ? new GeminiExtractor() : new EasyOCRExtractor();
     const result = await extractor.extract(imagePath);
     return {
       success: true,
@@ -310,7 +383,7 @@ export async function extractDocumentFields(
     const msg = err instanceof Error ? err.message : String(err);
     return {
       success: false,
-      engine: ocrEngine,
+      engine,
       document_type: documentType,
       image: { path: imagePath, width: 0, height: 0 },
       fields: [],
