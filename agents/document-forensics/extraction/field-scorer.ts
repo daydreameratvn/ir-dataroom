@@ -133,25 +133,21 @@ export function computeVerdict(scoredFields: FieldResult[]): {
 
   const allScores = scoredFields.map((f) => f.scores.anomaly);
 
-  const maxKeyScore =
-    keyFieldScores.length > 0 ? Math.max(...keyFieldScores) : 0;
-  const meanKeyScore =
-    keyFieldScores.length > 0
-      ? keyFieldScores.reduce((a, b) => a + b, 0) / keyFieldScores.length
-      : 0;
-  const meanAllScore =
-    allScores.length > 0
-      ? allScores.reduce((a, b) => a + b, 0) / allScores.length
+  // Fallback: if no key fields were classified, use all scores for verdict.
+  const effectiveScores = keyFieldScores.length > 0 ? keyFieldScores : allScores;
+
+  const maxScore =
+    effectiveScores.length > 0 ? Math.max(...effectiveScores) : 0;
+  const meanScore =
+    effectiveScores.length > 0
+      ? effectiveScores.reduce((a, b) => a + b, 0) / effectiveScores.length
       : 0;
 
-  const overallScore =
-    keyFieldScores.length > 0
-      ? maxKeyScore * 0.6 + meanKeyScore * 0.4
-      : meanAllScore;
+  const overallScore = maxScore * 0.6 + meanScore * 0.4;
 
   let verdict: 'NORMAL' | 'SUSPICIOUS' | 'TAMPERED' = 'NORMAL';
-  if (maxKeyScore >= 0.5) verdict = 'TAMPERED';
-  else if (maxKeyScore >= 0.45) verdict = 'SUSPICIOUS';
+  if (maxScore >= 0.50) verdict = 'TAMPERED';
+  else if (maxScore >= 0.45) verdict = 'SUSPICIOUS';
 
   const risk_level: 'low' | 'medium' | 'high' =
     overallScore > 0.45 ? 'high' : overallScore > 0.25 ? 'medium' : 'low';

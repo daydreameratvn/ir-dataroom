@@ -69,7 +69,7 @@ export const RISK_WEIGHTS: Record<string, number> = {
   quantity: 0.6,
   stamp: 0.6,
   hospital_name: 0.5,
-  unknown: 0.3,
+  unknown: 0.0,
 };
 
 /** Fields that trigger a tampering verdict when their anomaly score is high. */

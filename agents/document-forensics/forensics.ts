@@ -17,6 +17,8 @@ import { EasyOCRExtractor } from './extraction/easyocr-extractor.ts';
 import { scoreFieldsAgainstHeatmap, computeVerdict } from './extraction/field-scorer.ts';
 import { KEY_FIELDS } from './extraction/types.ts';
 import type { ExtractionResult } from './extraction/types.ts';
+import { generateForensicsSummary } from './utils/forensics-visualizer.ts';
+import type { BboxField } from './utils/forensics-visualizer.ts';
 import type { FieldResult, DocumentForensicsResult, BatchForensicsResult, FieldExtractionResult } from './types.ts';
 
 const execFileAsync = promisify(execFile);
@@ -134,7 +136,7 @@ except Exception as e:
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Heatmap visualization (JET colormap blended on original image)
+// Heatmap → JET-colormap PNG (passed to the forensics-visualizer overlay)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** OpenCV JET colormap LUT — maps 0–255 → [R,G,B]. */
@@ -147,18 +149,14 @@ function jetColor(v: number): [number, number, number] {
 }
 
 /**
- * Blend TruFor heatmap onto the original image using JET colormap.
- * Matches the Python: cv2.addWeighted(image, 0.6, hm_colored, 0.4, 0)
- * Returns base64-encoded PNG.
+ * Convert raw TruFor float32 heatmap to a JET-colormap RGBA PNG buffer.
+ * This is passed to generateForensicsSummary as the heatmap overlay layer.
  */
-async function blendHeatmapOverlay(
-  imagePath: string,
+async function heatmapToJetPng(
   heatmap: Float32Array,
   hmW: number,
   hmH: number,
-  imgW: number,
-  imgH: number,
-): Promise<string> {
+): Promise<Buffer> {
   // Normalize heatmap 0–255
   let hMin = Infinity, hMax = -Infinity;
   for (let i = 0; i < heatmap.length; i++) {
@@ -167,7 +165,7 @@ async function blendHeatmapOverlay(
   }
   const range = hMax - hMin > 1e-6 ? hMax - hMin : 1;
 
-  // Build JET-colored RGBA heatmap at heatmap resolution
+  // Build JET-colored RGB buffer at heatmap resolution
   const jetBuf = Buffer.alloc(hmW * hmH * 3);
   for (let i = 0; i < heatmap.length; i++) {
     const norm = Math.round(((heatmap[i]! - hMin) / range) * 255);
@@ -177,29 +175,9 @@ async function blendHeatmapOverlay(
     jetBuf[i * 3 + 2] = b;
   }
 
-  // Resize JET heatmap to match original image dimensions
-  const jetResized = await sharp(jetBuf, {
-    raw: { width: hmW, height: hmH, channels: 3 },
-  }).resize(imgW, imgH, { fit: 'fill' }).raw().toBuffer();
-
-  // Load original image as raw RGB
-  const original = await sharp(imagePath)
-    .resize(imgW, imgH, { fit: 'fill' })
-    .removeAlpha()
-    .raw()
+  return sharp(jetBuf, { raw: { width: hmW, height: hmH, channels: 3 } })
+    .png()
     .toBuffer();
-
-  // Blend: 60% original + 40% heatmap
-  const blended = Buffer.alloc(imgW * imgH * 3);
-  for (let i = 0; i < blended.length; i++) {
-    blended[i] = Math.round(original[i]! * 0.6 + jetResized[i]! * 0.4);
-  }
-
-  const pngBuf = await sharp(blended, {
-    raw: { width: imgW, height: imgH, channels: 3 },
-  }).png().toBuffer();
-
-  return pngBuf.toString('base64');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -224,6 +202,9 @@ async function runHybridForensics(
     const msg = err instanceof Error ? err.message : String(err);
     return {
       success: false,
+      method: 'advanced_document_forensics',
+      ocr_engine: ocrEngine,
+      device,
       verdict: 'ERROR',
       overall_score: 0,
       risk_level: 'low',
@@ -234,7 +215,7 @@ async function runHybridForensics(
       fields: [],
       visualization_path: null,
       notes: [],
-      error: `Gemini extraction failed: ${msg}`,
+      error: `OCR extraction failed: ${msg}`,
     };
   }
 
@@ -242,21 +223,6 @@ async function runHybridForensics(
 
   // Step 2: TruFor raw heatmap
   const truforResult = await runTruForRaw(imagePath, device);
-
-  // Blend TruFor heatmap (JET colormap) onto original image as PNG overlay
-  let heatmapPngB64: string | null = null;
-  if (truforResult.heatmap && truforResult.width > 0 && truforResult.height > 0) {
-    try {
-      heatmapPngB64 = await blendHeatmapOverlay(
-        imagePath,
-        truforResult.heatmap,
-        truforResult.width,
-        truforResult.height,
-        image_width,
-        image_height,
-      );
-    } catch { /* skip heatmap if encoding fails */ }
-  }
 
   // Step 3: Score ALL fields against heatmap (needed for verdict computation)
   let allScoredFields: FieldResult[];
@@ -294,6 +260,35 @@ async function runHybridForensics(
       )
     : null;
 
+  // Step 5: Generate forensics summary image (heatmap overlay + bboxes + sidebar)
+  let summaryB64: string | null = null;
+  try {
+    // Build a JET-colormap PNG buffer from the raw TruFor heatmap
+    let heatmapBuf: Buffer | null = null;
+    if (truforResult.heatmap && truforResult.width > 0 && truforResult.height > 0) {
+      heatmapBuf = await heatmapToJetPng(
+        truforResult.heatmap, truforResult.width, truforResult.height,
+      );
+    }
+
+    // Map scored fields → BboxField format for the visualizer
+    const bboxFields: BboxField[] = allScoredFields.map((f) => ({
+      label: f.type,
+      text: f.text,
+      confidence: f.confidence,
+      anomaly: f.scores.anomaly,
+      bbox: f.bbox,
+    }));
+
+    const finalVerdict = truforResult.heatmap ? verdict : 'NORMAL';
+    const summaryBuf = await generateForensicsSummary(
+      imagePath, bboxFields, finalVerdict, overall_score, null, heatmapBuf,
+    );
+    summaryB64 = summaryBuf.toString('base64');
+  } catch (vizErr) {
+    console.error('[forensics] Summary generation failed:', vizErr instanceof Error ? vizErr.message : vizErr);
+  }
+
   const notes: string[] = [
     `${ocrEngine} extracted ${extractedFields.length} fields, ${keyFields.length} key regions`,
   ];
@@ -306,6 +301,9 @@ async function runHybridForensics(
 
   return {
     success: true,
+    method: 'advanced_document_forensics',
+    ocr_engine: ocrEngine,
+    device,
     verdict: truforResult.heatmap ? verdict : 'NORMAL',
     overall_score,
     risk_level,
@@ -323,14 +321,14 @@ async function runHybridForensics(
           type: highestRisk.type,
           risk_weight: highestRisk.risk_weight,
           text: highestRisk.text,
+          bbox: highestRisk.bbox,
           scores: highestRisk.scores,
         }
       : null,
     fields: keyFields,
     visualization_path: null,
-    heatmap_b64: heatmapPngB64,
+    heatmap_b64: summaryB64,
     notes,
-    ocr_engine: ocrEngine,
   };
 }
 

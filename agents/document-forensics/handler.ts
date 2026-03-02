@@ -45,6 +45,9 @@ export async function handleAnalyze(
   if (!imagePath) {
     return {
       success: false,
+      method: 'advanced_document_forensics',
+      ocr_engine: request.ocr_engine ?? 'easyocr',
+      device: request.device ?? 'auto',
       verdict: 'ERROR',
       overall_score: 0,
       risk_level: 'low',

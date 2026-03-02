@@ -55,10 +55,10 @@ export async function generateForensicsSummary(
   fields: BboxField[],
   verdict: string,
   score: number,
-  outputPath: string,
+  outputPath?: string | null,
   heatmapBuf?: Buffer | null,
-): Promise<void> {
-  const meta = await sharp(imagePath).metadata();
+): Promise<Buffer> {
+  const meta = await sharp(imagePath, { failOnError: false }).metadata();
   const W = meta.width  ?? 800;
   const H = meta.height ?? 1000;
 
@@ -178,14 +178,24 @@ export async function generateForensicsSummary(
     ${panelItems.join('\n')}
   </svg>`;
 
-  const withAnnotations = await sharp(imagePath)
+  // Pre-decode to PNG to handle malformed JPEGs (Invalid SOS parameters, etc.)
+  const normalizedImg = await sharp(imagePath, { failOnError: false }).png().toBuffer();
+
+  const withAnnotations = await sharp(normalizedImg)
     .composite(compositeInputs)
     .extend({ right: PANEL_W, background: { r: 245, g: 245, b: 245, alpha: 1 } })
     .png()
     .toBuffer();
 
-  await sharp(withAnnotations)
+  const result = await sharp(withAnnotations)
     .composite([{ input: Buffer.from(panelSvg), left: W, top: 0 }])
-    .png()
-    .toFile(outputPath);
+    .jpeg({ quality: 85 })
+    .toBuffer();
+
+  if (outputPath) {
+    const { writeFileSync } = await import('node:fs');
+    writeFileSync(outputPath, result);
+  }
+
+  return result;
 }

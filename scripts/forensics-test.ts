@@ -38,7 +38,9 @@ if (!folder) {
 }
 
 const inputDir = resolve(folder);
-const outputDir = resolve("output");
+const caseName = basename(inputDir);
+const OUTPUT_BASE = "/Volumes/work/git/papaya-org/test-cases-v2-output";
+const outputDir = join(OUTPUT_BASE, caseName);
 mkdirSync(outputDir, { recursive: true });
 
 // ── Image scanning ───────────────────────────────────────────────────────────
@@ -133,10 +135,17 @@ async function processImage(imagePath: string): Promise<ImageReport> {
   let heatmapSaved: string | undefined;
   if ("heatmap_b64" in result && result.heatmap_b64) {
     const stem = basename(name, extname(name));
-    const outPath = join(outputDir, `${stem}_heatmap.png`);
+    const outPath = join(outputDir, `${stem}_summary.jpg`);
     writeFileSync(outPath, Buffer.from(result.heatmap_b64, "base64"));
     heatmapSaved = outPath;
-    console.log(`    Heatmap saved: ${outPath}`);
+    console.log(`    Summary saved: ${outPath} (${Math.round(Buffer.from(result.heatmap_b64, "base64").length / 1024)} KB)`);
+  }
+
+  // Save JSON result (without heatmap_b64)
+  if ("heatmap_b64" in result) {
+    const jsonResult = { ...result, heatmap_b64: undefined };
+    const stem = basename(name, extname(name));
+    writeFileSync(join(outputDir, `${stem}.json`), JSON.stringify(jsonResult, null, 2));
   }
 
   return { file: name, sizeKb, result, timeMs, heatmapSaved };

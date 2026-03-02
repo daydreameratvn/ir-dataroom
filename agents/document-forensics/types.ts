@@ -17,6 +17,9 @@ export interface FieldResult {
 
 export interface DocumentForensicsResult {
   success: boolean;
+  method: string;
+  ocr_engine: string;
+  device: string;
   verdict: 'NORMAL' | 'SUSPICIOUS' | 'TAMPERED' | 'ERROR';
   overall_score: number;
   risk_level: 'low' | 'medium' | 'high';
@@ -37,6 +40,7 @@ export interface DocumentForensicsResult {
     type: string;
     risk_weight: number;
     text: string;
+    bbox: { x: number; y: number; width: number; height: number } | null;
     scores: {
       anomaly: number;
       heatmap_mean: number;
@@ -45,11 +49,9 @@ export interface DocumentForensicsResult {
   } | null;
   fields: FieldResult[];
   visualization_path: string | null;
-  /** Base64-encoded PNG of TruFor heatmap blended on document (no bboxes). */
+  /** Base64-encoded JPEG of forensics summary (heatmap + bboxes + sidebar). */
   heatmap_b64?: string | null;
   notes: string[];
-  /** OCR/extraction engine used (populated for Gemini hybrid mode). */
-  ocr_engine?: string;
   error?: string;
 }
 
