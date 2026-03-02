@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Literal, Optional, Sequence, Union
 
 from pydantic import BaseModel
@@ -40,8 +41,9 @@ class TruForConfig(BaseModel):
     device: str = "cpu"
 
 
-# Default weights path
-DEFAULT_WEIGHTS_PATH = "weights/trufor/trufor.pth.tar"
+# Default weights path (absolute, relative to python/ package root)
+_PACKAGE_ROOT = Path(__file__).resolve().parent.parent.parent
+DEFAULT_WEIGHTS_PATH = str(_PACKAGE_ROOT / "weights" / "trufor" / "trufor.pth.tar")
 
 
 def get_default_weights() -> str:

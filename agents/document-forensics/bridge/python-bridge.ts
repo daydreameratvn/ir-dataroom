@@ -53,6 +53,9 @@ export async function runPythonMethod(
     };
   }
 
+  // Run from the parent of python/ so that `python/` is a proper top-level package.
+  // This allows 3-level relative imports inside methods/trufor/ to resolve correctly.
+  const parentDir = PYTHON_PROJECT_PATH.replace(/\/python\/?$/, '');
   try {
     const { stdout } = await execFileAsync(
       'uv',
@@ -64,8 +67,8 @@ export async function runPythonMethod(
         '-c',
         `
 import sys, json
-from methods.trufor.predictor import TruForPredictor
-from config import resolve_device
+from python.methods.trufor.predictor import TruForPredictor
+from python.config import resolve_device
 
 device = resolve_device('auto')
 pred = TruForPredictor(device=device)
@@ -86,7 +89,7 @@ print(json.dumps({
       {
         timeout: PYTHON_BRIDGE_TIMEOUT,
         maxBuffer: 50 * 1024 * 1024,
-        cwd: PYTHON_PROJECT_PATH,
+        cwd: parentDir,
       },
     );
 

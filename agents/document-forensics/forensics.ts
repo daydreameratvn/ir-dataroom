@@ -38,14 +38,18 @@ async function runTruForRaw(
   imagePath: string,
   device: string = 'auto',
 ): Promise<TruForRawResult> {
+  // Run from the parent of python/ so that `python/` is a proper top-level package.
+  // This allows `from ...base` (3-level relative import inside methods/trufor/method.py)
+  // to resolve correctly: python.methods.trufor.method → python.methods.trufor → python.methods → python → ✓
+  const parentDir = PYTHON_PROJECT_PATH.replace(/\/python\/?$/, '');
   const pythonScript = `
 import sys, json, base64
 import numpy as np
-from config import resolve_device
+from python.config import resolve_device
 device = resolve_device('${device}')
 
 try:
-    from methods.trufor.predictor import TruForPredictor
+    from python.methods.trufor.predictor import TruForPredictor
     pred = TruForPredictor(device=device)
     out  = pred.predict('${imagePath}')
 
@@ -77,7 +81,7 @@ except Exception as e:
     const { stdout } = await execFileAsync(
       'uv',
       ['run', '--project', PYTHON_PROJECT_PATH, 'python', '-c', pythonScript],
-      { timeout: PYTHON_BRIDGE_TIMEOUT, maxBuffer: 100 * 1024 * 1024, cwd: PYTHON_PROJECT_PATH },
+      { timeout: PYTHON_BRIDGE_TIMEOUT, maxBuffer: 100 * 1024 * 1024, cwd: parentDir },
     );
 
     const lines = stdout.trim().split('\n');
