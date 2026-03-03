@@ -80,7 +80,6 @@ export const policyDocSearchTool: AgentTool = {
       const insurer = policy?.insurer_company;
 
       if (insurer?.name && !insurerName) insurerName = insurer.name;
-      if (insurer?.name && !companyName) companyName = insurer.name;
       if (policy?.policy_number && !policyNumber) policyNumber = policy.policy_number;
     }
 
