@@ -215,6 +215,29 @@ git status   # should show clean working tree or only unrelated changes
 - Push with `-u` on first push: `git push -u origin feat/<name>`
 - Do NOT push to `main` without explicit user approval
 
+### Sync with Main Before Push (Mandatory)
+
+Before pushing code or creating a PR, Claude Code MUST rebase the working branch on the latest `origin/main` to avoid merge conflicts and ensure the branch is up to date:
+
+```bash
+git fetch origin main
+git rebase origin/main
+```
+
+- If rebase conflicts occur, resolve them, then `git rebase --continue`.
+- After a successful rebase, run typecheck again to confirm the code still compiles with the latest main changes.
+- Only after rebase + typecheck pass, push the branch: `git push -u origin <branch>` (use `--force-with-lease` if the branch was previously pushed and rebase rewrote history).
+
+### Always Create a PR After Completing Tasks
+
+After all tasks in a session are finished, committed, and pushed, Claude Code MUST create a pull request to merge the working branch into `main`:
+
+1. Push the branch if not already pushed.
+2. Create the PR using `gh pr create` with a clear title and description summarizing all changes.
+3. Return the PR URL to the user.
+
+Do NOT wait for the user to ask — PR creation is the final step of every task. If the user explicitly says not to create a PR, skip this step.
+
 ## Soul & Voice
 
 Before generating any user-facing content (UI text, copy, colors, branding), read `.claude/soul.md` for the Papaya brand guidelines, color palette, and design rules. All agents must follow these guidelines.
