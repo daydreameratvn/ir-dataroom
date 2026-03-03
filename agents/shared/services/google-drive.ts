@@ -132,7 +132,7 @@ const DIACRITICS_MAP: Record<string, string> = {
   Đ: "d",
 };
 
-function normalizeVietnamese(str: string): string {
+export function normalizeVietnamese(str: string): string {
   return str
     .split("")
     .map((ch) => DIACRITICS_MAP[ch] ?? ch)
@@ -141,7 +141,7 @@ function normalizeVietnamese(str: string): string {
     .replace(/[^a-z0-9]/g, "");
 }
 
-function fuzzyMatch(folderName: string, searchName: string): boolean {
+export function fuzzyMatch(folderName: string, searchName: string): boolean {
   const normalizedFolder = normalizeVietnamese(folderName);
   const normalizedSearch = normalizeVietnamese(searchName);
   // Exact normalized match or one contains the other
@@ -234,6 +234,15 @@ async function collectFilesRecursive(
 // ============================================================================
 // Public API
 // ============================================================================
+
+export async function listInsurerFolderNames(): Promise<string[]> {
+  const drive = await getDriveClient();
+  const children = await listChildren(drive, DRIVE_POLICY_ROOT_ID);
+  return children
+    .filter(f => f.mimeType === "application/vnd.google-apps.folder")
+    .map(f => f.name!)
+    .filter(Boolean);
+}
 
 export async function listPolicyDocuments(params: {
   insurerName: string;

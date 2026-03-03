@@ -1,6 +1,7 @@
 import { graphql } from "@papaya/graphql/sdk";
 
 import { getClient } from "../shared/graphql-client.ts";
+import { listInsurerFolderNames, fuzzyMatch } from "../shared/services/google-drive.ts";
 
 /**
  * Tier 1 Chronic ICD Prefixes — high-volume, predictable drug-only outpatient claims.
@@ -185,6 +186,8 @@ export interface EligibleClaim {
   code: string;
   benefitType?: string;
   icdCodes?: string[];
+  insurerName?: string;
+  policyNumber?: string;
 }
 
 /**
@@ -228,6 +231,93 @@ export async function fetchDroneEligibleClaims(batchSize: number, tier: DroneTie
         icdCodes,
       });
     }
+  }
+
+  return eligible;
+}
+
+// ============================================================================
+// Policy-Doc Mode — no ICD tier filtering, only claims with Drive policy docs
+// ============================================================================
+
+const GetPolicyDocEligibleClaims = graphql(`
+  query GetPolicyDocEligibleClaims($limit: Int!) {
+    claim_cases(
+      where: {
+        claim_case_status: { value: { _eq: InProgress } }
+        insured_benefit_type: { value: { _in: [OutPatient, Dental] } }
+        type: { _eq: "NON_LIFE" }
+        genesis_claim_id: { _is_null: true }
+        is_direct_billing: { _eq: false }
+      }
+      limit: $limit
+      order_by: { created_at: desc }
+    ) {
+      id
+      code
+      treatment_method
+      insured_benefit_type {
+        value
+      }
+      insured_certificate {
+        policy {
+          policy_number
+          insurer_company {
+            name
+          }
+        }
+      }
+    }
+  }
+`);
+
+/**
+ * Fetches eligible claims that have policy documents available in Google Drive.
+ * No ICD tier filtering — any OutPatient InProgress claim is considered.
+ * Filters by insurer name match against Drive folder names.
+ */
+export async function fetchPolicyDocEligibleClaims(batchSize: number): Promise<EligibleClaim[]> {
+  // Pre-fetch insurer folder names from Drive
+  const insurerFolders = await listInsurerFolderNames();
+  console.log(`[Eligibility] Drive insurer folders (${insurerFolders.length}): ${insurerFolders.join(", ")}`);
+
+  const client = getClient();
+  const { data } = await client.query({
+    query: GetPolicyDocEligibleClaims,
+    variables: { limit: Math.max(batchSize * 20, 200) },
+    fetchPolicy: "no-cache",
+  });
+
+  const claims = data?.claim_cases ?? [];
+  const eligible: EligibleClaim[] = [];
+
+  for (const claim of claims) {
+    if (eligible.length >= batchSize) break;
+
+    // Check insurer name against Drive folders
+    const cert = (claim as any).insured_certificate;
+    const insurerName = cert?.policy?.insurer_company?.name;
+    if (!insurerName) continue;
+
+    const matchedFolder = insurerFolders.find(folder => fuzzyMatch(folder, insurerName));
+    if (!matchedFolder) continue;
+
+    const policyNumber = cert?.policy?.policy_number ?? undefined;
+
+    // Apply surgical keyword exclusion
+    if (claim.treatment_method) {
+      const lower = claim.treatment_method.toLowerCase();
+      const excluded = EXCLUSION_KEYWORDS.find((kw) => lower.includes(kw));
+      if (excluded) continue;
+    }
+
+    eligible.push({
+      id: claim.id,
+      code: claim.code,
+      benefitType: claim.insured_benefit_type?.value,
+      insurerName,
+      policyNumber,
+    });
   }
 
   return eligible;

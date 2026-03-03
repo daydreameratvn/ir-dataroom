@@ -37,27 +37,35 @@ import { invokeComplianceAgentTool } from "../claim-assessor/tools/document-comp
  * - Batched Google search instructions
  * - skipCompliance option (fast pre-check done in runner)
  */
-export async function createDroneAgent(claimCode: string, options?: { skipCompliance?: boolean; tier?: 1 | 2 }) {
+export async function createDroneAgent(claimCode: string, options?: { skipCompliance?: boolean; tier?: 1 | 2; mode?: "tier" | "policy-doc" }) {
   const client = getClient();
 
   // 1. Pre-fetch claim documents
-  const { data } = await client.query({
-    query: graphql(`
-      query DroneClaimDocumentsV2($where: ClaimDocumentsBoolExp!) {
-        claimDocuments(where: $where) {
-          id
-          fileUrl
+  // Uses DDN app subgraph (claimDocuments). Falls back gracefully on Apple v2 endpoint.
+  let data: { claimDocuments?: { id: string; fileUrl: string | null }[] } | null | undefined;
+  try {
+    const result = await client.query({
+      query: graphql(`
+        query DroneClaimDocumentsV2($where: ClaimDocumentsBoolExp!) {
+          claimDocuments(where: $where) {
+            id
+            fileUrl
+          }
         }
-      }
-    `),
-    variables: {
-      where: {
-        claim: { claimNumber: { _eq: claimCode } },
-        documentType: { _neq: "SignOffForm" },
-        deletedAt: { _is_null: true },
+      `),
+      variables: {
+        where: {
+          claim: { claimNumber: { _eq: claimCode } },
+          documentType: { _neq: "SignOffForm" },
+          deletedAt: { _is_null: true },
+        },
       },
-    },
-  });
+    });
+    data = result.data;
+  } catch (err) {
+    console.warn(`[Drone] ${claimCode} document pre-fetch failed (endpoint may not support claimDocuments), skipping Gemini pre-analysis`);
+    data = null;
+  }
 
   // Supported MIME types per model
   const BEDROCK_IMAGE_TYPES = new Set(["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"]);
@@ -213,7 +221,11 @@ ${skipCompliance
       6. Include compliance findings in the final assessment summary.`}
 
     **Context**:
-${(options?.tier ?? 1) === 1
+${options?.mode === "policy-doc"
+      ? `      - This claim is a general outpatient case. It may be acute or chronic, any ICD code.
+      - Treatment is drug-only outpatient — no surgery, no procedures.
+      - This claim has policy documents available in Google Drive. You MUST look up policy terms during assessment.`
+      : (options?.tier ?? 1) === 1
       ? `      - This claim is a Tier 1 chronic disease case (Hypertension, Diabetes, Dyslipidemia, GERD, Asthma, etc.)
       - Treatment is drug-only outpatient — no surgery, no procedures.`
       : `      - This claim is a Tier 2 general outpatient case. It may be acute (respiratory infection, back pain, dermatitis, gastroenteritis, etc.) or chronic.
@@ -271,15 +283,22 @@ ${(options?.tier ?? 1) === 1
       The claim documents (PDFs) have been pre-analyzed by Gemini Flash AI. The structured extraction — including invoice line items, prescription items, test results, cross-checks, and an EXCLUSION VERDICT — will be injected as a [DOCUMENT ANALYSIS] message after data gathering is done. This is your PRIMARY source for document content. You MUST use the EXCLUSION VERDICT to determine non_paid_amount.
 
     **Policy Document Lookup**:
-      When you need to check policy terms, coverage conditions, exclusion clauses, or benefit limits:
+${options?.mode === "policy-doc"
+      ? `      You MUST call policyDocSearch with the claim code. If documents are found, call policyDocFetch on relevant files (contracts, T&C, amendments) to understand coverage terms BEFORE calling assessBenefit.
+      This is MANDATORY in policy-doc mode — do NOT skip this step.
+      1. Call policyDocSearch with the claim code to find available policy documents.
+      2. Call policyDocFetch on each relevant file (contracts, T&C, amendments) to read the document text.
+      3. Use the extracted policy terms to verify coverage rules, exclusion clauses, and benefit conditions during assessment.`
+      : `      When you need to check policy terms, coverage conditions, exclusion clauses, or benefit limits:
       1. Call policyDocSearch with the claim code to find available policy documents (contracts, T&C, amendments).
       2. Call policyDocFetch with the relevant file ID to read the document text.
       3. Use the extracted text to verify coverage rules, exclusion clauses, and benefit conditions.
-      Only fetch documents when needed — e.g., when determining if a specific item/drug/test is covered by policy terms.
+      Only fetch documents when needed — e.g., when determining if a specific item/drug/test is covered by policy terms.`}
 
     **Assessment Workflow (MUST complete ALL steps)**:
       ${skipCompliance ? "" : "1. Call invokeComplianceAgent first (see above).\n      "}2. Call claim tool to get claim data. Pay attention to past claims from same insured — note any non_paid_amount > 0 and their assessment_summary for drug exclusion history.
       3. Call benefits and insured tools to get policy context.
+${options?.mode === "policy-doc" ? `      3b. **MANDATORY**: Call policyDocSearch with the claim code to find policy documents. Then call policyDocFetch on relevant files (contracts, T&C, amendments). Review coverage terms, exclusion clauses, and benefit conditions BEFORE proceeding to drug validation and assessment.` : ""}
       4. Skip saveDetailForm if claim already has diagnosis and medical_provider populated. Only call when missing.
       5. **Drug & line item validation (MANDATORY — DO NOT SKIP)**:
          a. Review the DOCUMENT ANALYSIS section below for invoice line items, prescription items, and test results.

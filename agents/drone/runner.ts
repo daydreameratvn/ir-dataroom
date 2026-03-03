@@ -3,7 +3,7 @@ import { graphql } from "@papaya/graphql/sdk";
 
 import { getClient } from "../shared/graphql-client.ts";
 import { createDroneAgent } from "./agent.ts";
-import { fetchDroneEligibleClaims } from "./eligibility.ts";
+import { fetchDroneEligibleClaims, fetchPolicyDocEligibleClaims } from "./eligibility.ts";
 
 const slackClient = new WebClient(process.env.SLACK_TOKEN);
 const SLACK_CHANNEL = "C0A9MDAUR6Y";
@@ -89,6 +89,7 @@ export interface DroneState {
     batchSize: number;
     pollIntervalMs: number;
     maxBackoffMs: number;
+    mode?: "tier" | "policy-doc";
   };
 }
 
@@ -235,7 +236,7 @@ const BEDROCK_RETRY_MAX = 3; // Retry up to 2 times on transient Bedrock failure
 async function runDroneAgent(
   claimCode: string,
   attempt: number,
-  options?: { tier?: 1 | 2 },
+  options?: { tier?: 1 | 2; mode?: "tier" | "policy-doc" },
 ): Promise<{ tracker: ToolTracker; toolCallCount: number }> {
   const toolTracker: ToolTracker = {
     calledTools: new Set<string>(),
@@ -262,7 +263,7 @@ async function runDroneAgent(
     const agentStart = Date.now();
     const tag = attempt > 1 ? ` (retry #${attempt - 1})` : "";
     console.log(`[Drone] ${claimCode} creating agent...${tag}`);
-    agent = await createDroneAgent(claimCode, { skipCompliance: true, tier: options?.tier });
+    agent = await createDroneAgent(claimCode, { skipCompliance: true, tier: options?.tier, mode: options?.mode });
     console.log(`[Drone] ${claimCode} agent created in ${Date.now() - agentStart}ms`);
 
     agent.subscribe((e) => {
@@ -346,7 +347,7 @@ async function runDroneAgent(
 export async function processDroneClaim(
   claimCaseId: string,
   claimCode: string,
-  options?: { tier?: 1 | 2 },
+  options?: { tier?: 1 | 2; mode?: "tier" | "policy-doc" },
 ): Promise<{ status: "success" | "error" | "skipped" | "denied"; message?: string }> {
   // Skip if claim already has human-assessed benefits (don't override human work)
   // Check if claim status indicates it's already been assessed or has an approved amount
@@ -399,7 +400,7 @@ export async function processDroneClaim(
   try {
     // Run agent with retry on transient Bedrock failures (0 tool calls = silent stream error)
     for (let attempt = 1; attempt <= BEDROCK_RETRY_MAX; attempt++) {
-      const { tracker, toolCallCount } = await runDroneAgent(claimCode, attempt, { tier: options?.tier });
+      const { tracker, toolCallCount } = await runDroneAgent(claimCode, attempt, { tier: options?.tier, mode: options?.mode });
 
       // Transient Bedrock failure: agent completed instantly with 0 tool calls.
       // Retry once with a fresh agent — the next request usually succeeds.
@@ -433,6 +434,7 @@ export async function startDrone(config?: {
   batchSize?: number;
   pollIntervalMs?: number;
   maxBackoffMs?: number;
+  mode?: "tier" | "policy-doc";
 }): Promise<void> {
   if (state.isRunning) {
     console.warn("[Drone] Already running");
@@ -455,6 +457,7 @@ export async function startDrone(config?: {
       batchSize: config?.batchSize ?? 5,
       pollIntervalMs: config?.pollIntervalMs ?? 30_000,
       maxBackoffMs: config?.maxBackoffMs ?? 300_000,
+      mode: config?.mode,
     },
   };
 
@@ -473,8 +476,10 @@ export async function startDrone(config?: {
       state.lastPollAt = new Date().toISOString();
 
       // Fetch eligible claims
-      console.log(`[Drone] Polling for eligible claims...`);
-      const eligibleClaims = await fetchDroneEligibleClaims(state.config.batchSize);
+      console.log(`[Drone] Polling for eligible claims (mode=${state.config.mode ?? "tier"})...`);
+      const eligibleClaims = state.config.mode === "policy-doc"
+        ? await fetchPolicyDocEligibleClaims(state.config.batchSize)
+        : await fetchDroneEligibleClaims(state.config.batchSize);
 
       if (eligibleClaims.length === 0) {
         // Exponential backoff when no claims
@@ -495,7 +500,7 @@ export async function startDrone(config?: {
         console.log(`[Drone] Processing ${claim.code} (${claim.id})`);
 
         try {
-          const result = await processDroneClaim(claim.id, claim.code);
+          const result = await processDroneClaim(claim.id, claim.code, { mode: state.config.mode });
           state.processedCount++;
 
           switch (result.status) {
