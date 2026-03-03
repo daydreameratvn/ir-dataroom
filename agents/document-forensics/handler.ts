@@ -19,6 +19,7 @@ export interface AnalyzeRequest {
   ocr_engine?: 'easyocr' | 'gemini';
   device?: string;
   output_dir?: string;
+  market?: string;
 }
 
 export interface BatchRequest {
@@ -26,11 +27,13 @@ export interface BatchRequest {
   device?: string;
   concurrency?: number;
   output_dir?: string;
+  market?: string;
 }
 
 export interface ExtractFieldsRequest {
   image_path: string;
   ocr_engine?: 'easyocr' | 'gemini';
+  market?: string;
 }
 
 // ── Handlers ──────────────────────────────────────────────────────────────────
@@ -67,6 +70,8 @@ export async function handleAnalyze(
     request.output_dir,
     request.device ?? 'auto',
     request.ocr_engine,
+    true,
+    request.market,
   );
 }
 
@@ -96,6 +101,7 @@ export async function handleBatch(
     request.output_dir,
     request.device ?? 'auto',
     request.concurrency ?? 3,
+    request.market,
   );
 }
 
@@ -108,5 +114,7 @@ export async function handleExtractFields(
   return extractDocumentFields(
     request.image_path,
     request.ocr_engine,
+    undefined,
+    request.market,
   );
 }

@@ -18,6 +18,8 @@ import sharp from 'sharp';
 import { getGeminiApiKey } from '../config.ts';
 import { FIELD_TYPES } from './types.ts';
 import type { ExtractedField, ExtractionResult, UsageStats } from './types.ts';
+import { getMarketConfig, DEFAULT_MARKET } from './market-config.ts';
+import type { MarketCode, MarketConfig } from './market-config.ts';
 
 // Gemini 2.5 Flash pricing (USD per token)
 const PRICE = {
@@ -144,12 +146,12 @@ function convertBbox(
 
 // ── System prompt ─────────────────────────────────────────────────────────────
 
-function buildSystemPrompt(): string {
+function buildSystemPrompt(promptLanguage: string): string {
   const fieldList = FIELD_TYPES.map(
     (f) => `- ${f}`,
   ).join('\n');
 
-  return `You are an expert in Vietnamese and English medical document analysis.
+  return `You are an expert in ${promptLanguage} and English medical document analysis.
 Your task is to extract EVERY visible text element from this document — headings, labels, values, numbers, stamps, codes, and any other text — as individual items.
 
 For each text element:
@@ -174,8 +176,9 @@ Rules:
 
 export class GeminiExtractor {
   private ai: GoogleGenAI;
+  private readonly marketConfig: MarketConfig;
 
-  constructor(apiKey?: string) {
+  constructor(apiKey?: string, market?: MarketCode) {
     const key = apiKey ?? getGeminiApiKey();
     if (!key) {
       throw new Error(
@@ -183,6 +186,7 @@ export class GeminiExtractor {
       );
     }
     this.ai = new GoogleGenAI({ apiKey: key });
+    this.marketConfig = getMarketConfig(market ?? DEFAULT_MARKET);
   }
 
   async extract(imagePath: string): Promise<ExtractionResult> {
@@ -218,7 +222,7 @@ export class GeminiExtractor {
           responseMimeType: 'application/json',
           responseJsonSchema: jsonSchema,
           thinkingConfig: { thinkingBudget: 1024 },
-          systemInstruction: [buildSystemPrompt()],
+          systemInstruction: [buildSystemPrompt(this.marketConfig.promptLanguage)],
         },
         contents: [
           {

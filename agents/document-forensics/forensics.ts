@@ -14,6 +14,8 @@ import { PYTHON_PROJECT_PATH, PYTHON_BRIDGE_TIMEOUT, ensureOutputDir, getOcrEngi
 import type { OcrEngine } from './config.ts';
 import { GeminiExtractor } from './extraction/gemini-extractor.ts';
 import { EasyOCRExtractor } from './extraction/easyocr-extractor.ts';
+import { resolveMarket } from './extraction/market-config.ts';
+import type { MarketCode } from './extraction/market-config.ts';
 import { scoreFieldsAgainstHeatmap, computeVerdict } from './extraction/field-scorer.ts';
 import { KEY_FIELDS } from './extraction/types.ts';
 import type { ExtractionResult } from './extraction/types.ts';
@@ -203,17 +205,18 @@ async function runHybridForensics(
   _outputDir: string | null,
   device: string,
   ocrEngine: OcrEngine = 'easyocr',
+  market: MarketCode = 'VN',
 ): Promise<DocumentForensicsResult> {
   const t0 = Date.now();
-  console.log(`[forensics] START image=${imagePath} engine=${ocrEngine} device=${device}`);
+  console.log(`[forensics] START image=${imagePath} engine=${ocrEngine} market=${market} device=${device}`);
 
   // Step 1: OCR extraction (EasyOCR or Gemini)
   let extractionResult: ExtractionResult;
   try {
     if (ocrEngine === 'gemini') {
-      extractionResult = await new GeminiExtractor().extract(imagePath);
+      extractionResult = await new GeminiExtractor(undefined, market).extract(imagePath);
     } else {
-      extractionResult = await new EasyOCRExtractor().extract(imagePath);
+      extractionResult = await new EasyOCRExtractor(undefined, market).extract(imagePath);
     }
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -367,10 +370,12 @@ export async function advancedDocumentForensics(
   device: string = 'auto',
   ocrEngine?: OcrEngine,
   includeVisualization: boolean = true,
+  rawMarket?: string,
 ): Promise<DocumentForensicsResult> {
   const engine = ocrEngine ?? getOcrEngine();
+  const market = resolveMarket(rawMarket);
   const outDir = includeVisualization ? outputDir ?? ensureOutputDir() : null;
-  return runHybridForensics(imagePath, outDir, device, engine);
+  return runHybridForensics(imagePath, outDir, device, engine, market);
 }
 
 /**
@@ -380,11 +385,13 @@ export async function extractDocumentFields(
   imagePath: string,
   ocrEngine?: OcrEngine,
   documentType: string = 'auto',
+  rawMarket?: string,
 ): Promise<FieldExtractionResult> {
   const engine = ocrEngine ?? getOcrEngine();
+  const market = resolveMarket(rawMarket);
 
   try {
-    const extractor = engine === 'gemini' ? new GeminiExtractor() : new EasyOCRExtractor();
+    const extractor = engine === 'gemini' ? new GeminiExtractor(undefined, market) : new EasyOCRExtractor(undefined, market);
     const result = await extractor.extract(imagePath);
     return {
       success: true,
@@ -422,6 +429,7 @@ export async function batchDocumentForensics(
   outputDir?: string,
   device: string = 'auto',
   concurrency: number = 3,
+  rawMarket?: string,
 ): Promise<BatchForensicsResult> {
   const outDir = outputDir ?? ensureOutputDir();
   mkdirSync(outDir, { recursive: true });
@@ -433,7 +441,7 @@ export async function batchDocumentForensics(
   const processBatch = async (batch: string[]): Promise<void> => {
     const promises = batch.map(async (imgPath) => {
       try {
-        const result = await advancedDocumentForensics(imgPath, outDir, device);
+        const result = await advancedDocumentForensics(imgPath, outDir, device, undefined, true, rawMarket);
 
         verdicts[result.verdict as keyof typeof verdicts]++;
         if (result.success) {
