@@ -41,8 +41,8 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
   const client = getClient();
 
   // 1. Pre-fetch claim documents
-  // Uses DDN app subgraph (claimDocuments). Falls back gracefully on Apple v2 endpoint.
-  let data: { claimDocuments?: { id: string; fileUrl: string | null }[] } | null | undefined;
+  // Try DDN app subgraph first (claimDocuments), fall back to Apple v2 (claim_documents).
+  let docFiles: { id: string; fileUrl: string | null }[] = [];
   try {
     const result = await client.query({
       query: graphql(`
@@ -61,10 +61,33 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
         },
       },
     });
-    data = result.data;
-  } catch (err) {
-    console.warn(`[Drone] ${claimCode} document pre-fetch failed (endpoint may not support claimDocuments), skipping Gemini pre-analysis`);
-    data = null;
+    docFiles = (result.data?.claimDocuments ?? []).map(d => ({ id: d.id, fileUrl: d.fileUrl }));
+  } catch {
+    // DDN query failed — try Apple v2 schema (claim_documents with nested file { url })
+    try {
+      const result = await client.query({
+        query: graphql(`
+          query DroneClaimDocumentsApple($where: claim_documents_bool_exp!) {
+            claim_documents(where: $where) {
+              id
+              file { id url }
+            }
+          }
+        `),
+        variables: {
+          where: {
+            claim_case: { code: { _eq: claimCode } },
+            deleted_at: { _is_null: true },
+            file: { original_file_id: { _is_null: true } },
+            type: { _nin: ["SignOffForm"] },
+          },
+        },
+      });
+      docFiles = (result.data?.claim_documents ?? []).map(d => ({ id: d.id, fileUrl: d.file?.url ?? null }));
+      console.log(`[Drone] ${claimCode} document pre-fetch via Apple v2: ${docFiles.length} documents`);
+    } catch (err2) {
+      console.warn(`[Drone] ${claimCode} document pre-fetch failed on both endpoints, skipping Gemini pre-analysis`);
+    }
   }
 
   // Supported MIME types per model
@@ -76,7 +99,7 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
 
   // Detect file types and prepare files for both models
   const fileInfos = (await BPromise.map(
-    data?.claimDocuments ?? [],
+    docFiles,
     async (document) => {
       try {
         if (document.fileUrl == null) return null;
