@@ -1,15 +1,17 @@
-# Advanced Document Forensics Backend — Implementation Plan
+# Advanced Document Forensics Backend
+
+> **Status**: Implemented and deployed. GPU acceleration confirmed working (Tesla T4, CUDA 12.1).
 
 ## 1. Context & Goal
 
-Build a self-contained document fraud detection backend service in Banyan. The service:
-- Accepts document images as input
+Self-contained document fraud detection backend service in Banyan:
+- Accepts document images via HTTP multipart upload
 - Runs deep learning forensic analysis (TruFor heatmap + OCR field extraction + anomaly scoring)
 - Detects areas of tampering with per-field risk scores
 - Generates heatmap visualizations highlighting fraud areas
 - Returns structured JSON results with verdict, scores, and visualization images
 
-All code (TypeScript + Python) is copied from `/Volumes/work/git/papaya-org/image-detection-ts-mcp/` and bundled into a single self-contained backend — no external project dependencies.
+Code originated from `/Volumes/work/git/papaya-org/image-detection-ts-mcp/` and is bundled as a self-contained service — no external project dependencies.
 
 ---
 
@@ -17,7 +19,16 @@ All code (TypeScript + Python) is copied from `/Volumes/work/git/papaya-org/imag
 
 ```
                         ┌─────────────────────────────────┐
-                        │         handler.ts               │
+                        │         server.ts                │
+                        │   Bun.serve() — HTTP server      │
+                        │   /forensics/health              │
+                        │   /forensics/analyze             │
+                        │   /forensics/batch               │
+                        │   /forensics/extract             │
+                        └──────────────┬──────────────────┘
+                                       │
+                        ┌──────────────▼──────────────────┐
+                        │        handler.ts                │
                         │   handleAnalyze()                │
                         │   handleBatch()                  │
                         │   handleExtractFields()          │
@@ -27,6 +38,7 @@ All code (TypeScript + Python) is copied from `/Volumes/work/git/papaya-org/imag
                         │        forensics.ts              │
                         │  advancedDocumentForensics()     │
                         │  batchDocumentForensics()        │
+                        │  + inline TruFor Python bridge   │
                         └──────────────┬──────────────────┘
                                        │
                ┌───────────────────────┼───────────────────────┐
@@ -57,10 +69,10 @@ All code (TypeScript + Python) is copied from `/Volumes/work/git/papaya-org/imag
 
 | Pipeline | Engine | Runtime | Pros | Cons |
 |----------|--------|---------|------|------|
-| **Gemini Hybrid** (default) | Gemini Vision API | TypeScript-native | No Python setup for OCR, fast, structured output | Requires `GEMINI_API_KEY`, API cost |
-| **EasyOCR** | EasyOCR library | Python subprocess | Free, offline | Requires Python + EasyOCR install, slower |
+| **EasyOCR** (default) | EasyOCR library | Python subprocess | Free, offline, GPU-accelerated | Requires Python + EasyOCR install |
+| **Gemini Hybrid** | Gemini Vision API | TypeScript-native | Structured output, no Python for OCR | Requires `GEMINI_API_KEY`, API cost |
 
-Both produce `ExtractedField[]` → scored against TruFor heatmap → verdict.
+Both produce `ExtractedField[]` → scored against TruFor heatmap → verdict. Production uses EasyOCR (default).
 
 ---
 
@@ -199,35 +211,11 @@ Every Python file is copied from `/Volumes/work/git/papaya-org/image-detection-t
 
 ### 5.1 `config.ts` — Service Configuration
 
-```typescript
-import { resolve } from "node:path";
-import { mkdirSync } from "node:fs";
-
-// Paths
-export const SERVICE_ROOT = resolve(import.meta.dir);
-export const PROJECT_ROOT = resolve(SERVICE_ROOT, "..", "..", "..");
-export const PYTHON_PROJECT_PATH = resolve(SERVICE_ROOT, "python");
-export const WEIGHTS_DIR = resolve(PYTHON_PROJECT_PATH, "weights");
-export const OUTPUT_DIR = resolve(PROJECT_ROOT, "output", "document-forensics");
-
-// Image processing
-export const MAX_IMAGE_SIZE = 4096;
-
-// Python bridge
-export const PYTHON_BRIDGE_TIMEOUT = Number(process.env.PYTHON_BRIDGE_TIMEOUT ?? 120_000);
-
-// Gemini Vision OCR
-export const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? "";
-
-// EasyOCR
-export const EASYOCR_PYTHON = process.env.EASYOCR_PYTHON ?? "python3";
-export const EASYOCR_LANG = process.env.EASYOCR_LANG ?? "vi,en";
-
-export function ensureOutputDir(): string {
-  mkdirSync(OUTPUT_DIR, { recursive: true });
-  return OUTPUT_DIR;
-}
-```
+Key exports:
+- `PYTHON_PROJECT_PATH` — path to bundled Python package (`./python/`)
+- `PYTHON_BRIDGE_TIMEOUT` — from `process.env.PYTHON_BRIDGE_TIMEOUT`, default 120s. Overridden to 300s by ECS task definition (first TruFor call loads model into VRAM).
+- `getOcrEngine()` — returns `'easyocr'` (default) or `'gemini'`
+- `getGeminiApiKey()` — lazy read from `process.env.GEMINI_API_KEY` (loaded from SSM at startup by `server.ts`)
 
 ### 5.2 `types.ts` — Shared Types (extracted from `advanced-forensics-tools.ts`)
 
@@ -621,16 +609,18 @@ Input: RGB Document Image (H × W × 3)
 
 ## 10. Environment Variables
 
-| Variable | Purpose | Default |
-|----------|---------|---------|
-| `GEMINI_API_KEY` | Google Gemini API key for OCR extraction | **Required** for Gemini engine |
-| `PYTHON_BRIDGE_TIMEOUT` | TruFor subprocess timeout (ms) | `120000` |
-| `EASYOCR_PYTHON` | Python interpreter for EasyOCR subprocess | `python3` |
-| `EASYOCR_LANG` | EasyOCR language codes | `vi,en` |
-| `EASYOCR_CORRECT` | Enable protonx-legal-tc text correction | `0` |
-| `TRUFOR_WEIGHTS_PATH` | Override TruFor weights location | `./python/weights/trufor/trufor.pth.tar` |
+| Variable | Purpose | Default | ECS Override |
+|----------|---------|---------|--------------|
+| `PORT` | HTTP server port | `4001` | `4001` |
+| `NODE_ENV` | Environment mode | — | `production` |
+| `AWS_REGION` | AWS region for SSM | — | `ap-southeast-1` |
+| `PYTHON_BRIDGE_TIMEOUT` | TruFor/EasyOCR subprocess timeout (ms) | `120000` | `300000` (both CPU and GPU) |
+| `GEMINI_API_KEY` | Google Gemini API key for OCR extraction | — | Loaded from SSM `/banyan/gemini/api-key` at startup |
+| `OCR_ENGINE` | OCR engine selection | `easyocr` | — |
+| `EASYOCR_LANG` | EasyOCR language codes | `vi,en` | — |
+| `NVIDIA_VISIBLE_DEVICES` | GPU visibility (GPU Dockerfile only) | — | `all` |
 
-Per Banyan conventions, production values stored in AWS SSM Parameter Store.
+Per Banyan conventions, secrets stored in AWS SSM Parameter Store. `GEMINI_API_KEY` is loaded at server startup by `server.ts`.
 
 ---
 
@@ -777,16 +767,25 @@ This allows claim-assessor, overseer, and other agents to call forensics analysi
 
 ---
 
-## 15. Performance Characteristics
+## 15. Performance Characteristics (Measured)
 
-| Operation | MPS (Apple Silicon) | CPU |
-|-----------|--------------------|----|
-| TruFor heatmap generation | 4-6s | 15-30s |
-| EasyOCR field extraction | 2-5s | 5-10s |
-| Gemini Vision extraction | 2-4s | 2-4s (API call) |
-| Field scoring | <1s | <1s |
-| Visualization generation | <1s | <1s |
-| **Total (Gemini + TruFor)** | **7-11s** | **18-35s** |
-| **Total (EasyOCR + TruFor)** | **7-12s** | **20-40s** |
+| Operation | MPS (Apple Silicon) | CPU Fargate (2 vCPU) | GPU g4dn.xlarge (T4) |
+|-----------|--------------------|--------------------|---------------------|
+| EasyOCR (66 fields) | 2-5s | ~60s | **8.5s** |
+| EasyOCR (423 fields) | 3-8s | ~55s | **12.7s** |
+| TruFor heatmap | 4-6s | 120-200s | **7-8.5s** |
+| Field scoring | <1s | <1s | <1s |
+| Visualization | <1s | <1s | <1s |
+| **Total (66 fields)** | **7-12s** | **~200s** | **18s** |
+| **Total (423 fields)** | **8-15s** | **~130s** | **21s** |
 
-Batch processing with `concurrency: 3` gives ~2.5x throughput.
+GPU runtime: `torch=2.5.1+cu121`, `device=cuda`, `gpu=Tesla T4`.
+
+### Deployment Variants
+
+| Variant | Infra | Cost | Performance |
+|---------|-------|------|-------------|
+| CPU Fargate (always-on) | ECS Fargate, 2 vCPU / 8 GB | ~$85/mo | ~130-200s/image |
+| GPU EC2 (on-demand) | ECS EC2, g4dn.xlarge (T4) | $0.63/hr when on, $0 when off | ~18-21s/image |
+
+See `docs/plan/gpu-on-demand.md` for the GPU toggle architecture.
