@@ -168,22 +168,29 @@ export const saveDetailFormTool: AgentTool = {
     treatment_method: Type.String({ description: "The diagnosis of the claim case" }),
   }),
   execute: async (toolCallId, { claim_case_id, claim_code, physical_examination_date, assessed_diagnoses, diagnosis, medical_provider, request_amount, treatment_method }) => {
-    await client.mutate({
-      mutation: SaveAssessedDiagnosesDocument,
-      variables: {
-        input: assessed_diagnoses.map((d: { icd_id: string }) => ({
-          claim_case_id,
-          icd_metadata_id: d.icd_id,
-        })),
-      },
-    });
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    // Sanitize UUIDs: empty strings → null (PostgreSQL rejects "" for uuid columns)
+    const sanitizeUuid = (v: string | undefined | null) => v && UUID_RE.test(v) ? v : null;
+
+    const validDiagnoses = assessed_diagnoses.filter((d) => sanitizeUuid(d.icd_id));
+    if (validDiagnoses.length > 0) {
+      await client.mutate({
+        mutation: SaveAssessedDiagnosesDocument,
+        variables: {
+          input: validDiagnoses.map((d: { icd_id: string }) => ({
+            claim_case_id,
+            icd_metadata_id: d.icd_id,
+          })),
+        },
+      });
+    }
     const { data } = await client.mutate({
       mutation: UpdateClaimDocument,
       variables: {
         id: claim_case_id,
         input: {
-          medical_provider_id: medical_provider.id,
-          physical_examination_date,
+          medical_provider_id: sanitizeUuid(medical_provider.id),
+          physical_examination_date: physical_examination_date || null,
           diagnosis,
           request_amount,
           treatment_method,
@@ -242,6 +249,55 @@ export const assessBenefitTool: AgentTool = {
         isError: true,
       };
     }
+
+    // Auto-resolve the correct insuredCertificateHistoryId from the claim's insured certificate.
+    // The agent often picks a stale/expired history; the backend rejects it with
+    // "currentCertHistory.certificateHistoryId !== insuredCertificateHistoryId".
+    // Fix: query the claim → cert → histories, pick the one covering physical_examination_date
+    // (or the latest by created_at as fallback).
+    let resolvedHistoryId = detail.insured_certificate_history_id;
+    try {
+      const CertHistoryQuery = graphql(`
+        query CertHistoryForAssess($claimId: uuid!) {
+          claim_cases_by_pk(claim_case_id: $claimId) {
+            physical_examination_date
+            insured_certificate {
+              insured_certificate_histories(where: { deleted_at: { _is_null: true } }, order_by: { created_at: desc }) {
+                id
+                start_date
+                end_date
+              }
+            }
+          }
+        }
+      `);
+      const { data: histData } = await client.query({
+        query: CertHistoryQuery,
+        variables: { claimId: claim_case_id },
+      });
+      const claim = histData?.claim_cases_by_pk;
+      const histories = claim?.insured_certificate?.insured_certificate_histories ?? [];
+      if (histories.length > 0) {
+        const examDate = claim?.physical_examination_date ? new Date(claim.physical_examination_date) : null;
+        // Pick history covering the exam date
+        const covering = examDate
+          ? histories.find((h) => {
+              const start = h.start_date ? new Date(h.start_date) : null;
+              const end = h.end_date ? new Date(h.end_date) : null;
+              return (!start || start <= examDate) && (!end || end >= examDate);
+            })
+          : null;
+        // Fallback: latest by created_at (already sorted desc)
+        const best = covering ?? histories[0]!;
+        if (best.id !== resolvedHistoryId) {
+          console.log(`[assessBenefit] ${claim_code} auto-corrected certificateHistoryId: ${resolvedHistoryId} → ${best.id}`);
+          resolvedHistoryId = best.id;
+        }
+      }
+    } catch (err) {
+      console.warn(`[assessBenefit] ${claim_code} cert history auto-resolve failed, using agent-provided value:`, err instanceof Error ? err.message : String(err));
+    }
+
     const CreateUpdateClaimDetailDocument = graphql(`
       mutation CreateUpdateClaimDetailV2($input: CreateUpdateClaimDetailInput!, $options: CreateUpdateClaimDetailOptions) {
         createUpdateClaimDetail(input: $input, options: $options) {
@@ -262,7 +318,7 @@ export const assessBenefitTool: AgentTool = {
       copayAmount: detail.copay_amount,
       coverageAmount: detail.covered_amount,
       deductibleAmount: detail.deductible_amount,
-      insuredCertificateHistoryId: detail.insured_certificate_history_id,
+      insuredCertificateHistoryId: resolvedHistoryId,
       isMagic: true,
       nonPaidAmount: detail.non_paid_amount,
       note: "Assessed by AI",
@@ -297,7 +353,11 @@ export const assessBenefitTool: AgentTool = {
         console.error(`[assessBenefit] ${claim_code} attempt ${attempt} ERROR:`, err instanceof Error ? err.message : String(err));
         if (attempt === MAX_RETRIES) {
           console.error(`[assessBenefit] ${claim_code} all ${MAX_RETRIES} attempts failed, input:`, JSON.stringify(input));
-          throw err;
+          return {
+            content: [{ type: "text", text: `ERROR: assessBenefit failed after ${MAX_RETRIES} attempts: ${err instanceof Error ? err.message : String(err)}` }],
+            details: { error: true, claimCode: claim_code },
+            isError: true,
+          };
         }
         await new Promise((r) => setTimeout(r, attempt * 2000));
       }
