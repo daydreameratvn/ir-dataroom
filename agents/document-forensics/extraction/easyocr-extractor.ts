@@ -14,7 +14,7 @@ import { spawn } from 'node:child_process';
 import sharp from 'sharp';
 import { PYTHON_PROJECT_PATH } from '../config.ts';
 import type { ExtractedField, ExtractionResult } from './types.ts';
-import { getMarketConfig, DEFAULT_MARKET } from './market-config.ts';
+import { getMarketConfig } from './market-config.ts';
 import type { MarketCode, MarketConfig } from './market-config.ts';
 
 // ── Python inline script ─────────────────────────────────────────────────────
@@ -103,8 +103,8 @@ export class EasyOCRExtractor {
   private readonly langs: string;
   private readonly marketConfig: MarketConfig;
 
-  constructor(langs?: string, market?: MarketCode) {
-    const mc = getMarketConfig(market ?? DEFAULT_MARKET);
+  constructor(market: MarketCode, langs?: string) {
+    const mc = getMarketConfig(market);
     this.marketConfig = mc;
     this.langs = langs ?? process.env.EASYOCR_LANG ?? mc.ocrLangs.join(',');
   }

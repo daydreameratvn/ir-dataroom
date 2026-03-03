@@ -6,10 +6,9 @@
  * and saves results for comparison with local runs.
  *
  * Usage:
- *   bun scripts/forensics-test-prod.ts <folder>
+ *   bun scripts/forensics-test-prod.ts <folder> --market VN
  *   bun scripts/forensics-test-prod.ts <folder> --market TH
- *   bun scripts/forensics-test-prod.ts /path/to/test-cases-v2/case-03
- *   bun scripts/forensics-test-prod.ts <folder> --url http://localhost:4001
+ *   bun scripts/forensics-test-prod.ts <folder> --market TH --url http://localhost:4001
  *
  * Output is saved to /Volumes/work/git/papaya-org/test-cases-v2-output/<sub-folder>-prod/
  *
@@ -48,8 +47,8 @@ const MARKET = flag("market", "");
 const compareOnly = hasFlag("compare");
 
 const folder = rawArgs[0];
-if (!folder) {
-  console.error("Usage: bun scripts/forensics-test-prod.ts <folder> [--url <base>] [--market VN|TH|HK|ID] [--compare]");
+if (!folder || (!compareOnly && !MARKET)) {
+  console.error("Usage: bun scripts/forensics-test-prod.ts <folder> --market VN|TH|HK|ID [--url <base>] [--compare]");
   process.exit(1);
 }
 
@@ -142,7 +141,7 @@ mkdirSync(prodOutputDir, { recursive: true });
 
 console.log(`Found ${images.length} image(s) in ${inputDir}`);
 console.log(`Backend: ${BASE_URL}/forensics/analyze`);
-console.log(`Market:  ${MARKET || "VN (default)"}`);
+console.log(`Market:  ${MARKET}`);
 console.log(`Output:  ${prodOutputDir}\n`);
 
 // ── Call prod backend ────────────────────────────────────────────────────────
@@ -159,9 +158,7 @@ for (const imgPath of images) {
 
   const form = new FormData();
   form.append("image", Bun.file(imgPath), name);
-  if (MARKET) {
-    form.append("options", JSON.stringify({ market: MARKET }));
-  }
+  form.append("options", JSON.stringify({ market: MARKET }));
 
   const start = Date.now();
   let result: AnalyzeResult;
@@ -223,7 +220,7 @@ console.log("\n" + "=".repeat(80));
 console.log("FORENSICS PROD TEST REPORT");
 console.log("=".repeat(80));
 console.log(`Backend:     ${BASE_URL}`);
-console.log(`Market:      ${MARKET || "VN (default)"}`);
+console.log(`Market:      ${MARKET}`);
 console.log(`Images:      ${reports.length}`);
 console.log(`Total time:  ${(totalTime / 1000).toFixed(1)}s`);
 console.log(`Output:      ${prodOutputDir}`);

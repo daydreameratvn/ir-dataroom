@@ -3,10 +3,9 @@
  * Document forensics backend test script.
  *
  * Usage:
- *   bun scripts/forensics-test.ts <folder>
- *   bun scripts/forensics-test.ts <folder> --url http://localhost:4001
- *   bun scripts/forensics-test.ts <folder> --endpoint extract
- *   bun scripts/forensics-test.ts <folder> --market TH
+ *   bun scripts/forensics-test.ts <folder> --market VN
+ *   bun scripts/forensics-test.ts <folder> --market TH --url http://localhost:4001
+ *   bun scripts/forensics-test.ts <folder> --market HK --endpoint extract
  *
  * Scans <folder> for image files, sends each to the forensics backend,
  * prints a summary report, and saves heatmap images to output/.
@@ -34,8 +33,8 @@ const ENDPOINT = flag("endpoint", "analyze") as "analyze" | "extract";
 const MARKET = flag("market", "");
 
 const folder = args[0];
-if (!folder) {
-  console.error("Usage: bun scripts/forensics-test.ts <folder> [--url <base>] [--endpoint analyze|extract] [--market VN|TH|HK|ID]");
+if (!folder || !MARKET) {
+  console.error("Usage: bun scripts/forensics-test.ts <folder> --market VN|TH|HK|ID [--url <base>] [--endpoint analyze|extract]");
   process.exit(1);
 }
 
@@ -70,7 +69,7 @@ if (images.length === 0) {
 
 console.log(`Found ${images.length} image(s) in ${inputDir}`);
 console.log(`Backend: ${BASE_URL}/forensics/${ENDPOINT}`);
-console.log(`Market:  ${MARKET || "VN (default)"}\n`);
+console.log(`Market:  ${MARKET}\n`);
 
 // ── Call backend ─────────────────────────────────────────────────────────────
 
@@ -121,9 +120,7 @@ async function processImage(imagePath: string): Promise<ImageReport> {
   const form = new FormData();
   const fileBytes = Bun.file(imagePath);
   form.append("image", fileBytes, name);
-  if (MARKET) {
-    form.append("options", JSON.stringify({ market: MARKET }));
-  }
+  form.append("options", JSON.stringify({ market: MARKET }));
 
   const start = Date.now();
   const resp = await fetch(url, { method: "POST", body: form });
@@ -175,7 +172,7 @@ console.log("\n" + "=".repeat(80));
 console.log("FORENSICS TEST REPORT");
 console.log("=".repeat(80));
 console.log(`Endpoint:    ${ENDPOINT}`);
-console.log(`Market:      ${MARKET || "VN (default)"}`);
+console.log(`Market:      ${MARKET}`);
 console.log(`Images:      ${reports.length}`);
 console.log(`Total time:  ${(totalTime / 1000).toFixed(1)}s`);
 console.log("-".repeat(80));

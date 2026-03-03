@@ -10,6 +10,7 @@ import {
   batchDocumentForensics,
   extractDocumentFields,
 } from './forensics.ts';
+import { resolveMarket } from './extraction/market-config.ts';
 
 // ── Request types ─────────────────────────────────────────────────────────────
 
@@ -19,7 +20,7 @@ export interface AnalyzeRequest {
   ocr_engine?: 'easyocr' | 'gemini';
   device?: string;
   output_dir?: string;
-  market?: string;
+  market: string;
 }
 
 export interface BatchRequest {
@@ -27,13 +28,13 @@ export interface BatchRequest {
   device?: string;
   concurrency?: number;
   output_dir?: string;
-  market?: string;
+  market: string;
 }
 
 export interface ExtractFieldsRequest {
   image_path: string;
   ocr_engine?: 'easyocr' | 'gemini';
-  market?: string;
+  market: string;
 }
 
 // ── Handlers ──────────────────────────────────────────────────────────────────
@@ -44,34 +45,39 @@ export interface ExtractFieldsRequest {
 export async function handleAnalyze(
   request: AnalyzeRequest,
 ): Promise<DocumentForensicsResult> {
+  const errorShell = (error: string): DocumentForensicsResult => ({
+    success: false,
+    method: 'advanced_document_forensics',
+    ocr_engine: request.ocr_engine ?? 'easyocr',
+    device: request.device ?? 'auto',
+    verdict: 'ERROR',
+    overall_score: 0,
+    risk_level: 'low',
+    trufor: { global_score: 0, detection_score: null },
+    image: { path: '', width: 0, height: 0 },
+    ocr_analysis: { total_fields: 0, field_types_found: [] },
+    highest_risk_field: null,
+    fields: [],
+    visualization_path: null,
+    notes: [],
+    error,
+  });
+
+  try { resolveMarket(request.market); } catch (e) {
+    return errorShell(e instanceof Error ? e.message : String(e));
+  }
+
   const imagePath = request.image_path;
   if (!imagePath) {
-    return {
-      success: false,
-      method: 'advanced_document_forensics',
-      ocr_engine: request.ocr_engine ?? 'easyocr',
-      device: request.device ?? 'auto',
-      verdict: 'ERROR',
-      overall_score: 0,
-      risk_level: 'low',
-      trufor: { global_score: 0, detection_score: null },
-      image: { path: '', width: 0, height: 0 },
-      ocr_analysis: { total_fields: 0, field_types_found: [] },
-      highest_risk_field: null,
-      fields: [],
-      visualization_path: null,
-      notes: [],
-      error: 'image_path is required',
-    };
+    return errorShell('image_path is required');
   }
 
   return advancedDocumentForensics(
     imagePath,
+    request.market,
     request.output_dir,
     request.device ?? 'auto',
     request.ocr_engine,
-    true,
-    request.market,
   );
 }
 
@@ -81,27 +87,26 @@ export async function handleAnalyze(
 export async function handleBatch(
   request: BatchRequest,
 ): Promise<BatchForensicsResult> {
+  const batchError: BatchForensicsResult = {
+    success: false,
+    total_images: 0,
+    summary: { verdicts: { NORMAL: 0, SUSPICIOUS: 0, TAMPERED: 0, ERROR: 0 }, avg_score: 0, max_score: 0, min_score: 0 },
+    results: [],
+    output_dir: null,
+  };
+
+  try { resolveMarket(request.market); } catch { return batchError; }
+
   if (!request.image_paths || request.image_paths.length === 0) {
-    return {
-      success: false,
-      total_images: 0,
-      summary: {
-        verdicts: { NORMAL: 0, SUSPICIOUS: 0, TAMPERED: 0, ERROR: 0 },
-        avg_score: 0,
-        max_score: 0,
-        min_score: 0,
-      },
-      results: [],
-      output_dir: null,
-    };
+    return batchError;
   }
 
   return batchDocumentForensics(
     request.image_paths,
+    request.market,
     request.output_dir,
     request.device ?? 'auto',
     request.concurrency ?? 3,
-    request.market,
   );
 }
 
@@ -111,10 +116,22 @@ export async function handleBatch(
 export async function handleExtractFields(
   request: ExtractFieldsRequest,
 ): Promise<FieldExtractionResult> {
+  try { resolveMarket(request.market); } catch (e) {
+    return {
+      success: false,
+      engine: request.ocr_engine ?? 'easyocr',
+      document_type: 'auto',
+      image: { path: request.image_path, width: 0, height: 0 },
+      fields: [],
+      total_fields: 0,
+      processing_time_ms: 0,
+      error: e instanceof Error ? e.message : String(e),
+    };
+  }
+
   return extractDocumentFields(
     request.image_path,
-    request.ocr_engine,
-    undefined,
     request.market,
+    request.ocr_engine,
   );
 }

@@ -18,7 +18,7 @@ import sharp from 'sharp';
 import { getGeminiApiKey } from '../config.ts';
 import { FIELD_TYPES } from './types.ts';
 import type { ExtractedField, ExtractionResult, UsageStats } from './types.ts';
-import { getMarketConfig, DEFAULT_MARKET } from './market-config.ts';
+import { getMarketConfig } from './market-config.ts';
 import type { MarketCode, MarketConfig } from './market-config.ts';
 
 // Gemini 2.5 Flash pricing (USD per token)
@@ -178,7 +178,7 @@ export class GeminiExtractor {
   private ai: GoogleGenAI;
   private readonly marketConfig: MarketConfig;
 
-  constructor(apiKey?: string, market?: MarketCode) {
+  constructor(market: MarketCode, apiKey?: string) {
     const key = apiKey ?? getGeminiApiKey();
     if (!key) {
       throw new Error(
@@ -186,7 +186,7 @@ export class GeminiExtractor {
       );
     }
     this.ai = new GoogleGenAI({ apiKey: key });
-    this.marketConfig = getMarketConfig(market ?? DEFAULT_MARKET);
+    this.marketConfig = getMarketConfig(market);
   }
 
   async extract(imagePath: string): Promise<ExtractionResult> {

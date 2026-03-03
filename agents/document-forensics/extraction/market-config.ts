@@ -37,13 +37,15 @@ const VALID_MARKETS = new Set<string>(['VN', 'TH', 'HK', 'ID']);
 
 /**
  * Resolve a raw market string to a valid MarketCode.
- * Returns DEFAULT_MARKET when input is missing or unrecognized.
+ * Throws if the value is missing or unrecognized.
  */
 export function resolveMarket(raw: string | undefined | null): MarketCode {
-  if (!raw) return DEFAULT_MARKET;
+  if (!raw) {
+    throw new Error('market is required. Supported values: VN, TH, HK, ID');
+  }
   const upper = raw.trim().toUpperCase();
   if (VALID_MARKETS.has(upper)) return upper as MarketCode;
-  return DEFAULT_MARKET;
+  throw new Error(`Unknown market "${raw}". Supported values: VN, TH, HK, ID`);
 }
 
 // ── Shared rules (language-agnostic) ─────────────────────────────────────────

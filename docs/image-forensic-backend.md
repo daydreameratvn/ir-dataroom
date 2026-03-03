@@ -75,7 +75,7 @@ Store secrets in AWS SSM (see root `CLAUDE.md`), not in `.env` files.
 
 ### Market Support
 
-All endpoints accept an optional `market` parameter that adjusts OCR language selection, field classification regex rules, and Gemini prompt language per country. Omitting `market` defaults to `VN` for backward compatibility.
+All endpoints **require** a `market` parameter that selects OCR language, field classification regex rules, and Gemini prompt language for the target country. Requests without `market` return a validation error.
 
 | Code | Country | OCR Languages | Prompt Language |
 |------|---------|---------------|-----------------|
@@ -147,9 +147,9 @@ import { handleAnalyze, handleBatch, handleExtractFields } from './agents/docume
 ```typescript
 const result = await handleAnalyze({
   image_path: '/path/to/medical-receipt.jpg',
+  market: 'VN',            // required: 'VN' | 'TH' | 'HK' | 'ID'
   ocr_engine: 'gemini',   // 'gemini' (default) or 'easyocr'
   device: 'cpu',           // 'auto' | 'cpu' | 'mps' (Mac) | 'cuda' (GPU)
-  market: 'TH',           // 'VN' (default) | 'TH' | 'HK' | 'ID'
 });
 
 console.log(result.verdict);          // 'NORMAL' | 'SUSPICIOUS' | 'TAMPERED' | 'ERROR'
@@ -164,9 +164,9 @@ console.log(result.heatmap_b64);      // Base64 PNG of the TruFor heatmap
 ```typescript
 const batch = await handleBatch({
   image_paths: ['/path/a.jpg', '/path/b.jpg', '/path/c.jpg'],
+  market: 'ID',          // required
   device: 'auto',
   concurrency: 3,       // parallel workers (default: 3)
-  market: 'ID',         // all images processed with Indonesian config
 });
 
 console.log(batch.summary.verdicts);  // { NORMAL: 2, SUSPICIOUS: 1, TAMPERED: 0, ERROR: 0 }
@@ -180,8 +180,8 @@ Useful when you only need OCR results without tampering analysis:
 ```typescript
 const fields = await handleExtractFields({
   image_path: '/path/to/document.jpg',
+  market: 'HK',          // required
   ocr_engine: 'gemini',
-  market: 'HK',          // Traditional Chinese + English
 });
 
 console.log(fields.fields);
@@ -197,9 +197,9 @@ console.log(fields.fields);
 ```bash
 GEMINI_API_KEY=your-key bun -e "
   import { handleAnalyze } from './agents/document-forensics/handler.ts';
-  const r = await handleAnalyze({ image_path: process.argv[1] });
+  const r = await handleAnalyze({ image_path: process.argv[1], market: process.argv[2] });
   console.log(JSON.stringify(r, null, 2));
-" /path/to/test-image.jpg
+" /path/to/test-image.jpg VN
 ```
 
 ## Response Types
@@ -375,14 +375,14 @@ export const documentForensicsTool: AgentTool = {
   description: "Analyze a document image for tampering using TruFor + OCR field scoring",
   parameters: Type.Object({
     image_path: Type.String({ description: "Absolute path to the document image" }),
+    market: Type.String({ description: "Market code: VN, TH, HK, or ID" }),
     device: Type.Optional(Type.String({ description: "Inference device: auto, cpu, mps, cuda" })),
-    market: Type.Optional(Type.String({ description: "Market code: VN, TH, HK, ID (default: VN)" })),
   }),
   async execute(_toolCallId, params) {
     const result = await handleAnalyze({
       image_path: params.image_path,
-      device: params.device ?? 'auto',
       market: params.market,
+      device: params.device ?? 'auto',
     });
     return {
       content: [{ type: "text", text: JSON.stringify(result) }],
@@ -417,9 +417,9 @@ The service runs as an ECS Fargate task behind the shared ALB at `prod.banyan.se
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/forensics/health` | Readiness probe (503 until warmup completes) |
-| POST | `/forensics/analyze` | Single document analysis (accepts `image_path` or `image_base64`, optional `market`) |
-| POST | `/forensics/batch` | Parallel batch analysis (optional `market`) |
-| POST | `/forensics/extract` | OCR-only field extraction (optional `market`) |
+| POST | `/forensics/analyze` | Single document analysis (requires `market`, accepts `image_path` or `image_base64`) |
+| POST | `/forensics/batch` | Parallel batch analysis (requires `market`) |
+| POST | `/forensics/extract` | OCR-only field extraction (requires `market`) |
 
 Base URL: `https://prod.banyan.services.papaya.asia`
 

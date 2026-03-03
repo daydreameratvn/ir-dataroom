@@ -5,9 +5,8 @@
  * Calls forensics functions directly (no HTTP server needed).
  *
  * Usage:
- *   bun scripts/forensics-test-local.ts <folder>
- *   bun scripts/forensics-test-local.ts <folder> --market TH
- *   bun scripts/forensics-test-local.ts /path/to/test-cases-v2/case-03
+ *   bun scripts/forensics-test-local.ts <folder> --market VN
+ *   bun scripts/forensics-test-local.ts /path/to/test-cases-v2/case-03 --market TH
  *
  * Output is saved to /Volumes/work/git/papaya-org/test-cases-v2-output/<sub-folder>/
  */
@@ -35,8 +34,8 @@ function flag(name: string, fallback: string): string {
 const MARKET = flag("market", "");
 
 const folder = rawArgs[0];
-if (!folder) {
-  console.error("Usage: bun scripts/forensics-test-local.ts <folder> [--market VN|TH|HK|ID]");
+if (!folder || !MARKET) {
+  console.error("Usage: bun scripts/forensics-test-local.ts <folder> --market VN|TH|HK|ID");
   process.exit(1);
 }
 
@@ -70,7 +69,7 @@ if (images.length === 0) {
 }
 
 console.log(`Found ${images.length} image(s) in ${inputDir}`);
-console.log(`Market:  ${MARKET || "VN (default)"}`);
+console.log(`Market:  ${MARKET}`);
 console.log(`Output:  ${outputDir}\n`);
 
 // ── Process ──────────────────────────────────────────────────────────────────
@@ -94,9 +93,7 @@ for (const imgPath of images) {
   console.log(`  Processing: ${name} (${sizeKb} KB)...`);
   const start = Date.now();
 
-  const result = await advancedDocumentForensics(
-    imgPath, undefined, 'auto', undefined, true, MARKET || undefined,
-  );
+  const result = await advancedDocumentForensics(imgPath, MARKET);
   const timeMs = Date.now() - start;
 
   // Save summary image
@@ -123,7 +120,7 @@ const totalTime = Date.now() - totalStart;
 console.log("\n" + "=".repeat(80));
 console.log("FORENSICS LOCAL TEST REPORT");
 console.log("=".repeat(80));
-console.log(`Market:      ${MARKET || "VN (default)"}`);
+console.log(`Market:      ${MARKET}`);
 console.log(`Images:      ${reports.length}`);
 console.log(`Total time:  ${(totalTime / 1000).toFixed(1)}s`);
 console.log(`Output:      ${outputDir}`);
