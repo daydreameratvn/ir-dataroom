@@ -35,6 +35,11 @@ interface TruForRawResult {
   width: number;
   height: number;
   error?: string;
+  /** Resolved device: 'cuda', 'cpu', or 'mps'. */
+  device?: string;
+  cuda_available?: boolean;
+  gpu_name?: string | null;
+  torch_version?: string;
 }
 
 /**
@@ -51,6 +56,7 @@ async function runTruForRaw(
   const pythonScript = `
 import sys, json, base64
 import numpy as np
+import torch
 from python.config import resolve_device
 device = resolve_device('${device}')
 
@@ -69,6 +75,10 @@ try:
         'heatmap_b64':     heatmap_b64,
         'width':           int(hm.shape[1]),
         'height':          int(hm.shape[0]),
+        'device':          device,
+        'cuda_available':  torch.cuda.is_available(),
+        'gpu_name':        torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
+        'torch_version':   torch.__version__,
     }))
 except Exception as e:
     import traceback
@@ -121,6 +131,10 @@ except Exception as e:
       width: parsed.width,
       height: parsed.height,
       error: parsed.error,
+      device: parsed.device,
+      cuda_available: parsed.cuda_available,
+      gpu_name: parsed.gpu_name,
+      torch_version: parsed.torch_version,
     };
   } catch (err: unknown) {
     return {
@@ -190,6 +204,9 @@ async function runHybridForensics(
   device: string,
   ocrEngine: OcrEngine = 'easyocr',
 ): Promise<DocumentForensicsResult> {
+  const t0 = Date.now();
+  console.log(`[forensics] START image=${imagePath} engine=${ocrEngine} device=${device}`);
+
   // Step 1: OCR extraction (EasyOCR or Gemini)
   let extractionResult: ExtractionResult;
   try {
@@ -220,9 +237,12 @@ async function runHybridForensics(
   }
 
   const { fields: extractedFields, image_width, image_height } = extractionResult;
+  console.log(`[forensics] OCR done: ${extractedFields.length} fields in ${Date.now() - t0}ms`);
 
   // Step 2: TruFor raw heatmap
+  const t1 = Date.now();
   const truforResult = await runTruForRaw(imagePath, device);
+  console.log(`[forensics] TruFor done: success=${truforResult.success} score=${truforResult.global_score} device=${truforResult.device ?? '?'} cuda=${truforResult.cuda_available ?? '?'} gpu=${truforResult.gpu_name ?? 'N/A'} torch=${truforResult.torch_version ?? '?'} in ${Date.now() - t1}ms${truforResult.error ? ` error=${truforResult.error.slice(0, 300)}` : ''}`);
 
   // Step 3: Score ALL fields against heatmap (needed for verdict computation)
   let allScoredFields: FieldResult[];
@@ -295,9 +315,11 @@ async function runHybridForensics(
   if (truforResult.success && truforResult.heatmap) {
     notes.push(`TruFor heatmap generated (mean=${truforResult.global_score.toFixed(3)})`);
   } else if (truforResult.error) {
-    notes.push(`TruFor unavailable: ${truforResult.error.slice(0, 100)}`);
+    notes.push(`TruFor unavailable: ${truforResult.error.slice(0, 500)}`);
     notes.push('Anomaly scores are zero (no heatmap data)');
   }
+
+  console.log(`[forensics] DONE verdict=${truforResult.heatmap ? verdict : 'NORMAL'} score=${overall_score} total=${Date.now() - t0}ms`);
 
   return {
     success: true,

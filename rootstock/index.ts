@@ -57,12 +57,8 @@ export const stackOutputs = {
   CloudFrontDistributionId: resources.banyanCloudFront.id,
   CloudFrontDomainName: resources.banyanCloudFront.domainName,
 
-  // Phoenix
-  PhoenixBucketName: resources.banyanPhoenixBucket.bucket,
-  PhoenixCloudFrontDistributionId: resources.banyanPhoenixCloudFront.id,
-  PhoenixCloudFrontDomainName: resources.banyanPhoenixCloudFront.domainName,
-
   // ECR
   AuthEcrRepoUrl: resources.banyanAuthEcrRepo.repositoryUrl,
   ForensicsEcrRepoUrl: resources.banyanForensicsEcrRepo.repositoryUrl,
+  ForensicsGpuEcrRepoUrl: resources.banyanForensicsGpuEcrRepo.repositoryUrl,
 };

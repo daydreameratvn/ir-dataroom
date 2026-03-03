@@ -58,6 +58,7 @@ No CIDR blocks for internal traffic — use Security Group referencing exclusive
 | `banyan-prod-bastion-sg` | (none — SSM only) | — |
 | `banyan-prod-auth-sg` | TCP 4000 | ALB SG |
 | `banyan-prod-forensics-sg` | TCP 4001 | ALB SG |
+| `banyan-prod-forensics-gpu-host-sg` | (none — egress only) | — |
 | `banyan-prod-nlb-sg` | TCP 5432 | 0.0.0.0/0 |
 | `banyan-prod-doltgres-sg` | TCP 5432 | RDS SG, Bastion SG |
 | `banyan-prod-doltgres-efs-sg` | TCP 2049 (NFS) | Doltgres SG |
@@ -185,12 +186,40 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. CloudWatch lo
 * **Desired Count:** 1 task.
 * **Port:** Container port `4001`.
 * **Health Check:** `/forensics/health` on port 4001 (interval 30s, unhealthy threshold 5, timeout 10s).
-* **Load Balancing:** ALB listener rule `/forensics/*` (priority 200).
+* **Load Balancing:** ALB listener rule `/forensics/*` (priority 200) — weighted forward to CPU + GPU target groups. See section 2.9.1.
 * **Security Group:** `banyan-prod-forensics-sg` — inbound TCP 4001 from ALB SG, outbound all. No RDS access needed.
 * **IAM Permissions:** SSM read for `/banyan/forensics/*`.
 * **Secrets:** `GEMINI_API_KEY` loaded from SSM at startup (`/banyan/forensics/gemini-api-key`).
 * **Runtime:** Python 3.10 (TruFor inference) + Bun (TypeScript HTTP server). TruFor weights baked into Docker image.
 * **Deregistration Delay:** 120s (allow in-flight requests to complete).
+
+### 2.9.1 Document Forensics GPU Service (ECS EC2, On-Demand)
+
+GPU-accelerated forensics using a g4dn.xlarge EC2 instance (NVIDIA T4). Starts at zero cost and is toggled on/off via `scripts/forensics-gpu.sh`.
+
+* **Image:** `<account>.dkr.ecr.ap-southeast-1.amazonaws.com/banyan-document-forensics-gpu:latest`
+* **ECR Repository:** `banyan-document-forensics-gpu` (lifecycle policy: keep last 5 untagged images)
+* **Instance Type:** g4dn.xlarge (4 vCPU, 16 GB RAM, 1 NVIDIA T4 GPU)
+* **ECS Launch Type:** EC2 (not Fargate — GPU requires EC2 container instances)
+* **Resources:** 3584 CPU / 14336 MB memory / 1 GPU — leaves headroom for ECS agent on g4dn.xlarge
+* **Desired Count:** 0 tasks (default off, toggle with `scripts/forensics-gpu.sh on`)
+* **Port:** Container port `4001`.
+* **Health Check:** `/forensics/health` on port 4001 (interval 30s, healthy 2, unhealthy 3)
+* **EC2 AMI:** ECS GPU-optimized Amazon Linux 2023 (`al2023-ami-ecs-gpu-hvm-*-x86_64`)
+* **EBS:** 80 GB gp3 root volume (GPU Docker images are ~5-6 GB)
+* **Auto Scaling Group:** `banyan-prod-forensics-gpu-asg` — min=0, max=1, desired=0 (scale-to-zero). Single AZ (ap-southeast-1a).
+* **Capacity Provider:** `banyan-prod-forensics-gpu-cp` — managed scaling, managed termination protection, managed draining.
+* **Security Groups:**
+  * Host: `banyan-prod-forensics-gpu-host-sg` — egress only (ECS tasks use awsvpc with their own ENI)
+  * Tasks: Reuses `banyan-prod-forensics-sg` (same inbound port 4001 from ALB)
+* **EC2 Instance Role:** `banyan-prod-forensics-gpu-ec2-role` — `AmazonEC2ContainerServiceforEC2Role` + `AmazonSSMManagedInstanceCore`
+* **Runtime:** NVIDIA CUDA 12.1 + Python 3.10 (CUDA PyTorch) + Bun. PYTHON_BRIDGE_TIMEOUT=300000 (first TruFor call loads model into VRAM).
+* **ALB Routing:** Weighted forward action on `/forensics/*`:
+  * Default (GPU off): CPU weight=100, GPU weight=0 (100% CPU)
+  * When GPU is on: CPU weight=1, GPU weight=99 (~99% GPU)
+  * The toggle script updates ALB weights via `aws elbv2 modify-rule`
+* **Toggle Script:** `AWS_PROFILE=banyan bash scripts/forensics-gpu.sh [on|off|status]`
+* **Cost:** $0/mo when off. ~$0.63/hr when on (~$100/mo at 8 hrs/day × 20 days).
 
 ### 2.10 Frontend Hosting (CloudFront + S3)
 
@@ -200,18 +229,6 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. CloudWatch lo
   * ALB origin (`/auth/*`): HTTP origin, CachingDisabled + AllViewer policies.
   * SPA routing: 403/404 → `/index.html`.
   * PriceClass_200, HTTP/2+3, CloudFront default certificate.
-
-### 2.10 Phoenix Portal (CloudFront + S3)
-
-* **S3 Bucket:** `banyan-prod-phoenix` — private, OAC access only.
-* **CloudFront Distribution:** `phoenix.papaya.asia`
-  * S3 origin (default): Static assets via OAC (CachingOptimized + CORS-S3Origin).
-  * ALB origin (`/auth/*`): HTTP origin, CachingDisabled + AllViewer policies.
-  * SPA routing: 403/404 → `/index.html`.
-  * PriceClass_200, HTTP/2+3, TLS 1.2+.
-  * ACM certificate: `arn:aws:acm:us-east-1:812652266901:certificate/f446a33f-1c60-4fc8-8049-fd7d67af67a3` (wildcard `*.papaya.asia`).
-* **DNS:** CNAME `phoenix.papaya.asia` → CloudFront domain (Route 53 in account `089192911254`).
-
 
 ### 2.11 S3 Metadata Bucket
 
@@ -237,6 +254,7 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. CloudWatch lo
 * **Execution Role (`banyan-prod-ecs-exec-role`):** ECS agent. Permissions: ECR pulls, CloudWatch logs, Secrets Manager read (DB, JWT, Doltgres secrets).
 * **Task Role (`banyan-prod-ecs-task-role`):** Running containers. Permissions: SES, SNS, SSM (auth service).
 * **Doltgres EFS Policy (`banyan-prod-doltgres-efs-policy`):** Attached to task role — allows EFS mount, write, and root access for Doltgres persistent storage.
+* **GPU EC2 Instance Role (`banyan-prod-forensics-gpu-ec2-role`):** EC2 container instance. Permissions: `AmazonEC2ContainerServiceforEC2Role` (ECS agent), `AmazonSSMManagedInstanceCore` (SSM debugging).
 
 ---
 
@@ -288,11 +306,9 @@ new aws.Provider("banyan-aws-provider", {
 * `DomainName`: Domain name
 * `CertificateArn`: ACM certificate ARN
 * `CertValidationCname`: DNS CNAME records for cert validation
-* `PhoenixBucketName`: S3 bucket for Phoenix static assets
-* `PhoenixCloudFrontDistributionId`: CloudFront distribution ID for Phoenix
-* `PhoenixCloudFrontDomainName`: CloudFront domain name for Phoenix
 * `AuthEcrRepoUrl`: ECR repository URL for the auth service
 * `ForensicsEcrRepoUrl`: ECR repository URL for the document forensics service
+* `ForensicsGpuEcrRepoUrl`: ECR repository URL for the GPU forensics service
 
 ---
 
@@ -326,16 +342,16 @@ rootstock/
     ├── alb.ts                   # ALB, HTTP redirect, HTTPS listener (404 default)
     ├── auth-secrets.ts          # OAuth SSM parameters
     ├── ecs-auth.ts              # Auth service task def + ECS service
-    ├── ecs-forensics.ts         # Document forensics ECR + task def + ECS service
+    ├── ecs-forensics.ts         # Document forensics ECR + task def + ECS service (CPU Fargate)
+    ├── ecs-forensics-gpu.ts     # GPU forensics: EC2 g4dn.xlarge, ASG, capacity provider, weighted ALB rule
     ├── nlb-rds-proxy.ts         # NLB, target group, listener, SSM param
     ├── github-oidc.ts           # GitHub Actions OIDC provider and deploy role
-    ├── doltgres.ts              # Doltgres Fargate + EFS + SG + Secrets + Cloud Map + NLB integration
-    └── phoenix.ts               # Phoenix portal: S3, OAC, CloudFront (phoenix.papaya.asia)
+    └── doltgres.ts              # Doltgres Fargate + EFS + SG + Secrets + Cloud Map + NLB integration
 ```
 
 ---
 
-## 6. Cost Estimate (~$310/month)
+## 6. Cost Estimate (~$310/month baseline)
 
 | Component | Monthly | % of Total |
 |-----------|---------|-----------|
@@ -348,7 +364,16 @@ rootstock/
 | Doltgres EFS (elastic, ~10 GB est.) | $3.00 | 1% |
 | Bastion (t4g.nano, on-demand) | $3.07 | 1% |
 | ACM Certificate | $0.00 | 0% |
-| Other (Secrets Manager, Cloud Map, CloudWatch, ECR, SSM) | $5.00 | <2% |
-| **Total** | **~$305/mo** | |
+| Other (Secrets Manager, Cloud Map, CloudWatch, ECR, SSM) | $5.50 | <2% |
+| **Total (always-on)** | **~$305/mo** | |
+
+**GPU Forensics (on-demand, not included above):**
+
+| State | Cost |
+|-------|------|
+| GPU OFF (default) | $0/mo (ASG 0 instances) |
+| GPU ON, on-demand | ~$0.63/hr |
+| GPU ON, 8 hrs/day × 20 days | ~$100/mo |
+| ECR storage (~5 GB GPU image) | ~$0.50/mo |
 
 **Cost optimization paths:** RDS Reserved Instance (~30-40% savings), Fargate Savings Plans (~20%), reduce to 1 task per service (~50% Fargate savings).

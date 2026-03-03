@@ -1,7 +1,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { mergeTags } from "../lib/tags.ts";
-import { banyanAlbListener } from "./alb.ts";
 import { banyanCluster } from "./ecs-cluster.ts";
 import { banyanExecRole, banyanTaskRole } from "./ecs-iam.ts";
 import { banyanAlbSg } from "./security-groups.ts";
@@ -117,35 +116,8 @@ export const banyanForensicsTg = new aws.lb.TargetGroup("banyan-prod-forensics-t
   }),
 });
 
-// ============================================================
-// ALB Listener Rule: /forensics/* → forensics target group
-// ============================================================
-
-export const banyanForensicsListenerRule = new aws.lb.ListenerRule(
-  "banyan-prod-forensics-listener-rule",
-  {
-    listenerArn: banyanAlbListener.arn,
-    priority: 200,
-    conditions: [
-      {
-        pathPattern: {
-          values: ["/forensics/*"],
-        },
-      },
-    ],
-    actions: [
-      {
-        type: "forward",
-        targetGroupArn: banyanForensicsTg.arn,
-      },
-    ],
-    tags: mergeTags({
-      Name: "banyan-prod-forensics-listener-rule",
-      Component: "alb",
-      Service: "forensics",
-    }),
-  },
-);
+// NOTE: ALB Listener Rule for /forensics/* is defined in ecs-forensics-gpu.ts
+// as a weighted forward rule targeting both CPU (this TG) and GPU target groups.
 
 // ============================================================
 // Forensics IAM — SSM read for secrets
@@ -258,5 +230,4 @@ export const banyanForensicsService = new aws.ecs.Service(
       Service: "forensics",
     }),
   },
-  { dependsOn: [banyanForensicsListenerRule] },
 );

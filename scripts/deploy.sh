@@ -5,9 +5,9 @@ set -euo pipefail
 # Banyan Deploy Script
 #
 # Deploys the frontend (S3 + CloudFront), auth service (ECR + ECS),
-# document forensics service (ECR + ECS), investor portal (S3 + CloudFront),
-# and phoenix (S3 + CloudFront).
-# Usage: AWS_PROFILE=banyan bash scripts/deploy.sh [frontend|auth|forensics|investor-portal|phoenix|all]
+# document forensics service (ECR + ECS), GPU forensics (ECR + ECS EC2),
+# and investor portal (S3 + CloudFront).
+# Usage: AWS_PROFILE=banyan bash scripts/deploy.sh [frontend|auth|forensics|forensics-gpu|investor-portal|all]
 # =============================================================
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -161,36 +161,58 @@ deploy_investor_portal() {
 }
 
 # =============================================================
-# Deploy Phoenix
+# Deploy Document Forensics GPU Service
 # =============================================================
-deploy_phoenix() {
-  echo ">>> Building phoenix..."
-  cd "$REPO_ROOT/platform/apps/phoenix"
-  bun install
-  bun run build
+deploy_forensics_gpu() {
+  echo ">>> Building document-forensics GPU Docker image..."
+  local ECR_URL="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/banyan-document-forensics-gpu"
+  echo "ECR: $ECR_URL"
 
-  local BUCKET="banyan-prod-phoenix"
-  local CF_ID="E2KVO0UGOW295V"
+  # Login to ECR
+  aws ecr get-login-password --region "$REGION" \
+    | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
 
-  echo ">>> Uploading to S3 ($BUCKET)..."
-  aws s3 sync "$REPO_ROOT/platform/apps/phoenix/dist/" "s3://$BUCKET/" \
-    --delete \
-    --cache-control "public, max-age=31536000, immutable" \
-    --region "$REGION"
+  # Download TruFor weights from S3 if not present locally
+  local WEIGHTS_DIR="$REPO_ROOT/agents/document-forensics/python/weights/trufor"
+  local WEIGHTS_FILE="$WEIGHTS_DIR/trufor.pth.tar"
+  if [ ! -f "$WEIGHTS_FILE" ]; then
+    echo ">>> Downloading TruFor weights from S3 (~268 MB)..."
+    mkdir -p "$WEIGHTS_DIR"
+    aws s3 cp "s3://banyan-ml-weights/trufor/trufor.pth.tar" "$WEIGHTS_FILE"
+  else
+    echo ">>> TruFor weights already present"
+  fi
 
-  # index.html should not be cached
-  aws s3 cp "$REPO_ROOT/platform/apps/phoenix/dist/index.html" "s3://$BUCKET/index.html" \
-    --cache-control "no-cache, no-store, must-revalidate" \
-    --content-type "text/html" \
-    --region "$REGION"
+  # Build GPU image from repo root
+  docker build --platform linux/amd64 \
+    -t "$ECR_URL:latest" \
+    -f "$REPO_ROOT/agents/document-forensics/Dockerfile.gpu" \
+    "$REPO_ROOT"
 
-  echo ">>> Invalidating CloudFront ($CF_ID)..."
-  aws cloudfront create-invalidation \
-    --distribution-id "$CF_ID" \
-    --paths "/*" \
-    --query 'Invalidation.Id' --output text
+  echo ">>> Pushing to ECR..."
+  docker push "$ECR_URL:latest"
 
-  echo ">>> Phoenix deployed at https://phoenix.papaya.asia"
+  # Only force new deployment if GPU service has desired > 0
+  local DESIRED
+  DESIRED=$(aws ecs describe-services \
+    --cluster banyan-prod-cluster \
+    --services banyan-prod-forensics-gpu-service \
+    --region "$REGION" \
+    --query 'services[0].desiredCount' --output text 2>/dev/null || echo "0")
+
+  if [ "$DESIRED" -gt 0 ] 2>/dev/null; then
+    echo ">>> Forcing ECS GPU service update (desired=$DESIRED)..."
+    aws ecs update-service \
+      --cluster banyan-prod-cluster \
+      --service banyan-prod-forensics-gpu-service \
+      --force-new-deployment \
+      --region "$REGION" \
+      --query 'service.serviceName' --output text
+  else
+    echo ">>> GPU service desired=0, skipping ECS update (image pushed to ECR)."
+  fi
+
+  echo ">>> Document forensics GPU image deployed."
 }
 
 # =============================================================
@@ -209,18 +231,17 @@ case "$TARGET" in
   forensics)
     deploy_forensics
     ;;
-  phoenix)
-    deploy_phoenix
+  forensics-gpu)
+    deploy_forensics_gpu
     ;;
   all)
     deploy_auth
     deploy_frontend
     deploy_investor_portal
     deploy_forensics
-    deploy_phoenix
     ;;
   *)
-    echo "Usage: $0 [frontend|auth|forensics|investor-portal|phoenix|all]"
+    echo "Usage: $0 [frontend|auth|forensics|forensics-gpu|investor-portal|all]"
     exit 1
     ;;
 esac

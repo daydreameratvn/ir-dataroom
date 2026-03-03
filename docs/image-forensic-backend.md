@@ -442,6 +442,111 @@ AWS_PROFILE=banyan bash scripts/deploy.sh forensics
 | ECR storage (~2 GB) | ~$0.20 |
 | **Total** | **~$88** |
 
+## GPU Acceleration (On-Demand)
+
+The CPU Fargate service takes ~120-200s per image due to CPU-only PyTorch. A GPU instance (g4dn.xlarge with NVIDIA T4) processes images in ~10-20s — a 10x speedup. The GPU runs on-demand to keep costs near zero when not in use.
+
+### Architecture
+
+```
+                    ┌──────────────────────────────────────┐
+                    │           ALB (/forensics/*)          │
+                    │      Weighted Forward Action          │
+                    └─────┬──────────────────┬─────────────┘
+                          │ weight=1         │ weight=99
+                          ▼                  ▼
+               ┌──────────────────┐  ┌──────────────────┐
+               │  CPU Target Group │  │  GPU Target Group │
+               │    (always-on)    │  │   (on-demand)     │
+               └────────┬─────────┘  └────────┬──────────┘
+                        │                     │
+                        ▼                     ▼
+               ┌──────────────────┐  ┌──────────────────┐
+               │ Fargate Service   │  │ EC2 GPU Service   │
+               │ 2 vCPU / 8 GB    │  │ g4dn.xlarge       │
+               │ ~200s/image       │  │ 4 vCPU/16GB/T4    │
+               │ $85/mo always-on  │  │ ~20s/image        │
+               └──────────────────┘  │ $0.63/hr on-demand │
+                                     │ $0 when off        │
+                                     └──────────────────┘
+```
+
+The toggle script manages ALB listener rule weights. When GPU is off, weights are 100% CPU / 0% GPU. When GPU is turned on and healthy, the script switches to 1% CPU / 99% GPU. No client-side changes needed — the same `/forensics/*` endpoints work transparently.
+
+### Toggle GPU
+
+```bash
+# Start GPU instance (~3-5 min cold start)
+AWS_PROFILE=banyan bash scripts/forensics-gpu.sh on
+
+# Check status (ASG, ECS service, target group health)
+AWS_PROFILE=banyan bash scripts/forensics-gpu.sh status
+
+# Stop GPU instance (cost stops accruing)
+AWS_PROFILE=banyan bash scripts/forensics-gpu.sh off
+```
+
+**`on`** sets ASG desired capacity to 1, waits for the EC2 instance to register with ECS, then sets the GPU service desired count to 1. **`off`** reverses the process: scales service to 0, drains the container instance, then scales ASG to 0.
+
+### GPU ECS Configuration
+
+| Setting | Value |
+|---------|-------|
+| Instance type | g4dn.xlarge (4 vCPU, 16 GB RAM, 1 NVIDIA T4) |
+| AMI | ECS GPU-optimized Amazon Linux 2023 |
+| EBS | 80 GB gp3 |
+| Service | `banyan-prod-forensics-gpu-service` |
+| Task CPU / Memory | 3584 / 14336 MB |
+| GPU | 1 (NVIDIA T4 via ECS GPU resource) |
+| Launch type | EC2 (not Fargate — GPU requires EC2) |
+| ASG | `banyan-prod-forensics-gpu-asg` (min=0, max=1, desired=0) |
+| Capacity provider | `banyan-prod-forensics-gpu-cp` |
+| Log group | `/ecs/banyan-prod/forensics-gpu` (30-day retention) |
+| ECR repo | `banyan-document-forensics-gpu` |
+
+### Deploying GPU Image
+
+```bash
+# Build and push the GPU Docker image (~5-6 GB)
+AWS_PROFILE=banyan bash scripts/deploy.sh forensics-gpu
+```
+
+The GPU image uses `nvidia/cuda:12.1.1` base with CUDA PyTorch (~2.5 GB). The Python `resolve_device('auto')` function auto-detects CUDA at runtime — no code changes needed.
+
+### GPU Docker Build
+
+| Stage | Base Image | Purpose |
+|-------|-----------|---------|
+| python-deps | `nvidia/cuda:12.1.1-devel-ubuntu22.04` | CUDA PyTorch + Python deps |
+| bun-builder | `oven/bun:1` | TS deps (same as CPU) |
+| runtime | `nvidia/cuda:12.1.1-runtime-ubuntu22.04` | CUDA runtime + Python + Bun |
+
+Key differences from CPU image:
+- `pyproject.gpu.toml` pulls from `https://download.pytorch.org/whl/cu121` instead of CPU index
+- `NVIDIA_VISIBLE_DEVICES=all`, `NVIDIA_DRIVER_CAPABILITIES=compute,utility`
+- `PYTHON_BRIDGE_TIMEOUT=60000` (60s vs 300s — GPU is 10x faster)
+
+### GPU Cost
+
+| State | Cost |
+|-------|------|
+| GPU OFF (default) | $0/mo |
+| GPU ON, on-demand | ~$0.63/hr |
+| GPU ON, 8 hrs/day x 20 days | ~$100/mo |
+| GPU ON, 24/7 | ~$460/mo |
+| ECR storage (~5 GB image) | ~$0.50/mo |
+
+Toggle model saves 80-95% vs always-on GPU.
+
+### Performance Comparison
+
+| Metric | CPU Fargate | GPU g4dn.xlarge |
+|--------|------------|----------------|
+| TruFor inference | ~120-200s | ~10-20s |
+| Cold start | 0s (always on) | ~3-5 min |
+| Cost when idle | $85/mo | $0/mo |
+| Cost per hour | $0.12/hr | $0.63/hr |
+
 ## Troubleshooting
 
 | Problem | Fix |
@@ -453,3 +558,7 @@ AWS_PROFILE=banyan bash scripts/deploy.sh forensics
 | S3 access denied | Run `aws sso login` or check IAM permissions for `s3://banyan-ml-weights` |
 | TruFor on Mac | Uses MPS by default (`device: 'auto'`). Pass `device: 'cpu'` if MPS causes issues. |
 | `No JSON output` from TruFor | Check Python logs — likely a torch/numpy import error. Run `cd agents/document-forensics/python && uv run python -c "import torch; print(torch.__version__)"` |
+| GPU instance not registering | Check ASG activity: `aws autoscaling describe-scaling-activities --auto-scaling-group-name banyan-prod-forensics-gpu-asg`. AMI may not be available in region. |
+| GPU task stuck PENDING | Instance may lack ENI capacity. g4dn.xlarge supports 3 ENIs — ECS agent uses 1, awsvpc task uses 1. Check `aws ecs describe-container-instances`. |
+| GPU target unhealthy | Check CloudWatch logs at `/ecs/banyan-prod/forensics-gpu`. Common cause: Docker image not pushed yet (`bash scripts/deploy.sh forensics-gpu`). |
+| GPU `off` not terminating | ASG has `protectFromScaleIn: true`. The script drains instances first. If stuck, manually set instance to DRAINING then set ASG desired=0. |

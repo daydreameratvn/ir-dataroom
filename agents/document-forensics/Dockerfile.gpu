@@ -1,24 +1,44 @@
 # ==============================================================
-# Document Forensics — Multi-stage Docker Build
+# Document Forensics — GPU Docker Build (NVIDIA CUDA 12.1)
 #
-# Stage 1: Install Python dependencies (torch, TruFor, EasyOCR)
+# Stage 1: Install Python dependencies (CUDA PyTorch, TruFor, EasyOCR)
 # Stage 2: Install Bun/Node dependencies
-# Stage 3: Runtime — Python 3.10 slim + Bun binary
+# Stage 3: Runtime — CUDA 12.1 runtime + Python 3.10 + Bun
 # ==============================================================
 
-# ── Stage 1: Python dependencies ──────────────────────────────
-FROM python:3.10-slim AS python-deps
+# ── Stage 1: Python dependencies (CUDA) ────────────────────────
+FROM nvidia/cuda:12.1.1-devel-ubuntu22.04 AS python-deps
 
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      python3.10 \
+      python3.10-venv \
+      python3-pip \
+      curl \
+      ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Make python3.10 the default python3
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+
+# Install uv
 RUN pip install --no-cache-dir uv
 
 WORKDIR /app/agents/document-forensics/python
 
-# Copy Python project manifest and install deps
-COPY agents/document-forensics/python/pyproject.toml ./pyproject.toml
-RUN uv sync --no-dev
-
-# Copy all Python source files
+# Copy all Python source files FIRST (includes CPU pyproject.toml)
 COPY agents/document-forensics/python/ ./
+
+# Overwrite with GPU pyproject.toml (CUDA 12.1 PyTorch index) AFTER the bulk copy
+COPY agents/document-forensics/python/pyproject.gpu.toml ./pyproject.toml
+
+# Remove CPU lockfile — force uv to re-resolve against the CUDA PyTorch index
+RUN rm -f uv.lock
+
+# Sync deps — uv now sees the GPU pyproject.toml and installs CUDA torch
+RUN uv sync --no-dev
 
 # ── Stage 2: Bun / TypeScript dependencies ────────────────────
 FROM oven/bun:1 AS bun-builder
@@ -36,11 +56,15 @@ COPY agents/document-forensics/ ./agents/document-forensics/
 COPY tsconfig.json ./tsconfig.json
 
 # ── Stage 3: Runtime ──────────────────────────────────────────
-FROM python:3.10-slim AS runtime
+FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04 AS runtime
 
-# System dependencies for sharp (libvips), OpenCV, and general use
+ENV DEBIAN_FRONTEND=noninteractive
+
+# System dependencies for Python, sharp (libvips), OpenCV
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+      python3.10 \
+      python3.10-venv \
       libvips42 \
       libgl1 \
       libglib2.0-0 \
@@ -48,6 +72,8 @@ RUN apt-get update && \
       curl \
       unzip && \
     rm -rf /var/lib/apt/lists/*
+
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 
 # Install uv (needed at runtime — python-bridge.ts calls `uv run`)
 COPY --from=python-deps /usr/local/bin/uv /usr/local/bin/uv
@@ -66,14 +92,18 @@ COPY --from=bun-builder /app/tsconfig.json ./tsconfig.json
 COPY --from=bun-builder /app/package.json ./package.json
 
 # Copy Python venv + source from stage 1 AFTER bun-builder
-# (bun-builder includes pyproject.toml — this overwrites with correct version + .venv)
+# (bun-builder includes CPU pyproject.toml — this overwrites it with GPU version + .venv)
 COPY --from=python-deps /app/agents/document-forensics/python/ ./agents/document-forensics/python/
 
 # Copy TruFor weights (baked in during build — must exist in build context)
 # The deploy script downloads weights from S3 before docker build.
 COPY agents/document-forensics/python/weights/ ./agents/document-forensics/python/weights/
 
-# Environment
+# NVIDIA runtime environment
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+# Application environment
 ENV NODE_ENV=production
 ENV PORT=4001
 ENV PYTHON_BRIDGE_TIMEOUT=300000
