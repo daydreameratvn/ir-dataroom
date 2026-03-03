@@ -1,8 +1,7 @@
 import type { AgentMessage, AgentTool } from "@mariozechner/pi-agent-core";
 import { Agent } from "@mariozechner/pi-agent-core";
-import { vertex } from "@ai-sdk/google-vertex";
+import { GoogleGenAI } from "@google/genai";
 import { graphql } from "@papaya/graphql/sdk";
-import { generateText } from "ai";
 import BPromise from "bluebird";
 import dedent from "dedent";
 import { fileTypeFromStream } from "file-type";
@@ -147,21 +146,24 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
   if (geminiFiles.length > 0) {
     console.log(`[Drone] ${claimCode} starting Gemini pre-analysis in background (${geminiFiles.length} files)...`);
     const geminiStart = Date.now();
-    const fileParts = geminiFiles.map((f) => ({
-      type: "file" as const,
-      data: f.url,
-      mediaType: f.mimeType,
-    }));
 
-    documentAnalysisPromise = generateText({
-      abortSignal: AbortSignal.timeout(120_000), // 120s cap
-      model: vertex("gemini-2.5-flash"),
-      messages: [
+    const gemini = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const fileParts = await BPromise.map(
+      geminiFiles,
+      async (f) => {
+        const buffer = await got(f.url).buffer();
+        return { inlineData: { data: buffer.toString("base64"), mimeType: f.mimeType } };
+      },
+      { concurrency: 5 },
+    );
+
+    documentAnalysisPromise = gemini.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [
         {
           role: "user",
-          content: [
+          parts: [
             {
-              type: "text",
               text: dedent`Bạn là chuyên gia phân tích hồ sơ bảo hiểm y tế Việt Nam. Phân tích TẤT CẢ tài liệu sau.
 
                 Trả về KẾT QUẢ GỌN theo 3 phần:
@@ -189,8 +191,9 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
         },
       ],
     }).then((result) => {
-      console.log(`[Drone] ${claimCode} Gemini pre-analysis done in ${Date.now() - geminiStart}ms (${result.text.length} chars)`);
-      return result.text;
+      const text = result.text ?? "";
+      console.log(`[Drone] ${claimCode} Gemini pre-analysis done in ${Date.now() - geminiStart}ms (${text.length} chars)`);
+      return text;
     }).catch((error) => {
       console.error(`[Drone] ${claimCode} Gemini pre-analysis error:`, error);
       return "⚠️ Document pre-analysis failed. The agent must rely on other data sources.";

@@ -1,10 +1,9 @@
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { Type } from "@mariozechner/pi-ai";
-import { vertex } from "@ai-sdk/google-vertex";
-import { generateText } from "ai";
+import { GoogleGenAI } from "@google/genai";
 
 /**
- * Google Search tool that uses Vertex AI's enterprise web search grounding.
+ * Google Search tool that uses Gemini's built-in google_search grounding.
  * All keywords are searched in a SINGLE batch call (not one agent per keyword).
  */
 export const googleSearchTool: AgentTool = {
@@ -19,18 +18,19 @@ export const googleSearchTool: AgentTool = {
     console.log(`[googleSearch] searching ${keywords.length} keywords in single call...`);
 
     try {
-      const result = await generateText({
-        abortSignal: AbortSignal.timeout(60_000), // 60s cap
-        model: vertex("gemini-2.5-flash"),
-        tools: {
-          enterpriseWebSearch: vertex.tools.enterpriseWebSearch({}),
+      const gemini = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const result = await gemini.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: `Search for the following and return results for each:\n${keywords.map((k, i) => `${i + 1}. ${k}`).join("\n")}`,
+        config: {
+          tools: [{ googleSearch: {} }],
         },
-        prompt: `Search for the following and return results for each:\n${keywords.map((k, i) => `${i + 1}. ${k}`).join("\n")}`,
       });
 
+      const text = result.text ?? "";
       console.log(`[googleSearch] done in ${Date.now() - searchStart}ms for ${keywords.length} keywords`);
       return {
-        content: [{ type: "text", text: result.text }],
+        content: [{ type: "text", text }],
         details: { keywords },
       };
     } catch (error) {
