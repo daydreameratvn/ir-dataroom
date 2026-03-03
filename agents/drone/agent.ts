@@ -310,11 +310,12 @@ ${options?.mode === "policy-doc"
 
     **Policy Document Lookup**:
 ${options?.mode === "policy-doc"
-      ? `      You MUST call policyDocSearch with the claim code. If documents are found, call policyDocFetch on relevant files (contracts, T&C, amendments) to understand coverage terms BEFORE calling assessBenefit.
+      ? `      You MUST call policyDocSearch with the claim code. Then call policyDocFetch on the 1–2 MOST relevant files (the main contract or T&C — NOT every file found) to understand coverage terms BEFORE calling assessBenefit.
       This is MANDATORY in policy-doc mode — do NOT skip this step.
       1. Call policyDocSearch with the claim code to find available policy documents.
-      2. Call policyDocFetch on each relevant file (contracts, T&C, amendments) to read the document text.
-      3. Use the extracted policy terms to verify coverage rules, exclusion clauses, and benefit conditions during assessment.`
+      2. Pick the 1–2 most relevant files (contract, T&C). Do NOT fetch more than 2 files — this wastes turns.
+      3. Call policyDocFetch on those files to read the document text.
+      4. Use the extracted policy terms to verify coverage rules, exclusion clauses, and benefit conditions during assessment.`
       : `      When you need to check policy terms, coverage conditions, exclusion clauses, or benefit limits:
       1. Call policyDocSearch with the claim code to find available policy documents (contracts, T&C, amendments).
       2. Call policyDocFetch with the relevant file ID to read the document text.
@@ -324,7 +325,7 @@ ${options?.mode === "policy-doc"
     **Assessment Workflow (MUST complete ALL steps)**:
       ${skipCompliance ? "" : "1. Call invokeComplianceAgent first (see above).\n      "}2. Call claim tool to get claim data. Pay attention to past claims from same insured — note any non_paid_amount > 0 and their assessment_summary for drug exclusion history.
       3. Call benefits and insured tools to get policy context.
-${options?.mode === "policy-doc" ? `      3b. **MANDATORY**: Call policyDocSearch with the claim code to find policy documents. Then call policyDocFetch on relevant files (contracts, T&C, amendments). Review coverage terms, exclusion clauses, and benefit conditions BEFORE proceeding to drug validation and assessment.` : ""}
+${options?.mode === "policy-doc" ? `      3b. **MANDATORY**: Call policyDocSearch with the claim code to find policy documents. Then call policyDocFetch on the 1–2 MOST relevant files only (contract or T&C — do NOT fetch more than 2). Review coverage terms, exclusion clauses, and benefit conditions BEFORE proceeding to drug validation and assessment.` : ""}
       4. Skip saveDetailForm if claim already has diagnosis and medical_provider populated. Only call when missing.
       5. **Drug & line item validation (MANDATORY — DO NOT SKIP)**:
          a. Review the DOCUMENT ANALYSIS section below for invoice line items, prescription items, and test results.
@@ -509,6 +510,29 @@ The DOCUMENT ANALYSIS above contains an EXCLUSION VERDICT section. You MUST:
 
       return result;
     },
+  });
+
+  // Auto follow-up: if assessBenefit succeeded but createSignOff wasn't called, nudge the agent
+  agent.subscribe((e) => {
+    if (e.type === "agent_end") {
+      const msgs = agent.state.messages;
+      const hasAssess = msgs.some((m) =>
+        "role" in m && m.role === "assistant" && Array.isArray(m.content) &&
+        m.content.some((c: any) => c.type === "toolCall" && c.name === "assessBenefit"),
+      );
+      const hasSignOff = msgs.some((m) =>
+        "role" in m && m.role === "assistant" && Array.isArray(m.content) &&
+        m.content.some((c: any) => c.type === "toolCall" && c.name === "createSignOff"),
+      );
+      if (hasAssess && !hasSignOff) {
+        console.log(`[Drone] ${claimCode} assessBenefit done but no createSignOff — sending follow-up`);
+        agent.followUp({
+          role: "user",
+          content: "[SYSTEM] You called assessBenefit but did NOT call createSignOff. You MUST call createSignOff now to complete the assessment. This is mandatory.",
+          timestamp: Date.now(),
+        });
+      }
+    }
   });
 
   return agent;
