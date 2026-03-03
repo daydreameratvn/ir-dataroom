@@ -63,6 +63,42 @@ Combine credential export and passphrase retrieval in a single chain:
 export PULUMI_CONFIG_PASSPHRASE=$(AWS_PROFILE=banyan aws ssm get-parameter --name /banyan/pulumi/config-passphrase --with-decryption --region ap-southeast-1 --query Parameter.Value --output text) && eval $(aws configure export-credentials --profile banyan --format env) && pulumi up --yes
 ```
 
+## GCP Authentication
+
+The GCP provider uses Application Default Credentials. Before running Pulumi commands that touch GCP resources:
+
+```bash
+gcloud auth application-default login
+```
+
+This is separate from AWS credentials — both must be active for `pulumi up` to succeed.
+
+## OAuth Secret Management
+
+OAuth client credentials (Google, Microsoft, Apple) are stored as **Pulumi config secrets** — encrypted in Pulumi state, never in plaintext.
+
+### Setting OAuth secrets
+
+```bash
+cd rootstock
+export PULUMI_CONFIG_PASSPHRASE=$(AWS_PROFILE=banyan aws ssm get-parameter --name /banyan/pulumi/config-passphrase --with-decryption --region ap-southeast-1 --query Parameter.Value --output text)
+
+pulumi config set --secret banyan-ddn:googleOAuthClientId <value>
+pulumi config set --secret banyan-ddn:googleOAuthClientSecret <value>
+pulumi config set --secret banyan-ddn:microsoftOAuthClientId <value>
+pulumi config set --secret banyan-ddn:microsoftOAuthClientSecret <value>
+pulumi config set --secret banyan-ddn:appleOAuthClientId <value>
+pulumi config set --secret banyan-ddn:appleOAuthClientSecret <value>
+```
+
+These values flow through Pulumi into AWS SSM parameters at deploy time. Never set SSM values manually with `aws ssm put-parameter`.
+
+### Google OAuth consent screen
+
+External OAuth consent screen and web app client IDs must be created manually in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials) for project `banyan-489002` (known Terraform/Pulumi limitation). Redirect URIs:
+- `https://oasis.papaya.asia/auth/callback/google`
+- `https://oasis.papaya.asia/auth/admin/directory/callback/google`
+
 ## Troubleshooting & Common Issues
 
 ### AWS Credential Errors

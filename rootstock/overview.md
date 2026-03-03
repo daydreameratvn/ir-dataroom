@@ -3,11 +3,13 @@
 
 ## 1. Project Overview
 
-**Objective:** Architect and implement a 100% self-hosted deployment of Hasura DDN (v3) on AWS using Pulumi (TypeScript).
-**Region:** `ap-southeast-1` (Singapore)
+**Objective:** Architect and implement a 100% self-hosted deployment of Hasura DDN (v3) on AWS + GCP using Pulumi (TypeScript).
+**AWS Region:** `ap-southeast-1` (Singapore)
+**GCP Project:** `banyan-489002` | **GCP Region:** `asia-southeast1`
 **Target Environment:** 1 Production Environment (`prod`).
 **IaC Tool:** Pulumi (TypeScript) with an S3 backend for state management.
 **AWS Profile:** `banyan` — all AWS operations use this named profile.
+**GCP Auth:** Application Default Credentials (`gcloud auth application-default login`).
 
 ### Critical Hasura v3 Context
 
@@ -230,7 +232,37 @@ GPU-accelerated forensics using a g4dn.xlarge EC2 instance (NVIDIA T4). Starts a
   * SPA routing: 403/404 → `/index.html`.
   * PriceClass_200, HTTP/2+3, CloudFront default certificate.
 
-### 2.11 S3 Metadata Bucket
+### 2.10 Phoenix Portal (CloudFront + S3)
+
+* **S3 Bucket:** `banyan-prod-phoenix` — private, OAC access only.
+* **CloudFront Distribution:** `phoenix.papaya.asia`
+  * S3 origin (default): Static assets via OAC (CachingOptimized + CORS-S3Origin).
+  * ALB origin (`/auth/*`): HTTP origin, CachingDisabled + AllViewer policies.
+  * SPA routing: 403/404 → `/index.html`.
+  * PriceClass_200, HTTP/2+3, TLS 1.2+.
+  * ACM certificate: `arn:aws:acm:us-east-1:812652266901:certificate/f446a33f-1c60-4fc8-8049-fd7d67af67a3` (wildcard `*.papaya.asia`).
+* **DNS:** CNAME `phoenix.papaya.asia` → CloudFront domain (Route 53 in account `089192911254`).
+
+### 2.11 GCP Project & APIs
+
+* **Project:** `banyan-489002`
+* **Provider:** Explicit Pulumi GCP provider using Application Default Credentials.
+* **Enabled APIs:**
+
+| API | Purpose |
+|-----|---------|
+| `admin.googleapis.com` | Google Workspace Admin SDK — directory sync |
+| `people.googleapis.com` | People API — user profile info for SSO |
+| `iam.googleapis.com` | IAM API — identity and access management |
+
+All APIs have `disableOnDestroy: false` (safety: don't disable APIs if resource is removed from code).
+
+* **OAuth Credentials:**
+  * External OAuth consent screen + web app client IDs are created manually in Google Cloud Console (known Terraform/Pulumi limitation for external OAuth).
+  * Credential values are stored as Pulumi config secrets (`pulumi config set --secret`) and distributed to AWS SSM parameters automatically via Pulumi.
+  * SSM parameters: `/banyan/auth/google/client-id`, `/banyan/auth/google/client-secret` (+ Microsoft, Apple equivalents).
+
+### 2.12 S3 Metadata Bucket
 
 * **Bucket:** `banyan-hasura-metadata` (created manually, not managed by Pulumi).
 * **Purpose:** Stores the Hasura OpenDD metadata files that the engine loads at startup.
@@ -240,7 +272,7 @@ GPU-accelerated forensics using a g4dn.xlarge EC2 instance (NVIDIA T4). Starts a
 * **Deployment Flow:** The `hasura:deploy` script uploads these files to S3, then triggers ECS service restarts. The engine init container downloads them from S3 at task startup.
 * **Access:** ECS task role has `s3:GetObject` permission scoped to `arn:aws:s3:::banyan-hasura-metadata/*`.
 
-### 2.12 JWT Authentication
+### 2.14 JWT Authentication
 
 * **HMAC Key:** Random 32-byte key generated via `@pulumi/random` `RandomBytes`, base64-encoded.
 * **Secret Storage:** Secrets Manager (`banyan-prod-jwt-secret`) stores `{ "key": "<base64>" }`.
@@ -267,14 +299,23 @@ GPU-accelerated forensics using a g4dn.xlarge EC2 instance (NVIDIA T4). Starts a
 * **Stack:** `prod`
 * **Passphrase:** Stored in AWS Systems Manager Parameter Store as `SecureString` at `/banyan/pulumi/config-passphrase`. Retrieved dynamically — never hard-coded.
 
-### 4.2 AWS Provider
+### 4.2 Providers
 
-The AWS provider explicitly uses the `banyan` profile:
+**AWS** — explicitly uses the `banyan` profile:
 
 ```typescript
 new aws.Provider("banyan-aws-provider", {
   region: "ap-southeast-1",
   profile: "banyan",
+});
+```
+
+**GCP** — uses Application Default Credentials:
+
+```typescript
+new gcp.Provider("banyan-gcp-provider", {
+  project: "banyan-489002",
+  region: "asia-southeast1",
 });
 ```
 
@@ -292,6 +333,14 @@ new aws.Provider("banyan-aws-provider", {
 | `doltgresCpu` | no | `1024` | Doltgres task CPU units |
 | `doltgresMemory` | no | `2048` | Doltgres task memory (MB) |
 | `doltgresDataVolumeSize` | no | `50` | (unused — EFS is elastic, no fixed size) |
+| `gcpProject` | yes | — | GCP project ID (`banyan-489002`) |
+| `gcpRegion` | no | `asia-southeast1` | GCP region |
+| `googleOAuthClientId` | yes (secret) | — | Google OAuth client ID |
+| `googleOAuthClientSecret` | yes (secret) | — | Google OAuth client secret |
+| `microsoftOAuthClientId` | yes (secret) | — | Microsoft OAuth client ID |
+| `microsoftOAuthClientSecret` | yes (secret) | — | Microsoft OAuth client secret |
+| `appleOAuthClientId` | yes (secret) | — | Apple Sign In client ID |
+| `appleOAuthClientSecret` | yes (secret) | — | Apple Sign In client secret |
 
 ### 4.4 Stack Outputs
 
@@ -309,6 +358,12 @@ new aws.Provider("banyan-aws-provider", {
 * `AuthEcrRepoUrl`: ECR repository URL for the auth service
 * `ForensicsEcrRepoUrl`: ECR repository URL for the document forensics service
 * `ForensicsGpuEcrRepoUrl`: ECR repository URL for the GPU forensics service
+* `PhoenixBucketName`: S3 bucket for Phoenix static assets
+* `PhoenixCloudFrontDistributionId`: CloudFront distribution ID for Phoenix
+* `PhoenixCloudFrontDomainName`: CloudFront domain name for Phoenix
+* `gcpProject`: GCP project ID
+* `gcpRegion`: GCP region
+* `gcpEnabledApis`: List of enabled GCP API service names
 
 ---
 
@@ -323,7 +378,8 @@ rootstock/
 ├── CLAUDE.md                    # Agent instructions
 ├── overview.md                  # This file — infrastructure overview
 ├── providers/
-│   └── aws.ts                   # AWS provider (profile: banyan)
+│   ├── aws.ts                   # AWS provider (profile: banyan)
+│   └── gcp.ts                   # GCP provider (ADC auth)
 ├── lib/
 │   ├── types.ts                 # TypeScript interfaces
 │   ├── tags.ts                  # Standard tags (Project: banyan-ddn)
@@ -340,13 +396,17 @@ rootstock/
     ├── acm.ts                   # ACM certificate + DNS validation
     ├── jwt.ts                   # JWT HMAC key, Secrets Manager, admin token, SSM
     ├── alb.ts                   # ALB, HTTP redirect, HTTPS listener (404 default)
-    ├── auth-secrets.ts          # OAuth SSM parameters
+    ├── auth-secrets.ts          # OAuth SSM parameters (values from Pulumi config secrets)
     ├── ecs-auth.ts              # Auth service task def + ECS service
     ├── ecs-forensics.ts         # Document forensics ECR + task def + ECS service (CPU Fargate)
     ├── ecs-forensics-gpu.ts     # GPU forensics: EC2 g4dn.xlarge, ASG, capacity provider, weighted ALB rule
     ├── nlb-rds-proxy.ts         # NLB, target group, listener, SSM param
     ├── github-oidc.ts           # GitHub Actions OIDC provider and deploy role
-    └── doltgres.ts              # Doltgres Fargate + EFS + SG + Secrets + Cloud Map + NLB integration
+    ├── doltgres.ts              # Doltgres Fargate + EFS + SG + Secrets + Cloud Map + NLB integration
+    ├── phoenix.ts               # Phoenix portal: S3, OAC, CloudFront (phoenix.papaya.asia)
+    └── gcp/
+        ├── index.ts             # Barrel export
+        └── apis.ts              # GCP API enablement (admin, people, IAM)
 ```
 
 ---

@@ -33,6 +33,26 @@ export const doltgresConfig = {
 };
 
 
+export const gcpConfig = {
+  project: config.require("gcpProject"),
+  region: config.get("gcpRegion") || "asia-southeast1",
+};
+
+export const oauthConfig = {
+  google: {
+    clientId: config.requireSecret("googleOAuthClientId"),
+    clientSecret: config.requireSecret("googleOAuthClientSecret"),
+  },
+  microsoft: {
+    clientId: config.requireSecret("microsoftOAuthClientId"),
+    clientSecret: config.requireSecret("microsoftOAuthClientSecret"),
+  },
+  apple: {
+    clientId: config.requireSecret("appleOAuthClientId"),
+    clientSecret: config.requireSecret("appleOAuthClientSecret"),
+  },
+};
+
 export const projectConfig = {
   name: "banyan-ddn",
   owner: "rootstock-team",

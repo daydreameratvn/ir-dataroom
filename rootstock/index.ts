@@ -11,11 +11,12 @@
 // Providers
 // ============================================================
 import { awsProvider } from "./providers/aws.ts";
+import { gcpProvider } from "./providers/gcp.ts";
 
 // ============================================================
 // Configuration
 // ============================================================
-import { awsConfig, environment, stackName } from "./config.ts";
+import { awsConfig, gcpConfig, environment, stackName } from "./config.ts";
 
 // ============================================================
 // Resources
@@ -61,4 +62,9 @@ export const stackOutputs = {
   AuthEcrRepoUrl: resources.banyanAuthEcrRepo.repositoryUrl,
   ForensicsEcrRepoUrl: resources.banyanForensicsEcrRepo.repositoryUrl,
   ForensicsGpuEcrRepoUrl: resources.banyanForensicsGpuEcrRepo.repositoryUrl,
+
+  // GCP
+  gcpProject: gcpConfig.project,
+  gcpRegion: gcpConfig.region,
+  gcpEnabledApis: resources.gcpEnabledApis.map((api) => api.service),
 };
