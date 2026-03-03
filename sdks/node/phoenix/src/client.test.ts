@@ -349,10 +349,37 @@ describe('PhoenixClient', () => {
       await expect(client.listClaims()).rejects.toThrow('Phoenix API error: 500');
     });
 
+    it('throws on 404 response with custom message', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(errorResponse(404, 'Not Found'));
+
+      await expect(client.getClaim('nonexistent')).rejects.toThrow('Phoenix API error: 404 Not Found');
+    });
+
+    it('throws on 403 response', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(errorResponse(403, 'Forbidden'));
+
+      await expect(client.listClaims()).rejects.toThrow('Phoenix API error: 403 Forbidden');
+    });
+
+    it('throws on 422 validation error', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(errorResponse(422, 'Unprocessable Entity'));
+
+      await expect(client.submitClaim({ claimantName: '', amountClaimed: -1, currency: 'USD' })).rejects.toThrow('Phoenix API error: 422 Unprocessable Entity');
+    });
+
     it('throws on network error', async () => {
       mockFetch.mockRejectedValueOnce(new TypeError('Failed to fetch'));
 
       await expect(client.login(['X'])).rejects.toThrow('Failed to fetch');
+    });
+
+    it('throws on JSON parse error', async () => {
+      mockFetch.mockResolvedValueOnce(new Response('invalid json', { status: 200 }));
+
+      await expect(client.login(['X'])).rejects.toThrow();
     });
 
     it('aborts request when timeout is reached', async () => {
@@ -394,6 +421,205 @@ describe('PhoenixClient', () => {
 
       expect(clearTimeoutSpy).toHaveBeenCalled();
       clearTimeoutSpy.mockRestore();
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Edge cases and additional scenarios
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe('edge cases', () => {
+    it('handles empty policy numbers array in login', async () => {
+      mockFetch.mockResolvedValueOnce(jsonResponse([]));
+
+      const results = await client.login([]);
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(JSON.parse(init.body)).toEqual({ policyNumbers: [] });
+      expect(results).toEqual([]);
+    });
+
+    it('handles very long claim ID in getClaim', async () => {
+      const longId = 'c'.repeat(100);
+      const detail = { id: longId, claimNumber: 'CLM-001', status: 'submitted', documents: [], notes: [], aiSummary: null, aiRecommendation: null };
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(jsonResponse(detail));
+
+      const result = await client.getClaim(longId);
+
+      const [url] = mockFetch.mock.calls[0]!;
+      expect(url).toBe(`https://phoenix.papaya.asia/auth/phoenix/claims/${longId}`);
+      expect(result).toEqual(detail);
+    });
+
+    it('handles special characters in OTP code', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(jsonResponse({ success: true, verified: true }));
+
+      const specialCode = '12-34#56';
+      await client.verifyOtp('c1', specialCode);
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(JSON.parse(init.body)).toEqual({ code: specialCode });
+    });
+
+    it('sends both Authorization and x-tenant-id headers when both are set', async () => {
+      client.setToken('my-jwt');
+      client.setTenantId('tenant-123');
+      mockFetch.mockResolvedValueOnce(jsonResponse({ data: [] }));
+
+      await client.listClaims();
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.headers['Authorization']).toBe('Bearer my-jwt');
+      expect(init.headers['x-tenant-id']).toBe('tenant-123');
+    });
+
+    it('overwrites token when setToken is called multiple times', async () => {
+      client.setToken('first-token');
+      client.setToken('second-token');
+      mockFetch.mockResolvedValueOnce(jsonResponse({ data: [] }));
+
+      await client.listClaims();
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.headers['Authorization']).toBe('Bearer second-token');
+    });
+
+    it('overwrites tenant ID when setTenantId is called multiple times', async () => {
+      client.setTenantId('tenant-1');
+      client.setTenantId('tenant-2');
+      mockFetch.mockResolvedValueOnce(jsonResponse({ results: [] }));
+
+      await client.login(['P-001']);
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.headers['x-tenant-id']).toBe('tenant-2');
+    });
+
+    it('handles empty document data in uploadDocument', async () => {
+      const mockResult = { uploadUrl: 'https://s3.example.com/upload', document: { id: 'doc1', fileName: 'empty.txt' } };
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(jsonResponse(mockResult));
+
+      const result = await client.uploadDocument('c1', { fileName: 'empty.txt', fileType: 'text/plain', fileSize: 0 });
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(JSON.parse(init.body)).toEqual({ fileName: 'empty.txt', fileType: 'text/plain', fileSize: 0 });
+      expect(result).toEqual(mockResult);
+    });
+
+    it('handles large file size in uploadDocument', async () => {
+      const mockResult = { uploadUrl: 'https://s3.example.com/upload', document: { id: 'doc1', fileName: 'large.pdf' } };
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(jsonResponse(mockResult));
+
+      const largeFileSize = 50 * 1024 * 1024; // 50MB
+      const result = await client.uploadDocument('c1', { fileName: 'large.pdf', fileType: 'application/pdf', fileSize: largeFileSize });
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(JSON.parse(init.body).fileSize).toBe(largeFileSize);
+      expect(result).toEqual(mockResult);
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // HTTP method verification
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe('HTTP methods', () => {
+    beforeEach(() => {
+      client.setToken('test-token');
+    });
+
+    it('uses GET for listClaims', async () => {
+      mockFetch.mockResolvedValueOnce(jsonResponse({ data: [] }));
+
+      await client.listClaims();
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.method).toBeUndefined(); // GET is default, so method is not set
+    });
+
+    it('uses GET for getClaim', async () => {
+      mockFetch.mockResolvedValueOnce(jsonResponse({ id: 'c1', status: 'submitted' }));
+
+      await client.getClaim('c1');
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.method).toBeUndefined(); // GET is default
+    });
+
+    it('uses GET for getClaimDocuments', async () => {
+      mockFetch.mockResolvedValueOnce(jsonResponse({ data: [] }));
+
+      await client.getClaimDocuments('c1');
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.method).toBeUndefined(); // GET is default
+    });
+
+    it('uses POST for login', async () => {
+      mockFetch.mockResolvedValueOnce(jsonResponse([]));
+
+      await client.login(['P-001']);
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.method).toBe('POST');
+    });
+
+    it('uses POST for refreshToken', async () => {
+      mockFetch.mockResolvedValueOnce(jsonResponse({ token: 'new-token' }));
+
+      await client.refreshToken();
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.method).toBe('POST');
+    });
+
+    it('uses POST for submitClaim', async () => {
+      mockFetch.mockResolvedValueOnce(jsonResponse({ id: 'c1' }));
+
+      await client.submitClaim({ claimantName: 'Test', amountClaimed: 1000, currency: 'USD' });
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.method).toBe('POST');
+    });
+
+    it('uses POST for uploadDocument', async () => {
+      mockFetch.mockResolvedValueOnce(jsonResponse({ uploadUrl: 'https://example.com' }));
+
+      await client.uploadDocument('c1', { fileName: 'test.pdf', fileType: 'application/pdf' });
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.method).toBe('POST');
+    });
+
+    it('uses POST for requestOtp', async () => {
+      mockFetch.mockResolvedValueOnce(jsonResponse({ success: true }));
+
+      await client.requestOtp('c1');
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.method).toBe('POST');
+    });
+
+    it('uses POST for verifyOtp', async () => {
+      mockFetch.mockResolvedValueOnce(jsonResponse({ success: true, verified: true }));
+
+      await client.verifyOtp('c1', '123456');
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.method).toBe('POST');
+    });
+
+    it('uses DELETE for deleteDocument', async () => {
+      mockFetch.mockResolvedValueOnce(jsonResponse({ success: true }));
+
+      await client.deleteDocument('c1', 'doc1');
+
+      const [, init] = mockFetch.mock.calls[0]!;
+      expect(init.method).toBe('DELETE');
     });
   });
 });
