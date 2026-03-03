@@ -3,6 +3,7 @@ import type {
   LoginResult,
   Claim,
   ClaimDetail,
+  ClaimDocument,
   CreateClaimInput,
   UploadDocumentInput,
   UploadDocumentResult,
@@ -60,6 +61,17 @@ export class PhoenixClient {
     return this.request<UploadDocumentResult>(`/auth/phoenix/claims/${claimId}/documents`, {
       method: 'POST',
       body: JSON.stringify(data),
+    });
+  }
+
+  async getClaimDocuments(claimId: string): Promise<ClaimDocument[]> {
+    const result = await this.request<{ data: ClaimDocument[] }>(`/auth/phoenix/claims/${claimId}/documents`);
+    return result.data;
+  }
+
+  async deleteDocument(claimId: string, documentId: string): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/auth/phoenix/claims/${claimId}/documents/${documentId}`, {
+      method: 'DELETE',
     });
   }
 
