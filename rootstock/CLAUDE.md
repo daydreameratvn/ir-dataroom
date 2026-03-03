@@ -42,14 +42,27 @@ AWS_PROFILE=banyan pulumi up
 AWS_PROFILE=banyan pulumi stack
 ```
 
-### Passphrase for Stack Secrets
+### PULUMI_CONFIG_PASSPHRASE
 
-The passphrase is stored in AWS Systems Manager Parameter Store as a `SecureString`:
+The Pulumi state uses **passphrase-based encryption** for secrets. The `PULUMI_CONFIG_PASSPHRASE` environment variable **must** be set for any Pulumi command that reads or writes encrypted config values.
 
+**Where it's stored**: AWS SSM Parameter Store as `SecureString`
 - **Parameter**: `/banyan/pulumi/config-passphrase`
 - **Region**: `ap-southeast-1`
 
-Retrieve it dynamically before running Pulumi commands. **Never hard-code or remember the passphrase.**
+**When it's required** (will fail with `passphrase must be set` or `incorrect passphrase` without it):
+- `pulumi up` / `pulumi preview` — reads encrypted config values during execution
+- `pulumi config set --secret` — encrypts new secret values
+- `pulumi config get` — decrypts secret values
+- `pulumi stack export` / `pulumi stack import` — handles encrypted state
+- Any command that touches a stack with `secure:` values in `Pulumi.<stack>.yaml`
+
+**When it's NOT required**:
+- `pulumi stack ls` — just lists stacks
+- `pulumi whoami` — shows identity
+- `pulumi cancel` — cancels a pending operation (no state decryption)
+
+**How to use** — retrieve dynamically, never hard-code:
 
 ```bash
 export PULUMI_CONFIG_PASSPHRASE=$(AWS_PROFILE=banyan aws ssm get-parameter --name /banyan/pulumi/config-passphrase --with-decryption --region ap-southeast-1 --query Parameter.Value --output text)
@@ -57,11 +70,13 @@ export PULUMI_CONFIG_PASSPHRASE=$(AWS_PROFILE=banyan aws ssm get-parameter --nam
 
 ### Full Pulumi Command Pattern
 
-Combine credential export and passphrase retrieval in a single chain:
+Combine passphrase retrieval + AWS credential export in a single chain:
 
 ```bash
 export PULUMI_CONFIG_PASSPHRASE=$(AWS_PROFILE=banyan aws ssm get-parameter --name /banyan/pulumi/config-passphrase --with-decryption --region ap-southeast-1 --query Parameter.Value --output text) && eval $(aws configure export-credentials --profile banyan --format env) && pulumi up --yes
 ```
+
+**Important**: Both parts are needed — `PULUMI_CONFIG_PASSPHRASE` for secret decryption, `eval $(aws configure export-credentials ...)` for AWS SDK access. Chain with `&&` so failures stop the pipeline.
 
 ## GCP Authentication
 
