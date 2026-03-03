@@ -53,6 +53,17 @@ describe('PhoenixClient', () => {
         expect.any(Object),
       );
     });
+
+    it('uses default timeout of 30 seconds', () => {
+      const c = new PhoenixClient({ baseUrl: 'https://example.com' });
+      // Access private property via type assertion to test default
+      expect((c as any).timeout).toBe(30_000);
+    });
+
+    it('uses custom timeout when provided', () => {
+      const c = new PhoenixClient({ baseUrl: 'https://example.com', timeout: 60_000 });
+      expect((c as any).timeout).toBe(60_000);
+    });
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -234,6 +245,61 @@ describe('PhoenixClient', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // getClaimDocuments
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe('getClaimDocuments', () => {
+    it('gets /auth/phoenix/claims/:id/documents and unwraps data', async () => {
+      const documents = [
+        { id: 'doc1', fileName: 'receipt.pdf', fileType: 'application/pdf', uploadedAt: '2026-01-01', downloadUrl: 'https://s3.example.com/doc1' },
+        { id: 'doc2', fileName: 'photo.jpg', fileType: 'image/jpeg', uploadedAt: '2026-01-02', downloadUrl: 'https://s3.example.com/doc2' },
+      ];
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(jsonResponse({ data: documents }));
+
+      const result = await client.getClaimDocuments('c1');
+
+      const [url] = mockFetch.mock.calls[0]!;
+      expect(url).toBe('https://phoenix.papaya.asia/auth/phoenix/claims/c1/documents');
+      expect(result).toEqual(documents);
+    });
+
+    it('returns empty array when no documents', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(jsonResponse({ data: [] }));
+
+      const result = await client.getClaimDocuments('c1');
+      expect(result).toEqual([]);
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // deleteDocument
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  describe('deleteDocument', () => {
+    it('deletes /auth/phoenix/claims/:id/documents/:docId', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(jsonResponse({ success: true }));
+
+      const result = await client.deleteDocument('c1', 'doc1');
+
+      const [url, init] = mockFetch.mock.calls[0]!;
+      expect(url).toBe('https://phoenix.papaya.asia/auth/phoenix/claims/c1/documents/doc1');
+      expect(init.method).toBe('DELETE');
+      expect(result.success).toBe(true);
+    });
+
+    it('handles delete failure response', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(jsonResponse({ success: false }));
+
+      const result = await client.deleteDocument('c1', 'doc1');
+      expect(result.success).toBe(false);
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // requestOtp / verifyOtp
   // ═══════════════════════════════════════════════════════════════════════════
 
@@ -287,6 +353,47 @@ describe('PhoenixClient', () => {
       mockFetch.mockRejectedValueOnce(new TypeError('Failed to fetch'));
 
       await expect(client.login(['X'])).rejects.toThrow('Failed to fetch');
+    });
+
+    it('aborts request when timeout is reached', async () => {
+      const clientWithShortTimeout = new PhoenixClient({
+        baseUrl: 'https://phoenix.papaya.asia',
+        timeout: 100
+      });
+
+      // Mock fetch to simulate abort behavior
+      mockFetch.mockImplementationOnce((url, options) => {
+        return new Promise((resolve, reject) => {
+          if (options?.signal) {
+            options.signal.addEventListener('abort', () => {
+              reject(new DOMException('The operation was aborted.', 'AbortError'));
+            });
+          }
+          // Don't resolve to simulate hanging request
+        });
+      });
+
+      await expect(clientWithShortTimeout.login(['X'])).rejects.toThrow('The operation was aborted.');
+    });
+
+    it('clears timeout after successful request', async () => {
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+      mockFetch.mockResolvedValueOnce(jsonResponse({ results: [] }));
+
+      await client.login(['X']);
+
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+      clearTimeoutSpy.mockRestore();
+    });
+
+    it('clears timeout after failed request', async () => {
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+      mockFetch.mockResolvedValueOnce(errorResponse(500));
+
+      await expect(client.login(['X'])).rejects.toThrow('Phoenix API error: 500');
+
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+      clearTimeoutSpy.mockRestore();
     });
   });
 });
