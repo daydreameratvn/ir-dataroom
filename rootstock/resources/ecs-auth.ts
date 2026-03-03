@@ -11,6 +11,12 @@ import { banyanDbSecret } from "./rds.ts";
 import { banyanAlbSg, banyanRdsSg } from "./security-groups.ts";
 import { banyanVpc, banyanPrivateSubnets } from "./vpc.ts";
 
+// Fetch Hasura admin token from SSM (needed by agents/shared/graphql-client.ts)
+const hasuraAdminToken = aws.ssm.getParameterOutput({
+  name: "/banyan/hasura/admin-token",
+  withDecryption: true,
+});
+
 // ============================================================
 // Auth Service Security Group
 // ============================================================
@@ -190,8 +196,8 @@ export const banyanAuthTaskDef = new aws.ecs.TaskDefinition("banyan-prod-auth-ta
   executionRoleArn: banyanExecRole.arn,
   taskRoleArn: banyanTaskRole.arn,
   containerDefinitions: pulumi
-    .all([banyanAuthLogGroup.name, banyanDbSecret.arn, banyanJwtSecret.arn, banyanAuthEcrRepo.repositoryUrl])
-    .apply(([logGroupName, dbSecretArn, jwtSecretArn, ecrUrl]) =>
+    .all([banyanAuthLogGroup.name, banyanDbSecret.arn, banyanJwtSecret.arn, banyanAuthEcrRepo.repositoryUrl, hasuraAdminToken.value])
+    .apply(([logGroupName, dbSecretArn, jwtSecretArn, ecrUrl, adminToken]) =>
       JSON.stringify([
         {
           name: "auth",
@@ -219,6 +225,7 @@ export const banyanAuthTaskDef = new aws.ecs.TaskDefinition("banyan-prod-auth-ta
             { name: "DB_SECRET_NAME", value: "banyan-prod-db-credentials" },
             { name: "JWT_SECRET_NAME", value: "banyan-prod-jwt-secret" },
             { name: "DRIVE_POLICY_ROOT_ID", value: "1HeLlO86_ZlhtQJCWy9NK_zSk7aOoghuZ" },
+            { name: "HASURA_ADMIN_TOKEN", value: adminToken },
           ],
           logConfiguration: {
             logDriver: "awslogs",
