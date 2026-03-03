@@ -66,10 +66,29 @@ The setup script:
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
 | `GEMINI_API_KEY` | Yes | — | Google Generative AI key for OCR |
+| `OCR_ENGINE` | No | `easyocr` | Default OCR engine: `easyocr` or `gemini` |
+| `EASYOCR_LANG` | No | per market | Override EasyOCR languages (e.g. `th,en`). Takes precedence over market config. |
 | `PYTHON_BRIDGE_TIMEOUT` | No | `120000` | TruFor subprocess timeout (ms) |
 | `TRUFOR_WEIGHTS_PATH` | No | `python/weights/trufor/trufor.pth.tar` | Override weights path |
 
 Store secrets in AWS SSM (see root `CLAUDE.md`), not in `.env` files.
+
+### Market Support
+
+All endpoints accept an optional `market` parameter that adjusts OCR language selection, field classification regex rules, and Gemini prompt language per country. Omitting `market` defaults to `VN` for backward compatibility.
+
+| Code | Country | OCR Languages | Prompt Language |
+|------|---------|---------------|-----------------|
+| `VN` | Vietnam | `vi,en` | Vietnamese |
+| `TH` | Thailand | `th,en` | Thai |
+| `HK` | Hong Kong | `ch_tra,en` | Traditional Chinese |
+| `ID` | Indonesia | `id,en` | Indonesian |
+
+Market config lives in `extraction/market-config.ts`. Each market defines:
+- **OCR languages** — passed to EasyOCR or used in the Python fallback script
+- **Prompt language** — injected into the Gemini system prompt (e.g. "expert in Thai and English")
+- **Field rules** — priority-ordered regex patterns for classifying OCR text into field types (insurance_id, amount, date, etc.)
+- **Name heuristics** — title-case and ALL-CAPS regexes with market-appropriate character ranges
 
 ## Folder Structure
 
@@ -84,6 +103,7 @@ agents/document-forensics/
 │   └── result-formatter.ts      # Heatmap → PNG + scores
 ├── extraction/
 │   ├── types.ts                 # ExtractedField, RISK_WEIGHTS, KEY_FIELDS
+│   ├── market-config.ts         # Per-market OCR langs, field rules, prompt language
 │   ├── field-scorer.ts          # Per-field anomaly scoring + verdict
 │   ├── gemini-extractor.ts      # Gemini Vision OCR (default)
 │   └── easyocr-extractor.ts     # EasyOCR via Python subprocess (alternative)
@@ -129,6 +149,7 @@ const result = await handleAnalyze({
   image_path: '/path/to/medical-receipt.jpg',
   ocr_engine: 'gemini',   // 'gemini' (default) or 'easyocr'
   device: 'cpu',           // 'auto' | 'cpu' | 'mps' (Mac) | 'cuda' (GPU)
+  market: 'TH',           // 'VN' (default) | 'TH' | 'HK' | 'ID'
 });
 
 console.log(result.verdict);          // 'NORMAL' | 'SUSPICIOUS' | 'TAMPERED' | 'ERROR'
@@ -145,6 +166,7 @@ const batch = await handleBatch({
   image_paths: ['/path/a.jpg', '/path/b.jpg', '/path/c.jpg'],
   device: 'auto',
   concurrency: 3,       // parallel workers (default: 3)
+  market: 'ID',         // all images processed with Indonesian config
 });
 
 console.log(batch.summary.verdicts);  // { NORMAL: 2, SUSPICIOUS: 1, TAMPERED: 0, ERROR: 0 }
@@ -159,6 +181,7 @@ Useful when you only need OCR results without tampering analysis:
 const fields = await handleExtractFields({
   image_path: '/path/to/document.jpg',
   ocr_engine: 'gemini',
+  market: 'HK',          // Traditional Chinese + English
 });
 
 console.log(fields.fields);
@@ -315,9 +338,10 @@ If no key fields are found, the overall score is the mean of all field scores.
 ### EasyOCR (alternative)
 
 - Runs via Python subprocess
-- Supports Vietnamese + English (`vi,en`)
+- OCR languages selected per market (e.g. `vi,en` for VN, `th,en` for TH, `ch_tra,en` for HK)
+- Override with `EASYOCR_LANG` env var (takes precedence over market config)
 - No API key required — fully local
-- Uses heuristic field classification (regex patterns for dates, amounts, IDs)
+- Uses market-specific heuristic field classification (regex patterns for dates, amounts, IDs)
 - Lower accuracy for field type classification compared to Gemini
 
 ## TruFor Deep Learning Model
@@ -352,11 +376,13 @@ export const documentForensicsTool: AgentTool = {
   parameters: Type.Object({
     image_path: Type.String({ description: "Absolute path to the document image" }),
     device: Type.Optional(Type.String({ description: "Inference device: auto, cpu, mps, cuda" })),
+    market: Type.Optional(Type.String({ description: "Market code: VN, TH, HK, ID (default: VN)" })),
   }),
   async execute(_toolCallId, params) {
     const result = await handleAnalyze({
       image_path: params.image_path,
       device: params.device ?? 'auto',
+      market: params.market,
     });
     return {
       content: [{ type: "text", text: JSON.stringify(result) }],
@@ -391,9 +417,9 @@ The service runs as an ECS Fargate task behind the shared ALB at `prod.banyan.se
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/forensics/health` | Readiness probe (503 until warmup completes) |
-| POST | `/forensics/analyze` | Single document analysis (accepts `image_path` or `image_base64`) |
-| POST | `/forensics/batch` | Parallel batch analysis |
-| POST | `/forensics/extract` | OCR-only field extraction |
+| POST | `/forensics/analyze` | Single document analysis (accepts `image_path` or `image_base64`, optional `market`) |
+| POST | `/forensics/batch` | Parallel batch analysis (optional `market`) |
+| POST | `/forensics/extract` | OCR-only field extraction (optional `market`) |
 
 Base URL: `https://prod.banyan.services.papaya.asia`
 
