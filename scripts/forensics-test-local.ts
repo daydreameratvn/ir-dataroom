@@ -6,6 +6,7 @@
  *
  * Usage:
  *   bun scripts/forensics-test-local.ts <folder>
+ *   bun scripts/forensics-test-local.ts <folder> --market TH
  *   bun scripts/forensics-test-local.ts /path/to/test-cases-v2/case-03
  *
  * Output is saved to /Volumes/work/git/papaya-org/test-cases-v2-output/<sub-folder>/
@@ -19,9 +20,23 @@ import type { DocumentForensicsResult } from "../agents/document-forensics/types
 
 // ── CLI args ─────────────────────────────────────────────────────────────────
 
-const folder = process.argv[2];
+const rawArgs = process.argv.slice(2);
+
+function flag(name: string, fallback: string): string {
+  const i = rawArgs.indexOf(`--${name}`);
+  if (i >= 0 && i + 1 < rawArgs.length) {
+    const val = rawArgs[i + 1]!;
+    rawArgs.splice(i, 2);
+    return val;
+  }
+  return fallback;
+}
+
+const MARKET = flag("market", "");
+
+const folder = rawArgs[0];
 if (!folder) {
-  console.error("Usage: bun scripts/forensics-test-local.ts <folder>");
+  console.error("Usage: bun scripts/forensics-test-local.ts <folder> [--market VN|TH|HK|ID]");
   process.exit(1);
 }
 
@@ -55,7 +70,8 @@ if (images.length === 0) {
 }
 
 console.log(`Found ${images.length} image(s) in ${inputDir}`);
-console.log(`Output: ${outputDir}\n`);
+console.log(`Market:  ${MARKET || "VN (default)"}`);
+console.log(`Output:  ${outputDir}\n`);
 
 // ── Process ──────────────────────────────────────────────────────────────────
 
@@ -78,7 +94,9 @@ for (const imgPath of images) {
   console.log(`  Processing: ${name} (${sizeKb} KB)...`);
   const start = Date.now();
 
-  const result = await advancedDocumentForensics(imgPath);
+  const result = await advancedDocumentForensics(
+    imgPath, undefined, 'auto', undefined, true, MARKET || undefined,
+  );
   const timeMs = Date.now() - start;
 
   // Save summary image
@@ -105,6 +123,7 @@ const totalTime = Date.now() - totalStart;
 console.log("\n" + "=".repeat(80));
 console.log("FORENSICS LOCAL TEST REPORT");
 console.log("=".repeat(80));
+console.log(`Market:      ${MARKET || "VN (default)"}`);
 console.log(`Images:      ${reports.length}`);
 console.log(`Total time:  ${(totalTime / 1000).toFixed(1)}s`);
 console.log(`Output:      ${outputDir}`);
