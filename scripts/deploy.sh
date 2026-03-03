@@ -126,7 +126,7 @@ deploy_phoenix() {
   bun run build
 
   local BUCKET="banyan-prod-phoenix"
-  local CF_ID="E3T5K7ZJ6Q0J76"
+  local CF_ID="E2KVO0UGOW295V"
 
   echo ">>> Uploading to S3 ($BUCKET)..."
   aws s3 sync "$REPO_ROOT/platform/apps/phoenix/dist/" "s3://$BUCKET/" \
