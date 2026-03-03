@@ -72,8 +72,9 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           use_bedrock: "true"
-          model: apac.anthropic.claude-sonnet-4-20250514-v1:0
-          max_turns: 50
+          claude_args: "--model apac.anthropic.claude-sonnet-4-20250514-v1:0 --max-turns 50"
+          additional_permissions: |
+            Bash(git diff:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(git status:*),Bash(git log:*),Bash(bun:*),Bash(bunx:*),Bash(cd:*),Bash(cat:*),Bash(ls:*),Read,Write,Edit,Glob,Grep
 
           prompt: |
             You are a senior test engineer for the Banyan monorepo. Your job is to write
@@ -166,8 +167,3 @@ jobs:
             - Keep tests focused and readable — prefer many small tests over few large ones
             - Test behavior, not implementation details
             - Use descriptive test names: `it('should return 404 when claim does not exist')`
-
-          allowed_tools: |
-            Bash(git diff:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(git status:*),Bash(git log:*),
-            Bash(bun:*),Bash(bunx:*),Bash(cd:*),Bash(cat:*),Bash(ls:*),
-            Read,Write,Edit,Glob,Grep
