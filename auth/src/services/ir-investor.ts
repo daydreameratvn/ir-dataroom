@@ -24,6 +24,7 @@ interface InvestorRoundRow {
   round_id: string;
   status: string;
   nda_required: boolean;
+  nda_mode: string;
   nda_template_id: string | null;
   invited_at: string | null;
   nda_accepted_at: string | null;
@@ -72,6 +73,7 @@ export interface InvestorRound {
   roundId: string;
   status: string;
   ndaRequired: boolean;
+  ndaMode: string;
   ndaTemplateId: string | null;
   invitedAt: string | null;
   ndaAcceptedAt: string | null;
@@ -123,6 +125,7 @@ function rowToInvestorRound(row: InvestorRoundRow): InvestorRound {
     roundId: row.round_id,
     status: row.status,
     ndaRequired: row.nda_required,
+    ndaMode: row.nda_mode,
     ndaTemplateId: row.nda_template_id,
     invitedAt: row.invited_at,
     ndaAcceptedAt: row.nda_accepted_at,
@@ -194,7 +197,7 @@ const INVESTOR_COLUMNS = `id, tenant_id, email, name, firm, title, phone, notes,
   created_at, created_by, updated_at`;
 
 const INVESTOR_ROUND_COLUMNS = `id, tenant_id, investor_id, round_id, status,
-  nda_required, nda_template_id,
+  nda_required, nda_mode, nda_template_id,
   invited_at, nda_accepted_at, nda_ip_address, nda_user_agent,
   last_access_at, access_count, created_at, created_by, updated_at`;
 
@@ -379,30 +382,31 @@ export async function addInvestorToRound(
   investorId: string,
   roundId: string,
   userId: string,
-  opts?: { skipNda?: boolean }
+  opts?: { ndaMode?: "digital" | "offline" }
 ): Promise<{ id: string }> {
-  const skipNda = opts?.skipNda ?? false;
-  const status = skipNda ? "nda_accepted" : "invited";
-  const ndaRequired = !skipNda;
+  const ndaMode = opts?.ndaMode ?? "digital";
+  const isOffline = ndaMode === "offline";
+  const status = isOffline ? "nda_signed" : "invited";
+  const ndaRequired = !isOffline;
 
   const result = await query<{ id: string }>(
-    `INSERT INTO ir_investor_rounds (tenant_id, investor_id, round_id, status, nda_required, created_by, updated_by)
-     VALUES ($1, $2, $3, $4, $5, $6, $6)
+    `INSERT INTO ir_investor_rounds (tenant_id, investor_id, round_id, status, nda_required, nda_mode, created_by, updated_by)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $7)
      RETURNING id`,
-    [tenantId, investorId, roundId, status, ndaRequired, userId]
+    [tenantId, investorId, roundId, status, ndaRequired, ndaMode, userId]
   );
 
   return { id: result.rows[0]!.id };
 }
 
-/** Auto-promote investor from nda_accepted to active on first file access */
-export async function promoteToActiveIfNeeded(
+/** Auto-promote investor from nda_signed to viewing on first file access */
+export async function promoteToViewingIfNeeded(
   investorRoundId: string
 ): Promise<void> {
   await query(
     `UPDATE ir_investor_rounds
-     SET status = 'active', updated_at = now()
-     WHERE id = $1 AND status = 'nda_accepted' AND deleted_at IS NULL`,
+     SET status = 'viewing', updated_at = now()
+     WHERE id = $1 AND status = 'nda_signed' AND deleted_at IS NULL`,
     [investorRoundId]
   );
 }
@@ -471,7 +475,7 @@ export async function listInvestorRounds(
 
   const dataResult = await query<InvestorRoundWithInvestorRow>(
     `SELECT ir.id, ir.tenant_id, ir.investor_id, ir.round_id, ir.status,
-            ir.nda_required, ir.nda_template_id,
+            ir.nda_required, ir.nda_mode, ir.nda_template_id,
             ir.invited_at, ir.nda_accepted_at, ir.nda_ip_address, ir.nda_user_agent,
             ir.last_access_at, ir.access_count, ir.created_at, ir.created_by, ir.updated_at,
             inv.name AS investor_name, inv.email AS investor_email, inv.firm AS investor_firm
@@ -497,7 +501,7 @@ export async function listRoundsForInvestor(
 ): Promise<InvestorRoundWithRound[]> {
   const result = await query<InvestorRoundWithRoundRow>(
     `SELECT ir.id, ir.tenant_id, ir.investor_id, ir.round_id, ir.status,
-            ir.nda_required, ir.nda_template_id,
+            ir.nda_required, ir.nda_mode, ir.nda_template_id,
             ir.invited_at, ir.nda_accepted_at, ir.nda_ip_address, ir.nda_user_agent,
             ir.last_access_at, ir.access_count, ir.created_at, ir.created_by, ir.updated_at,
             r.name AS round_name, r.slug AS round_slug, r.status AS round_status
@@ -517,7 +521,7 @@ export async function getInvestorRound(
 ): Promise<InvestorRoundWithRound | null> {
   const result = await query<InvestorRoundWithRoundRow>(
     `SELECT ir.id, ir.tenant_id, ir.investor_id, ir.round_id, ir.status,
-            ir.nda_required, ir.nda_template_id,
+            ir.nda_required, ir.nda_mode, ir.nda_template_id,
             ir.invited_at, ir.nda_accepted_at, ir.nda_ip_address, ir.nda_user_agent,
             ir.last_access_at, ir.access_count, ir.created_at, ir.created_by, ir.updated_at,
             r.name AS round_name, r.slug AS round_slug, r.status AS round_status

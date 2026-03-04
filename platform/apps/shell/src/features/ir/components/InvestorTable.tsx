@@ -17,6 +17,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
   Table,
   TableBody,
   TableCell,
@@ -25,9 +26,10 @@ import {
   TableRow,
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from '@papaya/shared-ui';
-import type { InvestorRound, InvestorRoundStatus, InvestorEngagement, EngagementSignal } from '../types';
+import type { InvestorRound, InvestorRoundStatus, InvestorEngagement, EngagementSignal, NdaMode } from '../types';
 import {
   listRoundInvestors,
   updateInvestorStatus,
@@ -35,6 +37,7 @@ import {
   removeInvestorFromRound,
   sendInvitation,
   getRoundEngagement,
+  updateNdaMode,
 } from '../api';
 import InvestorStatusBadge from './InvestorStatusBadge';
 import InvestorInviteDialog from './InvestorInviteDialog';
@@ -45,12 +48,12 @@ interface InvestorTableProps {
 
 const INVESTOR_STATUSES: InvestorRoundStatus[] = [
   'invited',
-  'nda_pending',
-  'nda_accepted',
-  'active',
+  'nda_signed',
+  'viewing',
   'termsheet_sent',
   'termsheet_signed',
   'docs_out',
+  'docs_signed',
   'dropped',
 ];
 
@@ -66,7 +69,7 @@ function getDaysAgo(dateStr: string | null): string {
 // ── Engagement signal computation ──
 
 function getSignal(eng: InvestorEngagement): EngagementSignal | null {
-  if (['termsheet_sent', 'termsheet_signed', 'docs_out', 'dropped'].includes(eng.status)) return null;
+  if (['termsheet_sent', 'termsheet_signed', 'docs_out', 'docs_signed', 'dropped'].includes(eng.status)) return null;
 
   const daysSinceActive = eng.lastActiveAt
     ? Math.floor((Date.now() - new Date(eng.lastActiveAt).getTime()) / 86400000)
@@ -111,7 +114,7 @@ function getFirmGroupLabel(email: string, firm: string | null): string | null {
   if (firm) return firm;
   const domain = email.split('@')[1]?.toLowerCase();
   if (!domain || FREE_EMAIL_DOMAINS.has(domain)) return null;
-  const name = domain.split('.')[0];
+  const name = domain.split('.')[0] ?? '';
   return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
@@ -219,6 +222,10 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
   const [groupedByFirm, setGroupedByFirm] = useState(false);
   const [removeTarget, setRemoveTarget] = useState<InvestorRound | null>(null);
   const [dropTarget, setDropTarget] = useState<InvestorRound | null>(null);
+  const [resendTarget, setResendTarget] = useState<InvestorRound | null>(null);
+  const [resending, setResending] = useState(false);
+  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [ndaModeTarget, setNdaModeTarget] = useState<{ inv: InvestorRound; newMode: NdaMode } | null>(null);
   const limit = 20;
 
   const fetchInvestors = useCallback(async () => {
@@ -294,6 +301,37 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
     }
   }
 
+  function requestNdaModeChange(inv: InvestorRound, newMode: NdaMode) {
+    // Switching to digital requires confirmation — investor will need to accept the NDA
+    if (newMode === 'digital' && inv.ndaMode !== 'digital') {
+      setNdaModeTarget({ inv, newMode });
+      return;
+    }
+    applyNdaModeChange(inv.id, newMode);
+  }
+
+  async function applyNdaModeChange(investorRoundId: string, newMode: NdaMode) {
+    try {
+      await updateNdaMode(roundId, investorRoundId, newMode);
+      setInvestors((prev) =>
+        prev.map((inv) =>
+          inv.id === investorRoundId
+            ? { ...inv, ndaMode: newMode, ndaRequired: newMode === 'digital' }
+            : inv
+        )
+      );
+    } catch {
+      fetchInvestors();
+    }
+  }
+
+  async function handleNdaModeConfirmed() {
+    if (!ndaModeTarget) return;
+    const { inv, newMode } = ndaModeTarget;
+    setNdaModeTarget(null);
+    await applyNdaModeChange(inv.id, newMode);
+  }
+
   async function handleRemoveConfirmed() {
     if (!removeTarget) return;
     const investorRoundId = removeTarget.id;
@@ -307,18 +345,31 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
     }
   }
 
-  async function handleSendInvite(investorId: string) {
+  function showNotification(type: 'success' | 'error', message: string) {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 4000);
+  }
+
+  async function handleResendConfirmed() {
+    if (!resendTarget) return;
+    const { investorId, investorEmail } = resendTarget;
+    setResendTarget(null);
+    setResending(true);
     try {
       await sendInvitation(investorId);
-    } catch {
-      // Best effort
+      showNotification('success', `Invitation email sent to ${investorEmail}`);
+    } catch (err) {
+      showNotification('error', err instanceof Error ? err.message : 'Failed to send invitation email');
+    } finally {
+      setResending(false);
     }
   }
 
   // Merge investor round data with engagement data
   const investorsWithEngagement: InvestorWithEngagement[] = investors.map((inv) => {
     const eng = engagement.get(inv.investorId);
-    return { ...inv, ...eng };
+    // Spread eng but preserve typed status from inv
+    return eng ? { ...inv, ...eng, status: inv.status } : inv;
   });
 
   const displayInvestors = groupedByFirm
@@ -328,7 +379,12 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
   const totalPages = Math.ceil(total / limit);
 
   return (
+    <TooltipProvider delayDuration={200}>
     <div className="space-y-4">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Investors</h2>
+        <p className="text-muted-foreground">Manage investor access to your dataroom.</p>
+      </div>
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-muted-foreground">
           {total} investor{total !== 1 ? 's' : ''} in this round
@@ -361,6 +417,21 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
         </div>
       )}
 
+      {notification && (
+        <div
+          className={`rounded-md border px-3 py-2 text-sm flex items-center justify-between transition-opacity ${
+            notification.type === 'success'
+              ? 'border-green-200 bg-green-50 text-green-700'
+              : 'border-red-200 bg-red-50 text-red-700'
+          }`}
+        >
+          <span>{notification.type === 'success' ? '\u2705' : '\u274C'} {notification.message}</span>
+          <button onClick={() => setNotification(null)} className="ml-2 hover:opacity-70">
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
       {isLoading ? (
         <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
           Loading investors...
@@ -380,7 +451,7 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
                 <TableHead>Name</TableHead>
                 <TableHead>Firm</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>NDA</TableHead>
+                <TableHead>NDA Mode</TableHead>
                 <TableHead>Last Active</TableHead>
                 <TableHead>Signal</TableHead>
                 <TableHead>Recommendation</TableHead>
@@ -390,16 +461,17 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
             <TableBody>
               {displayInvestors.map((inv, idx, arr) => {
                 const firmLabel = groupedByFirm ? getFirmGroupLabel(inv.investorEmail, inv.investorFirm) : null;
+                const prev = idx > 0 ? arr[idx - 1] : undefined;
                 const prevFirmLabel =
-                  groupedByFirm && idx > 0
-                    ? getFirmGroupLabel(arr[idx - 1].investorEmail, arr[idx - 1].investorFirm)
+                  groupedByFirm && prev
+                    ? getFirmGroupLabel(prev.investorEmail, prev.investorFirm)
                     : null;
                 const showFirmHeader = groupedByFirm && firmLabel && firmLabel !== prevFirmLabel;
                 const showUngroupedHeader =
                   groupedByFirm &&
                   !firmLabel &&
-                  idx > 0 &&
-                  getFirmGroupLabel(arr[idx - 1].investorEmail, arr[idx - 1].investorFirm) !== null;
+                  prev != null &&
+                  getFirmGroupLabel(prev.investorEmail, prev.investorFirm) !== null;
 
                 const eng: InvestorEngagement | undefined = engagement.get(inv.investorId);
                 const signal = eng ? getSignal(eng) : null;
@@ -455,7 +527,7 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
                             onValueChange={(v) => handleStatusChange(inv, v as InvestorRoundStatus)}
                           >
                             <SelectTrigger className="h-7 w-40 text-xs">
-                              <InvestorStatusBadge status={inv.status} />
+                              <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                               {INVESTOR_STATUSES.map((s) => (
@@ -470,12 +542,19 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
-                        {inv.ndaAcceptedAt
-                          ? new Date(inv.ndaAcceptedAt).toLocaleDateString()
-                          : !inv.ndaRequired
-                            ? <span className="text-xs text-blue-600">Offline</span>
-                            : 'Pending'}
+                      <TableCell>
+                        <Select
+                          value={inv.ndaMode}
+                          onValueChange={(v) => requestNdaModeChange(inv, v as NdaMode)}
+                        >
+                          <SelectTrigger className="h-7 w-24 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="digital">Digital</SelectItem>
+                            <SelectItem value="offline">Offline</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
                         {getDaysAgo(eng?.lastActiveAt ?? inv.lastAccessAt)}
@@ -518,9 +597,10 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleSendInvite(inv.investorId)}
+                            onClick={() => setResendTarget(inv)}
+                            disabled={resending}
                             className="h-7 px-2 text-xs"
-                            title="Send invitation email"
+                            title="Re-send invitation email"
                           >
                             <Send className="h-3 w-3" />
                           </Button>
@@ -620,6 +700,47 @@ export default function InvestorTable({ roundId }: InvestorTableProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Resend invitation confirmation */}
+      <AlertDialog open={!!resendTarget} onOpenChange={(open) => !open && setResendTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Resend Invitation Email</AlertDialogTitle>
+            <AlertDialogDescription>
+              Send the dataroom invitation email again to{' '}
+              <strong>{resendTarget?.investorName}</strong> ({resendTarget?.investorEmail})?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleResendConfirmed}>
+              Send Email
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* NDA mode change confirmation */}
+      <AlertDialog open={!!ndaModeTarget} onOpenChange={(open) => !open && setNdaModeTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Change NDA Mode to Digital</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to switch{' '}
+              <strong>{ndaModeTarget?.inv.investorName ?? ndaModeTarget?.inv.investorEmail}</strong>{' '}
+              to digital NDA mode? This investor will need to accept the NDA before they can
+              access the dataroom.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleNdaModeConfirmed}>
+              Change to Digital
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+    </TooltipProvider>
   );
 }

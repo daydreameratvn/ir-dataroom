@@ -23,6 +23,9 @@ COPY platform/docs/oasis-guide.md ./platform/docs/oasis-guide.md
 
 FROM oven/bun:1-slim
 
+# Install ffmpeg for video watermarking
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /repo
 
 COPY --from=builder /repo/auth/node_modules ./auth/node_modules

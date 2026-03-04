@@ -67,6 +67,32 @@ export async function generateUploadUrl(params: {
 }
 
 /**
+ * Upload a file buffer directly to S3 (server-side proxy upload).
+ * Used to avoid CORS issues with direct browser-to-S3 presigned PUT.
+ */
+export async function uploadToS3(params: {
+  tenantId: string;
+  roundId: string;
+  docId: string;
+  fileName: string;
+  mimeType: string;
+  body: Buffer | Uint8Array;
+}): Promise<{ s3Key: string; s3Bucket: string }> {
+  const s3Key = buildS3Key(params.tenantId, params.roundId, params.docId, params.fileName);
+
+  const command = new PutObjectCommand({
+    Bucket: BUCKET,
+    Key: s3Key,
+    ContentType: params.mimeType,
+    Body: params.body,
+  });
+
+  await getS3().send(command);
+
+  return { s3Key, s3Bucket: BUCKET };
+}
+
+/**
  * Generate a presigned GET URL for viewing / downloading a file.
  * Optional: set Content-Disposition for forced download.
  */
@@ -75,6 +101,7 @@ export async function generateViewUrl(params: {
   s3Bucket?: string;
   expiresIn?: number;
   downloadAs?: string;
+  contentType?: string;
 }): Promise<string> {
   const bucket = params.s3Bucket || BUCKET;
   const expiresIn = params.expiresIn ?? 3600;
@@ -86,6 +113,10 @@ export async function generateViewUrl(params: {
 
   if (params.downloadAs) {
     commandInput.ResponseContentDisposition = `attachment; filename="${params.downloadAs}"`;
+  }
+
+  if (params.contentType) {
+    commandInput.ResponseContentType = params.contentType;
   }
 
   const command = new GetObjectCommand(commandInput as any);

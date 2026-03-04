@@ -87,16 +87,21 @@ export default defineConfig({
           : {}),
       },
       shared: {
-        react: { singleton: true, requiredVersion: '^18.0.0' },
-        'react-dom': { singleton: true, requiredVersion: '^18.0.0' },
-        'react-router-dom': { singleton: true },
-        zustand: { singleton: true },
-        '@tanstack/react-query': { singleton: true },
-        i18next: { singleton: true },
-        'react-i18next': { singleton: true },
+        react: { singleton: true, requiredVersion: '^18.0.0', eager: true },
+        'react-dom': { singleton: true, requiredVersion: '^18.0.0', eager: true },
+        'react-router-dom': { singleton: true, eager: true },
+        zustand: { singleton: true, eager: true },
+        '@tanstack/react-query': { singleton: true, eager: true },
+        i18next: { singleton: true, eager: true },
+        'react-i18next': { singleton: true, eager: true },
       },
     }),
   ],
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext',
+    },
+  },
   build: {
     target: 'esnext',
   },

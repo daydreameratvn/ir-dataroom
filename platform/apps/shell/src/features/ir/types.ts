@@ -4,13 +4,15 @@ export type RoundStatus = 'draft' | 'active' | 'paused' | 'closed' | 'archived';
 
 export type InvestorRoundStatus =
   | 'invited'
-  | 'nda_pending'
-  | 'nda_accepted'
-  | 'active'
+  | 'nda_signed'
+  | 'viewing'
   | 'termsheet_sent'
   | 'termsheet_signed'
   | 'docs_out'
+  | 'docs_signed'
   | 'dropped';
+
+export type NdaMode = 'digital' | 'offline';
 
 export type DocumentCategory =
   | 'financials'
@@ -70,6 +72,7 @@ export interface InvestorRound {
   roundId: string;
   status: InvestorRoundStatus;
   ndaRequired: boolean;
+  ndaMode: NdaMode;
   ndaTemplateId: string | null;
   invitedAt: string | null;
   ndaAcceptedAt: string | null;
@@ -137,13 +140,24 @@ export interface RecentActivity {
   createdAt: string;
 }
 
+// ── Dashboard Stats ──
+
+export interface RoundDashboardStats {
+  totalInvestors: number;
+  activeInvestors: number;
+  totalFiles: number;
+  totalViews: number;
+  totalDownloads: number;
+}
+
 // ── Analytics ──
 
 export interface RoundAnalytics {
   totalViews: number;
+  totalDownloads: number;
   uniqueViewers: number;
-  viewsPerDocument: { documentId: string; documentName: string; views: number }[];
-  viewsOverTime: { date: string; views: number }[];
+  viewsPerDocument: { documentId: string; documentName: string; views: number; downloads: number }[];
+  viewsOverTime: { date: string; views: number; downloads: number }[];
   topInvestors: { investorId: string; investorName: string; investorEmail: string; totalActions: number; totalDuration: number }[];
 }
 

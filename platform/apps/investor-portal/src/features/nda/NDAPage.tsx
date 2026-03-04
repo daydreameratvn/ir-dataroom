@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@papaya/shared-ui';
-import { CheckCircle2, Download, Loader2, ShieldCheck } from 'lucide-react';
-import { getRound, acceptNda, downloadNdaPdf } from '@/lib/api';
+import { CheckCircle2, Loader2, ShieldCheck } from 'lucide-react';
+import { getRound, acceptNda } from '@/lib/api';
 
 export default function NDAPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -20,32 +20,20 @@ export default function NDAPage() {
   const mutation = useMutation({
     mutationFn: () => acceptNda(slug!),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['round', slug] });
+      // Navigate immediately — don't wait for query refetch
       navigate(`/rounds/${slug}/documents`, { replace: true });
+      // Invalidate in the background so the documents page has fresh data
+      queryClient.invalidateQueries({ queryKey: ['round', slug] });
     },
   });
 
-  const [isDownloading, setIsDownloading] = useState(false);
-
-  async function handleDownloadNda() {
-    if (!slug) return;
-    setIsDownloading(true);
-    try {
-      const blob = await downloadNdaPdf(slug);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `NDA-${data?.round.name ?? slug}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch {
-      // Could show error toast
-    } finally {
-      setIsDownloading(false);
+  // Auto-navigate when NDA is already accepted or not required
+  useEffect(() => {
+    if (!data || isLoading) return;
+    if (data.ndaAccepted || !data.ndaRequired) {
+      navigate(`/rounds/${slug}/documents`, { replace: true });
     }
-  }
+  }, [data, isLoading, navigate, slug]);
 
   if (isLoading) {
     return (
@@ -55,43 +43,13 @@ export default function NDAPage() {
     );
   }
 
-  // If NDA is already accepted, show download option and redirect link
-  if (data?.ndaAccepted) {
+  // If NDA already accepted or not required, show loading while redirect happens
+  if (data?.ndaAccepted || (data && !data.ndaRequired)) {
     return (
-      <div className="mx-auto max-w-3xl space-y-6 p-6">
-        <div className="flex items-center gap-3">
-          <CheckCircle2 className="size-6 text-green-600" />
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              NDA Accepted
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              You have already signed the NDA for this round.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            onClick={handleDownloadNda}
-            disabled={isDownloading}
-          >
-            <Download className="size-4" />
-            {isDownloading ? 'Downloading...' : 'Download Signed NDA'}
-          </Button>
-          <Button onClick={() => navigate(`/rounds/${slug}/documents`, { replace: true })}>
-            View Documents
-          </Button>
-        </div>
+      <div className="flex min-h-[400px] items-center justify-center">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
       </div>
     );
-  }
-
-  // If NDA is not required for this investor
-  if (data && !data.ndaRequired) {
-    navigate(`/rounds/${slug}/documents`, { replace: true });
-    return null;
   }
 
   return (

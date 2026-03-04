@@ -98,19 +98,28 @@ export async function sendEmailOtp(email: string, code: string): Promise<void> {
       Source: fromEmail,
       Destination: { ToAddresses: [email] },
       Message: {
-        Subject: { Data: `Your Papaya verification code: ${code}` },
+        Subject: { Data: `Your Papaya sign-in code: ${code}` },
         Body: {
           Text: {
-            Data: `Your verification code is: ${code}\n\nThis code expires in 10 minutes. Do not share it with anyone.`,
+            Data: `Your sign-in code is: ${code}\n\nThis code expires in 10 minutes. Do not share it with anyone.\n\nPapaya`,
           },
           Html: {
             Data: `
-              <div style="font-family: sans-serif; max-width: 400px; margin: 0 auto; padding: 24px;">
-                <h2 style="color: #1a1a1a;">Verification Code</h2>
-                <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #f97316; margin: 24px 0;">${code}</p>
-                <p style="color: #666;">This code expires in 10 minutes. Do not share it with anyone.</p>
-                <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
-                <p style="color: #999; font-size: 12px;">Papaya Insurance</p>
+              <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 24px; color: #333;">
+                <div style="text-align: center; margin-bottom: 28px;">
+                  <img src="https://investors.papaya.asia/papaya-logo.png" alt="Papaya" height="36" style="height: 36px;" />
+                </div>
+                <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 8px; text-align: center;">Here\u2019s your sign-in code</h2>
+                <p style="color: #666; font-size: 14px; text-align: center; margin: 0 0 28px;">Enter this code to access the dataroom:</p>
+                <div style="background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 12px; padding: 28px; text-align: center; margin: 0 0 20px;">
+                  <span style="font-family: 'Courier New', Courier, monospace; font-size: 40px; font-weight: 700; letter-spacing: 12px; color: #1a1a1a; user-select: all; -webkit-user-select: all; -moz-user-select: all;">${code}</span>
+                </div>
+                <p style="color: #999; font-size: 12px; text-align: center; margin: 0 0 28px;">Click the code to select it, then copy \u2022 Expires in 10 minutes</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 0 0 16px;" />
+                <p style="color: #aaa; font-size: 11px; text-align: center; line-height: 1.5; margin: 0;">
+                  If you didn\u2019t request this code, you can safely ignore this email.<br />
+                  Papaya \u2022 Confidential
+                </p>
               </div>
             `,
           },

@@ -8,11 +8,13 @@ import type {
   InvestorEngagement,
   InvestorRound,
   InvestorRoundStatus,
+  NdaMode,
   NdaTemplate,
   OverallStats,
   RecentActivity,
   Round,
   RoundAnalytics,
+  RoundDashboardStats,
   RoundStatus,
 } from './types';
 
@@ -48,7 +50,7 @@ export interface ListRoundsParams {
 export async function listRounds(params?: ListRoundsParams): Promise<PaginatedResponse<Round>> {
   const searchParams = new URLSearchParams();
   if (params?.page) searchParams.set('page', String(params.page));
-  if (params?.limit) searchParams.set('limit', String(params.limit));
+  if (params?.limit) searchParams.set('pageSize', String(params.limit));
   if (params?.status) searchParams.set('status', params.status);
 
   const url = `${BASE}/rounds?${searchParams.toString()}`;
@@ -101,10 +103,23 @@ export async function updateRound(id: string, payload: UpdateRoundPayload): Prom
   }
 }
 
-export async function deleteRound(id: string): Promise<void> {
+export async function requestDeleteRoundOtp(id: string): Promise<void> {
+  const response = await fetch(`${BASE}/rounds/${id}/delete-otp`, {
+    method: 'POST',
+    headers: getHeaders(),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const message = (body as Record<string, unknown>).error ?? response.statusText;
+    throw new Error(String(message));
+  }
+}
+
+export async function deleteRound(id: string, code: string): Promise<void> {
   const response = await fetch(`${BASE}/rounds/${id}`, {
     method: 'DELETE',
     headers: getHeaders(),
+    body: JSON.stringify({ code }),
   });
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
@@ -127,7 +142,7 @@ export async function listRoundInvestors(
 ): Promise<PaginatedResponse<InvestorRound>> {
   const searchParams = new URLSearchParams();
   if (params?.page) searchParams.set('page', String(params.page));
-  if (params?.limit) searchParams.set('limit', String(params.limit));
+  if (params?.limit) searchParams.set('pageSize', String(params.limit));
   if (params?.status) searchParams.set('status', params.status);
 
   const url = `${BASE}/rounds/${roundId}/investors?${searchParams.toString()}`;
@@ -140,7 +155,7 @@ export interface AddInvestorPayload {
   name: string;
   firm?: string;
   title?: string;
-  skipNda?: boolean;
+  ndaMode?: NdaMode;
 }
 
 export async function addInvestorToRound(
@@ -160,7 +175,7 @@ export async function updateInvestorStatus(
   investorRoundId: string,
   status: InvestorRoundStatus
 ): Promise<void> {
-  const response = await fetch(`${BASE}/rounds/${roundId}/investors/${investorRoundId}/status`, {
+  const response = await fetch(`${BASE}/rounds/${roundId}/investors/${investorRoundId}`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify({ status }),
@@ -203,6 +218,25 @@ export async function removeInvestorFromRound(
   }
 }
 
+// ── NDA Mode ──
+
+export async function updateNdaMode(
+  roundId: string,
+  investorRoundId: string,
+  ndaMode: NdaMode
+): Promise<void> {
+  const response = await fetch(`${BASE}/rounds/${roundId}/investors/${investorRoundId}/nda-mode`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify({ ndaMode }),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const message = (body as Record<string, unknown>).error ?? response.statusText;
+    throw new Error(String(message));
+  }
+}
+
 // ── Documents ──
 
 export interface ListDocumentsParams {
@@ -217,7 +251,7 @@ export async function listDocuments(
 ): Promise<PaginatedResponse<Document>> {
   const searchParams = new URLSearchParams();
   if (params?.page) searchParams.set('page', String(params.page));
-  if (params?.limit) searchParams.set('limit', String(params.limit));
+  if (params?.limit) searchParams.set('pageSize', String(params.limit));
   if (params?.category) searchParams.set('category', params.category);
 
   const url = `${BASE}/rounds/${roundId}/documents?${searchParams.toString()}`;
@@ -259,12 +293,32 @@ export async function getDocumentUploadUrl(
 }
 
 /**
- * Upload a file directly to S3 using a presigned URL.
+ * Upload a file via the auth server proxy (avoids S3 CORS issues).
+ */
+export async function uploadDocumentFile(docId: string, file: File): Promise<void> {
+  const token = getAccessToken();
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(`${BASE}/documents/${docId}/upload`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: formData,
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const message = (body as Record<string, unknown>).error ?? 'Upload failed';
+    throw new Error(String(message));
+  }
+}
+
+/**
+ * @deprecated Use uploadDocumentFile instead (proxied, avoids CORS).
  */
 export async function uploadFileToS3(uploadUrl: string, file: File): Promise<void> {
   const response = await fetch(uploadUrl, {
     method: 'PUT',
-    headers: { 'Content-Type': file.type },
+    headers: { 'Content-Type': file.type || 'application/octet-stream' },
     body: file,
   });
   if (!response.ok) {
@@ -325,6 +379,13 @@ export async function createNda(roundId: string, content: string): Promise<NdaTe
   return handleResponse<NdaTemplate>(response);
 }
 
+// ── Dashboard Stats ──
+
+export async function getRoundDashboardStats(roundId: string): Promise<RoundDashboardStats> {
+  const response = await fetch(`${BASE}/rounds/${roundId}/dashboard-stats`, { headers: getHeaders() });
+  return handleResponse<RoundDashboardStats>(response);
+}
+
 // ── Analytics ──
 
 export async function getRoundAnalytics(roundId: string): Promise<RoundAnalytics> {
@@ -345,6 +406,7 @@ export async function getRoundEngagement(roundId: string): Promise<InvestorEngag
 export interface ListAccessLogsParams {
   page?: number;
   limit?: number;
+  action?: string;
 }
 
 export async function getAccessLogs(
@@ -353,7 +415,8 @@ export async function getAccessLogs(
 ): Promise<PaginatedResponse<AccessLog>> {
   const searchParams = new URLSearchParams();
   if (params?.page) searchParams.set('page', String(params.page));
-  if (params?.limit) searchParams.set('limit', String(params.limit));
+  if (params?.limit) searchParams.set('pageSize', String(params.limit));
+  if (params?.action) searchParams.set('action', params.action);
 
   const url = `${BASE}/rounds/${roundId}/access-logs?${searchParams.toString()}`;
   const response = await fetch(url, { headers: getHeaders() });

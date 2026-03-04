@@ -46,9 +46,10 @@ export interface AccessLogWithInvestor extends AccessLog {
 
 export interface RoundAnalytics {
   totalViews: number;
+  totalDownloads: number;
   uniqueViewers: number;
-  viewsPerDocument: { documentId: string; documentName: string; views: number }[];
-  viewsOverTime: { date: string; views: number }[];
+  viewsPerDocument: { documentId: string; documentName: string; views: number; downloads: number }[];
+  viewsOverTime: { date: string; views: number; downloads: number }[];
   topInvestors: { investorId: string; investorName: string; investorEmail: string; totalActions: number; totalDuration: number }[];
 }
 
@@ -279,14 +280,17 @@ export async function listAccessLogs(
 export async function getRoundAnalytics(
   roundId: string
 ): Promise<RoundAnalytics> {
-  // Total views
-  const totalResult = await query<{ count: string }>(
-    `SELECT COUNT(*) AS count
+  // Total views and downloads
+  const totalResult = await query<{ views: string; downloads: string }>(
+    `SELECT
+       COUNT(*) FILTER (WHERE action = 'view') AS views,
+       COUNT(*) FILTER (WHERE action = 'download') AS downloads
      FROM ir_access_logs
      WHERE round_id = $1 AND deleted_at IS NULL`,
     [roundId]
   );
-  const totalViews = parseInt(totalResult.rows[0]!.count, 10);
+  const totalViews = parseInt(totalResult.rows[0]!.views, 10);
+  const totalDownloads = parseInt(totalResult.rows[0]!.downloads, 10);
 
   // Unique viewers
   const uniqueResult = await query<{ count: string }>(
@@ -297,13 +301,16 @@ export async function getRoundAnalytics(
   );
   const uniqueViewers = parseInt(uniqueResult.rows[0]!.count, 10);
 
-  // Views per document
+  // Views and downloads per document
   const docsResult = await query<{
     document_id: string;
     document_name: string;
     views: string;
+    downloads: string;
   }>(
-    `SELECT al.document_id, d.name AS document_name, COUNT(*) AS views
+    `SELECT al.document_id, d.name AS document_name,
+            COUNT(*) FILTER (WHERE al.action = 'view') AS views,
+            COUNT(*) FILTER (WHERE al.action = 'download') AS downloads
      FROM ir_access_logs al
      JOIN ir_documents d ON d.id = al.document_id AND d.deleted_at IS NULL
      WHERE al.round_id = $1 AND al.document_id IS NOT NULL AND al.deleted_at IS NULL
@@ -315,11 +322,14 @@ export async function getRoundAnalytics(
     documentId: row.document_id,
     documentName: row.document_name,
     views: parseInt(row.views, 10),
+    downloads: parseInt(row.downloads, 10),
   }));
 
-  // Views over time (last 30 days, by day)
-  const timeResult = await query<{ date: string; views: string }>(
-    `SELECT DATE(created_at) AS date, COUNT(*) AS views
+  // Views and downloads over time (last 30 days, by day)
+  const timeResult = await query<{ date: string; views: string; downloads: string }>(
+    `SELECT DATE(created_at) AS date,
+            COUNT(*) FILTER (WHERE action = 'view') AS views,
+            COUNT(*) FILTER (WHERE action = 'download') AS downloads
      FROM ir_access_logs
      WHERE round_id = $1 AND deleted_at IS NULL
        AND created_at >= now() - INTERVAL '30 days'
@@ -330,6 +340,7 @@ export async function getRoundAnalytics(
   const viewsOverTime = timeResult.rows.map((row) => ({
     date: row.date,
     views: parseInt(row.views, 10),
+    downloads: parseInt(row.downloads, 10),
   }));
 
   // Top investors by engagement
@@ -363,6 +374,7 @@ export async function getRoundAnalytics(
 
   return {
     totalViews,
+    totalDownloads,
     uniqueViewers,
     viewsPerDocument,
     viewsOverTime,
@@ -526,6 +538,56 @@ export async function getRecentActivity(
     durationSeconds: row.duration_seconds,
     createdAt: row.created_at,
   }));
+}
+
+// ── Round Dashboard Stats ──
+
+export interface RoundDashboardStats {
+  totalInvestors: number;
+  activeInvestors: number;
+  totalFiles: number;
+  totalViews: number;
+  totalDownloads: number;
+}
+
+/**
+ * Get dashboard stats scoped to a single round.
+ */
+export async function getRoundDashboardStats(
+  roundId: string
+): Promise<RoundDashboardStats> {
+  const investorResult = await query<{ total: string; active: string }>(
+    `SELECT
+       COUNT(*) AS total,
+       COUNT(*) FILTER (WHERE ir.status IN ('nda_accepted', 'active')) AS active
+     FROM ir_investor_rounds ir
+     WHERE ir.round_id = $1 AND ir.deleted_at IS NULL`,
+    [roundId]
+  );
+
+  const filesResult = await query<{ count: string }>(
+    `SELECT COUNT(*) AS count
+     FROM ir_documents
+     WHERE round_id = $1 AND deleted_at IS NULL`,
+    [roundId]
+  );
+
+  const actionsResult = await query<{ views: string; downloads: string }>(
+    `SELECT
+       COUNT(*) FILTER (WHERE action = 'view') AS views,
+       COUNT(*) FILTER (WHERE action = 'download') AS downloads
+     FROM ir_access_logs
+     WHERE round_id = $1 AND deleted_at IS NULL`,
+    [roundId]
+  );
+
+  return {
+    totalInvestors: parseInt(investorResult.rows[0]!.total, 10),
+    activeInvestors: parseInt(investorResult.rows[0]!.active, 10),
+    totalFiles: parseInt(filesResult.rows[0]!.count, 10),
+    totalViews: parseInt(actionsResult.rows[0]!.views, 10),
+    totalDownloads: parseInt(actionsResult.rows[0]!.downloads, 10),
+  };
 }
 
 export async function getOverallStats(

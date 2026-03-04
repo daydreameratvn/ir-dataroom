@@ -3,7 +3,7 @@ import { createHmac } from "crypto";
 import { getJwtKey } from "../config.ts";
 import { requireAuth, requireAdmin, getEffectiveTenantId } from "../middleware.ts";
 import { query } from "../db/pool.ts";
-import { encryptToken, decryptToken } from "../services/encryption.ts";
+import { encryptToken } from "../services/encryption.ts";
 import {
   getAdminConsentUrl,
   exchangeAdminConsentCode,

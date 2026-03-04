@@ -10,29 +10,40 @@ export default function InvestorLayout() {
     <div className="flex min-h-screen flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        {/* Brand accent line */}
+        <div className="h-0.5 bg-primary" />
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-primary">
-              <span className="text-sm font-bold text-primary-foreground">P</span>
-            </div>
-            <span className="text-sm font-semibold text-foreground">
+          <Link to="/rounds" className="flex items-center gap-2.5">
+            <img src="/papaya-logo.png" alt="Papaya" className="h-7" />
+            <span className="text-sm font-medium text-muted-foreground">|</span>
+            <span className="text-sm font-semibold tracking-tight text-foreground">
               Investor Portal
             </span>
-          </div>
+          </Link>
 
           {/* User Info + Logout */}
           <div className="flex items-center gap-3">
             {investor && (
-              <Link to="/profile" className="hidden text-right sm:block hover:opacity-80">
-                <p className="text-sm font-medium text-foreground">
-                  {investor.name}
-                </p>
-                {investor.firm && (
-                  <p className="text-xs text-muted-foreground">
-                    {investor.firm}
+              <Link
+                to="/profile"
+                className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-accent"
+              >
+                <div className="flex size-8 items-center justify-center rounded-full bg-primary/10">
+                  <span className="text-xs font-semibold text-primary">
+                    {investor.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div className="hidden text-right sm:block">
+                  <p className="text-sm font-medium leading-tight text-foreground">
+                    {investor.name}
                   </p>
-                )}
+                  {investor.firm && (
+                    <p className="text-xs leading-tight text-muted-foreground">
+                      {investor.firm}
+                    </p>
+                  )}
+                </div>
               </Link>
             )}
             <Button
@@ -53,10 +64,10 @@ export default function InvestorLayout() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-4">
+      <footer className="border-t bg-muted/30 py-6">
         <div className="mx-auto max-w-5xl px-6">
           <p className="text-center text-xs text-muted-foreground">
-            Confidential. For authorized investors only. Powered by Papaya.
+            Private and Strictly Confidential. For authorized investors only.
           </p>
         </div>
       </footer>

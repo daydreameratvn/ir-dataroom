@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { SignJWT, jwtVerify } from "jose";
 import { requireAuth, requireAdmin, getEffectiveTenantId, getClientInfo, getTenantId } from "../middleware.ts";
-import { getJwtKey, authConfig } from "../config.ts";
+import { getJwtKey } from "../config.ts";
 import { createOtpRequest, verifyOtp, sendEmailOtp } from "../services/otp.ts";
 import {
   listRounds,
@@ -17,7 +17,6 @@ import {
   getInvestorByEmail,
   createInvestor,
   updateInvestor,
-  softDeleteInvestor,
   addInvestorToRound,
   updateInvestorRoundStatus,
   removeInvestorFromRound,
@@ -25,8 +24,9 @@ import {
   listRoundsForInvestor,
   getInvestorRound,
   recordInvestorAccess,
-  promoteToActiveIfNeeded,
+  promoteToViewingIfNeeded,
 } from "../services/ir-investor.ts";
+import { query } from "../db/pool.ts";
 import {
   listDocuments,
   getDocumentById,
@@ -49,11 +49,13 @@ import {
   exportAccessLogsCSV,
   getInvestorEngagement,
   getRecentActivity,
+  getRoundDashboardStats,
 } from "../services/ir-access-log.ts";
 import {
   generateUploadUrl,
   generateViewUrl,
   downloadFileBuffer,
+  uploadToS3,
 } from "../services/ir-s3.ts";
 import { watermarkFile } from "../services/ir-watermark.ts";
 import { generateSignedNdaPdf } from "../services/ir-nda-pdf.ts";
@@ -215,11 +217,47 @@ ir.put("/ir/rounds/:id", async (c) => {
   }
 });
 
-ir.delete("/ir/rounds/:id", async (c) => {
+// Request OTP before deleting a round
+ir.post("/ir/rounds/:id/delete-otp", async (c) => {
   const user = c.get("user");
-  const id = c.req.param("id");
+  const tenantId = getEffectiveTenantId(c);
 
   try {
+    const { code } = await createOtpRequest({
+      tenantId,
+      provider: "email_otp",
+      destination: user.email,
+    });
+    await sendEmailOtp(user.email, code);
+    return c.json({ success: true, message: "Verification code sent" });
+  } catch (err) {
+    console.error("[IR API] Error sending delete-round OTP:", err);
+    return c.json({ error: "Failed to send verification code" }, 500);
+  }
+});
+
+ir.delete("/ir/rounds/:id", async (c) => {
+  const user = c.get("user");
+  const tenantId = getEffectiveTenantId(c);
+  const id = c.req.param("id");
+
+  // Require OTP verification
+  const body = await c.req.json<{ code?: string }>().catch(() => ({}));
+  if (!body.code) {
+    return c.json({ error: "Verification code is required" }, 400);
+  }
+
+  try {
+    const result = await verifyOtp({
+      tenantId,
+      destination: user.email,
+      code: body.code,
+    });
+
+    if (!result.valid) {
+      return c.json({ error: "Invalid or expired verification code" }, 400);
+    }
+
     await softDeleteRound(id, user.sub);
     return c.json({ success: true });
   } catch (err) {
@@ -256,7 +294,7 @@ ir.post("/ir/rounds/:id/investors", async (c) => {
     title?: string;
     phone?: string;
     notes?: string;
-    skipNda?: boolean;
+    ndaMode?: "digital" | "offline";
   }>();
 
   if (!body.email || !body.name) {
@@ -275,16 +313,28 @@ ir.post("/ir/rounds/:id/investors", async (c) => {
       return c.json({ error: "Failed to create investor" }, 500);
     }
 
-    // Add to round (skipNda bypasses NDA requirement for this investor)
+    // Add to round with NDA mode (digital = NDA popup, offline = skip NDA)
     const irResult = await addInvestorToRound(tenantId, investor.id, roundId, user.sub, {
-      skipNda: body.skipNda,
+      ndaMode: body.ndaMode,
     });
+
+    // Fire welcome email (best-effort, non-blocking)
+    sendWelcomeEmail(investor).catch((err) => {
+      console.error("[IR API] Failed to send welcome email:", err);
+    });
+
     return c.json({ id: irResult.id, investorId: investor.id }, 201);
   } catch (err) {
     console.error("[IR API] Error adding investor to round:", err);
     return c.json({ error: "Failed to add investor to round" }, 500);
   }
 });
+
+const VALID_STATUSES = [
+  "invited", "nda_signed", "viewing",
+  "termsheet_sent", "termsheet_signed",
+  "docs_out", "docs_signed", "dropped",
+] as const;
 
 ir.put("/ir/rounds/:rid/investors/:iid", async (c) => {
   const user = c.get("user");
@@ -293,6 +343,10 @@ ir.put("/ir/rounds/:rid/investors/:iid", async (c) => {
 
   if (!body.status) {
     return c.json({ error: "status is required" }, 400);
+  }
+
+  if (!VALID_STATUSES.includes(body.status as any)) {
+    return c.json({ error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}` }, 400);
   }
 
   try {
@@ -314,6 +368,31 @@ ir.delete("/ir/rounds/:rid/investors/:iid", async (c) => {
   } catch (err) {
     console.error("[IR API] Error removing investor:", err);
     return c.json({ error: "Failed to remove investor" }, 500);
+  }
+});
+
+// ── Update NDA mode (digital ↔ offline) ──
+
+ir.put("/ir/rounds/:rid/investors/:iid/nda-mode", async (c) => {
+  const user = c.get("user");
+  const investorRoundId = c.req.param("iid");
+  const body = await c.req.json<{ ndaMode: "digital" | "offline" }>();
+
+  if (!body.ndaMode || !["digital", "offline"].includes(body.ndaMode)) {
+    return c.json({ error: "ndaMode must be 'digital' or 'offline'" }, 400);
+  }
+
+  try {
+    await query(
+      `UPDATE ir_investor_rounds
+       SET nda_mode = $1, nda_required = $2, updated_by = $3, updated_at = now()
+       WHERE id = $4 AND deleted_at IS NULL`,
+      [body.ndaMode, body.ndaMode === "digital", user.sub, investorRoundId]
+    );
+    return c.json({ success: true });
+  } catch (err) {
+    console.error("[IR API] Error updating NDA mode:", err);
+    return c.json({ error: "Failed to update NDA mode" }, 500);
   }
 });
 
@@ -392,6 +471,54 @@ ir.post("/ir/rounds/:id/documents", async (c) => {
   } catch (err) {
     console.error("[IR API] Error creating document:", err);
     return c.json({ error: "Failed to create document" }, 500);
+  }
+});
+
+// ── Document File Upload (proxy through server to avoid S3 CORS) ─────────
+
+ir.post("/ir/documents/:id/upload", async (c) => {
+  const user = c.get("user");
+  const tenantId = getEffectiveTenantId(c);
+  const id = c.req.param("id");
+
+  try {
+    const doc = await getDocumentById(id);
+    if (!doc) return c.json({ error: "Document not found" }, 404);
+
+    const formData = await c.req.formData();
+    const file = formData.get("file");
+    if (!file || !(file instanceof File)) {
+      return c.json({ error: "file is required" }, 400);
+    }
+
+    const mimeType = file.type || "application/octet-stream";
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    const s3Result = await uploadToS3({
+      tenantId,
+      roundId: doc.roundId,
+      docId: id,
+      fileName: file.name || doc.name,
+      mimeType,
+      body: buffer,
+    });
+
+    // Update document with S3 metadata
+    await updateDocument(
+      id,
+      {
+        s3Key: s3Result.s3Key,
+        s3Bucket: s3Result.s3Bucket,
+        mimeType,
+        fileSizeBytes: buffer.length,
+      },
+      user.sub
+    );
+
+    return c.json({ success: true, s3Key: s3Result.s3Key });
+  } catch (err) {
+    console.error("[IR API] Error uploading file:", err);
+    return c.json({ error: "Failed to upload file" }, 500);
   }
 });
 
@@ -514,6 +641,18 @@ ir.get("/ir/rounds/:id/analytics", async (c) => {
   }
 });
 
+ir.get("/ir/rounds/:id/dashboard-stats", async (c) => {
+  const roundId = c.req.param("id");
+
+  try {
+    const stats = await getRoundDashboardStats(roundId);
+    return c.json(stats);
+  } catch (err) {
+    console.error("[IR API] Error fetching dashboard stats:", err);
+    return c.json({ error: "Failed to fetch dashboard stats" }, 500);
+  }
+});
+
 ir.get("/ir/rounds/:id/engagement", async (c) => {
   const roundId = c.req.param("id");
 
@@ -606,6 +745,75 @@ ir.get("/ir/investors", async (c) => {
   }
 });
 
+// ── Shared helper: send welcome / invite email ──────────────────────────
+async function sendWelcomeEmail(investor: { email: string; name?: string | null }) {
+  const firstName = investor.name?.split(" ")[0] || "there";
+  const portalUrl = process.env.IR_PORTAL_URL || "https://investors.papaya.asia";
+  const fromEmail = process.env.OTP_FROM_EMAIL || "noreply@papaya.asia";
+  const { SESClient, SendEmailCommand } = await import("@aws-sdk/client-ses");
+  const ses = new SESClient({ region: process.env.AWS_REGION || "ap-southeast-1" });
+
+  await ses.send(
+    new SendEmailCommand({
+      Source: fromEmail,
+      Destination: { ToAddresses: [investor.email] },
+      Message: {
+        Subject: { Data: "Welcome aboard! Your Papaya dataroom is ready \ud83c\udf89" },
+        Body: {
+          Html: {
+            Data: `
+              <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 48px 24px; color: #333;">
+                <div style="text-align: center; margin-bottom: 32px;">
+                  <img src="https://investors.papaya.asia/papaya-logo.png" alt="Papaya" height="40" style="height: 40px;" />
+                </div>
+                <h2 style="color: #1a1a1a; font-size: 24px; font-weight: 700; margin-bottom: 20px;">We're thrilled to have you! \ud83d\ude80</h2>
+                <p style="font-size: 15px; line-height: 1.7; margin: 0 0 16px;">Hi ${firstName},</p>
+                <p style="font-size: 15px; line-height: 1.7; margin: 0 0 16px;">
+                  Thank you for your interest in Papaya \u2014 we're genuinely excited to share our story with you!
+                </p>
+                <p style="font-size: 15px; line-height: 1.7; margin: 0 0 16px;">
+                  We've prepared a dedicated dataroom where you can explore our pitch deck,
+                  financials, product roadmap, and other key materials \u2014 all in one place,
+                  at your own pace.
+                </p>
+                <p style="text-align: center; margin: 36px 0;">
+                  <a href="${portalUrl}" style="display: inline-block; background-color: #ED1B55; color: white; padding: 16px 40px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 16px; letter-spacing: 0.3px;">
+                    Enter Dataroom \u2192
+                  </a>
+                </p>
+                <div style="background: #f8f9fa; border-radius: 8px; padding: 16px 20px; margin: 24px 0;">
+                  <p style="font-size: 13px; line-height: 1.6; color: #555; margin: 0;">
+                    <strong>How to sign in:</strong> Click the button above, enter your email
+                    (<span style="color: #ED1B55;">${investor.email}</span>), and we\u2019ll send you a one-time code.
+                    No password needed \u2014 it\u2019s that easy!
+                  </p>
+                </div>
+                <p style="font-size: 15px; line-height: 1.7; margin: 24px 0 0;">
+                  We can\u2019t wait to show you what we\u2019re building. If you have any questions
+                  or would like to schedule a conversation, don\u2019t hesitate to reach out \u2014
+                  we\u2019d love to hear from you.
+                </p>
+                <p style="font-size: 15px; line-height: 1.7; margin: 24px 0 0;">
+                  With excitement,<br />
+                  <strong>The Papaya Team</strong>
+                </p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 36px 0 16px;" />
+                <p style="color: #aaa; font-size: 11px; text-align: center; line-height: 1.5;">
+                  You\u2019re receiving this because your email was added to the Papaya investor dataroom.<br />
+                  If this wasn\u2019t intended for you, you can safely ignore this message.
+                </p>
+              </div>
+            `,
+          },
+          Text: {
+            Data: `Hi ${firstName},\n\nThank you for your interest in Papaya \u2014 we're genuinely excited to share our story with you!\n\nWe've prepared a dedicated dataroom where you can explore our pitch deck, financials, product roadmap, and other key materials \u2014 all in one place, at your own pace.\n\nVisit ${portalUrl} and sign in with your email (${investor.email}). We'll send you a one-time code \u2014 no password needed!\n\nWe can't wait to show you what we're building. If you have any questions or would like to chat, don't hesitate to reach out.\n\nWith excitement,\nThe Papaya Team`,
+          },
+        },
+      },
+    })
+  );
+}
+
 ir.post("/ir/investors/:id/invite", async (c) => {
   const id = c.req.param("id");
 
@@ -613,63 +821,7 @@ ir.post("/ir/investors/:id/invite", async (c) => {
     const investor = await getInvestorById(id);
     if (!investor) return c.json({ error: "Investor not found" }, 404);
 
-    const firstName = investor.name?.split(" ")[0] || "there";
-    const portalUrl = process.env.IR_PORTAL_URL || "https://investors.papaya.asia";
-
-    // Send invitation / welcome email via SES
-    const fromEmail = process.env.OTP_FROM_EMAIL || "noreply@papaya.asia";
-    const { SESClient, SendEmailCommand } = await import("@aws-sdk/client-ses");
-    const ses = new SESClient({ region: process.env.AWS_REGION || "ap-southeast-1" });
-
-    await ses.send(
-      new SendEmailCommand({
-        Source: fromEmail,
-        Destination: { ToAddresses: [investor.email] },
-        Message: {
-          Subject: { Data: "You're Invited \u2014 Papaya Investor Dataroom" },
-          Body: {
-            Html: {
-              Data: `
-                <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px 24px; color: #333;">
-                  <div style="text-align: center; margin-bottom: 24px;">
-                    <img src="https://papaya.asia/logo.png" alt="Papaya" height="40" style="height: 40px;" />
-                  </div>
-                  <h2 style="color: #1a1a1a; font-size: 22px; margin-bottom: 16px;">Welcome to the Dataroom</h2>
-                  <p style="font-size: 15px; line-height: 1.6;">Hi ${firstName},</p>
-                  <p style="font-size: 15px; line-height: 1.6;">
-                    You've been invited to access Papaya's investor dataroom.
-                    Inside you'll find key documents, financials, and materials
-                    relevant to our fundraising round.
-                  </p>
-                  <p style="text-align: center; margin: 32px 0;">
-                    <a href="${portalUrl}" style="display: inline-block; background-color: #ED1B55; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
-                      Enter Dataroom
-                    </a>
-                  </p>
-                  <div style="background: #f8f9fa; border-radius: 8px; padding: 16px; margin: 24px 0;">
-                    <p style="font-size: 13px; color: #666; margin: 0;">
-                      <strong>How to sign in:</strong> Click the button above, enter your email
-                      (<em>${investor.email}</em>), and we'll send you a one-time code.
-                      No password needed.
-                    </p>
-                  </div>
-                  <p style="font-size: 14px; color: #666; line-height: 1.6;">
-                    If you have any questions, feel free to reply to this email.
-                  </p>
-                  <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
-                  <p style="color: #999; font-size: 12px; text-align: center;">
-                    Papaya Insurance &bull; Confidential
-                  </p>
-                </div>
-              `,
-            },
-            Text: {
-              Data: `Hi ${firstName},\n\nYou've been invited to access Papaya's investor dataroom.\n\nVisit ${portalUrl} and sign in with your email (${investor.email}). We'll send you a one-time code — no password needed.\n\nIf you have any questions, reply to this email.\n\nPapaya Insurance`,
-            },
-          },
-        },
-      })
-    );
+    await sendWelcomeEmail(investor);
 
     return c.json({ success: true, message: "Invitation sent" });
   } catch (err) {
@@ -949,52 +1101,26 @@ ir.get("/ir/portal/rounds/:slug/documents/:docId/view", async (c) => {
     const investorRound = await getInvestorRound(investor.sub, round.id);
     if (!investorRound) return c.json({ error: "Access denied" }, 403);
 
+    // Check NDA requirement
+    if (investorRound.ndaRequired && !investorRound.ndaAcceptedAt) {
+      return c.json({ error: "NDA must be accepted first" }, 403);
+    }
+
     const doc = await getDocumentById(docId);
     if (!doc || doc.roundId !== round.id) return c.json({ error: "Document not found" }, 404);
 
     // Auto-promote investor to 'active' on first file access
-    await promoteToActiveIfNeeded(investorRound.id).catch(() => {});
+    await promoteToViewingIfNeeded(investorRound.id).catch(() => {});
 
+    // For preview: always return a presigned URL for instant loading.
+    // The frontend CSS overlay provides the visual watermark during viewing.
+    // Server-side watermarking is only applied on download (where files are saved).
     let presignedUrl: string | null = null;
-
     if (doc.s3Key) {
-      // If watermark is enabled, download → watermark → return as blob
-      if (doc.watermarkEnabled && (doc.mimeType === "application/pdf" || doc.mimeType?.includes("spreadsheet") || doc.mimeType?.includes("excel"))) {
-        try {
-          const { buffer } = await downloadFileBuffer({ s3Key: doc.s3Key, s3Bucket: doc.s3Bucket ?? undefined });
-          const watermarked = await watermarkFile(buffer, doc.mimeType, investor.email);
-          if (watermarked) {
-            // Log view and return access log ID for duration tracking
-            const { ipAddress, userAgent } = getClientInfo(c);
-            const accessLog = await logAccess(investor.tenantId, {
-              investorId: investor.sub,
-              roundId: round.id,
-              documentId: docId,
-              action: "view",
-              ipAddress,
-              userAgent,
-            }).catch(() => null);
-
-            const headers: Record<string, string> = {
-              "Content-Type": doc.mimeType || "application/octet-stream",
-              "Content-Disposition": `inline; filename="${doc.name}"`,
-              "Content-Length": watermarked.length.toString(),
-            };
-            if (accessLog) {
-              headers["X-Access-Log-Id"] = accessLog.id;
-            }
-
-            return new Response(new Uint8Array(watermarked), { status: 200, headers });
-          }
-        } catch (err) {
-          console.error("[IR Portal] Watermark failed, falling back to presigned URL:", err);
-        }
-      }
-
-      // No watermark needed or watermark failed — use presigned URL
       presignedUrl = await generateViewUrl({
         s3Key: doc.s3Key,
         s3Bucket: doc.s3Bucket ?? undefined,
+        contentType: doc.mimeType ?? undefined,
       });
     }
 
@@ -1039,11 +1165,16 @@ ir.get("/ir/portal/rounds/:slug/documents/:docId/download", async (c) => {
     const investorRound = await getInvestorRound(investor.sub, round.id);
     if (!investorRound) return c.json({ error: "Access denied" }, 403);
 
+    // Check NDA requirement
+    if (investorRound.ndaRequired && !investorRound.ndaAcceptedAt) {
+      return c.json({ error: "NDA must be accepted first" }, 403);
+    }
+
     const doc = await getDocumentById(docId);
     if (!doc || doc.roundId !== round.id) return c.json({ error: "Document not found" }, 404);
 
     // Auto-promote investor to 'active' on first file access
-    await promoteToActiveIfNeeded(investorRound.id).catch(() => {});
+    await promoteToViewingIfNeeded(investorRound.id).catch(() => {});
 
     // Log download
     const { ipAddress, userAgent } = getClientInfo(c);
@@ -1057,27 +1188,30 @@ ir.get("/ir/portal/rounds/:slug/documents/:docId/download", async (c) => {
     }).catch(() => {});
 
     if (doc.s3Key) {
-      // If watermark is enabled, download → watermark → stream back
-      if (doc.watermarkEnabled) {
-        try {
-          const { buffer } = await downloadFileBuffer({ s3Key: doc.s3Key, s3Bucket: doc.s3Bucket ?? undefined });
+      // Always try to stream from S3 through server (avoids presigned URL issues)
+      try {
+        const { buffer } = await downloadFileBuffer({ s3Key: doc.s3Key, s3Bucket: doc.s3Bucket ?? undefined });
+
+        // Apply watermark if enabled, otherwise serve original
+        let content: Buffer = buffer;
+        if (doc.watermarkEnabled) {
           const watermarked = await watermarkFile(buffer, doc.mimeType, investor.email);
-          if (watermarked) {
-            return new Response(new Uint8Array(watermarked), {
-              status: 200,
-              headers: {
-                "Content-Type": doc.mimeType || "application/octet-stream",
-                "Content-Disposition": `attachment; filename="${doc.name}"`,
-                "Content-Length": watermarked.length.toString(),
-              },
-            });
-          }
-        } catch (err) {
-          console.error("[IR Portal] Watermark failed, falling back to presigned URL:", err);
+          if (watermarked) content = watermarked;
         }
+
+        return new Response(new Uint8Array(content), {
+          status: 200,
+          headers: {
+            "Content-Type": doc.mimeType || "application/octet-stream",
+            "Content-Disposition": `attachment; filename="${doc.name}"`,
+            "Content-Length": content.length.toString(),
+          },
+        });
+      } catch (err) {
+        console.error("[IR Portal] S3 download failed, falling back to presigned URL:", err);
       }
 
-      // No watermark or watermark failed — use presigned download URL
+      // Fallback: presigned download URL (if S3 direct download fails)
       const presignedUrl = await generateViewUrl({
         s3Key: doc.s3Key,
         s3Bucket: doc.s3Bucket ?? undefined,
@@ -1094,9 +1228,6 @@ ir.get("/ir/portal/rounds/:slug/documents/:docId/download", async (c) => {
 });
 
 ir.post("/ir/portal/rounds/:slug/documents/:docId/track", async (c) => {
-  const investor = c.get("investor");
-  const slug = c.req.param("slug");
-  const docId = c.req.param("docId");
   const body = await c.req.json<{ accessLogId: string; durationSeconds: number }>();
 
   if (!body.accessLogId || body.durationSeconds == null) {

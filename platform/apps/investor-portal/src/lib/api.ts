@@ -143,6 +143,7 @@ export interface InvestorRound {
   roundId: string;
   status: string;
   ndaRequired: boolean;
+  ndaMode: 'digital' | 'offline';
   ndaTemplateId: string | null;
   ndaAcceptedAt: string | null;
   lastAccessAt: string | null;
@@ -204,7 +205,15 @@ export async function downloadNdaPdf(slug: string): Promise<Blob> {
   }
 
   if (!res.ok) {
-    throw new Error('Failed to download NDA');
+    const body = await res.json().catch(() => ({}));
+    throw new Error((body as { error?: string }).error ?? 'Failed to download NDA');
+  }
+
+  // Ensure the response is actually a PDF, not a JSON error
+  const contentType = res.headers.get('Content-Type') ?? '';
+  if (!contentType.includes('application/pdf')) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error((body as { error?: string }).error ?? 'Unexpected response format');
   }
 
   return res.blob();
@@ -277,35 +286,9 @@ export async function getDocumentViewUrl(
   }
 
   const accessLogId = res.headers.get('X-Access-Log-Id') ?? undefined;
-  const contentType = res.headers.get('Content-Type') ?? '';
 
-  // Check if the response is a watermarked binary (PDF/Excel) or JSON with presigned URL
-  if (contentType.includes('application/pdf') || contentType.includes('spreadsheet') || contentType.includes('excel') || contentType.includes('octet-stream')) {
-    // Server returned a watermarked file as binary
-    const blob = await res.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    const docName = res.headers.get('Content-Disposition')?.match(/filename="?(.+?)"?$/)?.[1] ?? 'document';
-
-    return {
-      url: blobUrl,
-      blobUrl,
-      document: {
-        id: docId,
-        name: docName,
-        description: null,
-        category: '',
-        mimeType: contentType.split(';')[0],
-        fileSizeBytes: blob.size,
-        s3Key: null,
-        sortOrder: 0,
-        watermarkEnabled: true,
-        createdAt: '',
-      },
-      accessLogId,
-    };
-  }
-
-  // JSON response with presigned URL
+  // Server always returns JSON with presigned URL for instant preview.
+  // Watermarking is only applied on download, not preview.
   const body = (await res.json()) as { url: string | null; document: Document };
 
   return {
@@ -356,7 +339,7 @@ export async function getDocumentDownloadUrl(
         name: docName,
         description: null,
         category: '',
-        mimeType: contentType.split(';')[0],
+        mimeType: contentType.split(';')[0] ?? null,
         fileSizeBytes: blob.size,
         s3Key: null,
         sortOrder: 0,

@@ -11,6 +11,8 @@ export default function RoundGuard() {
     queryKey: ['round', slug],
     queryFn: () => getRound(slug!),
     enabled: !!slug,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 
   if (isLoading) {

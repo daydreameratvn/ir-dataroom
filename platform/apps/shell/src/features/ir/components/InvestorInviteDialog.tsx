@@ -7,8 +7,14 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@papaya/shared-ui';
 import { addInvestorToRound } from '../api';
+import type { NdaMode } from '../types';
 
 interface InvestorInviteDialogProps {
   open: boolean;
@@ -27,7 +33,7 @@ export default function InvestorInviteDialog({
   const [name, setName] = useState('');
   const [firm, setFirm] = useState('');
   const [title, setTitle] = useState('');
-  const [skipNda, setSkipNda] = useState(false);
+  const [ndaMode, setNdaMode] = useState<NdaMode>('digital');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +59,7 @@ export default function InvestorInviteDialog({
         name: name.trim(),
         firm: firm.trim() || undefined,
         title: title.trim() || undefined,
-        skipNda: skipNda || undefined,
+        ndaMode,
       });
 
       // Reset form
@@ -61,7 +67,7 @@ export default function InvestorInviteDialog({
       setName('');
       setFirm('');
       setTitle('');
-      setSkipNda(false);
+      setNdaMode('digital');
 
       onAdded();
       onOpenChange(false);
@@ -125,16 +131,24 @@ export default function InvestorInviteDialog({
             />
           </div>
 
-          {/* Skip NDA */}
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={skipNda}
-              onChange={(e) => setSkipNda(e.target.checked)}
-              className="h-4 w-4 rounded border-gray-300"
-            />
-            <span className="text-sm">Skip NDA requirement for this investor</span>
-          </label>
+          {/* NDA Mode */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium">NDA Mode</label>
+            <Select value={ndaMode} onValueChange={(v) => setNdaMode(v as NdaMode)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="digital">{'\uD83D\uDD12'} Digital — NDA popup on login</SelectItem>
+                <SelectItem value="offline">{'\uD83D\uDCCB'} Offline — Skip NDA popup</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {ndaMode === 'digital'
+                ? 'Investor will see an NDA popup and must accept before viewing documents.'
+                : 'Investor goes straight to documents. Handle NDA separately outside the platform.'}
+            </p>
+          </div>
 
           {/* Error */}
           {error && (

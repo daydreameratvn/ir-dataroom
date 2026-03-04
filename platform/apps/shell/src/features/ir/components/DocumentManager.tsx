@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { FileText, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { RefreshCw, Trash2, Upload } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,27 +13,30 @@ import {
   Button,
   Card,
   CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Separator,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
 } from '@papaya/shared-ui';
 import type { Document, DocumentCategory } from '../types';
-import { listDocuments, deleteDocument } from '../api';
-import DocumentUploadDialog from './DocumentUploadDialog';
+import { listDocuments, createDocument, uploadDocumentFile, deleteDocument } from '../api';
 
 interface DocumentManagerProps {
   roundId: string;
 }
 
-const CATEGORIES: { value: DocumentCategory | 'all'; label: string }[] = [
-  { value: 'all', label: 'All' },
+const CATEGORY_OPTIONS: { value: DocumentCategory; label: string }[] = [
   { value: 'financials', label: 'Financials' },
   { value: 'strategy', label: 'Strategy' },
   { value: 'product', label: 'Product' },
@@ -42,11 +45,49 @@ const CATEGORIES: { value: DocumentCategory | 'all'; label: string }[] = [
   { value: 'other', label: 'Other' },
 ];
 
+const CATEGORY_ORDER: DocumentCategory[] = ['financials', 'strategy', 'product', 'legal', 'team', 'other'];
+
+function categoryColor(category: DocumentCategory): string {
+  switch (category) {
+    case 'financials': return 'bg-emerald-100 text-emerald-700';
+    case 'strategy': return 'bg-blue-100 text-blue-700';
+    case 'product': return 'bg-violet-100 text-violet-700';
+    case 'legal': return 'bg-amber-100 text-amber-700';
+    case 'team': return 'bg-sky-100 text-sky-700';
+    default: return 'bg-gray-100 text-gray-600';
+  }
+}
+
 function formatFileSize(bytes: number | null): string {
   if (bytes === null || bytes === undefined) return '-';
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function friendlyType(mime: string | null, fileName?: string): string {
+  if (mime) {
+    const m = mime.toLowerCase();
+    if (m === 'application/pdf') return 'PDF';
+    if (m.includes('spreadsheet') || m.includes('excel') || m === 'text/csv') return 'Excel';
+    if (m.includes('presentation') || m.includes('powerpoint')) return 'PPT';
+    if (m.includes('word') || m === 'application/msword') return 'Word';
+    if (m.startsWith('video/')) return 'Video';
+    if (m.startsWith('image/')) return 'Image';
+    if (m.startsWith('audio/')) return 'Audio';
+    if (m === 'application/zip' || m.includes('compressed') || m.includes('tar')) return 'ZIP';
+    if (m === 'text/plain') return 'Text';
+  }
+  if (fileName) {
+    const ext = fileName.split('.').pop()?.toLowerCase();
+    if (ext === 'pdf') return 'PDF';
+    if (['xls', 'xlsx', 'csv'].includes(ext ?? '')) return 'Excel';
+    if (['ppt', 'pptx'].includes(ext ?? '')) return 'PPT';
+    if (['doc', 'docx'].includes(ext ?? '')) return 'Word';
+    if (['mp4', 'mov', 'avi', 'webm', 'mkv'].includes(ext ?? '')) return 'Video';
+    if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext ?? '')) return 'Image';
+  }
+  return 'File';
 }
 
 function formatDate(dateStr: string): string {
@@ -57,52 +98,61 @@ function formatDate(dateStr: string): string {
   }).format(new Date(dateStr));
 }
 
-function categoryColor(category: DocumentCategory): string {
-  switch (category) {
-    case 'financials':
-      return 'bg-emerald-100 text-emerald-700';
-    case 'strategy':
-      return 'bg-blue-100 text-blue-700';
-    case 'product':
-      return 'bg-violet-100 text-violet-700';
-    case 'legal':
-      return 'bg-amber-100 text-amber-700';
-    case 'team':
-      return 'bg-sky-100 text-sky-700';
-    case 'other':
-      return 'bg-gray-100 text-gray-600';
-    default:
-      return 'bg-gray-100 text-gray-600';
-  }
-}
-
 export default function DocumentManager({ roundId }: DocumentManagerProps) {
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<DocumentCategory | 'all'>('all');
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<DocumentCategory>('financials');
   const [deleteTarget, setDeleteTarget] = useState<Document | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchDocuments = useCallback(async () => {
     setIsLoading(true);
-    setError(null);
     try {
-      const params = activeCategory !== 'all' ? { category: activeCategory } : undefined;
-      const result = await listDocuments(roundId, params);
+      const result = await listDocuments(roundId, { limit: 200 });
       setDocuments(result.data);
-      setTotal(result.total);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch documents');
+    } catch {
+      // silent
     } finally {
       setIsLoading(false);
     }
-  }, [roundId, activeCategory]);
+  }, [roundId]);
 
   useEffect(() => {
     fetchDocuments();
   }, [fetchDocuments]);
+
+  async function handleUpload() {
+    const file = fileInputRef.current?.files?.[0];
+    if (!file) {
+      setUploadError('Please select a file first.');
+      return;
+    }
+
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const mimeType = file.type || 'application/octet-stream';
+
+      // 1. Create document record
+      const result = await createDocument(roundId, {
+        name: file.name,
+        category: selectedCategory,
+        mimeType,
+      });
+
+      // 2. Upload file via server proxy (avoids S3 CORS issues)
+      await uploadDocumentFile(result.id, file);
+
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      fetchDocuments();
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Upload failed. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function handleDeleteConfirmed() {
     if (!deleteTarget) return;
@@ -111,144 +161,154 @@ export default function DocumentManager({ roundId }: DocumentManagerProps) {
     try {
       await deleteDocument(docId);
       setDocuments((prev) => prev.filter((d) => d.id !== docId));
-      setTotal((prev) => prev - 1);
     } catch {
       fetchDocuments();
     }
   }
 
+  // Group files by category
+  const grouped = documents.reduce<Record<string, Document[]>>((acc, doc) => {
+    const cat = doc.category || 'other';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(doc);
+    return acc;
+  }, {});
+
+  const sortedCategories = CATEGORY_ORDER.filter((c) => grouped[c]?.length);
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">
-          {total} document{total !== 1 ? 's' : ''}
-        </h3>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={fetchDocuments} className="gap-1.5">
-            <RefreshCw className="h-3.5 w-3.5" />
-            Refresh
-          </Button>
-          <Button size="sm" onClick={() => setUploadDialogOpen(true)} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Add Document
-          </Button>
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Files</h2>
+          <p className="text-muted-foreground">Manage dataroom files and documents.</p>
         </div>
+        <Button variant="outline" size="sm" onClick={fetchDocuments}>
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
       </div>
 
-      {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}
-        </div>
-      )}
+      {/* Inline Upload */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Upload File</CardTitle>
+          <CardDescription>Add a new document to the dataroom.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {uploadError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {uploadError}
+            </div>
+          )}
+          <div className="flex items-end gap-4">
+            <div className="flex-1 space-y-2">
+              <label className="text-sm font-medium">File</label>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={() => setUploadError(null)}
+                className="file:text-foreground placeholder:text-muted-foreground border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium"
+              />
+            </div>
+            <div className="w-48 space-y-2">
+              <label className="text-sm font-medium">Category</label>
+              <Select
+                value={selectedCategory}
+                onValueChange={(v) => setSelectedCategory(v as DocumentCategory)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORY_OPTIONS.map((cat) => (
+                    <SelectItem key={cat.value} value={cat.value}>
+                      {cat.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button onClick={handleUpload} disabled={uploading}>
+              <Upload className="h-4 w-4 mr-2" />
+              {uploading ? 'Uploading...' : 'Upload'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
-      <Tabs
-        value={activeCategory}
-        onValueChange={(v) => setActiveCategory(v as DocumentCategory | 'all')}
-      >
-        <TabsList>
-          {CATEGORIES.map((cat) => (
-            <TabsTrigger key={cat.value} value={cat.value}>
-              {cat.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <Separator />
 
-        {CATEGORIES.map((cat) => (
-          <TabsContent key={cat.value} value={cat.value}>
-            {isLoading ? (
-              <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-                Loading documents...
-              </div>
-            ) : documents.length === 0 ? (
-              <Card>
-                <CardContent className="flex h-32 items-center justify-center pt-6 text-sm text-muted-foreground">
-                  No documents found. Add one to get started.
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="rounded-md border">
+      {/* Files Grouped by Category */}
+      {isLoading ? (
+        <div className="text-center py-8 text-muted-foreground">Loading files...</div>
+      ) : documents.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground">No files uploaded yet.</div>
+      ) : (
+        sortedCategories.map((category) => {
+          const categoryDocs = grouped[category];
+          return (
+            <Card key={category}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 capitalize">
+                  {category}
+                  <Badge variant="secondary">{categoryDocs.length}</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Document</TableHead>
-                      <TableHead>Category</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Type</TableHead>
                       <TableHead>Size</TableHead>
-                      <TableHead>Watermark</TableHead>
                       <TableHead>Uploaded</TableHead>
-                      <TableHead className="w-16">Actions</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {documents.map((doc) => (
+                    {categoryDocs.map((doc) => (
                       <TableRow key={doc.id}>
-                        <TableCell>
+                        <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-muted-foreground" />
-                            <div>
-                              <span className="font-medium">{doc.name}</span>
-                              {doc.description && (
-                                <p className="text-xs text-muted-foreground">
-                                  {doc.description}
-                                </p>
-                              )}
-                            </div>
+                            {doc.name}
+                            <Badge className={categoryColor(doc.category)}>
+                              {doc.category}
+                            </Badge>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge className={`${categoryColor(doc.category)} hover:${categoryColor(doc.category)}`}>
-                            {doc.category}
-                          </Badge>
+                          <Badge variant="outline">{friendlyType(doc.mimeType, doc.name)}</Badge>
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {formatFileSize(doc.fileSizeBytes)}
-                        </TableCell>
-                        <TableCell>
-                          {doc.watermarkEnabled ? (
-                            <Badge variant="outline" className="text-xs">
-                              On
-                            </Badge>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">Off</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
-                          {formatDate(doc.createdAt)}
-                        </TableCell>
-                        <TableCell>
+                        <TableCell>{formatFileSize(doc.fileSizeBytes)}</TableCell>
+                        <TableCell>{formatDate(doc.createdAt)}</TableCell>
+                        <TableCell className="text-right">
                           <Button
-                            variant="ghost"
+                            variant="destructive"
                             size="sm"
                             onClick={() => setDeleteTarget(doc)}
-                            className="h-7 px-2 text-xs text-red-600 hover:text-red-700"
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            Delete
                           </Button>
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
-              </div>
-            )}
-          </TabsContent>
-        ))}
-      </Tabs>
+              </CardContent>
+            </Card>
+          );
+        })
+      )}
 
-      <DocumentUploadDialog
-        open={uploadDialogOpen}
-        onOpenChange={setUploadDialogOpen}
-        roundId={roundId}
-        onCreated={fetchDocuments}
-      />
-
-      {/* Delete confirmation dialog */}
+      {/* Delete Confirmation */}
       <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Document</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete <strong>{deleteTarget?.name}</strong>? This will
-              remove the document and its file from storage. This action cannot be undone.
+              Are you sure you want to delete <strong>{deleteTarget?.name}</strong>? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

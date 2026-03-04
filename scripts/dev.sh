@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ============================================================
 # Papaya Banyan — Local Dev Launcher
-# Starts SSM tunnel + auth service + frontend in one command.
+# Starts SSM tunnel + auth + shell + investor portal.
 # Usage: bash scripts/dev.sh
 # ============================================================
 
@@ -33,7 +33,7 @@ trap cleanup EXIT INT TERM
 # ----------------------------------------------------------
 # 1. SSM Tunnel (localhost:15432 -> RDS)
 # ----------------------------------------------------------
-echo -e "${GREEN}[1/3]${NC} Starting SSM tunnel to RDS..."
+echo -e "${GREEN}[1/4]${NC} Starting SSM tunnel to RDS..."
 
 if lsof -i :15432 >/dev/null 2>&1; then
   echo -e "${YELLOW}  Tunnel already running on port 15432${NC}"
@@ -65,7 +65,7 @@ fi
 # ----------------------------------------------------------
 # 2. Auth Service (port 4000)
 # ----------------------------------------------------------
-echo -e "${GREEN}[2/3]${NC} Starting auth service..."
+echo -e "${GREEN}[2/4]${NC} Starting auth service..."
 
 if lsof -i :4000 >/dev/null 2>&1; then
   echo -e "${YELLOW}  Auth already running on port 4000${NC}"
@@ -115,7 +115,7 @@ fi
 # ----------------------------------------------------------
 # 3. Frontend (portless on oasis.localhost:1355)
 # ----------------------------------------------------------
-echo -e "${GREEN}[3/3]${NC} Starting frontend..."
+echo -e "${GREEN}[3/4]${NC} Starting shell frontend..."
 
 if lsof -i :1355 >/dev/null 2>&1; then
   echo -e "${YELLOW}  Frontend already running on port 1355${NC}"
@@ -141,18 +141,75 @@ else
 fi
 
 # ----------------------------------------------------------
+# 4. Investor Portal (portless on investors.oasis.localhost:1355)
+# ----------------------------------------------------------
+echo -e "${GREEN}[4/4]${NC} Starting investor portal..."
+
+# Helper: start (or restart) the investor portal process
+start_investor_portal() {
+  cd "$ROOT_DIR/platform/apps/investor-portal"
+  PATH="$ROOT_DIR/platform/node_modules/.bin:$("$BUN" --print process.env.PATH)" \
+  portless investors.oasis vite >> /tmp/banyan-investor-portal.log 2>&1 &
+  INVESTOR_PID=$!
+}
+
+# Check if investor portal is already responding
+if curl -sf -o /dev/null http://investors.oasis.localhost:1355/ 2>/dev/null; then
+  echo -e "${YELLOW}  Investor portal already running${NC}"
+else
+  > /tmp/banyan-investor-portal.log  # truncate log
+  start_investor_portal
+
+  # Wait for it to register with portless
+  for i in $(seq 1 20); do
+    if curl -sf -o /dev/null http://investors.oasis.localhost:1355/ 2>/dev/null; then
+      echo -e "${GREEN}  Investor portal ready (investors.oasis.localhost:1355)${NC}"
+      break
+    fi
+    if ! kill -0 $INVESTOR_PID 2>/dev/null; then
+      echo -e "${RED}  Investor portal failed. Check /tmp/banyan-investor-portal.log${NC}"
+      break
+    fi
+    sleep 1
+  done
+fi
+
+# ----------------------------------------------------------
+# Watchdog — auto-restart investor portal if it dies
+# ----------------------------------------------------------
+(
+  sleep 10  # initial grace period
+  while true; do
+    sleep 15
+    # Only run watchdog if the main script is still alive
+    if ! kill -0 $$ 2>/dev/null; then
+      exit 0
+    fi
+    # Check if investor portal responds; restart if not
+    if ! curl -sf -o /dev/null --max-time 3 http://investors.oasis.localhost:1355/ 2>/dev/null; then
+      echo -e "${YELLOW}  [watchdog] Investor portal down — restarting...${NC}" | tee -a /tmp/banyan-investor-portal.log
+      start_investor_portal
+      sleep 5
+    fi
+  done
+) &
+WATCHDOG_PID=$!
+
+# ----------------------------------------------------------
 # Ready
 # ----------------------------------------------------------
 echo ""
 echo -e "${GREEN}=== All services running ===${NC}"
-echo "  Frontend:  http://oasis.localhost:1355"
-echo "  Auth API:  http://localhost:4000"
-echo "  DB Tunnel: localhost:15432"
+echo "  Shell:            http://oasis.localhost:1355"
+echo "  Investor Portal:  http://investors.oasis.localhost:1355"
+echo "  Auth API:         http://localhost:4000"
+echo "  DB Tunnel:        localhost:15432"
 echo ""
 echo "  Logs:"
-echo "    Tunnel:   /tmp/banyan-tunnel.log"
-echo "    Auth:     /tmp/banyan-auth.log"
-echo "    Frontend: /tmp/banyan-frontend.log"
+echo "    Tunnel:           /tmp/banyan-tunnel.log"
+echo "    Auth:             /tmp/banyan-auth.log"
+echo "    Shell:            /tmp/banyan-frontend.log"
+echo "    Investor Portal:  /tmp/banyan-investor-portal.log"
 echo ""
 echo -e "Press ${YELLOW}Ctrl+C${NC} to stop all services."
 

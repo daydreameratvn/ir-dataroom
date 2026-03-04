@@ -1,17 +1,21 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Briefcase,
-  ArrowLeft,
   Plus,
   RefreshCw,
   Search,
   CircleDot,
   FileText,
   Users,
+  UserCheck,
   Eye,
+  Download,
   Trash2,
   Clock,
   Activity,
+  Settings,
+  ExternalLink,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -26,6 +30,9 @@ import {
   Button,
   Card,
   CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
   Input,
   PageHeader,
   StatCard,
@@ -40,16 +47,16 @@ import {
   TableHeader,
   TableRow,
 } from '@papaya/shared-ui';
-import type { Investor, OverallStats, RecentActivity, Round } from './types';
-import { getStats, listRounds, getRound, listAllInvestors, deleteRound, getRecentActivity } from './api';
+import type { Investor, OverallStats, RecentActivity, Round, RoundDashboardStats } from './types';
+import { getStats, listRounds, getRound, listAllInvestors, deleteRound, requestDeleteRoundOtp, getRecentActivity, getRoundDashboardStats } from './api';
 import RoundStatusBadge from './components/RoundStatusBadge';
 import RoundCreateDialog from './components/RoundCreateDialog';
 import InvestorTable from './components/InvestorTable';
 import DocumentManager from './components/DocumentManager';
 import NDAEditor from './components/NDAEditor';
-import AccessLogTable from './components/AccessLogTable';
+import ActivityTable from './components/ActivityTable';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
-import RoundConfiguration from './components/RoundConfiguration';
+import { INVESTOR_PORTAL_URL } from './config';
 
 // ── Formatting helpers ──
 
@@ -87,15 +94,40 @@ function formatTimeAgo(dateStr: string): string {
   return formatDate(dateStr);
 }
 
+// ── URL parsing ──
+
+type IRView =
+  | { mode: 'overview' }
+  | { mode: 'settings' }
+  | { mode: 'round'; roundId: string; tab: string };
+
+function parseIRPath(pathname: string): IRView {
+  const stripped = pathname.replace(/^\/ir\/?/, '');
+  const segments = stripped.split('/').filter(Boolean);
+
+  if (segments.length === 0) return { mode: 'overview' };
+  if (segments[0] === 'settings') return { mode: 'settings' };
+
+  const roundId = segments[0];
+  const tab = segments[1] || 'dashboard';
+  return { mode: 'round', roundId, tab };
+}
+
 // ── Main Page ──
 
 export default function IRPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const view = parseIRPath(location.pathname);
+
   const [stats, setStats] = useState<OverallStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
-  const [selectedRoundId, setSelectedRoundId] = useState<string | null>(null);
   const [selectedRound, setSelectedRound] = useState<Round | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+
+  const roundId = view.mode === 'round' ? view.roundId : null;
 
   const fetchStats = useCallback(async () => {
     setStatsLoading(true);
@@ -136,28 +168,23 @@ export default function IRPage() {
 
   // Fetch selected round details
   useEffect(() => {
-    if (!selectedRoundId) {
+    if (!roundId) {
       setSelectedRound(null);
       return;
     }
 
-    getRound(selectedRoundId)
+    getRound(roundId)
       .then(setSelectedRound)
       .catch(() => setSelectedRound(null));
-  }, [selectedRoundId]);
-
-  function handleBackToList() {
-    setSelectedRoundId(null);
-    setSelectedRound(null);
-  }
+  }, [roundId]);
 
   function handleRoundCreated() {
     fetchStats();
   }
 
   function handleRoundSaved() {
-    if (selectedRoundId) {
-      getRound(selectedRoundId)
+    if (roundId) {
+      getRound(roundId)
         .then(setSelectedRound)
         .catch(() => {
           // Silent
@@ -166,9 +193,34 @@ export default function IRPage() {
   }
 
   function handleRoundDeleted() {
-    setSelectedRoundId(null);
-    setSelectedRound(null);
+    navigate('/ir');
     fetchStats();
+  }
+
+  // Settings placeholder
+  if (view.mode === 'settings') {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Investor Relations"
+          subtitle="Settings"
+          action={
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-sm">
+              <Settings className="h-5 w-5" />
+            </div>
+          }
+        />
+        <Card>
+          <CardContent className="flex h-64 items-center justify-center pt-6">
+            <div className="text-center text-muted-foreground">
+              <Settings className="mx-auto mb-3 h-10 w-10 opacity-30" />
+              <p className="text-sm font-medium">IR Settings</p>
+              <p className="mt-1 text-xs">Coming soon. Configure global IR preferences, email templates, and branding.</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -217,8 +269,8 @@ export default function IRPage() {
         />
       </div>
 
-      {/* Recent Activity - only show on dashboard (no round selected) */}
-      {!selectedRoundId && recentActivity.length > 0 && (
+      {/* Recent Activity - only show on overview */}
+      {view.mode === 'overview' && recentActivity.length > 0 && (
         <Card>
           <CardContent className="pt-6">
             <div className="mb-4 flex items-center gap-2">
@@ -271,13 +323,18 @@ export default function IRPage() {
       )}
 
       {/* Content area */}
-      {selectedRoundId && selectedRound ? (
+      {view.mode === 'round' && selectedRound ? (
         <RoundDetailView
           round={selectedRound}
-          onBack={handleBackToList}
+          activeTab={view.tab}
+          onTabChange={(tab) => navigate(`/ir/${view.roundId}${tab === 'dashboard' ? '' : `/${tab}`}`)}
           onSaved={handleRoundSaved}
           onDeleted={handleRoundDeleted}
         />
+      ) : view.mode === 'round' ? (
+        <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
+          Loading round...
+        </div>
       ) : (
         <Tabs defaultValue="rounds" className="space-y-4">
           <TabsList>
@@ -287,7 +344,7 @@ export default function IRPage() {
 
           <TabsContent value="rounds">
             <RoundsTab
-              onSelectRound={setSelectedRoundId}
+              onSelectRound={(id) => navigate(`/ir/${id}`)}
               onCreateRound={() => setCreateDialogOpen(true)}
               onRoundCreated={handleRoundCreated}
             />
@@ -447,40 +504,66 @@ function RoundsTab({ onSelectRound, onCreateRound }: RoundsTabProps) {
 
 interface RoundDetailViewProps {
   round: Round;
-  onBack: () => void;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
   onSaved: () => void;
   onDeleted: () => void;
 }
 
-function RoundDetailView({ round, onBack, onSaved, onDeleted }: RoundDetailViewProps) {
+function RoundDetailView({ round, activeTab, onTabChange, onSaved, onDeleted }: RoundDetailViewProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteStep, setDeleteStep] = useState<'confirm' | 'otp'>('confirm');
+  const [otpCode, setOtpCode] = useState('');
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  async function handleDeleteRound() {
-    setIsDeleting(true);
+  function resetDeleteDialog() {
+    setDeleteDialogOpen(false);
+    setDeleteStep('confirm');
+    setOtpCode('');
+    setDeleteError(null);
+    setIsSendingOtp(false);
+    setIsDeleting(false);
+  }
+
+  async function handleSendDeleteOtp() {
+    setIsSendingOtp(true);
+    setDeleteError(null);
     try {
-      await deleteRound(round.id);
-      setDeleteDialogOpen(false);
+      await requestDeleteRoundOtp(round.id);
+      setDeleteStep('otp');
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Failed to send verification code');
+    } finally {
+      setIsSendingOtp(false);
+    }
+  }
+
+  async function handleDeleteWithOtp() {
+    if (!otpCode.trim()) {
+      setDeleteError('Please enter the verification code');
+      return;
+    }
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteRound(round.id, otpCode.trim());
+      resetDeleteDialog();
       onDeleted();
-    } catch {
-      // Failed to delete
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Failed to delete round');
       setIsDeleting(false);
     }
   }
 
   return (
     <div className="space-y-4">
-      {/* Back button and round header */}
+      {/* Round header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Rounds
-          </Button>
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold">{round.name}</h2>
-            <RoundStatusBadge status={round.status} />
-          </div>
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-semibold">{round.name}</h2>
+          <RoundStatusBadge status={round.status} />
         </div>
         <Button
           variant="outline"
@@ -506,65 +589,178 @@ function RoundDetailView({ round, onBack, onSaved, onDeleted }: RoundDetailViewP
         {round.closedAt && <span>Closed {formatDate(round.closedAt)}</span>}
       </div>
 
-      {/* Round sub-tabs */}
-      <Tabs defaultValue="investors" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="investors">Investors</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="nda">NDA</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="access-logs">Access Logs</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-        </TabsList>
+      {/* Round sub-tabs — controlled via URL */}
+      <Tabs value={activeTab} onValueChange={onTabChange} className="space-y-4">
+        <div className="flex items-center gap-3">
+          <TabsList>
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="investors">Investors</TabsTrigger>
+            <TabsTrigger value="files">Files</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="nda">NDA Drafting</TabsTrigger>
+          </TabsList>
+          <a
+            href={`${INVESTOR_PORTAL_URL}/rounds/${round.slug}/documents`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <ExternalLink className="size-3.5" />
+            Investor View
+          </a>
+        </div>
+
+        <TabsContent value="dashboard">
+          <RoundDashboard round={round} />
+        </TabsContent>
 
         <TabsContent value="investors">
           <InvestorTable roundId={round.id} />
         </TabsContent>
 
-        <TabsContent value="documents">
+        <TabsContent value="files">
           <DocumentManager roundId={round.id} />
-        </TabsContent>
-
-        <TabsContent value="nda">
-          <NDAEditor roundId={round.id} />
         </TabsContent>
 
         <TabsContent value="analytics">
           <AnalyticsDashboard roundId={round.id} />
         </TabsContent>
 
-        <TabsContent value="access-logs">
-          <AccessLogTable roundId={round.id} />
-        </TabsContent>
-
-        <TabsContent value="settings">
-          <RoundConfiguration round={round} onSaved={onSaved} />
+        <TabsContent value="nda">
+          <NDAEditor roundId={round.id} />
         </TabsContent>
       </Tabs>
 
-      {/* Delete confirmation dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      {/* Delete confirmation dialog — 2-step: confirm → OTP */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={(open) => { if (!open) resetDeleteDialog(); }}>
         <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Round</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete <strong>{round.name}</strong>? This will remove all
-              associated investors, documents, NDA templates, and access logs. This action cannot be
-              undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteRound}
-              disabled={isDeleting}
-              className="bg-red-600 text-white hover:bg-red-700"
-            >
-              {isDeleting ? 'Deleting...' : 'Delete Round'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
+          {deleteStep === 'confirm' ? (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Round</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete <strong>{round.name}</strong>? This will remove all
+                  associated investors, documents, NDA templates, and access logs. This action cannot be
+                  undone.
+                  <br /><br />
+                  A verification code will be sent to your email to confirm this action.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              {deleteError && (
+                <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {deleteError}
+                </div>
+              )}
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isSendingOtp}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={(e) => { e.preventDefault(); handleSendDeleteOtp(); }}
+                  disabled={isSendingOtp}
+                  className="bg-red-600 text-white hover:bg-red-700"
+                >
+                  {isSendingOtp ? 'Sending code...' : 'Continue'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </>
+          ) : (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Enter Verification Code</AlertDialogTitle>
+                <AlertDialogDescription>
+                  We sent a 6-digit code to your email. Enter it below to confirm deleting{' '}
+                  <strong>{round.name}</strong>.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="space-y-3">
+                <Input
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value)}
+                  placeholder="Enter 6-digit code"
+                  maxLength={6}
+                  className="text-center text-lg tracking-[0.5em] font-mono"
+                  autoFocus
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleDeleteWithOtp(); }}
+                />
+                {deleteError && (
+                  <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                    {deleteError}
+                  </div>
+                )}
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isDeleting} onClick={() => resetDeleteDialog()}>
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={(e) => { e.preventDefault(); handleDeleteWithOtp(); }}
+                  disabled={isDeleting || !otpCode.trim()}
+                  className="bg-red-600 text-white hover:bg-red-700"
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete Round'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </>
+          )}
         </AlertDialogContent>
       </AlertDialog>
+    </div>
+  );
+}
+
+// ── Round Dashboard ──
+
+function RoundDashboard({ round }: { round: Round }) {
+  const [dashStats, setDashStats] = useState<RoundDashboardStats | null>(null);
+  const [dashStatsLoading, setDashStatsLoading] = useState(true);
+
+  useEffect(() => {
+    setDashStatsLoading(true);
+    getRoundDashboardStats(round.id)
+      .then(setDashStats)
+      .catch(() => setDashStats(null))
+      .finally(() => setDashStatsLoading(false));
+  }, [round.id]);
+
+  const statCards = [
+    { label: 'Total Investors', value: dashStats?.totalInvestors ?? 0, icon: Users, description: 'All registered investors' },
+    { label: 'Active Investors', value: dashStats?.activeInvestors ?? 0, icon: UserCheck, description: 'NDA accepted' },
+    { label: 'Total Files', value: dashStats?.totalFiles ?? 0, icon: FileText, description: 'In dataroom' },
+    { label: 'Total Views', value: dashStats?.totalViews ?? 0, icon: Eye, description: 'File views' },
+    { label: 'Total Downloads', value: dashStats?.totalDownloads ?? 0, icon: Download, description: 'File downloads' },
+  ];
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
+        <p className="text-muted-foreground">
+          Overview of your investor dataroom.
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        {statCards.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={stat.label}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {stat.label}
+                </CardTitle>
+                <Icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {dashStatsLoading ? '—' : stat.value}
+                </div>
+                <CardDescription>{stat.description}</CardDescription>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      <ActivityTable roundId={round.id} />
     </div>
   );
 }

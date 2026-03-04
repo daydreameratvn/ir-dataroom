@@ -8,19 +8,14 @@ describe('InvestorStatusBadge', () => {
     expect(screen.getByText('Invited')).toBeInTheDocument();
   });
 
-  it('renders NDA Pending badge', () => {
-    render(<InvestorStatusBadge status="nda_pending" />);
-    expect(screen.getByText('NDA Pending')).toBeInTheDocument();
+  it('renders NDA Signed badge', () => {
+    render(<InvestorStatusBadge status="nda_signed" />);
+    expect(screen.getByText('NDA Signed')).toBeInTheDocument();
   });
 
-  it('renders NDA Accepted badge', () => {
-    render(<InvestorStatusBadge status="nda_accepted" />);
-    expect(screen.getByText('NDA Accepted')).toBeInTheDocument();
-  });
-
-  it('renders Active badge', () => {
-    render(<InvestorStatusBadge status="active" />);
-    expect(screen.getByText('Active')).toBeInTheDocument();
+  it('renders View/Download badge', () => {
+    render(<InvestorStatusBadge status="viewing" />);
+    expect(screen.getByText('View/Download')).toBeInTheDocument();
   });
 
   it('renders Termsheet Sent badge', () => {
@@ -36,6 +31,11 @@ describe('InvestorStatusBadge', () => {
   it('renders Docs Out badge', () => {
     render(<InvestorStatusBadge status="docs_out" />);
     expect(screen.getByText('Docs Out')).toBeInTheDocument();
+  });
+
+  it('renders Docs Signed badge', () => {
+    render(<InvestorStatusBadge status="docs_signed" />);
+    expect(screen.getByText('Docs Signed')).toBeInTheDocument();
   });
 
   it('renders Dropped badge', () => {

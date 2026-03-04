@@ -13,22 +13,16 @@ export default function InvestorStatusBadge({ status }: InvestorStatusBadgeProps
           Invited
         </Badge>
       );
-    case 'nda_pending':
-      return (
-        <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">
-          NDA Pending
-        </Badge>
-      );
-    case 'nda_accepted':
+    case 'nda_signed':
       return (
         <Badge className="bg-teal-100 text-teal-700 hover:bg-teal-100">
-          NDA Accepted
+          NDA Signed
         </Badge>
       );
-    case 'active':
+    case 'viewing':
       return (
         <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
-          Active
+          View/Download
         </Badge>
       );
     case 'termsheet_sent':
@@ -47,6 +41,12 @@ export default function InvestorStatusBadge({ status }: InvestorStatusBadgeProps
       return (
         <Badge className="bg-sky-100 text-sky-700 hover:bg-sky-100">
           Docs Out
+        </Badge>
+      );
+    case 'docs_signed':
+      return (
+        <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+          Docs Signed
         </Badge>
       );
     case 'dropped':

@@ -3,7 +3,6 @@ import {
   requireAuth,
   requireAdmin,
   isSuperAdmin,
-  getEffectiveTenantId,
   getClientInfo,
 } from "../middleware.ts";
 import { verifyAccessToken } from "../services/jwt.ts";

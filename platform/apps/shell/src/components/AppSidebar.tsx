@@ -31,6 +31,7 @@ import type { NavItem, NavGroup } from '@papaya/shared-types';
 import { useTenant } from '@/providers/TenantProvider';
 import { useAuth } from '@papaya/auth';
 import { navigationGroups } from '@/config/navigation';
+import IRFlyoutContent from '@/features/ir/components/IRFlyoutContent';
 
 const iconMap: Record<string, LucideIcon> = {
   LayoutDashboard,
@@ -323,6 +324,18 @@ function FlyoutContent({ group, shouldShowItem, isActive, isItemActive, onNaviga
       <ScrollArea className="flex-1 px-2 py-3">
         <div className="space-y-4">
           {visibleItems.map((item) => {
+            // Dynamic IR sidebar — fetch rounds and render sub-tabs
+            if (item.id === 'ir') {
+              return (
+                <div key={item.id} className="space-y-1">
+                  <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                    {t(item.labelKey)}
+                  </p>
+                  <IRFlyoutContent onNavigate={onNavigate} isActive={isActive} />
+                </div>
+              );
+            }
+
             const hasChildren = item.children && item.children.length > 0;
 
             if (hasChildren) {
