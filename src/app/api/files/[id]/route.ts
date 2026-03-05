@@ -5,7 +5,9 @@ import fs from "fs/promises";
 import path from "path";
 import { invalidateVideoCache } from "@/lib/watermark/video";
 
-const UPLOAD_DIR = path.join(process.cwd(), "uploads", "files");
+const UPLOAD_DIR = process.env.UPLOAD_DIR
+  ? path.join(process.env.UPLOAD_DIR, "files")
+  : path.join(process.cwd(), "uploads", "files");
 
 // GET /api/files/[id] - Get file metadata
 export async function GET(

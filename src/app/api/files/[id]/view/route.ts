@@ -9,7 +9,9 @@ import fs from "fs/promises";
 import { createReadStream } from "fs";
 import path from "path";
 
-const UPLOAD_DIR = path.join(process.cwd(), "uploads", "files");
+const UPLOAD_DIR = process.env.UPLOAD_DIR
+  ? path.join(process.env.UPLOAD_DIR, "files")
+  : path.join(process.cwd(), "uploads", "files");
 
 /** Stream a file from disk as a web ReadableStream */
 function streamFile(filePath: string): ReadableStream<Uint8Array> {

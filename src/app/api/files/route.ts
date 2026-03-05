@@ -7,7 +7,9 @@ import { createWriteStream } from "fs";
 import path from "path";
 import { Readable } from "stream";
 
-const UPLOAD_DIR = path.join(process.cwd(), "uploads", "files");
+const UPLOAD_DIR = process.env.UPLOAD_DIR
+  ? path.join(process.env.UPLOAD_DIR, "files")
+  : path.join(process.cwd(), "uploads", "files");
 
 // GET /api/files - List all files
 export async function GET() {

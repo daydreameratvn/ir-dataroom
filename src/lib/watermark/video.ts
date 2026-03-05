@@ -2,9 +2,9 @@ import ffmpeg, { FfmpegCommand } from "fluent-ffmpeg";
 import fs from "fs/promises";
 import path from "path";
 
-// Use ffmpeg-full (has drawtext/freetype support) if available
-const FFMPEG_PATH = "/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg";
-const FFPROBE_PATH = "/opt/homebrew/opt/ffmpeg-full/bin/ffprobe";
+// Use ffmpeg-full (has drawtext/freetype support) if available, fall back to system ffmpeg
+const FFMPEG_PATH = process.env.FFMPEG_PATH || "/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg";
+const FFPROBE_PATH = process.env.FFPROBE_PATH || "/opt/homebrew/opt/ffmpeg-full/bin/ffprobe";
 try {
   ffmpeg.setFfmpegPath(FFMPEG_PATH);
   ffmpeg.setFfprobePath(FFPROBE_PATH);
@@ -12,7 +12,9 @@ try {
   // Fall back to system ffmpeg
 }
 
-const CACHE_DIR = path.join(process.cwd(), "uploads", "cache");
+const CACHE_DIR = process.env.UPLOAD_DIR
+  ? path.join(process.env.UPLOAD_DIR, "cache")
+  : path.join(process.cwd(), "uploads", "cache");
 const WATERMARK_TIMEOUT_MS = 15_000; // 15 seconds max for video watermarking
 
 function getCachePath(fileId: string, investorId: string, ext: string): string {
