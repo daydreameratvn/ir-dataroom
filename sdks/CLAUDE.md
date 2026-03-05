@@ -62,7 +62,7 @@ The node SDK is the foundation. It contains the HTTP client and types. The react
 
 ### Naming Convention
 
-- Node SDK: `@papaya/<name>` — published to npm
+- Node SDK: `@papaya/<name>` — published to AWS CodeArtifact
 - React SDK: `@papaya/<name>-react` — depends on `@papaya/<name>` via `workspace:*`
 - React Native SDK: `@papaya/<name>-react-native` — depends on `@papaya/<name>` via `workspace:*`
 - iOS SDK: `Papaya<Name>SDK` — Swift Package (standalone)
@@ -74,7 +74,7 @@ The Swift and Kotlin SDKs are standalone — they do NOT depend on the TypeScrip
 
 ### Development Setup
 
-Source files are used for workspace resolution during development. The `publishConfig` field in each package.json overrides `main`/`types`/`exports` to point to `dist/` when publishing to npm.
+Source files are used for workspace resolution during development. The `publishConfig` field in each package.json overrides `main`/`types`/`exports` to point to `dist/` when publishing to CodeArtifact.
 
 ## Creating a New SDK
 
@@ -114,7 +114,25 @@ Follow the red/green TDD protocol defined in the root `CLAUDE.md`. SDK-specific 
 
 ### Publishing
 
-- TypeScript SDKs publish to npm under `@papaya/` scope
+TypeScript SDKs publish to **AWS CodeArtifact** under the `@papaya/` scope:
+
+| Field | Value |
+|---|---|
+| Domain | `papaya` |
+| Repository | `sdks` (upstream: `npm-store` → public npmjs) |
+| Region | `ap-southeast-1` |
+| Account | `812652266901` |
+| Endpoint | `https://papaya-812652266901.d.codeartifact.ap-southeast-1.amazonaws.com/npm/sdks/` |
+
+**Authenticate before publishing:**
+```bash
+aws codeartifact login --tool npm --domain papaya --domain-owner 812652266901 --repository sdks --region ap-southeast-1
+```
+
+**Partner install authentication:**
+Partners run the same `aws codeartifact login` command with read-only credentials. Tokens expire after 12 hours.
+
+**Other platforms:**
 - iOS SDK publishes as a Swift Package (Git tag-based)
 - Android SDK publishes to Maven Central
 - Always publish from CI — never from a local machine
