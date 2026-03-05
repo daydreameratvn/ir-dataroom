@@ -104,7 +104,7 @@ export default function FWACaseDetail() {
     if (!id || !confirm(t('portal.fwaCaseDetail.confirmDelete'))) return;
     try {
       await deleteCase.mutateAsync(id);
-      navigate('/portal/fwa-cases');
+      navigate('/fwa/fwa-cases');
     } catch {
       // Error handled by mutation
     }
@@ -121,7 +121,7 @@ export default function FWACaseDetail() {
   if (error || !fwaCase) {
     return (
       <div className="space-y-4">
-        <Button variant="ghost" onClick={() => navigate('/portal/fwa-cases')}>
+        <Button variant="ghost" onClick={() => navigate('/fwa/fwa-cases')}>
           <ArrowLeft className="mr-2 h-4 w-4" /> {t('portal.fwaCaseDetail.backToCases')}
         </Button>
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -136,7 +136,7 @@ export default function FWACaseDetail() {
 
   return (
     <div className="space-y-4">
-      <Button variant="ghost" size="sm" onClick={() => navigate('/portal/fwa-cases')}>
+      <Button variant="ghost" size="sm" onClick={() => navigate('/fwa/fwa-cases')}>
         <ArrowLeft className="mr-2 h-4 w-4" /> {t('portal.fwaCaseDetail.backToCases')}
       </Button>
 
@@ -306,7 +306,7 @@ export default function FWACaseDetail() {
                             title={t('portal.fwaCaseDetail.viewClaimDetail')}
                             onClick={(e) => {
                               e.stopPropagation();
-                              navigate(`/portal/claims/${claim.id}`);
+                              navigate(`/fwa/claims/${claim.id}`);
                             }}
                           >
                             <ExternalLink className="h-4 w-4" />

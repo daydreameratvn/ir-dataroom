@@ -67,7 +67,7 @@ export default function FWACasesList() {
         entityId: firstItem.insuredPersonId,
         claimIds,
       });
-      navigate(`/portal/fwa-cases/${result.id}`);
+      navigate(`/fwa/fwa-cases/${result.id}`);
     } catch {
       // Error handled by mutation
     }
@@ -225,7 +225,7 @@ export default function FWACasesList() {
                       <tr
                         key={c.id}
                         className="cursor-pointer border-b transition-colors hover:bg-muted/50"
-                        onClick={() => navigate(`/portal/fwa-cases/${c.id}`)}
+                        onClick={() => navigate(`/fwa/fwa-cases/${c.id}`)}
                       >
                         <td className="px-4 py-3 text-sm font-mono">{c.caseCode}</td>
                         <td className="px-4 py-3 text-sm">

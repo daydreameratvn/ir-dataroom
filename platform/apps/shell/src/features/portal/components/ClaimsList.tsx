@@ -42,7 +42,7 @@ export default function ClaimsList() {
         title={t('portal.claims.title')}
         subtitle={t('portal.claims.totalClaims', { count: total })}
         action={
-          <Button onClick={() => navigate('/portal/claims/new')}>
+          <Button onClick={() => navigate('/fwa/claims/new')}>
             <Plus className="mr-2 h-4 w-4" />
             {t('portal.dashboard.newClaim')}
           </Button>
@@ -78,7 +78,7 @@ export default function ClaimsList() {
           description={search || statusFilter ? t('portal.claims.noClaimsFilterDesc') : t('portal.claims.noClaimsEmptyDesc')}
           action={
             !search && !statusFilter ? (
-              <Button variant="outline" onClick={() => navigate('/portal/claims/new')}>
+              <Button variant="outline" onClick={() => navigate('/fwa/claims/new')}>
                 <Plus className="mr-2 h-4 w-4" />
                 {t('portal.claims.submitClaim')}
               </Button>
@@ -113,7 +113,7 @@ export default function ClaimsList() {
                     <tr
                       key={claim.id}
                       className="cursor-pointer border-b transition-colors hover:bg-muted/50"
-                      onClick={() => navigate(`/portal/claims/${claim.id}`)}
+                      onClick={() => navigate(`/fwa/claims/${claim.id}`)}
                     >
                       <td className="px-4 py-3 text-sm font-medium font-mono">{claim.claimNumber}</td>
                       <td className="px-4 py-3 text-sm">{claim.insuredName ?? '—'}</td>

@@ -32,7 +32,7 @@ const DashboardPage = lazyWithReload(() => import('./features/dashboard/Dashboar
 const ClaimsPage = lazyWithReload(() => import('./features/claims/ClaimsPage'));
 const PoliciesPage = lazyWithReload(() => import('./features/policies/PoliciesPage'));
 const UnderwritingPage = lazyWithReload(() => import('./features/underwriting/UnderwritingPage'));
-const FWAPage = lazyWithReload(() => import('./features/fwa/FWAPage'));
+const FWAPage = lazyWithReload(() => import('./features/portal/PortalPage'));
 const ProvidersPage = lazyWithReload(() => import('./features/providers/ProvidersPage'));
 const ReportingPage = lazyWithReload(() => import('./features/reporting/ReportingPage'));
 const AdminPage = lazyWithReload(() => import('./features/admin/AdminPage'));
@@ -43,7 +43,6 @@ const IRPage = lazyWithReload(() => import('./features/ir/IRPage'));
 const DesignSystemPage = lazyWithReload(() => import('./features/design-system/DesignSystemPage'));
 const StatusPage = lazyWithReload(() => import('./features/status/StatusPage'));
 const ProfilePage = lazyWithReload(() => import('./features/profile/ProfilePage'));
-const PortalPage = lazyWithReload(() => import('./features/portal/PortalPage'));
 const StatusPagePublic = lazyWithReload(() => import('./features/status/StatusPagePublic'));
 
 // Remote app routes are injected dynamically in bootstrap.tsx via remotes.tsx.
@@ -136,11 +135,6 @@ export const routes: RouteObject[] = [
         element: <DronePage />,
       },
 
-      // Portal — Claims processing portal
-      {
-        path: 'portal/*',
-        element: <PortalPage />,
-      },
 
       // Investor Relations — Dataroom management
       {

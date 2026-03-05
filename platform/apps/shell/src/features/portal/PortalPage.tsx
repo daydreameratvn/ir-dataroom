@@ -35,33 +35,33 @@ function PortalSidebar() {
   const modules = config?.modules;
 
   const navItems: NavItem[] = [
-    { label: t('portal.dashboard.title'), path: '/portal', icon: LayoutDashboard },
-    { label: t('portal.claims.title'), path: '/portal/claims', icon: FileSearch },
-    { label: t('portal.newClaim.title'), path: '/portal/claims/new', icon: FilePlus },
+    { label: t('portal.dashboard.title'), path: '/fwa', icon: LayoutDashboard },
+    { label: t('portal.claims.title'), path: '/fwa/claims', icon: FileSearch },
+    { label: t('portal.newClaim.title'), path: '/fwa/claims/new', icon: FilePlus },
     {
       label: t('portal.analytics.title'),
-      path: '/portal/analytics',
+      path: '/fwa/analytics',
       icon: BarChart3,
       show: !!(modules?.assessment || modules?.medical_necessity),
     },
     {
       label: t('portal.fwaAnalytics.title'),
-      path: '/portal/fwa-analytics',
+      path: '/fwa/fwa-analytics',
       icon: ShieldAlert,
       show: !!modules?.fwa,
     },
     {
       label: t('portal.fwaCases.title'),
-      path: '/portal/fwa-cases',
+      path: '/fwa/fwa-cases',
       icon: Scale,
       show: !!modules?.fwa,
     },
-    { label: t('portal.settings.title'), path: '/portal/settings', icon: Settings },
+    { label: t('portal.settings.title'), path: '/fwa/settings', icon: Settings },
   ];
 
   function isActive(item: NavItem): boolean {
     const currentPath = location.pathname;
-    if (item.path === '/portal') return currentPath === '/portal';
+    if (item.path === '/fwa') return currentPath === '/fwa';
     return currentPath.startsWith(item.path);
   }
 
@@ -116,7 +116,7 @@ export default function PortalPage() {
           <Route path="fwa-cases" element={<FWACasesList />} />
           <Route path="fwa-cases/:id" element={<FWACaseDetail />} />
           <Route path="settings" element={<SettingsView />} />
-          <Route path="*" element={<Navigate to="/portal" replace />} />
+          <Route path="*" element={<Navigate to="/fwa" replace />} />
         </Routes>
       </div>
     </div>

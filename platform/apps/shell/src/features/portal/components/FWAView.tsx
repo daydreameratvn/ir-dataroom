@@ -71,7 +71,7 @@ function FWAActionsBar({ claimId }: { claimId: string }) {
         entityId: claimId,
         claimIds: [claimId],
       });
-      navigate(`/portal/fwa-cases/${result.id}`);
+      navigate(`/fwa/fwa-cases/${result.id}`);
     } catch { /* error handled by mutation */ }
   }
 
@@ -104,7 +104,7 @@ function FWAActionsBar({ claimId }: { claimId: string }) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate(`/portal/fwa-cases/${linkData.caseId}`)}
+            onClick={() => navigate(`/fwa/fwa-cases/${linkData.caseId}`)}
           >
             <ExternalLink className="mr-2 h-3.5 w-3.5" />
             {t('portal.fwaTab.viewCase')}

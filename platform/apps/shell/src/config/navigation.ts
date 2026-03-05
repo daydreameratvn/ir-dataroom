@@ -74,13 +74,6 @@ export const navigationGroups: NavGroup[] = [
         path: '/drone',
       },
       {
-        id: 'portal',
-        labelKey: 'nav.portal',
-        icon: 'ScanSearch',
-        path: '/portal',
-        requiredFeature: 'portal',
-      },
-      {
         id: 'reporting',
         labelKey: 'nav.reporting',
         icon: 'BarChart3',

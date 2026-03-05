@@ -86,10 +86,10 @@ export default function ClaimDetail() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => navigate('/portal/fwa-analytics')}>
+            <Button variant="outline" onClick={() => navigate('/fwa/fwa-analytics')}>
               {t('portal.claimDetail.backToFWA')}
             </Button>
-            <Button onClick={() => navigate('/portal/claims/new')}>
+            <Button onClick={() => navigate('/fwa/claims/new')}>
               {t('portal.claimDetail.submitRealClaim')}
             </Button>
           </div>
@@ -101,7 +101,7 @@ export default function ClaimDetail() {
   if (error || !claim) {
     return (
       <div className="space-y-4">
-        <Button variant="ghost" onClick={() => navigate('/portal/claims')}>
+        <Button variant="ghost" onClick={() => navigate('/fwa/claims')}>
           <ArrowLeft className="mr-2 h-4 w-4" /> {t('portal.claimDetail.backToClaims')}
         </Button>
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -118,7 +118,7 @@ export default function ClaimDetail() {
   return (
     <div className="space-y-4 pb-20">
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/portal/claims')}>
+        <Button variant="ghost" size="sm" onClick={() => navigate('/fwa/claims')}>
           <ArrowLeft className="mr-2 h-4 w-4" /> {t('portal.claimDetail.backToClaims')}
         </Button>
       </div>

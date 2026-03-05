@@ -181,7 +181,7 @@ export default function FWAFlaggedClaimsTable({ claims }: FWAFlaggedClaimsTableP
                         <td className="px-3 py-3 text-xs text-muted-foreground">{formatDate(claim.createdAt)}</td>
                         <td className="px-2 py-3">
                           <button
-                            onClick={() => navigate(`/portal/claims/${claim.id}`)}
+                            onClick={() => navigate(`/fwa/claims/${claim.id}`)}
                             className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                             title={t('portal.fwaAnalytics.investigate')}
                           >

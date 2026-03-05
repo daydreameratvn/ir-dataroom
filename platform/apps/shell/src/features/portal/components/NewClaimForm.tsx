@@ -41,7 +41,7 @@ export default function NewClaimForm() {
       }
 
       const result = await createClaim(formData);
-      navigate(`/portal/claims/${result.id}`);
+      navigate(`/fwa/claims/${result.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('portal.newClaim.unexpectedError'));
     } finally {
@@ -129,7 +129,7 @@ export default function NewClaimForm() {
         <Button onClick={handleSubmit} disabled={submitting}>
           {submitting ? t('portal.newClaim.submitting') : t('portal.newClaim.submit')}
         </Button>
-        <Button variant="outline" onClick={() => navigate('/portal/claims')}>
+        <Button variant="outline" onClick={() => navigate('/fwa/claims')}>
           {t('common.cancel')}
         </Button>
       </div>
