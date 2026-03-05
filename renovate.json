@@ -1,6 +1,184 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    ":rebaseStalePrs",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)"
+  ],
+  "timezone": "Asia/Ho_Chi_Minh",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Dependency Updates Dashboard",
+  "labels": ["dependencies"],
+  "prHourlyLimit": 4,
+  "prConcurrentLimit": 10,
+  "minimumReleaseAge": "3 days",
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "rootstock/**"
+  ],
+  "packageRules": [
+    {
+      "description": "Tier 1 — Low risk: patch bumps and dev-only deps. Weekly, auto-merge.",
+      "matchUpdateTypes": ["patch", "pin", "digest"],
+      "matchManagers": ["npm"],
+      "automerge": true,
+      "automergeType": "pr",
+      "schedule": ["before 9am on Monday"],
+      "groupName": "tier-1-patches",
+      "commitMessagePrefix": "chore(deps):",
+      "prPriority": -1
+    },
+    {
+      "description": "Tier 1 — Dev dependencies (all bump types). Weekly, auto-merge.",
+      "matchDepTypes": ["devDependencies"],
+      "matchManagers": ["npm"],
+      "automerge": true,
+      "automergeType": "pr",
+      "schedule": ["before 9am on Monday"],
+      "groupName": "tier-1-dev-deps",
+      "commitMessagePrefix": "chore(deps):"
+    },
+    {
+      "description": "Tier 1 — @types/* packages. Weekly, auto-merge.",
+      "matchPackagePrefixes": ["@types/"],
+      "automerge": true,
+      "schedule": ["before 9am on Monday"],
+      "groupName": "tier-1-types",
+      "commitMessagePrefix": "chore(deps):"
+    },
+    {
+      "description": "Tier 2 — Minor bumps for production deps. Biweekly, human review.",
+      "matchUpdateTypes": ["minor"],
+      "matchDepTypes": ["dependencies"],
+      "matchManagers": ["npm"],
+      "automerge": false,
+      "schedule": ["before 9am on the 1st and 15th day of the month"],
+      "groupName": "tier-2-minor-bumps",
+      "commitMessagePrefix": "chore(deps):",
+      "prPriority": 0
+    },
+    {
+      "description": "Tier 3 — Major bumps. Monthly, human review required.",
+      "matchUpdateTypes": ["major"],
+      "matchManagers": ["npm"],
+      "automerge": false,
+      "schedule": ["before 9am on the first day of the month"],
+      "labels": ["dependencies", "major-update"],
+      "commitMessagePrefix": "chore(deps):",
+      "prPriority": 1
+    },
+    {
+      "description": "Tier 4 — React: singleton in Module Federation, update all together.",
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"],
+      "groupName": "react",
+      "automerge": false,
+      "labels": ["dependencies", "critical-update"],
+      "schedule": ["before 9am on the first day of the month"],
+      "prPriority": 5
+    },
+    {
+      "description": "Tier 4 — Vite and Module Federation.",
+      "matchPackageNames": ["vite"],
+      "matchPackagePrefixes": ["@module-federation/", "@vitejs/"],
+      "groupName": "vite-module-federation",
+      "automerge": false,
+      "labels": ["dependencies", "critical-update"],
+      "schedule": ["before 9am on the first day of the month"],
+      "prPriority": 5
+    },
+    {
+      "description": "Tier 4 — TypeScript: affects all 5 trees.",
+      "matchPackageNames": ["typescript"],
+      "matchPackagePrefixes": ["@typescript/"],
+      "groupName": "typescript",
+      "automerge": false,
+      "labels": ["dependencies", "critical-update"],
+      "schedule": ["before 9am on the first day of the month"],
+      "prPriority": 5
+    },
+    {
+      "description": "Tier 4 — Tailwind CSS.",
+      "matchPackageNames": ["tailwindcss"],
+      "matchPackagePrefixes": ["@tailwindcss/"],
+      "groupName": "tailwind",
+      "automerge": false,
+      "labels": ["dependencies", "critical-update"],
+      "schedule": ["before 9am on the first day of the month"],
+      "prPriority": 5
+    },
+    {
+      "description": "Tier 4 — Expo SDK: only upgrade via expo install --fix.",
+      "matchPackagePrefixes": ["expo", "react-native"],
+      "matchPaths": ["mobile/**"],
+      "enabled": false
+    },
+    {
+      "description": "Tier 3 — Agent framework (pi-mono): check changelog before updating.",
+      "matchPackagePrefixes": ["@mariozechner/pi-"],
+      "groupName": "pi-mono-agent-framework",
+      "automerge": false,
+      "labels": ["dependencies", "agents"],
+      "schedule": ["before 9am on the first day of the month"],
+      "prPriority": 3
+    },
+    {
+      "description": "Group AWS SDK updates together.",
+      "matchPackagePrefixes": ["@aws-sdk/"],
+      "groupName": "aws-sdk",
+      "automerge": false,
+      "schedule": ["before 9am on the 1st and 15th day of the month"]
+    },
+    {
+      "description": "Group Google/GCP SDK updates together.",
+      "matchPackagePrefixes": ["@google/", "google-", "googleapis", "@ai-sdk/google-"],
+      "groupName": "google-sdk",
+      "automerge": false,
+      "schedule": ["before 9am on the 1st and 15th day of the month"]
+    },
+    {
+      "description": "Group Pulumi updates together.",
+      "matchPackagePrefixes": ["@pulumi/"],
+      "groupName": "pulumi",
+      "automerge": false,
+      "schedule": ["before 9am on the first day of the month"]
+    },
+    {
+      "description": "Group TanStack updates together.",
+      "matchPackagePrefixes": ["@tanstack/"],
+      "groupName": "tanstack",
+      "automerge": false,
+      "schedule": ["before 9am on the 1st and 15th day of the month"]
+    },
+    {
+      "description": "Group testing libraries together.",
+      "matchPackagePrefixes": ["@testing-library/", "vitest", "@vitest/"],
+      "matchPackageNames": ["jsdom", "happy-dom"],
+      "groupName": "testing-libraries",
+      "automerge": true,
+      "schedule": ["before 9am on Monday"]
+    },
+    {
+      "description": "Group shadcn/Radix UI together.",
+      "matchPackagePrefixes": ["@radix-ui/"],
+      "groupName": "radix-ui",
+      "automerge": false,
+      "schedule": ["before 9am on the 1st and 15th day of the month"]
+    },
+    {
+      "description": "Group AI SDK (Vercel) together.",
+      "matchPackagePrefixes": ["@ai-sdk/", "ai"],
+      "matchPackageNames": ["ai"],
+      "groupName": "ai-sdk",
+      "automerge": false,
+      "schedule": ["before 9am on the 1st and 15th day of the month"]
+    },
+    {
+      "description": "Pin Expo-managed packages in mobile — do not Renovate.",
+      "matchPaths": ["mobile/**"],
+      "matchPackagePrefixes": ["expo-", "react-native-"],
+      "enabled": false
+    }
   ]
 }

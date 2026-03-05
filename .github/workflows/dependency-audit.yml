@@ -1,0 +1,66 @@
+name: Dependency Audit
+
+on:
+  schedule:
+    # Every Monday at 2:00 AM ICT (Sunday 19:00 UTC)
+    - cron: '0 19 * * 0'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  audit:
+    name: Check Outdated Dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Audit root tree
+        id: root
+        run: |
+          echo "## Root (agents, infra, hasura)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          bun outdated 2>&1 | head -100 >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Audit platform tree
+        id: platform
+        run: |
+          echo "## Platform" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cd platform && bun install --frozen-lockfile 2>/dev/null && bun outdated 2>&1 | head -100 >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Audit auth tree
+        id: auth
+        run: |
+          echo "## Auth" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cd auth && bun install --frozen-lockfile 2>/dev/null && bun outdated 2>&1 | head -100 >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Audit SDKs tree
+        id: sdks
+        run: |
+          echo "## SDKs" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cd sdks && bun install --frozen-lockfile 2>/dev/null && bun outdated 2>&1 | head -100 >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Audit mobile tree
+        id: mobile
+        run: |
+          echo "## Mobile" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cd mobile && bun install --frozen-lockfile 2>/dev/null && bun outdated 2>&1 | head -100 >> $GITHUB_STEP_SUMMARY || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Security audit
+        run: |
+          echo "## Security Audit" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          bun audit 2>&1 | head -50 >> $GITHUB_STEP_SUMMARY || echo "No known vulnerabilities (or bun audit not available)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
