@@ -115,7 +115,7 @@ describe('PhoenixClient', () => {
       const mockResults = [
         { policyNumber: 'P-001', success: true, token: 'jwt-1', policy: { id: '1', policyNumber: 'P-001', insuredName: 'Test', status: 'active' } },
       ];
-      mockFetch.mockResolvedValueOnce(jsonResponse(mockResults));
+      mockFetch.mockResolvedValueOnce(jsonResponse({ results: mockResults }));
 
       const results = await client.login(['P-001']);
 
@@ -131,7 +131,7 @@ describe('PhoenixClient', () => {
         { policyNumber: 'P-001', success: true, token: 'jwt-1', policy: { id: '1', policyNumber: 'P-001', insuredName: 'A', status: 'active' } },
         { policyNumber: 'P-002', success: false, message: 'POLICY_NOT_FOUND' },
       ];
-      mockFetch.mockResolvedValueOnce(jsonResponse(mockResults));
+      mockFetch.mockResolvedValueOnce(jsonResponse({ results: mockResults }));
 
       const results = await client.login(['P-001', 'P-002']);
       expect(results).toHaveLength(2);
@@ -430,7 +430,7 @@ describe('PhoenixClient', () => {
 
   describe('edge cases', () => {
     it('handles empty policy numbers array in login', async () => {
-      mockFetch.mockResolvedValueOnce(jsonResponse([]));
+      mockFetch.mockResolvedValueOnce(jsonResponse({ results: [] }));
 
       const results = await client.login([]);
 
@@ -560,7 +560,7 @@ describe('PhoenixClient', () => {
     });
 
     it('uses POST for login', async () => {
-      mockFetch.mockResolvedValueOnce(jsonResponse([]));
+      mockFetch.mockResolvedValueOnce(jsonResponse({ results: [] }));
 
       await client.login(['P-001']);
 

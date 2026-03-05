@@ -29,10 +29,11 @@ export class PhoenixClient {
   }
 
   async login(policyNumbers: string[]): Promise<LoginResult[]> {
-    return this.request<LoginResult[]>('/auth/phoenix/login', {
+    const res = await this.request<{ results: LoginResult[] }>('/auth/phoenix/login', {
       method: 'POST',
       body: JSON.stringify({ policyNumbers }),
     });
+    return res.results;
   }
 
   async refreshToken(): Promise<{ token: string }> {
