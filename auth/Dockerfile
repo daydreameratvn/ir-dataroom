@@ -3,8 +3,8 @@ FROM oven/bun:1 AS builder
 WORKDIR /repo
 
 # Install auth service dependencies
-COPY auth/package.json auth/bun.lock* ./auth/
-RUN cd auth && bun install --frozen-lockfile --production
+COPY auth/package.json ./auth/
+RUN cd auth && bun install --production
 
 # Install root dependencies (needed by agents imported from auth routes)
 COPY package.json bun.lock* ./
