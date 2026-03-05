@@ -161,6 +161,42 @@ deploy_investor_portal() {
 }
 
 # =============================================================
+# Deploy Phoenix Portal
+# =============================================================
+deploy_phoenix() {
+  echo ">>> Building phoenix portal..."
+  cd "$REPO_ROOT/platform/apps/phoenix"
+  bun install
+  bun run build
+
+  local BUCKET="banyan-prod-phoenix"
+  local CF_ID
+  CF_ID=$(aws cloudfront list-distributions \
+    --query "DistributionList.Items[?contains(Aliases.Items, 'phoenix.papaya.asia')].Id | [0]" \
+    --output text --region "$REGION")
+
+  echo ">>> Uploading to S3 ($BUCKET)..."
+  aws s3 sync "$REPO_ROOT/platform/apps/phoenix/dist/" "s3://$BUCKET/" \
+    --delete \
+    --cache-control "public, max-age=31536000, immutable" \
+    --region "$REGION"
+
+  # index.html should not be cached
+  aws s3 cp "$REPO_ROOT/platform/apps/phoenix/dist/index.html" "s3://$BUCKET/index.html" \
+    --cache-control "no-cache, no-store, must-revalidate" \
+    --content-type "text/html" \
+    --region "$REGION"
+
+  echo ">>> Invalidating CloudFront ($CF_ID)..."
+  aws cloudfront create-invalidation \
+    --distribution-id "$CF_ID" \
+    --paths "/*" \
+    --query 'Invalidation.Id' --output text
+
+  echo ">>> Phoenix portal deployed at https://phoenix.papaya.asia"
+}
+
+# =============================================================
 # Deploy Document Forensics GPU Service
 # =============================================================
 deploy_forensics_gpu() {
@@ -231,6 +267,9 @@ case "$TARGET" in
   forensics)
     deploy_forensics
     ;;
+  phoenix)
+    deploy_phoenix
+    ;;
   forensics-gpu)
     deploy_forensics_gpu
     ;;
@@ -238,10 +277,11 @@ case "$TARGET" in
     deploy_auth
     deploy_frontend
     deploy_investor_portal
+    deploy_phoenix
     deploy_forensics
     ;;
   *)
-    echo "Usage: $0 [frontend|auth|forensics|forensics-gpu|investor-portal|all]"
+    echo "Usage: $0 [frontend|auth|forensics|forensics-gpu|investor-portal|phoenix|all]"
     exit 1
     ;;
 esac
