@@ -1,0 +1,55 @@
+name: Test
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  push:
+    branches: [main]
+
+concurrency:
+  group: test-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      platform: ${{ steps.filter.outputs.platform }}
+      sdks: ${{ steps.filter.outputs.sdks }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            platform:
+              - 'platform/**'
+            sdks:
+              - 'sdks/**'
+
+  test-platform:
+    name: Platform Tests
+    needs: detect-changes
+    if: needs.detect-changes.outputs.platform == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: cd platform && bun install
+      - run: cd platform && bun run typecheck
+      - run: cd platform && bun run test
+
+  test-sdks:
+    name: SDK Tests
+    needs: detect-changes
+    if: needs.detect-changes.outputs.sdks == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: cd sdks && bun install
+      - run: cd sdks && bun run typecheck
+      - run: cd sdks && bun run test
