@@ -64,7 +64,7 @@ function buildSystemPrompt(claimCode: string): string {
     1. Gọi runComplianceCheck với claim code để lấy danh sách chứng từ hiện có
     2. Gọi claim tool để lấy thông tin hồ sơ (tên NĐBH, loại quyền lợi, số tiền)
     3. Phân tích hình ảnh tài liệu đính kèm (nếu có)
-    4. Xác định loại hồ sơ theo Phần 1.2 (Ngoại trú / Nội trú / Tai nạn)
+    4. Xác định loại hồ sơ theo Phần 1.2 (Ngoại trú / Nội trú / Nha khoa / Thai sản / Tai nạn)
     5. Đối chiếu chứng từ hiện có với ma trận bắt buộc (Phần 3)
     6. Kiểm tra chi tiết từng chứng từ theo Phần 4
     7. Kiểm tra chéo giữa các chứng từ theo Phần 5
@@ -75,7 +75,7 @@ function buildSystemPrompt(claimCode: string): string {
     **Output format**:
     ## Kết quả kiểm tra hồ sơ — ${claimCode}
 
-    **Loại hồ sơ**: [Ngoại trú / Nội trú / Tai nạn ngoại trú / Tai nạn nội trú]
+    **Loại hồ sơ**: [Ngoại trú / Nội trú / Nha khoa / Thai sản (khám thai) / Thai sản (sinh đẻ) / Tai nạn ngoại trú / Tai nạn nội trú]
 
     **Trạng thái**: ĐẠT / CẦN BỔ SUNG
 
