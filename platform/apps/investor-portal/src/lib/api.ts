@@ -5,6 +5,14 @@ function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
+async function resilientFetch(url: string, options?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, options);
+  } catch {
+    throw new Error('Service unavailable — please try again later');
+  }
+}
+
 async function apiFetch<T>(
   path: string,
   options: RequestInit = {},
@@ -19,7 +27,7 @@ async function apiFetch<T>(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await resilientFetch(`${BASE}${path}`, {
     ...options,
     headers,
   });
@@ -33,10 +41,14 @@ async function apiFetch<T>(
   }
 
   if (!res.ok) {
-    const body = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(
-      (body as { error?: string }).error ?? `Request failed: ${res.status}`,
-    );
+    const body = await res.json().catch(() => ({}));
+    const serverMsg = (body as { error?: string }).error;
+
+    if (!serverMsg && res.status >= 500) {
+      throw new Error('Service unavailable — please try again later');
+    }
+
+    throw new Error(serverMsg ?? `Request failed: ${res.status}`);
   }
 
   // Handle 204 No Content
@@ -62,7 +74,7 @@ async function apiFetchRaw(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await resilientFetch(`${BASE}${path}`, {
     ...options,
     headers,
   });
@@ -75,10 +87,14 @@ async function apiFetchRaw(
   }
 
   if (!res.ok) {
-    const body = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(
-      (body as { error?: string }).error ?? `Request failed: ${res.status}`,
-    );
+    const body = await res.json().catch(() => ({}));
+    const serverMsg = (body as { error?: string }).error;
+
+    if (!serverMsg && res.status >= 500) {
+      throw new Error('Service unavailable — please try again later');
+    }
+
+    throw new Error(serverMsg ?? `Request failed: ${res.status}`);
   }
 
   return res;
@@ -193,7 +209,7 @@ export async function downloadNdaPdf(slug: string): Promise<Blob> {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(`${BASE}/rounds/${encodeURIComponent(slug)}/nda/download`, {
+  const res = await resilientFetch(`${BASE}/rounds/${encodeURIComponent(slug)}/nda/download`, {
     headers,
   });
 
@@ -268,7 +284,7 @@ export async function getDocumentViewUrl(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(
+  const res = await resilientFetch(
     `${BASE}/rounds/${encodeURIComponent(slug)}/documents/${encodeURIComponent(docId)}/view`,
     { headers },
   );
@@ -307,7 +323,7 @@ export async function getDocumentDownloadUrl(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(
+  const res = await resilientFetch(
     `${BASE}/rounds/${encodeURIComponent(slug)}/documents/${encodeURIComponent(docId)}/download`,
     { headers },
   );

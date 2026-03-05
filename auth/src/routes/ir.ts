@@ -145,15 +145,15 @@ const ir = new Hono<{
 }>();
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ADMIN ROUTES — requireAuth + requireAdmin
+// ADMIN ROUTES — catch-all: every /ir/* route requires auth + admin,
+// EXCEPT /ir/portal/* which uses investor auth (declared further below).
+// This ensures any new admin endpoint is automatically protected.
 // ═══════════════════════════════════════════════════════════════════════════
 
-ir.use("/ir/rounds", requireAuth, requireAdmin);
-ir.use("/ir/rounds/*", requireAuth, requireAdmin);
-ir.use("/ir/documents/*", requireAuth, requireAdmin);
-ir.use("/ir/investors", requireAuth, requireAdmin);
-ir.use("/ir/investors/*", requireAuth, requireAdmin);
-ir.use("/ir/stats", requireAuth, requireAdmin);
+ir.use("/ir/*", async (c, next) => {
+  if (c.req.path.startsWith("/auth/ir/portal/")) return next();
+  return requireAuth(c, () => requireAdmin(c, next));
+});
 
 // ── Rounds ───────────────────────────────────────────────────────────────
 
@@ -865,7 +865,7 @@ ir.post("/ir/portal/otp/request", async (c) => {
     return c.json({ success: true, message: "OTP sent to email" });
   } catch (err) {
     console.error("[IR Portal] Error requesting OTP:", err);
-    return c.json({ error: "Failed to send OTP" }, 500);
+    return c.json({ error: "Service temporarily unavailable" }, 503);
   }
 });
 
@@ -933,7 +933,7 @@ ir.post("/ir/portal/otp/verify", async (c) => {
     });
   } catch (err) {
     console.error("[IR Portal] Error verifying OTP:", err);
-    return c.json({ error: "Failed to verify OTP" }, 500);
+    return c.json({ error: "Service temporarily unavailable" }, 503);
   }
 });
 

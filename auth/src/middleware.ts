@@ -65,9 +65,15 @@ export function isSuperAdmin(user: TokenPayload): boolean {
   return user.userType === "papaya" && user.role === "admin";
 }
 
-/** Gets effective tenant ID — super admins can specify any tenant via query param */
+/** Gets effective tenant ID — super admins can specify any tenant via query param.
+ *  Throws a clear error if called without requireAuth middleware. */
 export function getEffectiveTenantId(c: Context): string {
   const user = c.get("user");
+  if (!user) {
+    throw new Error(
+      `[Auth] getEffectiveTenantId() called without authenticated user on ${c.req.method} ${c.req.path} — missing requireAuth middleware?`,
+    );
+  }
   if (isSuperAdmin(user)) {
     return c.req.query("tenant_id") || user.tenantId;
   }

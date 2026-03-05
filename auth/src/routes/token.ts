@@ -35,88 +35,93 @@ token.post("/token/refresh", async (c) => {
     return c.json({ error: "Refresh token is required" }, 400);
   }
 
-  const session = await validateRefreshToken(refreshToken);
-  if (!session) {
-    // Clear the invalid cookie
-    const cookieName = isImpersonationRefresh ? "impersonation_refresh_token" : "refresh_token";
-    c.header(
-      "Set-Cookie",
-      `${cookieName}=; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=0`
-    );
-    return c.json({ error: "Invalid or expired refresh token" }, 401);
-  }
+  try {
+    const session = await validateRefreshToken(refreshToken);
+    if (!session) {
+      // Clear the invalid cookie
+      const cookieName = isImpersonationRefresh ? "impersonation_refresh_token" : "refresh_token";
+      c.header(
+        "Set-Cookie",
+        `${cookieName}=; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=0`
+      );
+      return c.json({ error: "Invalid or expired refresh token" }, 401);
+    }
 
-  const user = await findUserById(session.userId);
-  if (!user) {
-    return c.json({ error: "User not found" }, 404);
-  }
+    const user = await findUserById(session.userId);
+    if (!user) {
+      return c.json({ error: "User not found" }, 404);
+    }
 
-  const { userAgent, ipAddress } = getClientInfo(c);
+    const { userAgent, ipAddress } = getClientInfo(c);
 
-  // Rotate: revoke old session, create new one
-  const newRefreshToken = generateRefreshToken();
-  const fourHoursMs = 4 * 60 * 60 * 1000;
-  await rotateSession({
-    oldSessionId: session.sessionId,
-    tenantId: session.tenantId,
-    userId: session.userId,
-    newRefreshToken,
-    userAgent,
-    ipAddress,
-    impersonatorId: session.impersonatorId,
-    ttlMs: session.impersonatorId ? fourHoursMs : undefined,
-  });
+    // Rotate: revoke old session, create new one
+    const newRefreshToken = generateRefreshToken();
+    const fourHoursMs = 4 * 60 * 60 * 1000;
+    await rotateSession({
+      oldSessionId: session.sessionId,
+      tenantId: session.tenantId,
+      userId: session.userId,
+      newRefreshToken,
+      userAgent,
+      ipAddress,
+      impersonatorId: session.impersonatorId,
+      ttlMs: session.impersonatorId ? fourHoursMs : undefined,
+    });
 
-  const roles = getUserRoles(user);
-  const accessToken = await signAccessToken({
-    sub: user.id,
-    email: user.email,
-    name: user.name,
-    tenantId: user.tenantId,
-    userType: user.userType,
-    role: roles.role,
-    allowedRoles: roles.allowedRoles,
-    impersonatorId: session.impersonatorId,
-    canImpersonate: user.canImpersonate,
-  });
-
-  // Set the appropriate cookie
-  if (session.impersonatorId) {
-    c.header(
-      "Set-Cookie",
-      `impersonation_refresh_token=${newRefreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=${4 * 60 * 60}`
-    );
-  } else {
-    c.header(
-      "Set-Cookie",
-      `refresh_token=${newRefreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=${30 * 24 * 60 * 60}`
-    );
-  }
-
-  const response: Record<string, unknown> = {
-    accessToken,
-    expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
-    user: {
-      id: user.id,
+    const roles = getUserRoles(user);
+    const accessToken = await signAccessToken({
+      sub: user.id,
       email: user.email,
       name: user.name,
       tenantId: user.tenantId,
       userType: user.userType,
-      userLevel: user.userLevel,
-      canImpersonate: user.canImpersonate,
-    },
-  };
-
-  // Include impersonation info if this is an impersonation session
-  if (session.impersonatorId) {
-    const impersonator = await findAdminUserByIdAnyTenant(session.impersonatorId);
-    response.impersonation = {
+      role: roles.role,
+      allowedRoles: roles.allowedRoles,
       impersonatorId: session.impersonatorId,
-      impersonatorName: impersonator?.name ?? "Admin",
-    };
-  }
+      canImpersonate: user.canImpersonate,
+    });
 
-  return c.json(response);
+    // Set the appropriate cookie
+    if (session.impersonatorId) {
+      c.header(
+        "Set-Cookie",
+        `impersonation_refresh_token=${newRefreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=${4 * 60 * 60}`
+      );
+    } else {
+      c.header(
+        "Set-Cookie",
+        `refresh_token=${newRefreshToken}; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=${30 * 24 * 60 * 60}`
+      );
+    }
+
+    const response: Record<string, unknown> = {
+      accessToken,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        tenantId: user.tenantId,
+        userType: user.userType,
+        userLevel: user.userLevel,
+        canImpersonate: user.canImpersonate,
+      },
+    };
+
+    // Include impersonation info if this is an impersonation session
+    if (session.impersonatorId) {
+      const impersonator = await findAdminUserByIdAnyTenant(session.impersonatorId);
+      response.impersonation = {
+        impersonatorId: session.impersonatorId,
+        impersonatorName: impersonator?.name ?? "Admin",
+      };
+    }
+
+    return c.json(response);
+  } catch (err) {
+    console.error("[Token] Refresh failed:", (err as Error).message);
+    return c.json({ error: "Authentication service temporarily unavailable" }, 503);
+  }
 });
 
 // POST /auth/token/revoke — revoke current session

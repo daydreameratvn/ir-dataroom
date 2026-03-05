@@ -22,6 +22,16 @@ import type {
 
 const BASE = '/auth/ir';
 
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
 function getHeaders(): HeadersInit {
   const token = getAccessToken();
   return {
@@ -30,11 +40,27 @@ function getHeaders(): HeadersInit {
   };
 }
 
+async function irFetch(url: string, options?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, options);
+  } catch {
+    throw new ApiError('Service unavailable — please try again later', 0);
+  }
+}
+
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
+    const message = (body as Record<string, unknown>).error;
+
+    if (!message && response.status >= 500) {
+      throw new ApiError('Service unavailable — please try again later', response.status);
+    }
+
+    throw new ApiError(
+      String(message ?? `Request failed (${response.status})`),
+      response.status,
+    );
   }
   return response.json() as Promise<T>;
 }
@@ -54,12 +80,12 @@ export async function listRounds(params?: ListRoundsParams): Promise<PaginatedRe
   if (params?.status) searchParams.set('status', params.status);
 
   const url = `${BASE}/rounds?${searchParams.toString()}`;
-  const response = await fetch(url, { headers: getHeaders() });
+  const response = await irFetch(url, { headers: getHeaders() });
   return handleResponse<PaginatedResponse<Round>>(response);
 }
 
 export async function getRound(id: string): Promise<Round> {
-  const response = await fetch(`${BASE}/rounds/${id}`, { headers: getHeaders() });
+  const response = await irFetch(`${BASE}/rounds/${id}`, { headers: getHeaders() });
   return handleResponse<Round>(response);
 }
 
@@ -73,7 +99,7 @@ export interface CreateRoundPayload {
 }
 
 export async function createRound(payload: CreateRoundPayload): Promise<{ id: string }> {
-  const response = await fetch(`${BASE}/rounds`, {
+  const response = await irFetch(`${BASE}/rounds`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(payload),
@@ -91,41 +117,29 @@ export interface UpdateRoundPayload {
 }
 
 export async function updateRound(id: string, payload: UpdateRoundPayload): Promise<void> {
-  const response = await fetch(`${BASE}/rounds/${id}`, {
+  const response = await irFetch(`${BASE}/rounds/${id}`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify(payload),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 export async function requestDeleteRoundOtp(id: string): Promise<void> {
-  const response = await fetch(`${BASE}/rounds/${id}/delete-otp`, {
+  const response = await irFetch(`${BASE}/rounds/${id}/delete-otp`, {
     method: 'POST',
     headers: getHeaders(),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 export async function deleteRound(id: string, code: string): Promise<void> {
-  const response = await fetch(`${BASE}/rounds/${id}`, {
+  const response = await irFetch(`${BASE}/rounds/${id}`, {
     method: 'DELETE',
     headers: getHeaders(),
     body: JSON.stringify({ code }),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 // ── Round Investors ──
@@ -146,7 +160,7 @@ export async function listRoundInvestors(
   if (params?.status) searchParams.set('status', params.status);
 
   const url = `${BASE}/rounds/${roundId}/investors?${searchParams.toString()}`;
-  const response = await fetch(url, { headers: getHeaders() });
+  const response = await irFetch(url, { headers: getHeaders() });
   return handleResponse<PaginatedResponse<InvestorRound>>(response);
 }
 
@@ -162,7 +176,7 @@ export async function addInvestorToRound(
   roundId: string,
   payload: AddInvestorPayload
 ): Promise<{ id: string; investorId: string }> {
-  const response = await fetch(`${BASE}/rounds/${roundId}/investors`, {
+  const response = await irFetch(`${BASE}/rounds/${roundId}/investors`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(payload),
@@ -175,47 +189,35 @@ export async function updateInvestorStatus(
   investorRoundId: string,
   status: InvestorRoundStatus
 ): Promise<void> {
-  const response = await fetch(`${BASE}/rounds/${roundId}/investors/${investorRoundId}`, {
+  const response = await irFetch(`${BASE}/rounds/${roundId}/investors/${investorRoundId}`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify({ status }),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 export async function updateInvestorProfile(
   investorId: string,
   data: { name?: string; firm?: string; title?: string }
 ): Promise<void> {
-  const response = await fetch(`${BASE}/investors/${investorId}`, {
+  const response = await irFetch(`${BASE}/investors/${investorId}`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 export async function removeInvestorFromRound(
   roundId: string,
   investorRoundId: string
 ): Promise<void> {
-  const response = await fetch(`${BASE}/rounds/${roundId}/investors/${investorRoundId}`, {
+  const response = await irFetch(`${BASE}/rounds/${roundId}/investors/${investorRoundId}`, {
     method: 'DELETE',
     headers: getHeaders(),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 // ── NDA Mode ──
@@ -225,16 +227,12 @@ export async function updateNdaMode(
   investorRoundId: string,
   ndaMode: NdaMode
 ): Promise<void> {
-  const response = await fetch(`${BASE}/rounds/${roundId}/investors/${investorRoundId}/nda-mode`, {
+  const response = await irFetch(`${BASE}/rounds/${roundId}/investors/${investorRoundId}/nda-mode`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify({ ndaMode }),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 // ── Documents ──
@@ -255,7 +253,7 @@ export async function listDocuments(
   if (params?.category) searchParams.set('category', params.category);
 
   const url = `${BASE}/rounds/${roundId}/documents?${searchParams.toString()}`;
-  const response = await fetch(url, { headers: getHeaders() });
+  const response = await irFetch(url, { headers: getHeaders() });
   return handleResponse<PaginatedResponse<Document>>(response);
 }
 
@@ -271,7 +269,7 @@ export async function createDocument(
   roundId: string,
   payload: CreateDocumentPayload
 ): Promise<{ id: string; uploadUrl?: string }> {
-  const response = await fetch(`${BASE}/rounds/${roundId}/documents`, {
+  const response = await irFetch(`${BASE}/rounds/${roundId}/documents`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(payload),
@@ -284,7 +282,7 @@ export async function getDocumentUploadUrl(
   fileName: string,
   mimeType: string
 ): Promise<{ uploadUrl: string; s3Key: string }> {
-  const response = await fetch(`${BASE}/documents/${docId}/upload-url`, {
+  const response = await irFetch(`${BASE}/documents/${docId}/upload-url`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({ fileName, mimeType }),
@@ -300,29 +298,25 @@ export async function uploadDocumentFile(docId: string, file: File): Promise<voi
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch(`${BASE}/documents/${docId}/upload`, {
+  const response = await irFetch(`${BASE}/documents/${docId}/upload`, {
     method: 'POST',
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: formData,
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? 'Upload failed';
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 /**
  * @deprecated Use uploadDocumentFile instead (proxied, avoids CORS).
  */
 export async function uploadFileToS3(uploadUrl: string, file: File): Promise<void> {
-  const response = await fetch(uploadUrl, {
+  const response = await irFetch(uploadUrl, {
     method: 'PUT',
     headers: { 'Content-Type': file.type || 'application/octet-stream' },
     body: file,
   });
   if (!response.ok) {
-    throw new Error('Failed to upload file to S3');
+    throw new ApiError('Failed to upload file to S3', response.status);
   }
 }
 
@@ -338,40 +332,32 @@ export async function updateDocument(
   docId: string,
   payload: UpdateDocumentPayload
 ): Promise<void> {
-  const response = await fetch(`${BASE}/documents/${docId}`, {
+  const response = await irFetch(`${BASE}/documents/${docId}`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify(payload),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 export async function deleteDocument(docId: string): Promise<void> {
-  const response = await fetch(`${BASE}/documents/${docId}`, {
+  const response = await irFetch(`${BASE}/documents/${docId}`, {
     method: 'DELETE',
     headers: getHeaders(),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 // ── NDA ──
 
 export async function getActiveNda(roundId: string): Promise<NdaTemplate | null> {
-  const response = await fetch(`${BASE}/rounds/${roundId}/nda`, { headers: getHeaders() });
+  const response = await irFetch(`${BASE}/rounds/${roundId}/nda`, { headers: getHeaders() });
   if (response.status === 404) return null;
   return handleResponse<NdaTemplate>(response);
 }
 
 export async function createNda(roundId: string, content: string): Promise<NdaTemplate> {
-  const response = await fetch(`${BASE}/rounds/${roundId}/nda`, {
+  const response = await irFetch(`${BASE}/rounds/${roundId}/nda`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({ content }),
@@ -382,21 +368,21 @@ export async function createNda(roundId: string, content: string): Promise<NdaTe
 // ── Dashboard Stats ──
 
 export async function getRoundDashboardStats(roundId: string): Promise<RoundDashboardStats> {
-  const response = await fetch(`${BASE}/rounds/${roundId}/dashboard-stats`, { headers: getHeaders() });
+  const response = await irFetch(`${BASE}/rounds/${roundId}/dashboard-stats`, { headers: getHeaders() });
   return handleResponse<RoundDashboardStats>(response);
 }
 
 // ── Analytics ──
 
 export async function getRoundAnalytics(roundId: string): Promise<RoundAnalytics> {
-  const response = await fetch(`${BASE}/rounds/${roundId}/analytics`, { headers: getHeaders() });
+  const response = await irFetch(`${BASE}/rounds/${roundId}/analytics`, { headers: getHeaders() });
   return handleResponse<RoundAnalytics>(response);
 }
 
 // ── Engagement ──
 
 export async function getRoundEngagement(roundId: string): Promise<InvestorEngagement[]> {
-  const response = await fetch(`${BASE}/rounds/${roundId}/engagement`, { headers: getHeaders() });
+  const response = await irFetch(`${BASE}/rounds/${roundId}/engagement`, { headers: getHeaders() });
   const result = await handleResponse<{ data: InvestorEngagement[] }>(response);
   return result.data;
 }
@@ -419,18 +405,17 @@ export async function getAccessLogs(
   if (params?.action) searchParams.set('action', params.action);
 
   const url = `${BASE}/rounds/${roundId}/access-logs?${searchParams.toString()}`;
-  const response = await fetch(url, { headers: getHeaders() });
+  const response = await irFetch(url, { headers: getHeaders() });
   return handleResponse<PaginatedResponse<AccessLog>>(response);
 }
 
 export async function exportAccessLogsCSV(roundId: string): Promise<void> {
-  const response = await fetch(`${BASE}/rounds/${roundId}/access-logs/export`, {
+  const response = await irFetch(`${BASE}/rounds/${roundId}/access-logs/export`, {
     headers: getHeaders(),
   });
   if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
+    await handleResponse<void>(response);
+    return;
   }
 
   const blob = await response.blob();
@@ -447,14 +432,14 @@ export async function exportAccessLogsCSV(roundId: string): Promise<void> {
 // ── Stats ──
 
 export async function getStats(): Promise<OverallStats> {
-  const response = await fetch(`${BASE}/stats`, { headers: getHeaders() });
+  const response = await irFetch(`${BASE}/stats`, { headers: getHeaders() });
   return handleResponse<OverallStats>(response);
 }
 
 // ── All Investors ──
 
 export async function listAllInvestors(): Promise<Investor[]> {
-  const response = await fetch(`${BASE}/investors`, { headers: getHeaders() });
+  const response = await irFetch(`${BASE}/investors`, { headers: getHeaders() });
   const result = await handleResponse<{ data: Investor[] }>(response);
   return result.data;
 }
@@ -462,21 +447,17 @@ export async function listAllInvestors(): Promise<Investor[]> {
 // ── Invitations ──
 
 export async function sendInvitation(investorId: string): Promise<void> {
-  const response = await fetch(`${BASE}/investors/${investorId}/invite`, {
+  const response = await irFetch(`${BASE}/investors/${investorId}/invite`, {
     method: 'POST',
     headers: getHeaders(),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 // ── Recent Activity ──
 
 export async function getRecentActivity(limit = 20): Promise<RecentActivity[]> {
-  const response = await fetch(`${BASE}/recent-activity?limit=${limit}`, {
+  const response = await irFetch(`${BASE}/recent-activity?limit=${limit}`, {
     headers: getHeaders(),
   });
   const result = await handleResponse<{ data: RecentActivity[] }>(response);

@@ -18,19 +18,34 @@ interface AuthResponse {
 
 async function authRequest<T>(path: string, options?: RequestInit): Promise<T> {
   const { headers: optionHeaders, ...restOptions } = options ?? {};
-  const response = await fetch(`${_authBaseUrl}${path}`, {
-    credentials: 'include',
-    ...restOptions,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(optionHeaders as Record<string, string>),
-    },
-  });
+
+  let response: Response;
+  try {
+    response = await fetch(`${_authBaseUrl}${path}`, {
+      credentials: 'include',
+      ...restOptions,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(optionHeaders as Record<string, string>),
+      },
+    });
+  } catch {
+    // Network error — server is completely unreachable
+    throw new AuthError('Service unavailable — please try again later', 0);
+  }
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
+    const serverMessage = (body as Record<string, string>).error;
+
+    // If no server message and 5xx, the response isn't from our auth server
+    // (likely proxy error when auth server is down)
+    if (!serverMessage && response.status >= 500) {
+      throw new AuthError('Service unavailable — please try again later', response.status);
+    }
+
     throw new AuthError(
-      (body as Record<string, string>).error || `Auth error: ${response.status}`,
+      serverMessage || `Request failed (${response.status})`,
       response.status,
     );
   }
@@ -200,22 +215,15 @@ export async function startImpersonation(
   user: User;
   impersonation: { impersonatorId: string; impersonatorName: string };
 }> {
-  const res = await fetch(`${_authBaseUrl}/admin/impersonate/${userId}`, {
+  return authRequest(`/admin/impersonate/${userId}`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    credentials: 'include',
+    headers: { Authorization: `Bearer ${token}` },
   });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error((body as Record<string, string>).error || 'Impersonation failed');
-  }
-  return res.json();
 }
 
 export async function endImpersonation(token: string): Promise<void> {
-  await fetch(`${_authBaseUrl}/admin/impersonate/end`, {
+  await authRequest<Record<string, never>>('/admin/impersonate/end', {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
-    credentials: 'include',
   });
 }

@@ -18,16 +18,49 @@ export async function getPool(): Promise<pg.Pool> {
   });
 
   pool.on("error", (err) => {
-    console.error("Unexpected pool error:", err);
+    console.error("[DB Pool] Connection error — resetting pool:", err.message);
+    resetPool();
   });
 
   return pool;
 }
+
+/** Destroy the pool so next query creates a fresh connection */
+export function resetPool(): void {
+  if (pool) {
+    pool.end().catch(() => {});
+    pool = null;
+  }
+}
+
+const CONNECTION_ERROR_RE =
+  /ECONNREFUSED|ETIMEDOUT|ENOTFOUND|connection terminated|Connection terminated|cannot connect|too many clients|timeout expired/i;
 
 export async function query<T extends pg.QueryResultRow = pg.QueryResultRow>(
   text: string,
   params?: unknown[]
 ): Promise<pg.QueryResult<T>> {
   const p = await getPool();
-  return p.query<T>(text, params);
+  try {
+    return await p.query<T>(text, params);
+  } catch (err) {
+    // If it's a connection error, reset pool so next request retries fresh
+    const msg = err instanceof Error ? err.message : "";
+    if (CONNECTION_ERROR_RE.test(msg)) {
+      console.error("[DB Pool] Query connection error — resetting pool for recovery");
+      resetPool();
+    }
+    throw err;
+  }
+}
+
+/** Quick connectivity check — returns true if DB is reachable */
+export async function checkDbConnection(): Promise<boolean> {
+  try {
+    const p = await getPool();
+    await p.query("SELECT 1");
+    return true;
+  } catch {
+    return false;
+  }
 }

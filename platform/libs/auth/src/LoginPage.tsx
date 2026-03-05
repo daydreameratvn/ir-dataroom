@@ -20,6 +20,7 @@ import {
   verifyOtp,
   getPasskeyLoginOptions,
   verifyPasskeyLogin,
+  AuthError,
 } from './auth-client';
 
 type LoginStep = 'choose' | 'otp-verify';
@@ -128,7 +129,11 @@ export default function LoginPage() {
       signIn(result.user, result.accessToken, result.expiresAt);
       navigate(returnUrl, { replace: true });
     } catch (err) {
-      setError(t('auth.login.invalidCode'));
+      if (err instanceof AuthError && err.status >= 500) {
+        setError(err.message);
+      } else {
+        setError(t('auth.login.invalidCode'));
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -146,6 +151,8 @@ export default function LoginPage() {
     } catch (err) {
       if (err instanceof Error && err.name === 'NotAllowedError') {
         setError(t('auth.login.passkeyCancelled'));
+      } else if (err instanceof AuthError && err.status >= 500) {
+        setError(err.message);
       } else {
         setError(t('auth.login.passkeyFailed'));
       }

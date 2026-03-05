@@ -31,9 +31,24 @@ app.use(
 );
 app.use("*", logger());
 
-// Health check
-app.get("/auth/health", (c) => {
-  return c.json({ status: "ok", service: "auth", timestamp: new Date().toISOString() });
+// Health check — use ?deep=true to verify DB connectivity
+app.get("/auth/health", async (c) => {
+  const deep = c.req.query("deep") === "true";
+  const result: Record<string, unknown> = {
+    status: "ok",
+    service: "auth",
+    timestamp: new Date().toISOString(),
+  };
+
+  if (deep) {
+    const { checkDbConnection } = await import("./db/pool.ts");
+    const dbOk = await checkDbConnection();
+    result.database = dbOk ? "connected" : "unreachable";
+    if (!dbOk) result.status = "degraded";
+  }
+
+  const statusCode = result.status === "ok" ? 200 : 503;
+  return c.json(result, statusCode);
 });
 
 // Routes
@@ -51,22 +66,52 @@ app.route("/auth", ir);
 app.route("/auth", phoenix);
 app.route("/auth", directoryRoutes);
 
-// Global error handler — auto-reports unhandled errors
+// ---------------------------------------------------------------------------
+// Global error handler — distinguishes DB outages from other errors
+// ---------------------------------------------------------------------------
+function isDbConnectionError(err: unknown): boolean {
+  // Check error.code (Node.js/Bun system errors set this directly)
+  if (typeof err === "object" && err !== null) {
+    const code = (err as Record<string, unknown>).code;
+    if (typeof code === "string" && /ECONNREFUSED|ETIMEDOUT|ENOTFOUND/.test(code)) {
+      return true;
+    }
+  }
+  // Fallback: check error message text
+  const msg = err instanceof Error ? err.message : String(err);
+  return /ECONNREFUSED|ETIMEDOUT|ENOTFOUND|connection terminated|Connection terminated|cannot connect|too many clients|timeout expired/i.test(msg);
+}
+
 app.onError(async (err, c) => {
-  console.error("Unhandled error:", err);
-  try {
-    const { upsertErrorReport, generateFingerprint } = await import("./services/error-report.ts");
-    await upsertErrorReport({
-      source: "backend_unhandled",
-      message: err.message,
-      stackTrace: err.stack,
-      endpoint: `${c.req.method} ${c.req.path}`,
-      fingerprint: generateFingerprint("backend_unhandled", err.message, err.stack),
-      userAgent: c.req.header("user-agent"),
-      ipAddress: c.req.header("x-forwarded-for")?.split(",")[0]?.trim(),
-    });
-  } catch { /* don't crash on error reporting failure */ }
-  return c.json({ error: "Internal server error" }, 500);
+  const dbDown = isDbConnectionError(err);
+  const status = dbDown ? 503 : 500;
+  const message = dbDown
+    ? "Database temporarily unavailable"
+    : "Internal server error";
+
+  console.error(
+    dbDown ? "[DB DOWN]" : "[ERROR]",
+    `${c.req.method} ${c.req.path}:`,
+    err,
+  );
+
+  // Only attempt DB-based error reporting if DB is NOT down
+  if (!dbDown) {
+    try {
+      const { upsertErrorReport, generateFingerprint } = await import("./services/error-report.ts");
+      await upsertErrorReport({
+        source: "backend_unhandled",
+        message: err.message,
+        stackTrace: err.stack,
+        endpoint: `${c.req.method} ${c.req.path}`,
+        fingerprint: generateFingerprint("backend_unhandled", err.message, err.stack),
+        userAgent: c.req.header("user-agent"),
+        ipAddress: c.req.header("x-forwarded-for")?.split(",")[0]?.trim(),
+      });
+    } catch { /* don't crash on error reporting failure */ }
+  }
+
+  return c.json({ error: message }, status);
 });
 
 console.log(`Auth service starting on port ${authConfig.port}`);
