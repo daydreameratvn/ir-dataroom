@@ -152,7 +152,7 @@ const ir = new Hono<{
 
 ir.use("/ir/*", async (c, next) => {
   if (c.req.path.startsWith("/auth/ir/portal/")) return next();
-  return requireAuth(c, () => requireAdmin(c, next));
+  await requireAuth(c, async () => { await requireAdmin(c, next); });
 });
 
 // ── Rounds ───────────────────────────────────────────────────────────────
@@ -242,7 +242,7 @@ ir.delete("/ir/rounds/:id", async (c) => {
   const id = c.req.param("id");
 
   // Require OTP verification
-  const body = await c.req.json<{ code?: string }>().catch(() => ({}));
+  const body = await c.req.json<{ code?: string }>().catch(() => ({}) as { code?: string });
   if (!body.code) {
     return c.json({ error: "Verification code is required" }, 400);
   }

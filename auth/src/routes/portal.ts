@@ -366,8 +366,8 @@ portal.post("/portal/claims", async (c) => {
       const formData = await c.req.formData();
       claimCode = formData.get("claimCode")?.toString();
       for (const [key, value] of formData.entries()) {
-        if (key === "files" && value instanceof File) {
-          files.push(value);
+        if (key === "files" && (value as unknown) instanceof File) {
+          files.push(value as unknown as File);
         }
       }
     } else {
@@ -399,7 +399,7 @@ portal.post("/portal/claims", async (c) => {
       },
     });
 
-    const newClaim = insertData.insertClaims.returning[0];
+    const newClaim = insertData.insertClaims.returning[0]!;
 
     // Upload files to S3 and create claim_documents records
     if (files.length > 0) {
@@ -1595,7 +1595,7 @@ portal.post("/portal/fwa-cases", async (c) => {
       },
     });
 
-    const newCase = insertData.insertFwaCases.returning[0];
+    const newCase = insertData.insertFwaCases.returning[0]!;
 
     // Link claims to the FWA case
     const linkObjects = body.claimIds.map((claimId) => ({
@@ -1711,10 +1711,11 @@ let _mergeExtractedData: ((claimId: string, patch: Record<string, unknown>, name
 
 async function getMergeExtractedData() {
   if (!_mergeExtractedData) {
-    const mod = await import("../../../agents/portal-extraction/tools/claims.ts");
+    const agentPath = "../../../agents/portal-extraction/tools/claims.ts";
+    const mod = await import(/* @vite-ignore */ agentPath);
     _mergeExtractedData = mod.mergeExtractedData;
   }
-  return _mergeExtractedData;
+  return _mergeExtractedData!;
 }
 
 async function updatePipelineStatus(

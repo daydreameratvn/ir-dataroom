@@ -2,12 +2,12 @@ import { describe, it, expect, beforeAll, mock } from "bun:test";
 import { Hono } from "hono";
 
 // Mock phoenix service before importing routes
-const mockFindPolicyByNumber = mock(() => Promise.resolve(null));
-const mockListClaimsForPolicy = mock(() => Promise.resolve([]));
-const mockGetClaimWithDetails = mock(() => Promise.resolve(null));
-const mockCreateClaim = mock(() => Promise.resolve(null));
+const mockFindPolicyByNumber = mock(() => Promise.resolve(null as Record<string, unknown> | null));
+const mockListClaimsForPolicy = mock(() => Promise.resolve([] as Record<string, unknown>[]));
+const mockGetClaimWithDetails = mock(() => Promise.resolve(null as Record<string, unknown> | null));
+const mockCreateClaim = mock(() => Promise.resolve(null as Record<string, unknown> | null));
 const mockCreateClaimDocument = mock(() =>
-  Promise.resolve({ uploadUrl: "https://s3.example.com/upload", document: { id: "doc-1" } })
+  Promise.resolve({ uploadUrl: "https://s3.example.com/upload", document: { id: "doc-1" } } as Record<string, unknown>)
 );
 
 mock.module("../services/phoenix.ts", () => ({

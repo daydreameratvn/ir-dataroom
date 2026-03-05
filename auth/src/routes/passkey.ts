@@ -104,8 +104,8 @@ passkey.get("/passkey/list", requireAuth, async (c) => {
 // DELETE /auth/passkey/:id — requires auth
 passkey.delete("/passkey/:id", requireAuth, async (c) => {
   const user = c.get("user");
-  const passkeyId = c.req.param("id");
-  const deleted = await deletePasskey(passkeyId, user.sub, user.tenantId);
+  const passkeyId = c.req.param("id")!;
+  const deleted = await deletePasskey(passkeyId, user.sub, user.tenantId!);
   if (!deleted) {
     return c.json({ error: "Passkey not found" }, 404);
   }
@@ -115,12 +115,12 @@ passkey.delete("/passkey/:id", requireAuth, async (c) => {
 // PATCH /auth/passkey/:id — requires auth (rename)
 passkey.patch("/passkey/:id", requireAuth, async (c) => {
   const user = c.get("user");
-  const passkeyId = c.req.param("id");
+  const passkeyId = c.req.param("id")!;
   const body = await c.req.json<{ deviceName: string }>();
   if (!body.deviceName?.trim()) {
     return c.json({ error: "Device name is required" }, 400);
   }
-  const updated = await renamePasskey(passkeyId, user.sub, user.tenantId, body.deviceName.trim());
+  const updated = await renamePasskey(passkeyId, user.sub, user.tenantId!, body.deviceName.trim());
   if (!updated) {
     return c.json({ error: "Passkey not found" }, 404);
   }

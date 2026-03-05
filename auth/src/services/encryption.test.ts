@@ -57,7 +57,7 @@ describe("encryption", () => {
 
     // Tamper with the ciphertext
     const bytes = Buffer.from(ciphertext, "base64");
-    bytes[bytes.length - 1] ^= 0xff;
+    bytes[bytes.length - 1]! ^= 0xff;
     const tampered = bytes.toString("base64");
 
     expect(decryptToken(tampered)).rejects.toThrow();
