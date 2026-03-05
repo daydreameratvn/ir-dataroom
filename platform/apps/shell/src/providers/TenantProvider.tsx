@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { Tenant } from '@papaya/shared-types';
+import { i18n } from '@papaya/i18n';
 
 interface TenantContextValue {
   tenant: Tenant;
@@ -27,6 +28,7 @@ const defaultTenant: Tenant = {
     reporting: true,
     aiAgents: true,
     ir: true,
+    portal: true,
   },
   createdAt: '2024-01-01T00:00:00Z',
   updatedAt: '2024-01-01T00:00:00Z',
@@ -46,6 +48,17 @@ export interface TenantProviderProps {
 
 export default function TenantProvider({ children }: TenantProviderProps) {
   const [tenant, setTenant] = useState<Tenant>(defaultTenant);
+
+  // Sync tenant's default locale to i18n when tenant changes,
+  // but only if the user hasn't already chosen a language (stored in localStorage).
+  useEffect(() => {
+    try {
+      const userChose = localStorage.getItem('i18nextLng');
+      if (!userChose && tenant.defaultLocale && i18n.language !== tenant.defaultLocale) {
+        i18n.changeLanguage(tenant.defaultLocale);
+      }
+    } catch { /* localStorage unavailable */ }
+  }, [tenant.defaultLocale]);
 
   return (
     <TenantContext.Provider value={{ tenant, setTenant }}>

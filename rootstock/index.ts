@@ -63,6 +63,9 @@ export const stackOutputs = {
   ForensicsEcrRepoUrl: resources.banyanForensicsEcrRepo.repositoryUrl,
   ForensicsGpuEcrRepoUrl: resources.banyanForensicsGpuEcrRepo.repositoryUrl,
 
+  // Portal Documents
+  PortalDocumentsBucketName: resources.banyanPortalDocumentsBucket.bucket,
+
   // GCP
   gcpProject: gcpConfig.project,
   gcpRegion: gcpConfig.region,

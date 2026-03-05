@@ -5,21 +5,25 @@ import type { StatusResponse } from './types';
 
 // Mock useAuth to control admin state — returns a plain object, no delegation to original
 const mockUser = { current: null as Record<string, unknown> | null };
-vi.mock('@papaya/auth', () => ({
-  useAuth: () => ({
-    user: mockUser.current,
-    session: null,
-    isLoading: false,
-    isAuthenticated: !!mockUser.current,
-    isImpersonating: false,
-    impersonation: null,
-    signIn: vi.fn(),
-    signOut: vi.fn(),
-    startImpersonation: vi.fn(),
-    endImpersonation: vi.fn(),
-  }),
-  AuthProvider: ({ children }: { children: unknown }) => children,
-}));
+vi.mock('@papaya/auth', async () => {
+  const { createContext } = await import('react');
+  return {
+    AuthContext: createContext(null),
+    useAuth: () => ({
+      user: mockUser.current,
+      session: null,
+      isLoading: false,
+      isAuthenticated: !!mockUser.current,
+      isImpersonating: false,
+      impersonation: null,
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      startImpersonation: vi.fn(),
+      endImpersonation: vi.fn(),
+    }),
+    AuthProvider: ({ children }: { children: unknown }) => children,
+  };
+});
 
 // Mock the API calls in admin panels
 vi.mock('./api', () => ({
@@ -59,7 +63,7 @@ beforeEach(async () => {
     ok: true,
     json: () => Promise.resolve(mockStatusResponse),
   });
-  global.fetch = fetchMock as unknown as typeof fetch;
+  globalThis.fetch = fetchMock as unknown as typeof fetch;
 });
 
 afterEach(() => {

@@ -82,7 +82,7 @@ export default function AnalyticsDashboard({ roundId }: AnalyticsDashboardProps)
       setInvestorEngagement(
         engagementResult
           .map((inv) => ({
-            name: inv.investorName || inv.investorEmail.split('@')[0],
+            name: inv.investorName || inv.investorEmail.split('@')[0] || inv.investorEmail,
             views: inv.totalViews,
             downloads: inv.totalDownloads,
           }))

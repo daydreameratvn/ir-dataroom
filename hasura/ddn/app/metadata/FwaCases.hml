@@ -1,0 +1,434 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwaCases
+  fields:
+    - name: aiNextSteps
+      type: Json
+    - name: aiPatterns
+      type: String_1
+    - name: aiSummary
+      type: String_1
+    - name: avgRiskScore
+      type: Bigdecimal
+    - name: caseCode
+      type: String_1!
+    - name: closedAt
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: entityId
+      type: String_1!
+    - name: entityName
+      type: String_1!
+    - name: entityType
+      type: String_1!
+    - name: flagSummary
+      type: Json
+    - name: highestRiskScore
+      type: Bigdecimal
+    - name: id
+      type: Uuid!
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: totalFlaggedAmount
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: FwaCases
+    inputTypeName: FwaCasesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: fwa_cases
+      fieldMapping:
+        aiNextSteps:
+          column:
+            name: ai_next_steps
+        aiPatterns:
+          column:
+            name: ai_patterns
+        aiSummary:
+          column:
+            name: ai_summary
+        avgRiskScore:
+          column:
+            name: avg_risk_score
+        caseCode:
+          column:
+            name: case_code
+        closedAt:
+          column:
+            name: closed_at
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        entityId:
+          column:
+            name: entity_id
+        entityName:
+          column:
+            name: entity_name
+        entityType:
+          column:
+            name: entity_type
+        flagSummary:
+          column:
+            name: flag_summary
+        highestRiskScore:
+          column:
+            name: highest_risk_score
+        id:
+          column:
+            name: id
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        totalFlaggedAmount:
+          column:
+            name: total_flagged_amount
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwaCases
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - aiNextSteps
+          - aiPatterns
+          - aiSummary
+          - avgRiskScore
+          - caseCode
+          - closedAt
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - entityId
+          - entityName
+          - entityType
+          - flagSummary
+          - highestRiskScore
+          - id
+          - status
+          - tenantId
+          - totalFlaggedAmount
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwaCasesAggExp
+  operand:
+    object:
+      aggregatedType: FwaCases
+      aggregatableFields:
+        - fieldName: aiPatterns
+          aggregateExpression: TextAggExp
+        - fieldName: aiSummary
+          aggregateExpression: TextAggExp
+        - fieldName: avgRiskScore
+          aggregateExpression: NumericAggExp
+        - fieldName: caseCode
+          aggregateExpression: TextAggExp
+        - fieldName: closedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: entityId
+          aggregateExpression: TextAggExp
+        - fieldName: entityName
+          aggregateExpression: TextAggExp
+        - fieldName: entityType
+          aggregateExpression: TextAggExp
+        - fieldName: highestRiskScore
+          aggregateExpression: NumericAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: totalFlaggedAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwaCasesAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwaCases
+  objectType: FwaCases
+  source:
+    dataConnectorName: banyan_pg
+    collection: fwa_cases
+  filterExpressionType: FwaCasesBoolExp
+  aggregateExpression: FwaCasesAggExp
+  orderByExpression: FwaCasesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwaCases
+      subscription:
+        rootField: fwaCases
+    selectUniques:
+      - queryRootField: fwaCasesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: fwaCasesById
+    filterInputTypeName: FwaCasesFilterInput
+    aggregate:
+      queryRootField: fwaCasesAggregate
+      subscription:
+        rootField: fwaCasesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwaCases
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: FwaCases
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaCaseActions
+  sourceType: FwaCases
+  target:
+    model:
+      name: FwaCaseActions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaCaseActionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: caseId
+  graphql:
+    aggregateFieldName: fwaCaseActionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaCaseLinkedClaims
+  sourceType: FwaCases
+  target:
+    model:
+      name: FwaCaseLinkedClaims
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaCaseLinkedClaimsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: caseId
+  graphql:
+    aggregateFieldName: fwaCaseLinkedClaimsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaCaseStatus
+  sourceType: FwaCases
+  target:
+    model:
+      name: FwaCaseStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwaCasesBoolExp
+  operand:
+    object:
+      type: FwaCases
+      comparableFields:
+        - fieldName: aiPatterns
+          booleanExpressionType: TextBoolExp
+        - fieldName: aiSummary
+          booleanExpressionType: TextBoolExp
+        - fieldName: avgRiskScore
+          booleanExpressionType: NumericBoolExp
+        - fieldName: caseCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: closedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: entityId
+          booleanExpressionType: TextBoolExp
+        - fieldName: entityName
+          booleanExpressionType: TextBoolExp
+        - fieldName: entityType
+          booleanExpressionType: TextBoolExp
+        - fieldName: highestRiskScore
+          booleanExpressionType: NumericBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: totalFlaggedAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: tenant
+        - relationshipName: fwaCaseActions
+        - relationshipName: fwaCaseLinkedClaims
+        - relationshipName: fwaCaseStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwaCasesBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwaCasesOrderByExp
+  operand:
+    object:
+      orderedType: FwaCases
+      orderableFields:
+        - fieldName: aiPatterns
+          orderByExpression: String1OrderByExp
+        - fieldName: aiSummary
+          orderByExpression: String1OrderByExp
+        - fieldName: avgRiskScore
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: caseCode
+          orderByExpression: String1OrderByExp
+        - fieldName: closedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: entityId
+          orderByExpression: String1OrderByExp
+        - fieldName: entityName
+          orderByExpression: String1OrderByExp
+        - fieldName: entityType
+          orderByExpression: String1OrderByExp
+        - fieldName: highestRiskScore
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: totalFlaggedAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: tenant
+        - relationshipName: fwaCaseStatus
+  graphql:
+    expressionTypeName: FwaCasesOrderByExp

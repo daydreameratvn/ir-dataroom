@@ -18,6 +18,7 @@ vi.mock('./api', () => ({
   getRound: vi.fn(),
   listAllInvestors: vi.fn().mockResolvedValue([]),
   createRound: vi.fn(),
+  getRecentActivity: vi.fn().mockResolvedValue([]),
 }));
 
 beforeEach(async () => {

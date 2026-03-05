@@ -80,6 +80,8 @@ describe('InvestorInviteDialog', () => {
         email: 'john@example.com',
         name: 'John Doe',
         firm: 'Acme Capital',
+        title: undefined,
+        ndaMode: 'digital',
       });
     });
 
@@ -87,10 +89,10 @@ describe('InvestorInviteDialog', () => {
     expect(defaultProps.onOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it('renders skip NDA checkbox', () => {
+  it('renders NDA mode selector', () => {
     render(<InvestorInviteDialog {...defaultProps} />);
 
-    expect(screen.getByText('Skip NDA requirement for this investor')).toBeInTheDocument();
+    expect(screen.getByText('NDA Mode')).toBeInTheDocument();
   });
 
   it('does not render when open is false', () => {

@@ -5,27 +5,31 @@ import TestWrapper, { ensureI18n } from '@/test/wrapper';
 import AdminPage from './AdminPage';
 
 // Mock @papaya/auth (UserTable uses useAuth from this lib)
-vi.mock('@papaya/auth', () => ({
-  useAuth: () => ({
-    user: {
-      id: 'user-001',
-      email: 'admin@papaya.asia',
-      name: 'Sarah Chen',
-      userType: 'insurer',
-      userLevel: 'admin',
-      tenantId: 'papaya-demo',
-    },
-    session: { accessToken: 'mock-token' },
-    isAuthenticated: true,
-    isLoading: false,
-  }),
-  getAccessToken: () => 'mock-token',
-  setAccessToken: vi.fn(),
-  clearAccessToken: vi.fn(),
-  isTokenValid: () => true,
-  onTokenChange: vi.fn(),
-  reportError: vi.fn(),
-}));
+vi.mock('@papaya/auth', async () => {
+  const { createContext } = await import('react');
+  return {
+    AuthContext: createContext(null),
+    useAuth: () => ({
+      user: {
+        id: 'user-001',
+        email: 'admin@papaya.asia',
+        name: 'Sarah Chen',
+        userType: 'insurer',
+        userLevel: 'admin',
+        tenantId: 'papaya-demo',
+      },
+      session: { accessToken: 'mock-token' },
+      isAuthenticated: true,
+      isLoading: false,
+    }),
+    getAccessToken: () => 'mock-token',
+    setAccessToken: vi.fn(),
+    clearAccessToken: vi.fn(),
+    isTokenValid: () => true,
+    onTokenChange: vi.fn(),
+    reportError: vi.fn(),
+  };
+});
 
 // Mock the API module (used by UserTable)
 vi.mock('./api', () => ({

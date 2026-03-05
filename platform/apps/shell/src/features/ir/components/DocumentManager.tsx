@@ -246,7 +246,7 @@ export default function DocumentManager({ roundId }: DocumentManagerProps) {
         <div className="text-center py-8 text-muted-foreground">No files uploaded yet.</div>
       ) : (
         sortedCategories.map((category) => {
-          const categoryDocs = grouped[category];
+          const categoryDocs = grouped[category] ?? [];
           return (
             <Card key={category}>
               <CardHeader>

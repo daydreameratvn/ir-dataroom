@@ -1,12 +1,6 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { User, AuthSession } from '@papaya/shared-types';
-
-interface AuthContextValue {
-  user: User | null;
-  session: AuthSession | null;
-  signIn: (user: User) => void;
-  signOut: () => void;
-}
+import { AuthContext } from '@papaya/auth';
 
 const mockUser: User = {
   id: 'user-001',
@@ -27,35 +21,37 @@ const mockSession: AuthSession = {
   expiresAt: '2099-12-31T23:59:59Z',
 };
 
-const AuthContext = createContext<AuthContextValue | null>(null);
-
-export function useAuth(): AuthContextValue {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
-}
-
 export interface AuthProviderProps {
   children: ReactNode;
 }
 
-export default function AuthProvider({ children }: AuthProviderProps) {
+export default function MockAuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<AuthSession | null>(mockSession);
 
-  function signIn(user: User) {
-    setSession({
-      user,
-      accessToken: 'mock-token',
-      expiresAt: '2099-12-31T23:59:59Z',
-    });
+  function signIn(user: User, accessToken: string, expiresAt: string) {
+    setSession({ user, accessToken, expiresAt });
   }
 
   function signOut() {
     setSession(null);
+    return Promise.resolve();
   }
 
   return (
-    <AuthContext.Provider value={{ user: session?.user ?? null, session, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{
+        user: session?.user ?? null,
+        session,
+        isLoading: false,
+        isAuthenticated: session !== null,
+        isImpersonating: false,
+        impersonation: null,
+        signIn,
+        signOut,
+        startImpersonation: async () => {},
+        endImpersonation: async () => {},
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

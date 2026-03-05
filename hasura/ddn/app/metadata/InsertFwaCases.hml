@@ -1,0 +1,221 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwaCasesObject
+  fields:
+    - name: aiNextSteps
+      type: Json
+    - name: aiPatterns
+      type: String_1
+    - name: aiSummary
+      type: String_1
+    - name: avgRiskScore
+      type: Bigdecimal
+    - name: caseCode
+      type: String_1!
+    - name: closedAt
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: entityId
+      type: String_1!
+    - name: entityName
+      type: String_1!
+    - name: entityType
+      type: String_1
+    - name: flagSummary
+      type: Json
+    - name: highestRiskScore
+      type: Bigdecimal
+    - name: id
+      type: Uuid
+    - name: status
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: totalFlaggedAmount
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertFwaCasesObject
+    inputTypeName: InsertFwaCasesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_fwa_cases_object
+      fieldMapping:
+        aiNextSteps:
+          column:
+            name: ai_next_steps
+        aiPatterns:
+          column:
+            name: ai_patterns
+        aiSummary:
+          column:
+            name: ai_summary
+        avgRiskScore:
+          column:
+            name: avg_risk_score
+        caseCode:
+          column:
+            name: case_code
+        closedAt:
+          column:
+            name: closed_at
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        entityId:
+          column:
+            name: entity_id
+        entityName:
+          column:
+            name: entity_name
+        entityType:
+          column:
+            name: entity_type
+        flagSummary:
+          column:
+            name: flag_summary
+        highestRiskScore:
+          column:
+            name: highest_risk_score
+        id:
+          column:
+            name: id
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        totalFlaggedAmount:
+          column:
+            name: total_flagged_amount
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwaCasesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - aiNextSteps
+          - aiPatterns
+          - aiSummary
+          - avgRiskScore
+          - caseCode
+          - closedAt
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - entityId
+          - entityName
+          - entityType
+          - flagSummary
+          - highestRiskScore
+          - id
+          - status
+          - tenantId
+          - totalFlaggedAmount
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwaCasesResponse
+  description: Responses from the 'insert_fwa_cases' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwaCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwaCasesResponse
+    inputTypeName: InsertFwaCasesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_fwa_cases_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwaCasesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwaCases
+  outputType: InsertFwaCasesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwaCasesObject!]!"
+    - name: postCheck
+      type: FwaCasesBoolExp
+      description: Insert permission predicate over the 'fwa_cases' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_fwa_cases
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwaCases
+    rootFieldKind: Mutation
+  description: Insert into the fwa_cases table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwaCases
+  permissions:
+    - role: admin
+      allowExecution: true

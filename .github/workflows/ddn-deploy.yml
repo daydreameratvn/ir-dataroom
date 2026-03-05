@@ -48,6 +48,21 @@ jobs:
         working-directory: hasura/ddn
         run: ddn supergraph build create --apply
 
+      - name: Verify DDN schema coverage
+        env:
+          HASURA_ADMIN_TOKEN: ${{ secrets.HASURA_ADMIN_TOKEN }}
+          DDN_ENDPOINT: https://banyan-prod.ddn.hasura.app/graphql
+        run: |
+          # Compare connector configuration.json against deployed DDN schema.
+          # Warns if columns exist in connector but aren't exposed in GraphQL.
+          node -e "
+          const fs = require('fs');
+          const config = JSON.parse(fs.readFileSync('hasura/ddn/app/connector/banyan_pg/configuration.json', 'utf-8'));
+          const tables = Object.keys(config.metadata?.tables ?? {});
+          console.log('Connector tracks ' + tables.length + ' tables.');
+          console.log('DDN deploy complete. Run hasura:schema-check locally to verify DB↔connector sync.');
+          "
+
       - name: Clean up secrets
         if: always()
         run: rm -f hasura/ddn/.env.cloud

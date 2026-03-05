@@ -1,4 +1,5 @@
 import { query } from "../db/pool.ts";
+import { gqlQuery } from "./gql.ts";
 
 export interface AuthUser {
   id: string;
@@ -56,6 +57,33 @@ function rowToUser(row: UserRow): AuthUser {
   };
 }
 
+/** DDN returns camelCase fields — map to AuthUser */
+interface GqlUserRow {
+  id: string;
+  email: string;
+  name: string;
+  tenantId: string;
+  userType: string;
+  userLevel: string;
+  phone: string | null;
+}
+
+function gqlRowToUser(row: GqlUserRow): AuthUser {
+  return {
+    id: row.id,
+    email: row.email,
+    name: row.name,
+    tenantId: row.tenantId,
+    userType: row.userType,
+    userLevel: row.userLevel,
+    phone: row.phone ?? undefined,
+    isImpersonatable: false, // TODO: add to DDN metadata and deploy
+    canImpersonate: false,   // TODO: add to DDN metadata and deploy
+  };
+}
+
+const USER_GQL_FIELDS = `id email name tenantId userType userLevel phone`;
+
 export async function findUserByIdentity(
   tenantId: string,
   provider: string,
@@ -80,42 +108,48 @@ export async function findUserByEmail(
   tenantId: string,
   email: string
 ): Promise<AuthUser | null> {
-  const result = await query<UserRow>(
-    `SELECT id, email, name, tenant_id, user_type, user_level, phone, is_impersonatable, can_impersonate
-     FROM users
-     WHERE tenant_id = $1 AND email = $2 AND deleted_at IS NULL`,
-    [tenantId, email]
-  );
+  const data = await gqlQuery<{ users: GqlUserRow[] }>(`
+    query FindUserByEmail($tenantId: Uuid!, $email: String1!) {
+      users(
+        where: { tenantId: { _eq: $tenantId }, email: { _eq: $email }, deletedAt: { _is_null: true } }
+        limit: 1
+      ) { ${USER_GQL_FIELDS} }
+    }
+  `, { tenantId, email });
 
-  const row = result.rows[0];
-  return row ? rowToUser(row) : null;
+  const row = data.users[0];
+  return row ? gqlRowToUser(row) : null;
 }
 
 export async function findUserByPhone(
   tenantId: string,
   phone: string
 ): Promise<AuthUser | null> {
-  const result = await query<UserRow>(
-    `SELECT id, email, name, tenant_id, user_type, user_level, phone, is_impersonatable, can_impersonate
-     FROM users
-     WHERE tenant_id = $1 AND phone = $2 AND deleted_at IS NULL`,
-    [tenantId, phone]
-  );
+  const data = await gqlQuery<{ users: GqlUserRow[] }>(`
+    query FindUserByPhone($tenantId: Uuid!, $phone: String1!) {
+      users(
+        where: { tenantId: { _eq: $tenantId }, phone: { _eq: $phone }, deletedAt: { _is_null: true } }
+        limit: 1
+      ) { ${USER_GQL_FIELDS} }
+    }
+  `, { tenantId, phone });
 
-  const row = result.rows[0];
-  return row ? rowToUser(row) : null;
+  const row = data.users[0];
+  return row ? gqlRowToUser(row) : null;
 }
 
 export async function findUserById(userId: string): Promise<AuthUser | null> {
-  const result = await query<UserRow>(
-    `SELECT id, email, name, tenant_id, user_type, user_level, phone, is_impersonatable, can_impersonate
-     FROM users
-     WHERE id = $1 AND deleted_at IS NULL`,
-    [userId]
-  );
+  const data = await gqlQuery<{ users: GqlUserRow[] }>(`
+    query FindUserById($userId: Uuid!) {
+      users(
+        where: { id: { _eq: $userId }, deletedAt: { _is_null: true } }
+        limit: 1
+      ) { ${USER_GQL_FIELDS} }
+    }
+  `, { userId });
 
-  const row = result.rows[0];
-  return row ? rowToUser(row) : null;
+  const row = data.users[0];
+  return row ? gqlRowToUser(row) : null;
 }
 
 export async function linkIdentity(
@@ -133,10 +167,18 @@ export async function linkIdentity(
 }
 
 export async function updateLastLogin(userId: string): Promise<void> {
-  await query(
-    `UPDATE users SET last_login_at = now(), updated_at = now() WHERE id = $1`,
-    [userId]
-  );
+  const now = new Date().toISOString();
+  await gqlQuery(`
+    mutation UpdateLastLogin($userId: Uuid!, $now: Timestamptz!) {
+      updateUsersById(
+        keyId: $userId
+        updateColumns: {
+          lastLoginAt: { set: $now }
+          updatedAt: { set: $now }
+        }
+      ) { affectedRows }
+    }
+  `, { userId, now });
 }
 
 export async function recordLoginAttempt(opts: {
@@ -148,19 +190,21 @@ export async function recordLoginAttempt(opts: {
   userAgent?: string;
   failureReason?: string;
 }): Promise<void> {
-  await query(
-    `INSERT INTO auth_login_attempts (tenant_id, user_id, provider, success, ip_address, user_agent, failure_reason)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-    [
-      opts.tenantId,
-      opts.userId ?? null,
-      opts.provider,
-      opts.success,
-      opts.ipAddress ?? null,
-      opts.userAgent ?? null,
-      opts.failureReason ?? null,
-    ]
-  );
+  await gqlQuery(`
+    mutation RecordLoginAttempt($object: InsertAuthLoginAttemptsObjectInput!) {
+      insertAuthLoginAttempts(objects: [$object]) { affectedRows }
+    }
+  `, {
+    object: {
+      tenantId: opts.tenantId,
+      userId: opts.userId ?? null,
+      provider: opts.provider,
+      success: opts.success,
+      ipAddress: opts.ipAddress ?? null,
+      userAgent: opts.userAgent ?? null,
+      failureReason: opts.failureReason ?? null,
+    },
+  });
 }
 
 // ---------- Directory auto-join ----------
@@ -517,14 +561,39 @@ export async function setCanImpersonate(
 export async function findAdminUserByIdAnyTenant(
   userId: string
 ): Promise<AdminUserView | null> {
-  const result = await query<AdminUserRow>(
-    `SELECT id, email, name, tenant_id, user_type, user_level, phone,
-            title, department, locale, last_login_at, created_at, is_impersonatable, can_impersonate
-     FROM users
-     WHERE id = $1 AND deleted_at IS NULL`,
-    [userId]
-  );
+  const data = await gqlQuery<{
+    users: Array<GqlUserRow & {
+      title: string | null;
+      department: string | null;
+      locale: string | null;
+      lastLoginAt: string | null;
+      createdAt: string;
+    }>;
+  }>(`
+    query FindAdminUserByIdAnyTenant($userId: Uuid!) {
+      users(
+        where: { id: { _eq: $userId }, deletedAt: { _is_null: true } }
+        limit: 1
+      ) {
+        ${USER_GQL_FIELDS}
+        title
+        department
+        locale
+        lastLoginAt
+        createdAt
+      }
+    }
+  `, { userId });
 
-  const row = result.rows[0];
-  return row ? rowToAdminUser(row) : null;
+  const row = data.users[0];
+  if (!row) return null;
+
+  return {
+    ...gqlRowToUser(row),
+    title: row.title ?? undefined,
+    department: row.department ?? undefined,
+    locale: row.locale ?? undefined,
+    lastLoginAt: row.lastLoginAt ?? undefined,
+    createdAt: row.createdAt,
+  };
 }

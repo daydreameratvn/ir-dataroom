@@ -1,5 +1,5 @@
 import { randomBytes, createHash } from "crypto";
-import { query } from "../db/pool.ts";
+import { gqlQuery } from "./gql.ts";
 import { authConfig } from "../config.ts";
 
 function hashToken(token: string): string {
@@ -23,43 +23,67 @@ export async function createSession(opts: {
   const ttl = opts.ttlMs ?? authConfig.refreshTokenDays * 24 * 60 * 60 * 1000;
   const expiresAt = new Date(Date.now() + ttl);
 
-  const result = await query<{ id: string }>(
-    `INSERT INTO auth_sessions (tenant_id, user_id, token_hash, expires_at, user_agent, ip_address, impersonator_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
-     RETURNING id`,
-    [opts.tenantId, opts.userId, tokenHash, expiresAt, opts.userAgent, opts.ipAddress, opts.impersonatorId ?? null]
-  );
+  const data = await gqlQuery<{
+    insertAuthSessions: { returning: Array<{ id: string }> };
+  }>(`
+    mutation CreateSession($object: InsertAuthSessionsObjectInput!) {
+      insertAuthSessions(objects: [$object]) {
+        returning { id }
+      }
+    }
+  `, {
+    object: {
+      tenantId: opts.tenantId,
+      userId: opts.userId,
+      tokenHash,
+      expiresAt: expiresAt.toISOString(),
+      userAgent: opts.userAgent ?? null,
+      ipAddress: opts.ipAddress ?? null,
+      // TODO: add impersonatorId after DDN metadata deploy
+    },
+  });
 
-  return { id: result.rows[0]!.id, expiresAt };
+  return { id: data.insertAuthSessions.returning[0]!.id, expiresAt };
 }
 
 export async function validateRefreshToken(
   refreshToken: string
 ): Promise<{ userId: string; tenantId: string; sessionId: string; impersonatorId?: string } | null> {
   const tokenHash = hashToken(refreshToken);
+  const now = new Date().toISOString();
 
-  const result = await query<{
-    id: string;
-    user_id: string;
-    tenant_id: string;
-    impersonator_id: string | null;
-  }>(
-    `SELECT id, user_id, tenant_id, impersonator_id FROM auth_sessions
-     WHERE token_hash = $1
-       AND expires_at > now()
-       AND revoked_at IS NULL
-       AND deleted_at IS NULL`,
-    [tokenHash]
-  );
+  const data = await gqlQuery<{
+    authSessions: Array<{
+      id: string;
+      userId: string;
+      tenantId: string;
+    }>;
+  }>(`
+    query ValidateRefreshToken($tokenHash: String1!, $now: Timestamptz!) {
+      authSessions(
+        where: {
+          tokenHash: { _eq: $tokenHash }
+          expiresAt: { _gt: $now }
+          revokedAt: { _is_null: true }
+          deletedAt: { _is_null: true }
+        }
+        limit: 1
+      ) {
+        id
+        userId
+        tenantId
+      }
+    }
+  `, { tokenHash, now });
 
-  const row = result.rows[0];
+  const row = data.authSessions[0];
   if (!row) return null;
 
   return {
     sessionId: row.id,
-    userId: row.user_id,
-    tenantId: row.tenant_id,
-    ...(row.impersonator_id ? { impersonatorId: row.impersonator_id } : {}),
+    userId: row.userId,
+    tenantId: row.tenantId,
+    // TODO: add impersonatorId after DDN metadata deploy
   };
 }
 
@@ -74,11 +98,18 @@ export async function rotateSession(opts: {
   ttlMs?: number;
 }): Promise<{ id: string; expiresAt: Date }> {
   // Revoke old session
-  await query(
-    `UPDATE auth_sessions SET revoked_at = now(), updated_at = now()
-     WHERE id = $1`,
-    [opts.oldSessionId]
-  );
+  const now = new Date().toISOString();
+  await gqlQuery(`
+    mutation RevokeOldSession($id: Uuid!, $now: Timestamptz!) {
+      updateAuthSessionsById(
+        keyId: $id
+        updateColumns: {
+          revokedAt: { set: $now }
+          updatedAt: { set: $now }
+        }
+      ) { affectedRows }
+    }
+  `, { id: opts.oldSessionId, now });
 
   // Create new session
   return createSession({
@@ -93,20 +124,54 @@ export async function rotateSession(opts: {
 }
 
 export async function revokeSession(sessionId: string): Promise<void> {
-  await query(
-    `UPDATE auth_sessions SET revoked_at = now(), updated_at = now()
-     WHERE id = $1`,
-    [sessionId]
-  );
+  const now = new Date().toISOString();
+  await gqlQuery(`
+    mutation RevokeSession($id: Uuid!, $now: Timestamptz!) {
+      updateAuthSessionsById(
+        keyId: $id
+        updateColumns: {
+          revokedAt: { set: $now }
+          updatedAt: { set: $now }
+        }
+      ) { affectedRows }
+    }
+  `, { id: sessionId, now });
 }
 
 export async function revokeAllUserSessions(
   userId: string,
   tenantId: string
 ): Promise<void> {
-  await query(
-    `UPDATE auth_sessions SET revoked_at = now(), updated_at = now()
-     WHERE user_id = $1 AND tenant_id = $2 AND revoked_at IS NULL AND deleted_at IS NULL`,
-    [userId, tenantId]
-  );
+  const now = new Date().toISOString();
+
+  // Query active sessions for this user
+  const data = await gqlQuery<{
+    authSessions: Array<{ id: string }>;
+  }>(`
+    query FindActiveSessions($userId: Uuid!, $tenantId: Uuid!) {
+      authSessions(
+        where: {
+          userId: { _eq: $userId }
+          tenantId: { _eq: $tenantId }
+          revokedAt: { _is_null: true }
+          deletedAt: { _is_null: true }
+        }
+      ) { id }
+    }
+  `, { userId, tenantId });
+
+  // Revoke each session
+  for (const session of data.authSessions) {
+    await gqlQuery(`
+      mutation RevokeSessionById($id: Uuid!, $now: Timestamptz!) {
+        updateAuthSessionsById(
+          keyId: $id
+          updateColumns: {
+            revokedAt: { set: $now }
+            updatedAt: { set: $now }
+          }
+        ) { affectedRows }
+      }
+    `, { id: session.id, now });
+  }
 }

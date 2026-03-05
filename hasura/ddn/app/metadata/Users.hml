@@ -20,8 +20,12 @@ definition:
       type: String_1
     - name: email
       type: String_1!
+    - name: canImpersonate
+      type: Boolean_1!
     - name: id
       type: Uuid!
+    - name: isImpersonatable
+      type: Boolean_1!
     - name: lastLoginAt
       type: Timestamptz
     - name: locale
@@ -73,9 +77,15 @@ definition:
         email:
           column:
             name: email
+        canImpersonate:
+          column:
+            name: can_impersonate
         id:
           column:
             name: id
+        isImpersonatable:
+          column:
+            name: is_impersonatable
         lastLoginAt:
           column:
             name: last_login_at
@@ -117,6 +127,7 @@ definition:
       output:
         allowedFields:
           - avatarUrl
+          - canImpersonate
           - createdAt
           - createdBy
           - deletedAt
@@ -125,6 +136,7 @@ definition:
           - directorySyncId
           - email
           - id
+          - isImpersonatable
           - lastLoginAt
           - locale
           - name
@@ -147,6 +159,8 @@ definition:
       aggregatableFields:
         - fieldName: avatarUrl
           aggregateExpression: TextAggExp
+        - fieldName: canImpersonate
+          aggregateExpression: BoolAggExp
         - fieldName: createdAt
           aggregateExpression: TimestamptzAggExp
         - fieldName: createdBy
@@ -163,6 +177,8 @@ definition:
           aggregateExpression: TextAggExp
         - fieldName: id
           aggregateExpression: UuidAggExp
+        - fieldName: isImpersonatable
+          aggregateExpression: BoolAggExp
         - fieldName: lastLoginAt
           aggregateExpression: TimestamptzAggExp
         - fieldName: locale
@@ -642,6 +658,8 @@ definition:
       comparableFields:
         - fieldName: avatarUrl
           booleanExpressionType: TextBoolExp
+        - fieldName: canImpersonate
+          booleanExpressionType: BoolBoolExp
         - fieldName: createdAt
           booleanExpressionType: TimestamptzBoolExp
         - fieldName: createdBy
@@ -658,6 +676,8 @@ definition:
           booleanExpressionType: TextBoolExp
         - fieldName: id
           booleanExpressionType: UuidBoolExp
+        - fieldName: isImpersonatable
+          booleanExpressionType: BoolBoolExp
         - fieldName: lastLoginAt
           booleanExpressionType: TimestamptzBoolExp
         - fieldName: locale
@@ -716,6 +736,8 @@ definition:
       orderableFields:
         - fieldName: avatarUrl
           orderByExpression: String1OrderByExp
+        - fieldName: canImpersonate
+          orderByExpression: BoolOrderByExp
         - fieldName: createdAt
           orderByExpression: TimestamptzOrderByExp
         - fieldName: createdBy
@@ -732,6 +754,8 @@ definition:
           orderByExpression: String1OrderByExp
         - fieldName: id
           orderByExpression: UuidOrderByExp
+        - fieldName: isImpersonatable
+          orderByExpression: BoolOrderByExp
         - fieldName: lastLoginAt
           orderByExpression: TimestamptzOrderByExp
         - fieldName: locale

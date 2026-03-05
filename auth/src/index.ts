@@ -15,6 +15,7 @@ import fwa from "./routes/fwa.ts";
 import ir from "./routes/ir.ts";
 import phoenix from "./routes/phoenix.ts";
 import directoryRoutes from "./routes/directory.ts";
+import portal from "./routes/portal.ts";
 import { startSyncScheduler } from "./services/sync-scheduler.ts";
 
 const app = new Hono();
@@ -65,6 +66,7 @@ app.route("/auth", fwa);
 app.route("/auth", ir);
 app.route("/auth", phoenix);
 app.route("/auth", directoryRoutes);
+app.route("/auth", portal);
 
 // ---------------------------------------------------------------------------
 // Global error handler — distinguishes DB outages from other errors
@@ -116,8 +118,9 @@ app.onError(async (err, c) => {
 
 console.log(`Auth service starting on port ${authConfig.port}`);
 
-// Start background directory sync scheduler in production
-if (process.env.NODE_ENV !== "test") {
+// Start background directory sync scheduler when a database connection is available
+// (sync still uses direct pg — skip when running without DATABASE_URL)
+if (process.env.NODE_ENV !== "test" && (process.env.DATABASE_URL || process.env.DB_SECRET_NAME)) {
   startSyncScheduler();
 }
 

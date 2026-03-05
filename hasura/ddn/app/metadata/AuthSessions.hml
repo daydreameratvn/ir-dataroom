@@ -14,6 +14,8 @@ definition:
       type: Timestamptz!
     - name: id
       type: Uuid!
+    - name: impersonatorId
+      type: Uuid
     - name: ipAddress
       type: String_1
     - name: revokedAt
@@ -52,6 +54,9 @@ definition:
         id:
           column:
             name: id
+        impersonatorId:
+          column:
+            name: impersonator_id
         ipAddress:
           column:
             name: ip_address
@@ -91,6 +96,7 @@ definition:
           - deletedAt
           - expiresAt
           - id
+          - impersonatorId
           - ipAddress
           - revokedAt
           - tenantId
@@ -118,6 +124,8 @@ definition:
         - fieldName: expiresAt
           aggregateExpression: TimestamptzAggExp
         - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: impersonatorId
           aggregateExpression: UuidAggExp
         - fieldName: ipAddress
           aggregateExpression: TextAggExp
@@ -236,6 +244,8 @@ definition:
           booleanExpressionType: TimestamptzBoolExp
         - fieldName: id
           booleanExpressionType: UuidBoolExp
+        - fieldName: impersonatorId
+          booleanExpressionType: UuidBoolExp
         - fieldName: ipAddress
           booleanExpressionType: TextBoolExp
         - fieldName: revokedAt
@@ -280,6 +290,8 @@ definition:
         - fieldName: expiresAt
           orderByExpression: TimestamptzOrderByExp
         - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: impersonatorId
           orderByExpression: UuidOrderByExp
         - fieldName: ipAddress
           orderByExpression: String1OrderByExp

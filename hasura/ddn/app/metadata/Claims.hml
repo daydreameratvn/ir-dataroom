@@ -40,6 +40,8 @@ definition:
       type: Timestamptz
     - name: denialReason
       type: String_1
+    - name: extractedData
+      type: Jsonb
     - name: id
       type: Uuid!
     - name: policyId
@@ -119,6 +121,9 @@ definition:
         denialReason:
           column:
             name: denial_reason
+        extractedData:
+          column:
+            name: extracted_data
         id:
           column:
             name: id
@@ -174,6 +179,7 @@ definition:
           - dateOfService
           - deletedAt
           - denialReason
+          - extractedData
           - id
           - policyId
           - providerId
@@ -229,6 +235,8 @@ definition:
           aggregateExpression: TimestamptzAggExp
         - fieldName: denialReason
           aggregateExpression: TextAggExp
+        - fieldName: extractedData
+          aggregateExpression: JsonbAggExp
         - fieldName: id
           aggregateExpression: UuidAggExp
         - fieldName: policyId
@@ -626,6 +634,28 @@ definition:
     aggregateFieldName: fwaAlertsAggregate
 
 ---
+kind: Relationship
+version: v1
+definition:
+  name: fwaCaseLinkedClaims
+  sourceType: Claims
+  target:
+    model:
+      name: FwaCaseLinkedClaims
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaCaseLinkedClaimsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claimId
+  graphql:
+    aggregateFieldName: fwaCaseLinkedClaimsAggregate
+
+---
 kind: BooleanExpressionType
 version: v1
 definition:
@@ -670,6 +700,8 @@ definition:
           booleanExpressionType: TimestamptzBoolExp
         - fieldName: denialReason
           booleanExpressionType: TextBoolExp
+        - fieldName: extractedData
+          booleanExpressionType: JsonbBoolExp
         - fieldName: id
           booleanExpressionType: UuidBoolExp
         - fieldName: policyId
@@ -702,6 +734,7 @@ definition:
         - relationshipName: userBySubmittedBy
         - relationshipName: tenant
         - relationshipName: fwaAlerts
+        - relationshipName: fwaCaseLinkedClaims
   logicalOperators:
     enable: true
   isNull:

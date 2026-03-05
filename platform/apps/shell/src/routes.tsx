@@ -43,6 +43,7 @@ const IRPage = lazyWithReload(() => import('./features/ir/IRPage'));
 const DesignSystemPage = lazyWithReload(() => import('./features/design-system/DesignSystemPage'));
 const StatusPage = lazyWithReload(() => import('./features/status/StatusPage'));
 const ProfilePage = lazyWithReload(() => import('./features/profile/ProfilePage'));
+const PortalPage = lazyWithReload(() => import('./features/portal/PortalPage'));
 const StatusPagePublic = lazyWithReload(() => import('./features/status/StatusPagePublic'));
 
 // Remote app routes are injected dynamically in bootstrap.tsx via remotes.tsx.
@@ -133,6 +134,12 @@ export const routes: RouteObject[] = [
       {
         path: 'drone/*',
         element: <DronePage />,
+      },
+
+      // Portal — Claims processing portal
+      {
+        path: 'portal/*',
+        element: <PortalPage />,
       },
 
       // Investor Relations — Dataroom management

@@ -1,7 +1,7 @@
 import { randomInt, createHash } from "crypto";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
-import { query } from "../db/pool.ts";
+import { gqlQuery } from "./gql.ts";
 import { authConfig } from "../config.ts";
 
 const region = process.env.AWS_REGION || "ap-southeast-1";
@@ -23,16 +23,28 @@ export async function createOtpRequest(opts: {
 }): Promise<{ id: string; code: string }> {
   const code = generateOtp();
   const codeHash = hashCode(code);
-  const expiresAt = new Date(Date.now() + authConfig.otpExpiry);
+  const expiresAt = new Date(Date.now() + authConfig.otpExpiry).toISOString();
 
-  const result = await query<{ id: string }>(
-    `INSERT INTO auth_otp_requests (tenant_id, provider, destination, code_hash, expires_at, max_attempts)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id`,
-    [opts.tenantId, opts.provider, opts.destination, codeHash, expiresAt, authConfig.otpMaxAttempts]
-  );
+  const data = await gqlQuery<{
+    insertAuthOtpRequests: { returning: Array<{ id: string }> };
+  }>(`
+    mutation InsertOtpRequest($object: InsertAuthOtpRequestsObjectInput!) {
+      insertAuthOtpRequests(objects: [$object]) {
+        returning { id }
+      }
+    }
+  `, {
+    object: {
+      tenantId: opts.tenantId,
+      provider: opts.provider,
+      destination: opts.destination,
+      codeHash,
+      expiresAt,
+      maxAttempts: authConfig.otpMaxAttempts,
+    },
+  });
 
-  return { id: result.rows[0]!.id, code };
+  return { id: data.insertAuthOtpRequests.returning[0]!.id, code };
 }
 
 export async function verifyOtp(opts: {
@@ -41,53 +53,81 @@ export async function verifyOtp(opts: {
   code: string;
 }): Promise<{ valid: boolean; provider?: "email_otp" | "phone_otp" }> {
   const codeHash = hashCode(opts.code);
+  const now = new Date().toISOString();
 
   // Find the latest unverified, unexpired OTP for this destination
-  const result = await query<{
-    id: string;
-    provider: "email_otp" | "phone_otp";
-    code_hash: string;
-    attempts: number;
-    max_attempts: number;
-  }>(
-    `SELECT id, provider, code_hash, attempts, max_attempts
-     FROM auth_otp_requests
-     WHERE tenant_id = $1
-       AND destination = $2
-       AND verified_at IS NULL
-       AND expires_at > now()
-       AND deleted_at IS NULL
-     ORDER BY created_at DESC
-     LIMIT 1`,
-    [opts.tenantId, opts.destination]
-  );
+  const data = await gqlQuery<{
+    authOtpRequests: Array<{
+      id: string;
+      provider: string;
+      codeHash: string;
+      attempts: number;
+      maxAttempts: number;
+    }>;
+  }>(`
+    query FindLatestOtp($tenantId: Uuid!, $destination: String1!, $now: Timestamptz!) {
+      authOtpRequests(
+        where: {
+          tenantId: { _eq: $tenantId }
+          destination: { _eq: $destination }
+          verifiedAt: { _is_null: true }
+          expiresAt: { _gt: $now }
+          deletedAt: { _is_null: true }
+        }
+        order_by: { createdAt: Desc }
+        limit: 1
+      ) {
+        id
+        provider
+        codeHash
+        attempts
+        maxAttempts
+      }
+    }
+  `, { tenantId: opts.tenantId, destination: opts.destination, now });
 
-  const otp = result.rows[0];
+  const otp = data.authOtpRequests[0];
   if (!otp) return { valid: false };
 
   // Check max attempts
-  if (otp.attempts >= otp.max_attempts) {
+  if (otp.attempts >= otp.maxAttempts) {
     return { valid: false };
   }
 
-  // Increment attempts
-  await query(
-    `UPDATE auth_otp_requests SET attempts = attempts + 1, updated_at = now() WHERE id = $1`,
-    [otp.id]
-  );
+  // Increment attempts (no atomic increment in DDN — read + write)
+  const updatedAt = new Date().toISOString();
+  await gqlQuery(`
+    mutation IncrementOtpAttempts($id: Uuid!, $attempts: Int32!, $updatedAt: Timestamptz!) {
+      updateAuthOtpRequestsById(
+        keyId: $id
+        updateColumns: {
+          attempts: { set: $attempts }
+          updatedAt: { set: $updatedAt }
+        }
+      ) { affectedRows }
+    }
+  `, { id: otp.id, attempts: otp.attempts + 1, updatedAt });
 
   // Verify hash
-  if (otp.code_hash !== codeHash) {
+  if (otp.codeHash !== codeHash) {
     return { valid: false };
   }
 
   // Mark as verified
-  await query(
-    `UPDATE auth_otp_requests SET verified_at = now(), updated_at = now() WHERE id = $1`,
-    [otp.id]
-  );
+  const verifiedAt = new Date().toISOString();
+  await gqlQuery(`
+    mutation VerifyOtp($id: Uuid!, $verifiedAt: Timestamptz!) {
+      updateAuthOtpRequestsById(
+        keyId: $id
+        updateColumns: {
+          verifiedAt: { set: $verifiedAt }
+          updatedAt: { set: $verifiedAt }
+        }
+      ) { affectedRows }
+    }
+  `, { id: otp.id, verifiedAt });
 
-  return { valid: true, provider: otp.provider };
+  return { valid: true, provider: otp.provider as "email_otp" | "phone_otp" };
 }
 
 export async function sendEmailOtp(email: string, code: string): Promise<void> {

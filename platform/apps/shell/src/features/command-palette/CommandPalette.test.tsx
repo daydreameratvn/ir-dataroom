@@ -57,7 +57,7 @@ describe('CommandPalette', () => {
 
     expect(screen.getByText('New Claim')).toBeInTheDocument();
     expect(screen.getByText('New Policy')).toBeInTheDocument();
-    expect(screen.getByText('New Underwriting Application')).toBeInTheDocument();
+    expect(screen.getByText('New Application')).toBeInTheDocument();
   });
 
   it('shows navigation items', () => {
@@ -67,7 +67,7 @@ describe('CommandPalette', () => {
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Claims Intake')).toBeInTheDocument();
     expect(screen.getByText('Browse Policies')).toBeInTheDocument();
-    expect(screen.getByText('FWA Alerts')).toBeInTheDocument();
+    expect(screen.getByText('Alerts')).toBeInTheDocument();
   });
 
   it('filters results when typing', async () => {
@@ -79,7 +79,7 @@ describe('CommandPalette', () => {
     await user.type(input, 'fraud');
 
     // FWA items should remain visible (they have 'fraud' in keywords)
-    expect(screen.getByText('FWA Alerts')).toBeInTheDocument();
+    expect(screen.getByText('Alerts')).toBeInTheDocument();
 
     // Unrelated items should be filtered out
     expect(screen.queryByText('Dashboard')).not.toBeInTheDocument();

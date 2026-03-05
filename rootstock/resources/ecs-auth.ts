@@ -171,8 +171,15 @@ const banyanAuthTaskPolicy = new aws.iam.Policy("banyan-prod-auth-task-policy", 
       },
       {
         Effect: "Allow",
-        Action: ["s3:GetObject", "s3:PutObject", "s3:ListBucket"],
+        Action: [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket",
+        ],
         Resource: [
+          "arn:aws:s3:::banyan-portal-documents",
+          "arn:aws:s3:::banyan-portal-documents/*",
           "arn:aws:s3:::papaya-ir-dataroom",
           "arn:aws:s3:::papaya-ir-dataroom/*",
         ],

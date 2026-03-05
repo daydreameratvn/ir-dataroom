@@ -1,0 +1,148 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwaCaseStatuses
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: FwaCaseStatuses
+    inputTypeName: FwaCaseStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: fwa_case_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwaCaseStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwaCaseStatusesAggExp
+  operand:
+    object:
+      aggregatedType: FwaCaseStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwaCaseStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwaCaseStatusesOrderByExp
+  operand:
+    object:
+      orderedType: FwaCaseStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: FwaCaseStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwaCaseStatuses
+  objectType: FwaCaseStatuses
+  source:
+    dataConnectorName: banyan_pg
+    collection: fwa_case_statuses
+  filterExpressionType: FwaCaseStatusesBoolExp
+  aggregateExpression: FwaCaseStatusesAggExp
+  orderByExpression: FwaCaseStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwaCaseStatuses
+      subscription:
+        rootField: fwaCaseStatuses
+    selectUniques:
+      - queryRootField: fwaCaseStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: fwaCaseStatusesByValue
+    filterInputTypeName: FwaCaseStatusesFilterInput
+    aggregate:
+      queryRootField: fwaCaseStatusesAggregate
+      subscription:
+        rootField: fwaCaseStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwaCaseStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaCases
+  sourceType: FwaCaseStatuses
+  target:
+    model:
+      name: FwaCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwaCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: fwaCasesAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwaCaseStatusesBoolExp
+  operand:
+    object:
+      type: FwaCaseStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: fwaCases
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwaCaseStatusesBoolExp

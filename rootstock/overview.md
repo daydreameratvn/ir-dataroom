@@ -178,7 +178,7 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. CloudWatch lo
 * **Health Check:** `/auth/health` on port 4000.
 * **Load Balancing:** ALB listener rule `/auth/*` (priority 100, both HTTP and HTTPS listeners).
 * **Security Group:** `banyan-prod-auth-sg` — inbound TCP 4000 from ALB SG, outbound all.
-* **IAM Permissions:** SES, SNS, SSM, Bedrock (InvokeModel, InvokeModelWithResponseStream).
+* **IAM Permissions:** SES, SNS, SSM, Bedrock (InvokeModel, InvokeModelWithResponseStream), S3 (GetObject, PutObject, DeleteObject on `banyan-portal-documents/*`).
 
 ### 2.9 Document Forensics Service (ECS Fargate)
 
@@ -272,6 +272,16 @@ All APIs have `disableOnDestroy: false` (safety: don't disable APIs if resource 
 * **Deployment Flow:** The `hasura:deploy` script uploads these files to S3, then triggers ECS service restarts. The engine init container downloads them from S3 at task startup.
 * **Access:** ECS task role has `s3:GetObject` permission scoped to `arn:aws:s3:::banyan-hasura-metadata/*`.
 
+### 2.13 S3 Portal Documents Bucket
+
+* **Bucket:** `banyan-portal-documents` — managed by Pulumi (`rootstock/resources/s3-portal.ts`).
+* **Purpose:** Stores documents uploaded during portal claim submission.
+* **Access:** Private — all public access blocked. Documents served via auth service proxy (GET `/auth/portal/documents/:id`).
+* **CORS:** Allows `GET`, `PUT`, `POST` from `https://oasis.papaya.asia` and `http://localhost:5173`.
+* **Lifecycle:** Auto-abort incomplete multipart uploads after 7 days.
+* **IAM:** Auth service ECS task role has `s3:GetObject`, `s3:PutObject`, `s3:DeleteObject` scoped to `arn:aws:s3:::banyan-portal-documents/*`.
+* **Local Dev:** `auth/scripts/dev.sh` runs `aws s3 mb s3://banyan-portal-documents` idempotently on startup.
+
 ### 2.14 JWT Authentication
 
 * **HMAC Key:** Random 32-byte key generated via `@pulumi/random` `RandomBytes`, base64-encoded.
@@ -352,6 +362,7 @@ new gcp.Provider("banyan-gcp-provider", {
 * `BastionInstanceId`: EC2 instance ID for SSM tunnel
 * `DoltgresServiceArn`: ARN of the Doltgres ECS service
 * `DoltgresEfsId`: EFS file system ID for Doltgres persistent storage
+* `PortalDocumentsBucketName`: S3 bucket name for portal document uploads
 * `DomainName`: Domain name
 * `CertificateArn`: ACM certificate ARN
 * `CertValidationCname`: DNS CNAME records for cert validation
@@ -403,6 +414,7 @@ rootstock/
     ├── nlb-rds-proxy.ts         # NLB, target group, listener, SSM param
     ├── github-oidc.ts           # GitHub Actions OIDC provider and deploy role
     ├── doltgres.ts              # Doltgres Fargate + EFS + SG + Secrets + Cloud Map + NLB integration
+    ├── s3-portal.ts             # S3 bucket for portal document uploads
     ├── phoenix.ts               # Phoenix portal: S3, OAC, CloudFront (phoenix.papaya.asia)
     └── gcp/
         ├── index.ts             # Barrel export

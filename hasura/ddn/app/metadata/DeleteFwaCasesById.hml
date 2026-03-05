@@ -1,0 +1,71 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwaCasesByIdResponse
+  description: Responses from the 'delete_fwa_cases_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwaCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwaCasesByIdResponse
+    inputTypeName: DeleteFwaCasesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: delete_fwa_cases_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwaCasesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwaCasesById
+  outputType: DeleteFwaCasesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: FwaCasesBoolExp
+      description: Delete permission predicate over the 'fwa_cases' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: delete_fwa_cases_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwaCasesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwa_cases' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwaCasesById
+  permissions:
+    - role: admin
+      allowExecution: true

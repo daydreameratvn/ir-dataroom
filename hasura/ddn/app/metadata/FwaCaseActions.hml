@@ -1,0 +1,286 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwaCaseActions
+  fields:
+    - name: actionType
+      type: String_1!
+    - name: caseId
+      type: Uuid!
+    - name: content
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: metadata
+      type: Json
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: FwaCaseActions
+    inputTypeName: FwaCaseActionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: fwa_case_actions
+      fieldMapping:
+        actionType:
+          column:
+            name: action_type
+        caseId:
+          column:
+            name: case_id
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        id:
+          column:
+            name: id
+        metadata:
+          column:
+            name: metadata
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwaCaseActions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actionType
+          - caseId
+          - content
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - id
+          - metadata
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwaCaseActionsAggExp
+  operand:
+    object:
+      aggregatedType: FwaCaseActions
+      aggregatableFields:
+        - fieldName: actionType
+          aggregateExpression: TextAggExp
+        - fieldName: caseId
+          aggregateExpression: UuidAggExp
+        - fieldName: content
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwaCaseActionsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwaCaseActions
+  objectType: FwaCaseActions
+  source:
+    dataConnectorName: banyan_pg
+    collection: fwa_case_actions
+  filterExpressionType: FwaCaseActionsBoolExp
+  aggregateExpression: FwaCaseActionsAggExp
+  orderByExpression: FwaCaseActionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwaCaseActions
+      subscription:
+        rootField: fwaCaseActions
+    selectUniques:
+      - queryRootField: fwaCaseActionsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: fwaCaseActionsById
+    filterInputTypeName: FwaCaseActionsFilterInput
+    aggregate:
+      queryRootField: fwaCaseActionsAggregate
+      subscription:
+        rootField: fwaCaseActionsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwaCaseActions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaCase
+  sourceType: FwaCaseActions
+  target:
+    model:
+      name: FwaCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: caseId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: FwaCaseActions
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwaCaseActionsBoolExp
+  operand:
+    object:
+      type: FwaCaseActions
+      comparableFields:
+        - fieldName: actionType
+          booleanExpressionType: TextBoolExp
+        - fieldName: caseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: content
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: fwaCase
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwaCaseActionsBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwaCaseActionsOrderByExp
+  operand:
+    object:
+      orderedType: FwaCaseActions
+      orderableFields:
+        - fieldName: actionType
+          orderByExpression: String1OrderByExp
+        - fieldName: caseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: content
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: fwaCase
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: FwaCaseActionsOrderByExp

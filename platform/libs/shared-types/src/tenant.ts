@@ -24,4 +24,5 @@ export interface TenantFeatures {
   reporting: boolean;
   aiAgents: boolean;
   ir: boolean;
+  portal: boolean;
 }

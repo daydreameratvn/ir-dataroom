@@ -96,14 +96,15 @@ otp.post("/otp/phone", async (c) => {
 // POST /auth/otp/verify — verify OTP and issue tokens
 otp.post("/otp/verify", async (c) => {
   const body = await c.req.json<{ destination: string; code: string }>();
-  const tenantId = getTenantId(c);
-  const { userAgent, ipAddress } = getClientInfo(c);
 
   if (!body.destination || !body.code) {
     return c.json({ error: "Destination and code are required" }, 400);
   }
 
   try {
+    const tenantId = getTenantId(c);
+    const { userAgent, ipAddress } = getClientInfo(c);
+
     const result = await verifyOtp({
       tenantId,
       destination: body.destination,

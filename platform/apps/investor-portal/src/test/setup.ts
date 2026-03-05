@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest';
 
 // jsdom doesn't have ResizeObserver
-global.ResizeObserver = class ResizeObserver {
+globalThis.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
   disconnect() {}

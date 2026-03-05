@@ -1,0 +1,185 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwaCaseLinkedClaimsObject
+  fields:
+    - name: caseId
+      type: Uuid!
+    - name: claimId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: flags
+      type: Json
+    - name: fwaConfirmed
+      type: Boolean_1
+    - name: id
+      type: Uuid
+    - name: recommendation
+      type: String_1
+    - name: riskLevel
+      type: String_1
+    - name: riskScore
+      type: Bigdecimal
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertFwaCaseLinkedClaimsObject
+    inputTypeName: InsertFwaCaseLinkedClaimsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_fwa_case_linked_claims_object
+      fieldMapping:
+        caseId:
+          column:
+            name: case_id
+        claimId:
+          column:
+            name: claim_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        flags:
+          column:
+            name: flags
+        fwaConfirmed:
+          column:
+            name: fwa_confirmed
+        id:
+          column:
+            name: id
+        recommendation:
+          column:
+            name: recommendation
+        riskLevel:
+          column:
+            name: risk_level
+        riskScore:
+          column:
+            name: risk_score
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwaCaseLinkedClaimsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - caseId
+          - claimId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - flags
+          - fwaConfirmed
+          - id
+          - recommendation
+          - riskLevel
+          - riskScore
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwaCaseLinkedClaimsResponse
+  description: Responses from the 'insert_fwa_case_linked_claims' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwaCaseLinkedClaims!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwaCaseLinkedClaimsResponse
+    inputTypeName: InsertFwaCaseLinkedClaimsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_fwa_case_linked_claims_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwaCaseLinkedClaimsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwaCaseLinkedClaims
+  outputType: InsertFwaCaseLinkedClaimsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwaCaseLinkedClaimsObject!]!"
+    - name: postCheck
+      type: FwaCaseLinkedClaimsBoolExp
+      description: Insert permission predicate over the 'fwa_case_linked_claims' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_fwa_case_linked_claims
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwaCaseLinkedClaims
+    rootFieldKind: Mutation
+  description: Insert into the fwa_case_linked_claims table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwaCaseLinkedClaims
+  permissions:
+    - role: admin
+      allowExecution: true

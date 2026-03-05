@@ -17,7 +17,7 @@ if (!i18n.isInitialized) {
 }
 
 // jsdom doesn't have ResizeObserver — cmdk needs it
-global.ResizeObserver = class ResizeObserver {
+globalThis.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
   disconnect() {}

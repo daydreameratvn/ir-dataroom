@@ -1,0 +1,340 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwaCaseLinkedClaims
+  fields:
+    - name: caseId
+      type: Uuid!
+    - name: claimId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: flags
+      type: Json
+    - name: fwaConfirmed
+      type: Boolean_1!
+    - name: id
+      type: Uuid!
+    - name: recommendation
+      type: String_1
+    - name: riskLevel
+      type: String_1
+    - name: riskScore
+      type: Bigdecimal
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: FwaCaseLinkedClaims
+    inputTypeName: FwaCaseLinkedClaimsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: fwa_case_linked_claims
+      fieldMapping:
+        caseId:
+          column:
+            name: case_id
+        claimId:
+          column:
+            name: claim_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        flags:
+          column:
+            name: flags
+        fwaConfirmed:
+          column:
+            name: fwa_confirmed
+        id:
+          column:
+            name: id
+        recommendation:
+          column:
+            name: recommendation
+        riskLevel:
+          column:
+            name: risk_level
+        riskScore:
+          column:
+            name: risk_score
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwaCaseLinkedClaims
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - caseId
+          - claimId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - flags
+          - fwaConfirmed
+          - id
+          - recommendation
+          - riskLevel
+          - riskScore
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwaCaseLinkedClaimsAggExp
+  operand:
+    object:
+      aggregatedType: FwaCaseLinkedClaims
+      aggregatableFields:
+        - fieldName: caseId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: recommendation
+          aggregateExpression: TextAggExp
+        - fieldName: riskLevel
+          aggregateExpression: TextAggExp
+        - fieldName: riskScore
+          aggregateExpression: NumericAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwaCaseLinkedClaimsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwaCaseLinkedClaims
+  objectType: FwaCaseLinkedClaims
+  source:
+    dataConnectorName: banyan_pg
+    collection: fwa_case_linked_claims
+  filterExpressionType: FwaCaseLinkedClaimsBoolExp
+  aggregateExpression: FwaCaseLinkedClaimsAggExp
+  orderByExpression: FwaCaseLinkedClaimsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwaCaseLinkedClaims
+      subscription:
+        rootField: fwaCaseLinkedClaims
+    selectUniques:
+      - queryRootField: fwaCaseLinkedClaimsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: fwaCaseLinkedClaimsById
+    filterInputTypeName: FwaCaseLinkedClaimsFilterInput
+    aggregate:
+      queryRootField: fwaCaseLinkedClaimsAggregate
+      subscription:
+        rootField: fwaCaseLinkedClaimsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwaCaseLinkedClaims
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwaCase
+  sourceType: FwaCaseLinkedClaims
+  target:
+    model:
+      name: FwaCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: caseId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claim
+  sourceType: FwaCaseLinkedClaims
+  target:
+    model:
+      name: Claims
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: FwaCaseLinkedClaims
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwaCaseLinkedClaimsBoolExp
+  operand:
+    object:
+      type: FwaCaseLinkedClaims
+      comparableFields:
+        - fieldName: caseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: fwaConfirmed
+          booleanExpressionType: BoolBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: recommendation
+          booleanExpressionType: TextBoolExp
+        - fieldName: riskLevel
+          booleanExpressionType: TextBoolExp
+        - fieldName: riskScore
+          booleanExpressionType: NumericBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: fwaCase
+        - relationshipName: claim
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwaCaseLinkedClaimsBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwaCaseLinkedClaimsOrderByExp
+  operand:
+    object:
+      orderedType: FwaCaseLinkedClaims
+      orderableFields:
+        - fieldName: caseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: fwaConfirmed
+          orderByExpression: BoolOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: recommendation
+          orderByExpression: String1OrderByExp
+        - fieldName: riskLevel
+          orderByExpression: String1OrderByExp
+        - fieldName: riskScore
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: fwaCase
+        - relationshipName: claim
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: FwaCaseLinkedClaimsOrderByExp

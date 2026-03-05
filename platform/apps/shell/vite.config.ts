@@ -112,6 +112,10 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    fs: {
+      // Allow serving pdfjs-dist worker from root node_modules (hoisted by bun)
+      allow: ['..', '../..', '../../..'],
+    },
     proxy: {
       '/auth': {
         target: process.env.AUTH_PROXY_TARGET || 'http://localhost:4000',

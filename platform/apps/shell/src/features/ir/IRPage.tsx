@@ -108,7 +108,7 @@ function parseIRPath(pathname: string): IRView {
   if (segments.length === 0) return { mode: 'overview' };
   if (segments[0] === 'settings') return { mode: 'settings' };
 
-  const roundId = segments[0];
+  const roundId = segments[0]!;
   const tab = segments[1] || 'dashboard';
   return { mode: 'round', roundId, tab };
 }

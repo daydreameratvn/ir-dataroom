@@ -28,7 +28,7 @@ The `@mariozechner/pi-ai` package abstracts 20+ LLM providers behind a single st
 ```typescript
 import { getModel } from "@mariozechner/pi-ai";
 
-const claude = getModel("amazon-bedrock", "apac.anthropic.claude-sonnet-4-20250514-v1:0");
+const claude = getModel("amazon-bedrock", "global.anthropic.claude-sonnet-4-6");
 const gemini = getModel("google", "gemini-2.5-flash");
 const gpt = getModel("openai", "gpt-4.1");
 ```
@@ -41,9 +41,9 @@ Use the `amazon-bedrock` provider with cross-region inference profile IDs:
 
 | Model | Bedrock Model ID |
 |-------|-----------------|
-| Claude Opus 4.6 | `apac.anthropic.claude-opus-4-20250514-v1:0` |
-| Claude Sonnet 4.6 | `apac.anthropic.claude-sonnet-4-20250514-v1:0` |
-| Claude Haiku 4.5 | `apac.anthropic.claude-haiku-4-5-20251001-v1:0` |
+| Claude Opus 4.6 | `global.anthropic.claude-opus-4-6-v1` |
+| Claude Sonnet 4.6 | `global.anthropic.claude-sonnet-4-6` |
+| Claude Haiku 4.5 | `global.anthropic.claude-haiku-4-5-20251001-v1:0` |
 
 **Authentication**: Bedrock uses AWS credentials, not an API key. Set `AWS_PROFILE`, `AWS_REGION`, or standard AWS credential chain (IAM role, env vars, `~/.aws/credentials`). No `ANTHROPIC_API_KEY` needed.
 
@@ -120,7 +120,7 @@ import { createAgentSession } from "@mariozechner/pi-coding-agent";
 import { getModel } from "@mariozechner/pi-ai";
 
 export async function createMyAgent() {
-  const model = getModel("amazon-bedrock", "apac.anthropic.claude-sonnet-4-20250514-v1:0");
+  const model = getModel("amazon-bedrock", "global.anthropic.claude-sonnet-4-6");
 
   const { session } = await createAgentSession({
     model,
@@ -148,7 +148,7 @@ import { getModel } from "@mariozechner/pi-ai";
 import type { AgentMessage, Message } from "@mariozechner/pi-agent-core";
 
 export function createClaimsAgent(context: ClaimsContext) {
-  const model = getModel("amazon-bedrock", "apac.anthropic.claude-sonnet-4-20250514-v1:0");
+  const model = getModel("amazon-bedrock", "global.anthropic.claude-sonnet-4-6");
 
   const agent = new Agent({
     initialState: {
@@ -211,7 +211,7 @@ export async function createAssessorAgent(claimId: string) {
   const documentTool = createDocumentAnalysisTool(documents);
 
   // 3. Construct the agent
-  const model = getModel("amazon-bedrock", "apac.anthropic.claude-sonnet-4-20250514-v1:0");
+  const model = getModel("amazon-bedrock", "global.anthropic.claude-sonnet-4-6");
 
   const agent = new Agent({
     initialState: {

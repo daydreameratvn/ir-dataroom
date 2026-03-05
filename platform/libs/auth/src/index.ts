@@ -1,4 +1,4 @@
-export { default as AuthProvider, useAuth } from './AuthProvider';
+export { default as AuthProvider, useAuth, AuthContext } from './AuthProvider';
 export type { AuthProviderProps } from './AuthProvider';
 export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as LoginPage } from './LoginPage';

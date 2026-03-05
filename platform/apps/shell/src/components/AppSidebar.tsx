@@ -13,6 +13,7 @@ import {
   Bot,
   Briefcase,
   Brain,
+  ScanSearch,
   Sparkles,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -45,6 +46,7 @@ const iconMap: Record<string, LucideIcon> = {
   Bot,
   Briefcase,
   Brain,
+  ScanSearch,
 };
 
 export interface AppSidebarProps {
