@@ -299,6 +299,18 @@ features/
 
 ---
 
+## Testing
+
+Follow the red/green TDD protocol defined in the root `CLAUDE.md`. Platform-specific conventions:
+
+- **Framework**: Vitest + React Testing Library
+- **File naming**: `ComponentName.test.tsx` next to the source file
+- **Mocking**: `vi.mock()` for modules, `userEvent.setup()` for interactions
+- **Async**: `waitFor()` for async operations, `screen.findBy*` for elements that appear later
+- **Globals**: Vitest globals enabled — no need to import `describe`, `it`, `expect`
+- **TypeScript**: Strict — use `!` for indexing, avoid `any`
+- **Run**: `cd platform && bun run test` (runs all workspace tests)
+
 ## Workflow Rules for Claude Code
 
 ### When displaying AI agent output:

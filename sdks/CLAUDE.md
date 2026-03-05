@@ -102,12 +102,15 @@ Source files are used for workspace resolution during development. The `publishC
 
 ### Testing
 
+Follow the red/green TDD protocol defined in the root `CLAUDE.md`. SDK-specific conventions:
+
 - Unit tests for every public method
 - Integration tests against a mock API server
 - Test both success and error paths
-- TypeScript SDKs: Vitest
+- TypeScript SDKs: Vitest, mock `fetch` globally, `renderHook()` for React hooks
 - iOS: XCTest
 - Android: JUnit + MockK
+- **Run**: `cd sdks && bun run test`
 
 ### Publishing
 

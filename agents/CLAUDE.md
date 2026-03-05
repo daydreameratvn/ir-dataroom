@@ -544,11 +544,38 @@ export default function (pi: ExtensionAPI) {
 
 ## Testing
 
-- Every agent needs integration tests with mocked LLM responses
-- Tool functions are unit tested independently
-- Use deterministic test cases with known-good inputs and expected outputs
-- Test the fallback path (agent failure → graceful degradation)
-- Use Vitest: `npx vitest run tests/`
+Follow the red/green TDD protocol defined in the root `CLAUDE.md`. Agent-specific conventions below.
+
+### Mock Strategy
+
+- **Mock at module boundaries** — `vi.mock("@mariozechner/pi-agent-core")`, not individual functions
+- **Mock classes as classes** — use `class MockAgent {}`, not `vi.fn().mockImplementation(() => ({}))`
+- **Mock LLM calls — never call real models** in tests
+- **Keep mocks minimal** — only mock what the test needs, let everything else be real
+
+### What to Test
+
+| Component | Test | Mock |
+|-----------|------|------|
+| Pure functions (math, parsing, extraction) | Unit test with known inputs/outputs | Nothing |
+| Tool factories (`createXDefinition`) | Verify returned structure, embedded config | External tool imports |
+| Agent runner (`runSubAgent`) | Success, error, timeout, event streaming | `Agent` class, model |
+| Tool `execute` functions | Input → output with mocked dependencies | GraphQL client, HTTP, LLM |
+| System prompt builders | Contains required sections, dynamic values | Nothing |
+| Rules/config exports | Structure, required fields present | Nothing |
+
+### Running Tests
+
+```bash
+# Run all agent tests
+cd agents && bunx vitest run
+
+# Run specific test file
+cd agents && bunx vitest run subagents/runner.test.ts
+
+# Watch mode during development
+cd agents && bunx vitest watch
+```
 
 ---
 
