@@ -104,7 +104,7 @@ export async function listUsers(params: ListUsersParams): Promise<PaginatedRespo
   if (params.limit) searchParams.set('limit', String(params.limit));
 
   const url = `${BASE}/users?${searchParams.toString()}`;
-  const response = await fetch(url, { headers: getHeaders() });
+  const response = await adminFetch(url, { headers: getHeaders() });
   return handleResponse<PaginatedResponse<AdminUser>>(response);
 }
 
