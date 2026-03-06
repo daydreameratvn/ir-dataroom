@@ -60,33 +60,38 @@ async function verifyState(state: string): Promise<SSOState | null> {
 
 // GET /auth/sso/:provider — redirect to OAuth provider
 sso.get("/sso/:provider", async (c) => {
-  const provider = c.req.param("provider");
-  const tenantId = getTenantId(c);
-  const returnUrl = c.req.query("return_url") || "/";
+  try {
+    const provider = c.req.param("provider");
+    const tenantId = getTenantId(c);
+    const returnUrl = c.req.query("return_url") || "/";
 
-  const state = await signState({
-    provider,
-    tenantId,
-    returnUrl,
-    ts: String(Date.now()),
-  });
+    const state = await signState({
+      provider,
+      tenantId,
+      returnUrl,
+      ts: String(Date.now()),
+    });
 
-  let authUrl: string;
-  switch (provider) {
-    case "google":
-      authUrl = await getGoogleAuthUrl(state);
-      break;
-    case "microsoft":
-      authUrl = await getMicrosoftAuthUrl(state);
-      break;
-    case "apple":
-      authUrl = await getAppleAuthUrl(state);
-      break;
-    default:
-      return c.json({ error: `Unsupported provider: ${provider}` }, 400);
+    let authUrl: string;
+    switch (provider) {
+      case "google":
+        authUrl = await getGoogleAuthUrl(state);
+        break;
+      case "microsoft":
+        authUrl = await getMicrosoftAuthUrl(state);
+        break;
+      case "apple":
+        authUrl = await getAppleAuthUrl(state);
+        break;
+      default:
+        return c.json({ error: `Unsupported provider: ${provider}` }, 400);
+    }
+
+    return c.redirect(authUrl);
+  } catch (err) {
+    console.error("[SSO] Initiation failed:", (err as Error).message);
+    return c.json({ error: "Service temporarily unavailable" }, 503);
   }
-
-  return c.redirect(authUrl);
 });
 
 // GET /auth/callback/:provider — exchange code, issue tokens

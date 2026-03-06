@@ -49,7 +49,6 @@ otp.post("/otp/email", async (c) => {
       await sendEmailOtp(body.email, code);
     } catch (err) {
       console.warn(`[OTP] Failed to send email to ${body.email}:`, (err as Error).message);
-      console.warn(`[OTP] Code for ${body.email}: ${code}`);
     }
 
     return c.json({ success: true, message: "If the email exists, a code has been sent" });
@@ -84,7 +83,7 @@ otp.post("/otp/phone", async (c) => {
       await sendSmsOtp(body.phone, code);
     } catch (err) {
       console.warn(`[OTP] Failed to send SMS to ${body.phone}:`, (err as Error).message);
-      console.warn(`[OTP] Code for ${body.phone}: ${code}`);
+      // OTP code intentionally NOT logged for security
     }
 
     return c.json({ success: true, message: "If the phone number exists, a code has been sent" });

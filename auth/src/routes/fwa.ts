@@ -160,24 +160,29 @@ fwa.post("/fwa/assess/approve", async (c) => {
 // ── GET /fwa/pending — List pending approval assessments ─────────────────
 
 fwa.get("/fwa/pending", async (c) => {
-  const pending: Array<{
-    chatId: string;
-    claimCode: string;
-    createdAt: number;
-  }> = [];
+  try {
+    const pending: Array<{
+      chatId: string;
+      claimCode: string;
+      createdAt: number;
+    }> = [];
 
-  for (const [chatId, session] of agentStore) {
-    pending.push({
-      chatId,
-      claimCode: session.claimCode,
-      createdAt: session.createdAt,
-    });
+    for (const [chatId, session] of agentStore) {
+      pending.push({
+        chatId,
+        claimCode: session.claimCode,
+        createdAt: session.createdAt,
+      });
+    }
+
+    // Sort newest first
+    pending.sort((a, b) => b.createdAt - a.createdAt);
+
+    return c.json({ data: pending });
+  } catch (err) {
+    console.error("[FWA] List pending sessions failed:", (err as Error).message);
+    return c.json({ error: "Service temporarily unavailable" }, 503);
   }
-
-  // Sort newest first
-  pending.sort((a, b) => b.createdAt - a.createdAt);
-
-  return c.json({ data: pending });
 });
 
 // ── POST /fwa/compliance — Start compliance check (SSE stream) ───────────
@@ -348,38 +353,48 @@ fwa.post("/fwa/scourge", async (c) => {
 // ── GET /fwa/scourge — List scourge jobs ─────────────────────────────────
 
 fwa.get("/fwa/scourge", async (c) => {
-  const jobs = Array.from(scourgeStore.values()).map((job) => ({
-    id: job.id,
-    claimCode: job.claimCode,
-    status: job.status,
-    createdAt: job.createdAt,
-    documentCount: job.result?.documents.length ?? 0,
-  }));
+  try {
+    const jobs = Array.from(scourgeStore.values()).map((job) => ({
+      id: job.id,
+      claimCode: job.claimCode,
+      status: job.status,
+      createdAt: job.createdAt,
+      documentCount: job.result?.documents.length ?? 0,
+    }));
 
-  // Sort newest first
-  jobs.sort((a, b) => b.createdAt - a.createdAt);
+    // Sort newest first
+    jobs.sort((a, b) => b.createdAt - a.createdAt);
 
-  return c.json({ data: jobs });
+    return c.json({ data: jobs });
+  } catch (err) {
+    console.error("[FWA] List scourge jobs failed:", (err as Error).message);
+    return c.json({ error: "Service temporarily unavailable" }, 503);
+  }
 });
 
 // ── GET /fwa/scourge/:id — Get scourge job detail ────────────────────────
 
 fwa.get("/fwa/scourge/:id", async (c) => {
-  const id = c.req.param("id");
-  const job = scourgeStore.get(id);
+  try {
+    const id = c.req.param("id");
+    const job = scourgeStore.get(id);
 
-  if (!job) {
-    return c.json({ error: "Job not found" }, 404);
+    if (!job) {
+      return c.json({ error: "Job not found" }, 404);
+    }
+
+    return c.json({
+      id: job.id,
+      claimCode: job.claimCode,
+      status: job.status,
+      createdAt: job.createdAt,
+      documentCount: job.result?.documents.length ?? 0,
+      result: job.result ?? null,
+    });
+  } catch (err) {
+    console.error("[FWA] Get scourge job detail failed:", (err as Error).message);
+    return c.json({ error: "Service temporarily unavailable" }, 503);
   }
-
-  return c.json({
-    id: job.id,
-    claimCode: job.claimCode,
-    status: job.status,
-    createdAt: job.createdAt,
-    documentCount: job.result?.documents.length ?? 0,
-    result: job.result ?? null,
-  });
 });
 
 export default fwa;

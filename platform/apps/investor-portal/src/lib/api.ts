@@ -5,6 +5,9 @@ function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
+// Prevent multiple 401 redirects when parallel requests all fail
+let isRedirectingToLogin = false;
+
 async function resilientFetch(url: string, options?: RequestInit): Promise<Response> {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
@@ -46,10 +49,13 @@ async function apiFetch<T>(
   });
 
   if (res.status === 401) {
-    // Token expired or invalid — clear and redirect to login
+    // Token expired or invalid — clear and redirect (once)
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem('investor_info');
-    window.location.href = '/login';
+    if (!isRedirectingToLogin) {
+      isRedirectingToLogin = true;
+      window.location.href = '/login';
+    }
     throw new Error('Unauthorized');
   }
 
@@ -95,7 +101,10 @@ async function apiFetchRaw(
   if (res.status === 401) {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem('investor_info');
-    window.location.href = '/login';
+    if (!isRedirectingToLogin) {
+      isRedirectingToLogin = true;
+      window.location.href = '/login';
+    }
     throw new Error('Unauthorized');
   }
 

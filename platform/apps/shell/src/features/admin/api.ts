@@ -57,11 +57,37 @@ function getHeaders(): HeadersInit {
   };
 }
 
+async function adminFetch(url: string, options?: RequestInit): Promise<Response> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(url, options);
+      // Retry once on 503 (transient server issue / ECS rollout)
+      if (res.status === 503 && attempt === 0) {
+        await new Promise((r) => setTimeout(r, 1000));
+        continue;
+      }
+      return res;
+    } catch {
+      if (attempt === 0) {
+        await new Promise((r) => setTimeout(r, 1000));
+        continue;
+      }
+      throw new Error('Service unavailable — please try again later');
+    }
+  }
+  throw new Error('Service unavailable — please try again later');
+}
+
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
+    const message = (body as Record<string, unknown>).error;
+
+    if (!message && response.status >= 500) {
+      throw new Error('Service unavailable — please try again later');
+    }
+
+    throw new Error(String(message ?? `Request failed (${response.status})`));
   }
   return response.json() as Promise<T>;
 }
@@ -83,12 +109,12 @@ export async function listUsers(params: ListUsersParams): Promise<PaginatedRespo
 }
 
 export async function getUser(id: string): Promise<AdminUser> {
-  const response = await fetch(`${BASE}/users/${id}`, { headers: getHeaders() });
+  const response = await adminFetch(`${BASE}/users/${id}`, { headers: getHeaders() });
   return handleResponse<AdminUser>(response);
 }
 
 export async function createUser(payload: CreateUserPayload): Promise<AdminUser> {
-  const response = await fetch(`${BASE}/users`, {
+  const response = await adminFetch(`${BASE}/users`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify(payload),
@@ -97,7 +123,7 @@ export async function createUser(payload: CreateUserPayload): Promise<AdminUser>
 }
 
 export async function updateUser(id: string, payload: UpdateUserPayload): Promise<AdminUser> {
-  const response = await fetch(`${BASE}/users/${id}`, {
+  const response = await adminFetch(`${BASE}/users/${id}`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify(payload),
@@ -106,34 +132,26 @@ export async function updateUser(id: string, payload: UpdateUserPayload): Promis
 }
 
 export async function deleteUser(id: string): Promise<void> {
-  const response = await fetch(`${BASE}/users/${id}`, {
+  const response = await adminFetch(`${BASE}/users/${id}`, {
     method: 'DELETE',
     headers: getHeaders(),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 export async function listTenants(): Promise<Tenant[]> {
-  const response = await fetch(`${BASE}/tenants`, { headers: getHeaders() });
+  const response = await adminFetch(`${BASE}/tenants`, { headers: getHeaders() });
   const result = await handleResponse<{ data: Tenant[] }>(response);
   return result.data;
 }
 
 export async function setUserImpersonatable(userId: string, impersonatable: boolean): Promise<void> {
-  const response = await fetch(`${BASE}/users/${userId}/impersonatable`, {
+  const response = await adminFetch(`${BASE}/users/${userId}/impersonatable`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify({ impersonatable }),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }
 
 export async function revokeUserSessions(userId: string): Promise<void> {
@@ -149,14 +167,10 @@ export async function revokeUserSessions(userId: string): Promise<void> {
 }
 
 export async function setUserCanImpersonate(userId: string, canImpersonate: boolean): Promise<void> {
-  const response = await fetch(`${BASE}/users/${userId}/can-impersonate`, {
+  const response = await adminFetch(`${BASE}/users/${userId}/can-impersonate`, {
     method: 'PUT',
     headers: getHeaders(),
     body: JSON.stringify({ canImpersonate }),
   });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const message = (body as Record<string, unknown>).error ?? response.statusText;
-    throw new Error(String(message));
-  }
+  await handleResponse<void>(response);
 }

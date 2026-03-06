@@ -127,22 +127,27 @@ token.post("/token/refresh", async (c) => {
 
 // POST /auth/token/revoke — revoke current session
 token.post("/token/revoke", requireAuth, async (c) => {
-  const refreshToken = getCookie(c, "refresh_token");
+  try {
+    const refreshToken = getCookie(c, "refresh_token");
 
-  if (refreshToken) {
-    const session = await validateRefreshToken(refreshToken);
-    if (session) {
-      await revokeSession(session.sessionId);
+    if (refreshToken) {
+      const session = await validateRefreshToken(refreshToken);
+      if (session) {
+        await revokeSession(session.sessionId);
+      }
     }
+
+    // Clear the refresh token cookie
+    c.header(
+      "Set-Cookie",
+      "refresh_token=; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=0"
+    );
+
+    return c.json({ success: true });
+  } catch (err) {
+    console.error("[Token] Revoke failed:", (err as Error).message);
+    return c.json({ error: "Service temporarily unavailable" }, 503);
   }
-
-  // Clear the refresh token cookie
-  c.header(
-    "Set-Cookie",
-    "refresh_token=; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=0"
-  );
-
-  return c.json({ success: true });
 });
 
 export default token;

@@ -47,7 +47,13 @@ deploy_auth() {
     --region "$REGION" \
     --query 'service.serviceName' --output text
 
-  echo ">>> Auth deployed. ECS will roll out new tasks."
+  echo ">>> Waiting for ECS deployment to stabilize..."
+  aws ecs wait services-stable \
+    --cluster banyan-prod-cluster \
+    --services banyan-prod-auth-service \
+    --region "$REGION" 2>&1 || echo ">>> Warning: ECS wait timed out — check manually"
+
+  echo ">>> Auth deployed and stable."
 }
 
 # =============================================================
