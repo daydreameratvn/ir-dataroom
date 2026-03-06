@@ -19,18 +19,33 @@ interface AuthResponse {
 async function authRequest<T>(path: string, options?: RequestInit): Promise<T> {
   const { headers: optionHeaders, ...restOptions } = options ?? {};
 
-  let response: Response;
-  try {
-    response = await fetch(`${_authBaseUrl}${path}`, {
-      credentials: 'include',
-      ...restOptions,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(optionHeaders as Record<string, string>),
-      },
-    });
-  } catch {
-    // Network error — server is completely unreachable
+  let response: Response | undefined;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      response = await fetch(`${_authBaseUrl}${path}`, {
+        credentials: 'include',
+        ...restOptions,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(optionHeaders as Record<string, string>),
+        },
+      });
+      // Retry once on 503 (transient server issue / ECS rollout)
+      if (response.status === 503 && attempt === 0) {
+        await new Promise((r) => setTimeout(r, 1000));
+        continue;
+      }
+      break;
+    } catch {
+      if (attempt === 0) {
+        await new Promise((r) => setTimeout(r, 1000));
+        continue;
+      }
+      // Network error — server is completely unreachable
+      throw new AuthError('Service unavailable — please try again later', 0);
+    }
+  }
+  if (!response) {
     throw new AuthError('Service unavailable — please try again later', 0);
   }
 

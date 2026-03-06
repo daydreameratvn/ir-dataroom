@@ -41,11 +41,24 @@ function getHeaders(): HeadersInit {
 }
 
 async function irFetch(url: string, options?: RequestInit): Promise<Response> {
-  try {
-    return await fetch(url, options);
-  } catch {
-    throw new ApiError('Service unavailable — please try again later', 0);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(url, options);
+      // Retry once on 503 (transient server issue / ECS rollout)
+      if (res.status === 503 && attempt === 0) {
+        await new Promise((r) => setTimeout(r, 1000));
+        continue;
+      }
+      return res;
+    } catch {
+      if (attempt === 0) {
+        await new Promise((r) => setTimeout(r, 1000));
+        continue;
+      }
+      throw new ApiError('Service unavailable — please try again later', 0);
+    }
   }
+  throw new ApiError('Service unavailable — please try again later', 0);
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {
