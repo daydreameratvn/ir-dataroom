@@ -4,6 +4,22 @@
 
 Partner-facing SDKs that allow third-party insurers and platforms to integrate with Papaya's APIs. Each platform directory can hold multiple named SDKs. The `sample` SDK in each platform serves as a template for creating new SDKs.
 
+## Commands
+
+```bash
+# Run all SDK tests
+cd sdks && bun run test
+
+# Type check all TypeScript SDKs
+cd sdks && bun run typecheck
+
+# Build all TypeScript SDKs
+cd sdks && bun run build
+
+# Authenticate to CodeArtifact (required on first checkout before bun install)
+aws codeartifact login --tool npm --domain papaya --domain-owner 812652266901 --repository sdks --region ap-southeast-1
+```
+
 ## Folder Structure
 
 ```
@@ -78,11 +94,7 @@ Source files are used for workspace resolution during development. The `publishC
 
 ## Creating a New SDK
 
-1. Copy the `sample` directory under the target platform: `cp -r node/sample node/<new-name>`
-2. Update `package.json`: change `name`, `description`
-3. If creating react/react-native variants, copy those too and update the dependency from `@papaya/sample` to `@papaya/<new-name>`
-4. Run `bun install` from `sdks/` to link everything
-5. For iOS/Android: copy `ios/sample` or `android/sample` and update package/module names
+To scaffold a new SDK, use the `new-sdk` skill.
 
 ## Development Rules
 
