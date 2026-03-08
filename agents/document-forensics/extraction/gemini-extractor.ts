@@ -11,7 +11,6 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { extname } from 'node:path';
 import { GoogleGenAI } from '@google/genai';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 import { z } from 'zod';
 import sharp from 'sharp';
 
@@ -213,7 +212,7 @@ export class GeminiExtractor {
         throw new Error('Gemini file has no URI after upload');
       }
 
-      const jsonSchema = zodToJsonSchema(responseSchema);
+      const jsonSchema = z.toJsonSchema(responseSchema);
       const response = await this.ai.models.generateContent({
         model: GEMINI_FLASH.model,
         config: {
