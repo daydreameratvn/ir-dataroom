@@ -1,4 +1,4 @@
-import type { User } from '@papaya/shared-types';
+import type { User, UserPreferences } from '@papaya/shared-types';
 import type {
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialRequestOptionsJSON,
@@ -184,6 +184,25 @@ export async function renamePasskey(
     method: 'PATCH',
     headers: { Authorization: `Bearer ${accessToken}` },
     body: JSON.stringify({ deviceName }),
+  });
+}
+
+// Preferences
+export async function getPreferences(accessToken: string): Promise<UserPreferences> {
+  return authRequest<UserPreferences>('/me/preferences', {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+}
+
+export async function updatePreferences(
+  patch: Partial<UserPreferences>,
+  accessToken: string,
+): Promise<UserPreferences> {
+  return authRequest<UserPreferences>('/me/preferences', {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify(patch),
   });
 }
 

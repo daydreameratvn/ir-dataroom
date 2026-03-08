@@ -42,6 +42,7 @@ export default function MockAuthProvider({ children }: AuthProviderProps) {
       value={{
         user: session?.user ?? null,
         session,
+        preferences: { hasSeenWelcome: true },
         isLoading: false,
         isAuthenticated: session !== null,
         isImpersonating: false,
@@ -50,6 +51,7 @@ export default function MockAuthProvider({ children }: AuthProviderProps) {
         signOut,
         startImpersonation: async () => {},
         endImpersonation: async () => {},
+        updatePreferences: async () => {},
       }}
     >
       {children}

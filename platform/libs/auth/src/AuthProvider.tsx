@@ -7,12 +7,14 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import type { User, AuthSession } from '@papaya/shared-types';
+import type { User, AuthSession, UserPreferences } from '@papaya/shared-types';
 import {
   refreshAccessToken,
   revokeToken,
   startImpersonation as startImpersonationApi,
   endImpersonation as endImpersonationApi,
+  getPreferences,
+  updatePreferences as updatePreferencesApi,
 } from './auth-client';
 import {
   getAccessToken,
@@ -25,6 +27,7 @@ import {
 interface AuthContextValue {
   user: User | null;
   session: AuthSession | null;
+  preferences: UserPreferences | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   isImpersonating: boolean;
@@ -33,6 +36,7 @@ interface AuthContextValue {
   signOut: () => Promise<void>;
   startImpersonation: (userId: string) => Promise<void>;
   endImpersonation: () => Promise<void>;
+  updatePreferences: (patch: Partial<UserPreferences>) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -49,6 +53,7 @@ export interface AuthProviderProps {
 
 export default function AuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<AuthSession | null>(null);
+  const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const originalSessionRef = useRef<AuthSession | null>(null);
@@ -80,6 +85,26 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }, delay);
   }, []);
 
+  const fetchAndSetPreferences = useCallback(async (accessToken: string) => {
+    try {
+      const prefs = await getPreferences(accessToken);
+      setPreferences(prefs);
+    } catch {
+      // Non-critical — use defaults
+    }
+  }, []);
+
+  const updatePreferences = useCallback(async (patch: Partial<UserPreferences>) => {
+    const token = getAccessToken();
+    if (!token) return;
+    try {
+      const updated = await updatePreferencesApi(patch, token);
+      setPreferences(updated);
+    } catch {
+      // Best effort
+    }
+  }, []);
+
   const signIn = useCallback(
     (user: User, accessToken: string, expiresAt: string) => {
       setAccessToken(accessToken, expiresAt);
@@ -100,6 +125,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     }
     clearAccessToken();
     setSession(null);
+    setPreferences(null);
     originalSessionRef.current = null;
     if (refreshTimerRef.current) {
       clearTimeout(refreshTimerRef.current);
@@ -184,6 +210,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
             impersonation: result.impersonation,
           });
           scheduleRefresh(result.expiresAt);
+          await fetchAndSetPreferences(result.accessToken);
         } catch {
           // Token from hash was invalid
         }
@@ -202,6 +229,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
           impersonation: result.impersonation,
         });
         scheduleRefresh(result.expiresAt);
+        await fetchAndSetPreferences(result.accessToken);
       } catch {
         // No valid session — user needs to login
       }
@@ -222,6 +250,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       value={{
         user: session?.user ?? null,
         session,
+        preferences,
         isLoading,
         isAuthenticated: session !== null,
         isImpersonating,
@@ -230,6 +259,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         signOut,
         startImpersonation,
         endImpersonation,
+        updatePreferences,
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuth } from '@papaya/auth';
 import { cn } from '@papaya/shared-ui';
@@ -12,8 +12,20 @@ import { useNewVersion } from './hooks/useNewVersion';
 
 export default function App() {
   const [fatimaOpen, setFatimaOpen] = useState(false);
-  const { isImpersonating } = useAuth();
+  const { isImpersonating, preferences, updatePreferences } = useAuth();
   const hasNewVersion = useNewVersion();
+  const welcomeHandled = useRef(false);
+
+  // Auto-open Fatima for first-time users
+  useEffect(() => {
+    if (welcomeHandled.current) return;
+    if (!preferences) return; // Not loaded yet
+    if (preferences.hasSeenWelcome) return; // Already seen
+
+    welcomeHandled.current = true;
+    setFatimaOpen(true);
+    updatePreferences({ hasSeenWelcome: true });
+  }, [preferences, updatePreferences]);
 
   // Global ⌘J shortcut to toggle Fatima panel
   useEffect(() => {

@@ -17,6 +17,11 @@ export interface User {
   canImpersonate?: boolean;
 }
 
+export interface UserPreferences {
+  hasSeenWelcome?: boolean;
+  seenSections?: string[];
+}
+
 export interface AuthSession {
   user: User;
   accessToken: string;
