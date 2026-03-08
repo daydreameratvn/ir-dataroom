@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
@@ -25,12 +25,9 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-  Avatar,
-  AvatarFallback,
 } from '@papaya/shared-ui';
 import type { NavItem, NavGroup } from '@papaya/shared-types';
 import { useTenant } from '@/providers/TenantProvider';
-import { useAuth } from '@papaya/auth';
 import { navigationGroups } from '@/config/navigation';
 import IRFlyoutContent from '@/features/ir/components/IRFlyoutContent';
 
@@ -56,9 +53,7 @@ export interface AppSidebarProps {
 export default function AppSidebar({ onOpenFatima }: AppSidebarProps) {
   const { t } = useTranslation();
   const location = useLocation();
-  const navigate = useNavigate();
   const { tenant } = useTenant();
-  const { user } = useAuth();
   const [openFlyout, setOpenFlyout] = useState<string | null>(null);
 
   function isActive(path: string | undefined) {
@@ -111,13 +106,6 @@ export default function AppSidebar({ onOpenFatima }: AppSidebarProps) {
   // Dashboard is the only item in the 'main' group — it's a direct link in the rail
   const categoryGroups = navigationGroups.filter((g) => g.id !== 'main');
   const activeGroup = categoryGroups.find(isNavGroupActive);
-
-  const initials = user?.name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2) ?? '?';
 
   const flyoutGroup = openFlyout ? categoryGroups.find((g) => g.id === openFlyout) : null;
 
@@ -240,23 +228,6 @@ export default function AppSidebar({ onOpenFatima }: AppSidebarProps) {
                     <span className="text-[10px]">⌘</span>J
                   </kbd>
                 </div>
-              </TooltipContent>
-            </Tooltip>
-
-            {/* User avatar */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => navigate('/profile')}
-                  className="mt-1 flex h-9 w-9 items-center justify-center"
-                >
-                  <Avatar className="h-7 w-7">
-                    <AvatarFallback className="text-[10px]">{initials}</AvatarFallback>
-                  </Avatar>
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="right" sideOffset={8}>
-                {user?.name ?? t('nav.profile')}
               </TooltipContent>
             </Tooltip>
           </div>
