@@ -23,12 +23,16 @@ const params = await fetchSSMParams();
 
 const connectionUri = requireParam(params, "ddn-connection-uri");
 const jwtSecretKey = requireParam(params, "jwt-secret-key");
+const appleEndpoint = requireParam(params, "apple-endpoint");
+const appleAdminSecret = requireParam(params, "apple-admin-secret");
 
 // Connector config vars. READ_URL/WRITE_URL/AUTHORIZATION_HEADER are
 // auto-populated by DDN CLI from connector builds into .env.cloud.
 const envContent = [
   `APP_BANYAN_PG_CONNECTION_URI="${connectionUri}"`,
   `JWT_SECRET_KEY="${jwtSecretKey}"`,
+  `APPLE_APPLE_GQL_GRAPHQL_ENDPOINT_1="${appleEndpoint}"`,
+  `APPLE_APPLE_GQL_ADMIN_SECRET="${appleAdminSecret}"`,
   "",
 ].join("\n");
 
