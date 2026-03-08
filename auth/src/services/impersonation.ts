@@ -1,4 +1,4 @@
-import { query } from "../db/pool.ts";
+import { gqlQuery } from "./gql.ts";
 
 export async function logImpersonation(opts: {
   tenantId: string;
@@ -9,17 +9,21 @@ export async function logImpersonation(opts: {
   ipAddress?: string;
   userAgent?: string;
 }): Promise<void> {
-  await query(
-    `INSERT INTO impersonation_logs (tenant_id, impersonator_id, target_user_id, session_id, action, ip_address, user_agent, created_by, updated_by)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $2, $2)`,
-    [
-      opts.tenantId,
-      opts.impersonatorId,
-      opts.targetUserId,
-      opts.sessionId ?? null,
-      opts.action,
-      opts.ipAddress ?? null,
-      opts.userAgent ?? null,
-    ]
-  );
+  await gqlQuery(`
+    mutation LogImpersonation($object: InsertImpersonationLogsObjectInput!) {
+      insertImpersonationLogs(objects: [$object]) { affectedRows }
+    }
+  `, {
+    object: {
+      tenantId: opts.tenantId,
+      impersonatorId: opts.impersonatorId,
+      targetUserId: opts.targetUserId,
+      sessionId: opts.sessionId ?? null,
+      action: opts.action,
+      ipAddress: opts.ipAddress ?? null,
+      userAgent: opts.userAgent ?? null,
+      createdBy: opts.impersonatorId,
+      updatedBy: opts.impersonatorId,
+    },
+  });
 }

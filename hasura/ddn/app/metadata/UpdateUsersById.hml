@@ -162,6 +162,38 @@ definition:
 kind: ObjectType
 version: v1
 definition:
+  name: UpdateColumnUsersDeletedBy
+  description: Update the 'deleted_by' column in the 'users' collection
+  fields:
+    - name: set
+      type: Uuid
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnUsersDeletedBy
+    inputTypeName: UpdateColumnUsersDeletedByInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_column_users_deleted_by
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnUsersDeletedBy
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
   name: UpdateColumnUsersDepartment
   description: Update the 'department' column in the 'users' collection
   fields:
@@ -184,6 +216,70 @@ kind: TypePermissions
 version: v1
 definition:
   typeName: UpdateColumnUsersDepartment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnUsersDirectoryProviderId
+  description: Update the 'directory_provider_id' column in the 'users' collection
+  fields:
+    - name: set
+      type: Uuid
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnUsersDirectoryProviderId
+    inputTypeName: UpdateColumnUsersDirectoryProviderIdInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_column_users_directory_provider_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnUsersDirectoryProviderId
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnUsersDirectorySyncId
+  description: Update the 'directory_sync_id' column in the 'users' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnUsersDirectorySyncId
+    inputTypeName: UpdateColumnUsersDirectorySyncIdInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: update_column_users_directory_sync_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnUsersDirectorySyncId
   permissions:
     - role: admin
       output:
@@ -628,9 +724,18 @@ definition:
     - name: deletedAt
       type: UpdateColumnUsersDeletedAt
       description: Update the 'deleted_at' column in the 'users' collection.
+    - name: deletedBy
+      type: UpdateColumnUsersDeletedBy
+      description: Update the 'deleted_by' column in the 'users' collection.
     - name: department
       type: UpdateColumnUsersDepartment
       description: Update the 'department' column in the 'users' collection.
+    - name: directoryProviderId
+      type: UpdateColumnUsersDirectoryProviderId
+      description: Update the 'directory_provider_id' column in the 'users' collection.
+    - name: directorySyncId
+      type: UpdateColumnUsersDirectorySyncId
+      description: Update the 'directory_sync_id' column in the 'users' collection.
     - name: email
       type: UpdateColumnUsersEmail
       description: Update the 'email' column in the 'users' collection.
@@ -692,9 +797,18 @@ definition:
         deletedAt:
           column:
             name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
         department:
           column:
             name: department
+        directoryProviderId:
+          column:
+            name: directory_provider_id
+        directorySyncId:
+          column:
+            name: directory_sync_id
         email:
           column:
             name: email
@@ -749,7 +863,10 @@ definition:
           - createdAt
           - createdBy
           - deletedAt
+          - deletedBy
           - department
+          - directoryProviderId
+          - directorySyncId
           - email
           - id
           - isImpersonatable

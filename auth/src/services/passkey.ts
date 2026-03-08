@@ -7,7 +7,7 @@ import {
   type VerifiedAuthenticationResponse,
 } from "@simplewebauthn/server";
 import type { AuthenticatorTransportFuture } from "@simplewebauthn/types";
-import { query } from "../db/pool.ts";
+import { gqlQuery } from "./gql.ts";
 import { authConfig } from "../config.ts";
 
 interface StoredPasskey {
@@ -22,26 +22,23 @@ async function getUserPasskeys(
   userId: string,
   tenantId: string
 ): Promise<StoredPasskey[]> {
-  const result = await query<{
-    id: string;
-    credential_id: string;
-    public_key: string;
-    sign_count: number;
-    transports: string | null;
-  }>(
-    `SELECT id, credential_id, public_key, sign_count, transports
-     FROM auth_passkeys
-     WHERE user_id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
-    [userId, tenantId]
-  );
+  const data = await gqlQuery<{
+    authPasskeys: Array<{
+      id: string;
+      credentialId: string;
+      publicKey: string;
+      signCount: number;
+      transports: string | null;
+    }>;
+  }>(`
+    query GetUserPasskeys($userId: Uuid!, $tenantId: Uuid!) {
+      authPasskeys(
+        where: { userId: { _eq: $userId }, tenantId: { _eq: $tenantId }, deletedAt: { _is_null: true } }
+      ) { id credentialId publicKey signCount transports }
+    }
+  `, { userId, tenantId });
 
-  return result.rows.map((row) => ({
-    id: row.id,
-    credentialId: row.credential_id,
-    publicKey: row.public_key,
-    signCount: row.sign_count,
-    transports: row.transports,
-  }));
+  return data.authPasskeys;
 }
 
 export async function generateRegOptions(
@@ -91,19 +88,21 @@ export async function storePasskey(opts: {
   deviceName?: string;
   transports?: string;
 }): Promise<void> {
-  await query(
-    `INSERT INTO auth_passkeys (tenant_id, user_id, credential_id, public_key, sign_count, device_name, transports)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-    [
-      opts.tenantId,
-      opts.userId,
-      opts.credentialId,
-      opts.publicKey,
-      opts.signCount,
-      opts.deviceName ?? null,
-      opts.transports ?? null,
-    ]
-  );
+  await gqlQuery(`
+    mutation StorePasskey($object: InsertAuthPasskeysObjectInput!) {
+      insertAuthPasskeys(objects: [$object]) { affectedRows }
+    }
+  `, {
+    object: {
+      tenantId: opts.tenantId,
+      userId: opts.userId,
+      credentialId: opts.credentialId,
+      publicKey: opts.publicKey,
+      signCount: opts.signCount,
+      deviceName: opts.deviceName ?? null,
+      transports: opts.transports ?? null,
+    },
+  });
 }
 
 export async function generateAuthOptions(credentialId?: string) {
@@ -126,28 +125,31 @@ export async function verifyAuthResponse(
   credentialId: string;
   newSignCount: number;
 } | null> {
-  // Find the credential
   const credId =
     (response as Record<string, string>)?.id ??
     (response as Record<string, string>)?.rawId;
   if (!credId) return null;
 
-  const result = await query<{
-    id: string;
-    credential_id: string;
-    public_key: string;
-    sign_count: number;
-    transports: string | null;
-    user_id: string;
-    tenant_id: string;
-  }>(
-    `SELECT id, credential_id, public_key, sign_count, transports, user_id, tenant_id
-     FROM auth_passkeys
-     WHERE credential_id = $1 AND deleted_at IS NULL`,
-    [credId]
-  );
+  const data = await gqlQuery<{
+    authPasskeys: Array<{
+      id: string;
+      credentialId: string;
+      publicKey: string;
+      signCount: number;
+      transports: string | null;
+      userId: string;
+      tenantId: string;
+    }>;
+  }>(`
+    query FindPasskeyByCredentialId($credId: String1!) {
+      authPasskeys(
+        where: { credentialId: { _eq: $credId }, deletedAt: { _is_null: true } }
+        limit: 1
+      ) { id credentialId publicKey signCount transports userId tenantId }
+    }
+  `, { credId });
 
-  const passkey = result.rows[0];
+  const passkey = data.authPasskeys[0];
   if (!passkey) return null;
 
   const verification: VerifiedAuthenticationResponse =
@@ -157,9 +159,9 @@ export async function verifyAuthResponse(
       expectedOrigin: authConfig.rpOrigin,
       expectedRPID: authConfig.rpId,
       credential: {
-        id: passkey.credential_id,
-        publicKey: Buffer.from(passkey.public_key, "base64url"),
-        counter: passkey.sign_count,
+        id: passkey.credentialId,
+        publicKey: Buffer.from(passkey.publicKey, "base64url"),
+        counter: passkey.signCount,
         transports: passkey.transports
           ? (passkey.transports.split(",") as AuthenticatorTransportFuture[])
           : undefined,
@@ -169,14 +171,23 @@ export async function verifyAuthResponse(
   if (!verification.verified) return null;
 
   const newSignCount = verification.authenticationInfo.newCounter;
-  await query(
-    `UPDATE auth_passkeys SET sign_count = $1, last_used_at = now(), updated_at = now() WHERE id = $2`,
-    [newSignCount, passkey.id]
-  );
+  const now = new Date().toISOString();
+  await gqlQuery(`
+    mutation UpdatePasskeySignCount($keyId: Uuid!, $updateColumns: UpdateAuthPasskeysByIdUpdateColumnsInput!) {
+      updateAuthPasskeysById(keyId: $keyId, updateColumns: $updateColumns) { affectedRows }
+    }
+  `, {
+    keyId: passkey.id,
+    updateColumns: {
+      signCount: { set: newSignCount },
+      lastUsedAt: { set: now },
+      updatedAt: { set: now },
+    },
+  });
 
   return {
     verified: true,
-    credentialId: passkey.credential_id,
+    credentialId: passkey.credentialId,
     newSignCount,
   };
 }
@@ -193,27 +204,24 @@ export async function listUserPasskeys(
   userId: string,
   tenantId: string
 ): Promise<PasskeyInfo[]> {
-  const result = await query<{
-    id: string;
-    credential_id: string;
-    device_name: string | null;
-    created_at: string;
-    last_used_at: string | null;
-  }>(
-    `SELECT id, credential_id, device_name, created_at, last_used_at
-     FROM auth_passkeys
-     WHERE user_id = $1 AND tenant_id = $2 AND deleted_at IS NULL
-     ORDER BY created_at DESC`,
-    [userId, tenantId]
-  );
+  const data = await gqlQuery<{
+    authPasskeys: Array<{
+      id: string;
+      credentialId: string;
+      deviceName: string | null;
+      createdAt: string;
+      lastUsedAt: string | null;
+    }>;
+  }>(`
+    query ListUserPasskeys($userId: Uuid!, $tenantId: Uuid!) {
+      authPasskeys(
+        where: { userId: { _eq: $userId }, tenantId: { _eq: $tenantId }, deletedAt: { _is_null: true } }
+        order_by: [{ createdAt: Desc }]
+      ) { id credentialId deviceName createdAt lastUsedAt }
+    }
+  `, { userId, tenantId });
 
-  return result.rows.map((row) => ({
-    id: row.id,
-    credentialId: row.credential_id,
-    deviceName: row.device_name,
-    createdAt: row.created_at,
-    lastUsedAt: row.last_used_at,
-  }));
+  return data.authPasskeys;
 }
 
 export async function deletePasskey(
@@ -221,13 +229,31 @@ export async function deletePasskey(
   userId: string,
   tenantId: string
 ): Promise<boolean> {
-  const result = await query(
-    `UPDATE auth_passkeys
-     SET deleted_at = now(), deleted_by = $3, updated_at = now(), updated_by = $3
-     WHERE id = $1 AND user_id = $3 AND tenant_id = $2 AND deleted_at IS NULL`,
-    [passkeyId, tenantId, userId]
-  );
-  return (result.rowCount ?? 0) > 0;
+  const now = new Date().toISOString();
+  const data = await gqlQuery<{
+    updateAuthPasskeysById: { affectedRows: number };
+  }>(`
+    mutation DeletePasskey($keyId: Uuid!, $preCheck: AuthPasskeysBoolExp, $updateColumns: UpdateAuthPasskeysByIdUpdateColumnsInput!) {
+      updateAuthPasskeysById(keyId: $keyId, preCheck: $preCheck, updateColumns: $updateColumns) {
+        affectedRows
+      }
+    }
+  `, {
+    keyId: passkeyId,
+    preCheck: {
+      userId: { _eq: userId },
+      tenantId: { _eq: tenantId },
+      deletedAt: { _is_null: true },
+    },
+    updateColumns: {
+      deletedAt: { set: now },
+      deletedBy: { set: userId },
+      updatedAt: { set: now },
+      updatedBy: { set: userId },
+    },
+  });
+
+  return data.updateAuthPasskeysById.affectedRows > 0;
 }
 
 export async function renamePasskey(
@@ -236,25 +262,45 @@ export async function renamePasskey(
   tenantId: string,
   deviceName: string
 ): Promise<boolean> {
-  const result = await query(
-    `UPDATE auth_passkeys
-     SET device_name = $4, updated_at = now(), updated_by = $3
-     WHERE id = $1 AND user_id = $3 AND tenant_id = $2 AND deleted_at IS NULL`,
-    [passkeyId, tenantId, userId, deviceName]
-  );
-  return (result.rowCount ?? 0) > 0;
+  const now = new Date().toISOString();
+  const data = await gqlQuery<{
+    updateAuthPasskeysById: { affectedRows: number };
+  }>(`
+    mutation RenamePasskey($keyId: Uuid!, $preCheck: AuthPasskeysBoolExp, $updateColumns: UpdateAuthPasskeysByIdUpdateColumnsInput!) {
+      updateAuthPasskeysById(keyId: $keyId, preCheck: $preCheck, updateColumns: $updateColumns) {
+        affectedRows
+      }
+    }
+  `, {
+    keyId: passkeyId,
+    preCheck: {
+      userId: { _eq: userId },
+      tenantId: { _eq: tenantId },
+      deletedAt: { _is_null: true },
+    },
+    updateColumns: {
+      deviceName: { set: deviceName },
+      updatedAt: { set: now },
+      updatedBy: { set: userId },
+    },
+  });
+
+  return data.updateAuthPasskeysById.affectedRows > 0;
 }
 
 export async function findUserByCredentialId(
   credentialId: string
 ): Promise<{ userId: string; tenantId: string } | null> {
-  const result = await query<{ user_id: string; tenant_id: string }>(
-    `SELECT user_id, tenant_id FROM auth_passkeys
-     WHERE credential_id = $1 AND deleted_at IS NULL`,
-    [credentialId]
-  );
+  const data = await gqlQuery<{
+    authPasskeys: Array<{ userId: string; tenantId: string }>;
+  }>(`
+    query FindUserByCredentialId($credentialId: String1!) {
+      authPasskeys(
+        where: { credentialId: { _eq: $credentialId }, deletedAt: { _is_null: true } }
+        limit: 1
+      ) { userId tenantId }
+    }
+  `, { credentialId });
 
-  const row = result.rows[0];
-  if (!row) return null;
-  return { userId: row.user_id, tenantId: row.tenant_id };
+  return data.authPasskeys[0] ?? null;
 }

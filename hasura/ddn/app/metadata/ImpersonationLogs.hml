@@ -2,195 +2,203 @@
 kind: ObjectType
 version: v1
 definition:
-  name: AuthPasskeys
+  name: ImpersonationLogs
   fields:
+    - name: action
+      type: String_1!
     - name: createdAt
       type: Timestamptz!
     - name: createdBy
       type: Uuid
-    - name: credentialId
-      type: String_1!
     - name: deletedAt
       type: Timestamptz
     - name: deletedBy
       type: Uuid
-    - name: deviceName
-      type: String_1
+    - name: endedAt
+      type: Timestamptz
     - name: id
       type: Uuid!
-    - name: lastUsedAt
-      type: Timestamptz
-    - name: publicKey
-      type: String_1!
-    - name: signCount
-      type: Int32!
+    - name: impersonatorId
+      type: Uuid!
+    - name: ipAddress
+      type: String_1
+    - name: reason
+      type: String_1
+    - name: sessionId
+      type: Uuid
+    - name: targetUserId
+      type: Uuid!
     - name: tenantId
       type: Uuid!
-    - name: transports
-      type: String_1
     - name: updatedAt
       type: Timestamptz!
     - name: updatedBy
       type: Uuid
-    - name: userId
-      type: Uuid!
+    - name: userAgent
+      type: String_1
   graphql:
-    typeName: AuthPasskeys
-    inputTypeName: AuthPasskeysInput
+    typeName: ImpersonationLogs
+    inputTypeName: ImpersonationLogsInput
   dataConnectorTypeMapping:
     - dataConnectorName: banyan_pg
-      dataConnectorObjectType: auth_passkeys
+      dataConnectorObjectType: impersonation_logs
       fieldMapping:
+        action:
+          column:
+            name: action
         createdAt:
           column:
             name: created_at
         createdBy:
           column:
             name: created_by
-        credentialId:
-          column:
-            name: credential_id
         deletedAt:
           column:
             name: deleted_at
         deletedBy:
           column:
             name: deleted_by
-        deviceName:
+        endedAt:
           column:
-            name: device_name
+            name: ended_at
         id:
           column:
             name: id
-        lastUsedAt:
+        impersonatorId:
           column:
-            name: last_used_at
-        publicKey:
+            name: impersonator_id
+        ipAddress:
           column:
-            name: public_key
-        signCount:
+            name: ip_address
+        reason:
           column:
-            name: sign_count
+            name: reason
+        sessionId:
+          column:
+            name: session_id
+        targetUserId:
+          column:
+            name: target_user_id
         tenantId:
           column:
             name: tenant_id
-        transports:
-          column:
-            name: transports
         updatedAt:
           column:
             name: updated_at
         updatedBy:
           column:
             name: updated_by
-        userId:
+        userAgent:
           column:
-            name: user_id
+            name: user_agent
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: AuthPasskeys
+  typeName: ImpersonationLogs
   permissions:
     - role: admin
       output:
         allowedFields:
+          - action
           - createdAt
           - createdBy
-          - credentialId
           - deletedAt
           - deletedBy
-          - deviceName
+          - endedAt
           - id
-          - lastUsedAt
-          - publicKey
-          - signCount
+          - impersonatorId
+          - ipAddress
+          - reason
+          - sessionId
+          - targetUserId
           - tenantId
-          - transports
           - updatedAt
           - updatedBy
-          - userId
+          - userAgent
 
 ---
 kind: AggregateExpression
 version: v1
 definition:
-  name: AuthPasskeysAggExp
+  name: ImpersonationLogsAggExp
   operand:
     object:
-      aggregatedType: AuthPasskeys
+      aggregatedType: ImpersonationLogs
       aggregatableFields:
+        - fieldName: action
+          aggregateExpression: TextAggExp
         - fieldName: createdAt
           aggregateExpression: TimestamptzAggExp
         - fieldName: createdBy
           aggregateExpression: UuidAggExp
-        - fieldName: credentialId
-          aggregateExpression: TextAggExp
         - fieldName: deletedAt
           aggregateExpression: TimestamptzAggExp
         - fieldName: deletedBy
           aggregateExpression: UuidAggExp
-        - fieldName: deviceName
-          aggregateExpression: TextAggExp
+        - fieldName: endedAt
+          aggregateExpression: TimestamptzAggExp
         - fieldName: id
           aggregateExpression: UuidAggExp
-        - fieldName: lastUsedAt
-          aggregateExpression: TimestamptzAggExp
-        - fieldName: publicKey
+        - fieldName: impersonatorId
+          aggregateExpression: UuidAggExp
+        - fieldName: ipAddress
           aggregateExpression: TextAggExp
-        - fieldName: signCount
-          aggregateExpression: Int4AggExp
+        - fieldName: reason
+          aggregateExpression: TextAggExp
+        - fieldName: sessionId
+          aggregateExpression: UuidAggExp
+        - fieldName: targetUserId
+          aggregateExpression: UuidAggExp
         - fieldName: tenantId
           aggregateExpression: UuidAggExp
-        - fieldName: transports
-          aggregateExpression: TextAggExp
         - fieldName: updatedAt
           aggregateExpression: TimestamptzAggExp
         - fieldName: updatedBy
           aggregateExpression: UuidAggExp
-        - fieldName: userId
-          aggregateExpression: UuidAggExp
+        - fieldName: userAgent
+          aggregateExpression: TextAggExp
   count:
     enable: true
     returnType: Int64
   graphql:
-    selectTypeName: AuthPasskeysAggExp
+    selectTypeName: ImpersonationLogsAggExp
 
 ---
 kind: Model
 version: v2
 definition:
-  name: AuthPasskeys
-  objectType: AuthPasskeys
+  name: ImpersonationLogs
+  objectType: ImpersonationLogs
   source:
     dataConnectorName: banyan_pg
-    collection: auth_passkeys
-  filterExpressionType: AuthPasskeysBoolExp
-  aggregateExpression: AuthPasskeysAggExp
-  orderByExpression: AuthPasskeysOrderByExp
+    collection: impersonation_logs
+  filterExpressionType: ImpersonationLogsBoolExp
+  aggregateExpression: ImpersonationLogsAggExp
+  orderByExpression: ImpersonationLogsOrderByExp
   graphql:
     selectMany:
-      queryRootField: authPasskeys
+      queryRootField: impersonationLogs
       subscription:
-        rootField: authPasskeys
+        rootField: impersonationLogs
     selectUniques:
-      - queryRootField: authPasskeysById
+      - queryRootField: impersonationLogsById
         uniqueIdentifier:
           - id
         subscription:
-          rootField: authPasskeysById
-    filterInputTypeName: AuthPasskeysFilterInput
+          rootField: impersonationLogsById
+    filterInputTypeName: ImpersonationLogsFilterInput
     aggregate:
-      queryRootField: authPasskeysAggregate
+      queryRootField: impersonationLogsAggregate
       subscription:
-        rootField: authPasskeysAggregate
+        rootField: impersonationLogsAggregate
 
 ---
 kind: ModelPermissions
 version: v1
 definition:
-  modelName: AuthPasskeys
+  modelName: ImpersonationLogs
   permissions:
     - role: admin
       select:
@@ -201,8 +209,44 @@ definition:
 kind: Relationship
 version: v1
 definition:
+  name: impersonator
+  sourceType: ImpersonationLogs
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: impersonatorId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: targetUser
+  sourceType: ImpersonationLogs
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: targetUserId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
   name: tenant
-  sourceType: AuthPasskeys
+  sourceType: ImpersonationLogs
   target:
     model:
       name: Tenants
@@ -216,114 +260,101 @@ definition:
           - fieldName: id
 
 ---
-kind: Relationship
-version: v1
-definition:
-  name: user
-  sourceType: AuthPasskeys
-  target:
-    model:
-      name: Users
-      relationshipType: Object
-  mapping:
-    - source:
-        fieldPath:
-          - fieldName: userId
-      target:
-        modelField:
-          - fieldName: id
-
----
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: AuthPasskeysBoolExp
+  name: ImpersonationLogsBoolExp
   operand:
     object:
-      type: AuthPasskeys
+      type: ImpersonationLogs
       comparableFields:
+        - fieldName: action
+          booleanExpressionType: TextBoolExp
         - fieldName: createdAt
           booleanExpressionType: TimestamptzBoolExp
         - fieldName: createdBy
           booleanExpressionType: UuidBoolExp
-        - fieldName: credentialId
-          booleanExpressionType: TextBoolExp
         - fieldName: deletedAt
           booleanExpressionType: TimestamptzBoolExp
         - fieldName: deletedBy
           booleanExpressionType: UuidBoolExp
-        - fieldName: deviceName
-          booleanExpressionType: TextBoolExp
+        - fieldName: endedAt
+          booleanExpressionType: TimestamptzBoolExp
         - fieldName: id
           booleanExpressionType: UuidBoolExp
-        - fieldName: lastUsedAt
-          booleanExpressionType: TimestamptzBoolExp
-        - fieldName: publicKey
+        - fieldName: impersonatorId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: ipAddress
           booleanExpressionType: TextBoolExp
-        - fieldName: signCount
-          booleanExpressionType: Int4BoolExp
+        - fieldName: reason
+          booleanExpressionType: TextBoolExp
+        - fieldName: sessionId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: targetUserId
+          booleanExpressionType: UuidBoolExp
         - fieldName: tenantId
           booleanExpressionType: UuidBoolExp
-        - fieldName: transports
-          booleanExpressionType: TextBoolExp
         - fieldName: updatedAt
           booleanExpressionType: TimestamptzBoolExp
         - fieldName: updatedBy
           booleanExpressionType: UuidBoolExp
-        - fieldName: userId
-          booleanExpressionType: UuidBoolExp
+        - fieldName: userAgent
+          booleanExpressionType: TextBoolExp
       comparableRelationships:
+        - relationshipName: impersonator
+        - relationshipName: targetUser
         - relationshipName: tenant
-        - relationshipName: user
   logicalOperators:
     enable: true
   isNull:
     enable: true
   graphql:
-    typeName: AuthPasskeysBoolExp
+    typeName: ImpersonationLogsBoolExp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: AuthPasskeysOrderByExp
+  name: ImpersonationLogsOrderByExp
   operand:
     object:
-      orderedType: AuthPasskeys
+      orderedType: ImpersonationLogs
       orderableFields:
+        - fieldName: action
+          orderByExpression: String1OrderByExp
         - fieldName: createdAt
           orderByExpression: TimestamptzOrderByExp
         - fieldName: createdBy
           orderByExpression: UuidOrderByExp
-        - fieldName: credentialId
-          orderByExpression: String1OrderByExp
         - fieldName: deletedAt
           orderByExpression: TimestamptzOrderByExp
         - fieldName: deletedBy
           orderByExpression: UuidOrderByExp
-        - fieldName: deviceName
-          orderByExpression: String1OrderByExp
+        - fieldName: endedAt
+          orderByExpression: TimestamptzOrderByExp
         - fieldName: id
           orderByExpression: UuidOrderByExp
-        - fieldName: lastUsedAt
-          orderByExpression: TimestamptzOrderByExp
-        - fieldName: publicKey
+        - fieldName: impersonatorId
+          orderByExpression: UuidOrderByExp
+        - fieldName: ipAddress
           orderByExpression: String1OrderByExp
-        - fieldName: signCount
-          orderByExpression: Int32OrderByExp
+        - fieldName: reason
+          orderByExpression: String1OrderByExp
+        - fieldName: sessionId
+          orderByExpression: UuidOrderByExp
+        - fieldName: targetUserId
+          orderByExpression: UuidOrderByExp
         - fieldName: tenantId
           orderByExpression: UuidOrderByExp
-        - fieldName: transports
-          orderByExpression: String1OrderByExp
         - fieldName: updatedAt
           orderByExpression: TimestamptzOrderByExp
         - fieldName: updatedBy
           orderByExpression: UuidOrderByExp
-        - fieldName: userId
-          orderByExpression: UuidOrderByExp
+        - fieldName: userAgent
+          orderByExpression: String1OrderByExp
       orderableRelationships:
+        - relationshipName: impersonator
+        - relationshipName: targetUser
         - relationshipName: tenant
-        - relationshipName: user
   graphql:
-    expressionTypeName: AuthPasskeysOrderByExp
-
+    expressionTypeName: ImpersonationLogsOrderByExp

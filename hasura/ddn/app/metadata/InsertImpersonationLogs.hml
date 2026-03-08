@@ -2,12 +2,10 @@
 kind: ObjectType
 version: v1
 definition:
-  name: InsertUsersObject
+  name: InsertImpersonationLogsObject
   fields:
-    - name: avatarUrl
-      type: String_1
-    - name: canImpersonate
-      type: Boolean_1
+    - name: action
+      type: String_1!
     - name: createdAt
       type: Timestamptz
     - name: createdBy
@@ -16,51 +14,38 @@ definition:
       type: Timestamptz
     - name: deletedBy
       type: Uuid
-    - name: department
-      type: String_1
-    - name: directoryProviderId
-      type: Uuid
-    - name: directorySyncId
-      type: String_1
-    - name: email
-      type: String_1!
+    - name: endedAt
+      type: Timestamptz
     - name: id
       type: Uuid
-    - name: isImpersonatable
-      type: Boolean_1
-    - name: lastLoginAt
-      type: Timestamptz
-    - name: locale
+    - name: impersonatorId
+      type: Uuid!
+    - name: ipAddress
       type: String_1
-    - name: name
-      type: String_1!
-    - name: phone
+    - name: reason
       type: String_1
+    - name: sessionId
+      type: Uuid
+    - name: targetUserId
+      type: Uuid!
     - name: tenantId
       type: Uuid!
-    - name: title
-      type: String_1
     - name: updatedAt
       type: Timestamptz
     - name: updatedBy
       type: Uuid
-    - name: userLevel
-      type: String_1!
-    - name: userType
-      type: String_1!
+    - name: userAgent
+      type: String_1
   graphql:
-    typeName: InsertUsersObject
-    inputTypeName: InsertUsersObjectInput
+    typeName: InsertImpersonationLogsObject
+    inputTypeName: InsertImpersonationLogsObjectInput
   dataConnectorTypeMapping:
     - dataConnectorName: banyan_pg
-      dataConnectorObjectType: insert_users_object
+      dataConnectorObjectType: insert_impersonation_logs_object
       fieldMapping:
-        avatarUrl:
+        action:
           column:
-            name: avatar_url
-        canImpersonate:
-          column:
-            name: can_impersonate
+            name: action
         createdAt:
           column:
             name: created_at
@@ -73,106 +58,85 @@ definition:
         deletedBy:
           column:
             name: deleted_by
-        department:
+        endedAt:
           column:
-            name: department
-        directoryProviderId:
-          column:
-            name: directory_provider_id
-        directorySyncId:
-          column:
-            name: directory_sync_id
-        email:
-          column:
-            name: email
+            name: ended_at
         id:
           column:
             name: id
-        isImpersonatable:
+        impersonatorId:
           column:
-            name: is_impersonatable
-        lastLoginAt:
+            name: impersonator_id
+        ipAddress:
           column:
-            name: last_login_at
-        locale:
+            name: ip_address
+        reason:
           column:
-            name: locale
-        name:
+            name: reason
+        sessionId:
           column:
-            name: name
-        phone:
+            name: session_id
+        targetUserId:
           column:
-            name: phone
+            name: target_user_id
         tenantId:
           column:
             name: tenant_id
-        title:
-          column:
-            name: title
         updatedAt:
           column:
             name: updated_at
         updatedBy:
           column:
             name: updated_by
-        userLevel:
+        userAgent:
           column:
-            name: user_level
-        userType:
-          column:
-            name: user_type
+            name: user_agent
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: InsertUsersObject
+  typeName: InsertImpersonationLogsObject
   permissions:
     - role: admin
       output:
         allowedFields:
-          - avatarUrl
-          - canImpersonate
+          - action
           - createdAt
           - createdBy
           - deletedAt
           - deletedBy
-          - department
-          - directoryProviderId
-          - directorySyncId
-          - email
+          - endedAt
           - id
-          - isImpersonatable
-          - lastLoginAt
-          - locale
-          - name
-          - phone
+          - impersonatorId
+          - ipAddress
+          - reason
+          - sessionId
+          - targetUserId
           - tenantId
-          - title
           - updatedAt
           - updatedBy
-          - userLevel
-          - userType
+          - userAgent
 
 ---
 kind: ObjectType
 version: v1
 definition:
-  name: InsertUsersResponse
-  description: Responses from the 'insert_users' procedure
+  name: InsertImpersonationLogsResponse
+  description: Responses from the 'insert_impersonation_logs' procedure
   fields:
     - name: affectedRows
       type: Int32!
       description: The number of rows affected by the mutation
     - name: returning
-      type: "[Users!]!"
+      type: "[ImpersonationLogs!]!"
       description: Data from rows affected by the mutation
   graphql:
-    typeName: InsertUsersResponse
-    inputTypeName: InsertUsersResponseInput
+    typeName: InsertImpersonationLogsResponse
+    inputTypeName: InsertImpersonationLogsResponseInput
   dataConnectorTypeMapping:
     - dataConnectorName: banyan_pg
-      dataConnectorObjectType: insert_users_response
+      dataConnectorObjectType: insert_impersonation_logs_response
       fieldMapping:
         affectedRows:
           column:
@@ -185,7 +149,7 @@ definition:
 kind: TypePermissions
 version: v1
 definition:
-  typeName: InsertUsersResponse
+  typeName: InsertImpersonationLogsResponse
   permissions:
     - role: admin
       output:
@@ -197,32 +161,31 @@ definition:
 kind: Command
 version: v1
 definition:
-  name: InsertUsers
-  outputType: InsertUsersResponse!
+  name: InsertImpersonationLogs
+  outputType: InsertImpersonationLogsResponse!
   arguments:
     - name: objects
-      type: "[InsertUsersObject!]!"
+      type: "[InsertImpersonationLogsObject!]!"
     - name: postCheck
-      type: UsersBoolExp
-      description: Insert permission predicate over the 'users' collection
+      type: ImpersonationLogsBoolExp
+      description: Insert permission predicate over the 'impersonation_logs' collection
   source:
     dataConnectorName: banyan_pg
     dataConnectorCommand:
-      procedure: insert_users
+      procedure: insert_impersonation_logs
     argumentMapping:
       objects: objects
       postCheck: post_check
   graphql:
-    rootFieldName: insertUsers
+    rootFieldName: insertImpersonationLogs
     rootFieldKind: Mutation
-  description: Insert into the users table
+  description: Insert into the impersonation_logs table
 
 ---
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: InsertUsers
+  commandName: InsertImpersonationLogs
   permissions:
     - role: admin
       allowExecution: true
-

@@ -1,0 +1,239 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDirectorySyncLogsObject
+  fields:
+    - name: changeLog
+      type: Jsonb
+    - name: completedAt
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: durationMs
+      type: Int4
+    - name: errorDetails
+      type: Jsonb
+    - name: errorMessage
+      type: String_1
+    - name: errorsCount
+      type: Int4
+    - name: id
+      type: Uuid
+    - name: providerId
+      type: Uuid!
+    - name: startedAt
+      type: Timestamptz
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: triggerType
+      type: String_1!
+    - name: triggeredBy
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: usersCreated
+      type: Int4
+    - name: usersDeactivated
+      type: Int4
+    - name: usersFetched
+      type: Int4
+    - name: usersSkipped
+      type: Int4
+    - name: usersUpdated
+      type: Int4
+  graphql:
+    typeName: InsertDirectorySyncLogsObject
+    inputTypeName: InsertDirectorySyncLogsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_directory_sync_logs_object
+      fieldMapping:
+        changeLog:
+          column:
+            name: change_log
+        completedAt:
+          column:
+            name: completed_at
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        durationMs:
+          column:
+            name: duration_ms
+        errorDetails:
+          column:
+            name: error_details
+        errorMessage:
+          column:
+            name: error_message
+        errorsCount:
+          column:
+            name: errors_count
+        id:
+          column:
+            name: id
+        providerId:
+          column:
+            name: provider_id
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        triggerType:
+          column:
+            name: trigger_type
+        triggeredBy:
+          column:
+            name: triggered_by
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        usersCreated:
+          column:
+            name: users_created
+        usersDeactivated:
+          column:
+            name: users_deactivated
+        usersFetched:
+          column:
+            name: users_fetched
+        usersSkipped:
+          column:
+            name: users_skipped
+        usersUpdated:
+          column:
+            name: users_updated
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDirectorySyncLogsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - changeLog
+          - completedAt
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - durationMs
+          - errorDetails
+          - errorMessage
+          - errorsCount
+          - id
+          - providerId
+          - startedAt
+          - status
+          - tenantId
+          - triggerType
+          - triggeredBy
+          - updatedAt
+          - updatedBy
+          - usersCreated
+          - usersDeactivated
+          - usersFetched
+          - usersSkipped
+          - usersUpdated
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDirectorySyncLogsResponse
+  description: Responses from the 'insert_directory_sync_logs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[DirectorySyncLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertDirectorySyncLogsResponse
+    inputTypeName: InsertDirectorySyncLogsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_directory_sync_logs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDirectorySyncLogsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertDirectorySyncLogs
+  outputType: InsertDirectorySyncLogsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertDirectorySyncLogsObject!]!"
+    - name: postCheck
+      type: DirectorySyncLogsBoolExp
+      description: Insert permission predicate over the 'directory_sync_logs' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_directory_sync_logs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertDirectorySyncLogs
+    rootFieldKind: Mutation
+  description: Insert into the directory_sync_logs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertDirectorySyncLogs
+  permissions:
+    - role: admin
+      allowExecution: true
