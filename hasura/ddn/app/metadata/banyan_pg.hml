@@ -370,6 +370,41 @@ definition:
               unique_columns:
                 - id
         - arguments: {}
+          name: policy_rule_categories
+          type: policy_rule_categories
+          uniqueness_constraints:
+            policy_rule_categories_pkey:
+              unique_columns:
+                - value
+        - arguments: {}
+          name: policy_rule_set_statuses
+          type: policy_rule_set_statuses
+          uniqueness_constraints:
+            policy_rule_set_statuses_pkey:
+              unique_columns:
+                - value
+        - arguments: {}
+          name: policy_rule_sets
+          type: policy_rule_sets
+          uniqueness_constraints:
+            policy_rule_sets_pkey:
+              unique_columns:
+                - id
+        - arguments: {}
+          name: policy_rule_sources
+          type: policy_rule_sources
+          uniqueness_constraints:
+            policy_rule_sources_pkey:
+              unique_columns:
+                - id
+        - arguments: {}
+          name: policy_rules
+          type: policy_rules
+          uniqueness_constraints:
+            policy_rules_pkey:
+              unique_columns:
+                - id
+        - arguments: {}
           name: policy_statuses
           type: policy_statuses
           uniqueness_constraints:
@@ -2776,6 +2811,86 @@ definition:
               type:
                 element_type:
                   name: policies
+                  type: named
+                type: array
+          foreign_keys: {}
+        delete_policy_rule_categories_by_value_response:
+          description: Responses from the 'delete_policy_rule_categories_by_value' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rule_categories
+                  type: named
+                type: array
+          foreign_keys: {}
+        delete_policy_rule_set_statuses_by_value_response:
+          description: Responses from the 'delete_policy_rule_set_statuses_by_value' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rule_set_statuses
+                  type: named
+                type: array
+          foreign_keys: {}
+        delete_policy_rule_sets_by_id_response:
+          description: Responses from the 'delete_policy_rule_sets_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rule_sets
+                  type: named
+                type: array
+          foreign_keys: {}
+        delete_policy_rule_sources_by_id_response:
+          description: Responses from the 'delete_policy_rule_sources_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rule_sources
+                  type: named
+                type: array
+          foreign_keys: {}
+        delete_policy_rules_by_id_response:
+          description: Responses from the 'delete_policy_rules_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rules
                   type: named
                 type: array
           foreign_keys: {}
@@ -9264,6 +9379,403 @@ definition:
                   type: named
                 type: array
           foreign_keys: {}
+        insert_policy_rule_categories_object:
+          fields:
+            comment:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            value:
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        insert_policy_rule_categories_response:
+          description: Responses from the 'insert_policy_rule_categories' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rule_categories
+                  type: named
+                type: array
+          foreign_keys: {}
+        insert_policy_rule_set_statuses_object:
+          fields:
+            comment:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            value:
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        insert_policy_rule_set_statuses_response:
+          description: Responses from the 'insert_policy_rule_set_statuses' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rule_set_statuses
+                  type: named
+                type: array
+          foreign_keys: {}
+        insert_policy_rule_sets_object:
+          fields:
+            created_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            effective_date:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            expiry_date:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            insurer_name:
+              type:
+                name: text
+                type: named
+            metadata:
+              type:
+                type: nullable
+                underlying_type:
+                  name: jsonb
+                  type: named
+            policy_number:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            product_name:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            reviewed_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            reviewed_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            status:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            updated_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        insert_policy_rule_sets_response:
+          description: Responses from the 'insert_policy_rule_sets' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rule_sets
+                  type: named
+                type: array
+          foreign_keys: {}
+        insert_policy_rule_sources_object:
+          fields:
+            created_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            drive_file_id:
+              type:
+                name: text
+                type: named
+            drive_folder_path:
+              type:
+                type: nullable
+                underlying_type:
+                  element_type:
+                    type: nullable
+                    underlying_type:
+                      name: text
+                      type: named
+                  type: array
+            extracted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            extraction_model:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            file_category:
+              type:
+                name: text
+                type: named
+            file_name:
+              type:
+                name: text
+                type: named
+            id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            page_count:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            raw_text:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            rule_set_id:
+              type:
+                name: uuid
+                type: named
+            updated_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        insert_policy_rule_sources_response:
+          description: Responses from the 'insert_policy_rule_sources' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rule_sources
+                  type: named
+                type: array
+          foreign_keys: {}
+        insert_policy_rules_object:
+          fields:
+            benefit_type:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            category:
+              type:
+                name: text
+                type: named
+            created_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            description:
+              type:
+                name: text
+                type: named
+            id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            priority:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            rule_key:
+              type:
+                name: text
+                type: named
+            rule_set_id:
+              type:
+                name: uuid
+                type: named
+            rule_value:
+              type:
+                name: jsonb
+                type: named
+            source_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            source_page:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            source_text:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            updated_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        insert_policy_rules_response:
+          description: Responses from the 'insert_policy_rules' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rules
+                  type: named
+                type: array
+          foreign_keys: {}
         insert_policy_statuses_object:
           fields:
             comment:
@@ -11722,6 +12234,370 @@ definition:
                 tenant_id:
                   - id
               foreign_collection: tenants
+        policy_rule_categories:
+          fields:
+            comment:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            value:
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        policy_rule_set_statuses:
+          fields:
+            comment:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            value:
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        policy_rule_sets:
+          fields:
+            created_at:
+              type:
+                name: timestamptz
+                type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            effective_date:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            expiry_date:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            id:
+              type:
+                name: uuid
+                type: named
+            insurer_name:
+              type:
+                name: text
+                type: named
+            metadata:
+              type:
+                name: jsonb
+                type: named
+            policy_number:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            product_name:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            reviewed_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            reviewed_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            status:
+              type:
+                name: text
+                type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            updated_at:
+              type:
+                name: timestamptz
+                type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys:
+            policy_rule_sets_created_by_fkey:
+              column_mapping:
+                created_by:
+                  - id
+              foreign_collection: users
+            policy_rule_sets_deleted_by_fkey:
+              column_mapping:
+                deleted_by:
+                  - id
+              foreign_collection: users
+            policy_rule_sets_reviewed_by_fkey:
+              column_mapping:
+                reviewed_by:
+                  - id
+              foreign_collection: users
+            policy_rule_sets_status_fkey:
+              column_mapping:
+                status:
+                  - value
+              foreign_collection: policy_rule_set_statuses
+            policy_rule_sets_updated_by_fkey:
+              column_mapping:
+                updated_by:
+                  - id
+              foreign_collection: users
+        policy_rule_sources:
+          fields:
+            created_at:
+              type:
+                name: timestamptz
+                type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            drive_file_id:
+              type:
+                name: text
+                type: named
+            drive_folder_path:
+              type:
+                type: nullable
+                underlying_type:
+                  element_type:
+                    type: nullable
+                    underlying_type:
+                      name: text
+                      type: named
+                  type: array
+            extracted_at:
+              type:
+                name: timestamptz
+                type: named
+            extraction_model:
+              type:
+                name: text
+                type: named
+            file_category:
+              type:
+                name: text
+                type: named
+            file_name:
+              type:
+                name: text
+                type: named
+            id:
+              type:
+                name: uuid
+                type: named
+            page_count:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            raw_text:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            rule_set_id:
+              type:
+                name: uuid
+                type: named
+            updated_at:
+              type:
+                name: timestamptz
+                type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys:
+            policy_rule_sources_created_by_fkey:
+              column_mapping:
+                created_by:
+                  - id
+              foreign_collection: users
+            policy_rule_sources_deleted_by_fkey:
+              column_mapping:
+                deleted_by:
+                  - id
+              foreign_collection: users
+            policy_rule_sources_rule_set_id_fkey:
+              column_mapping:
+                rule_set_id:
+                  - id
+              foreign_collection: policy_rule_sets
+            policy_rule_sources_updated_by_fkey:
+              column_mapping:
+                updated_by:
+                  - id
+              foreign_collection: users
+        policy_rules:
+          fields:
+            benefit_type:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            category:
+              type:
+                name: text
+                type: named
+            created_at:
+              type:
+                name: timestamptz
+                type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            description:
+              type:
+                name: text
+                type: named
+            id:
+              type:
+                name: uuid
+                type: named
+            priority:
+              type:
+                name: int4
+                type: named
+            rule_key:
+              type:
+                name: text
+                type: named
+            rule_set_id:
+              type:
+                name: uuid
+                type: named
+            rule_value:
+              type:
+                name: jsonb
+                type: named
+            source_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            source_page:
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+            source_text:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            updated_at:
+              type:
+                name: timestamptz
+                type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys:
+            policy_rules_category_fkey:
+              column_mapping:
+                category:
+                  - value
+              foreign_collection: policy_rule_categories
+            policy_rules_created_by_fkey:
+              column_mapping:
+                created_by:
+                  - id
+              foreign_collection: users
+            policy_rules_deleted_by_fkey:
+              column_mapping:
+                deleted_by:
+                  - id
+              foreign_collection: users
+            policy_rules_rule_set_id_fkey:
+              column_mapping:
+                rule_set_id:
+                  - id
+              foreign_collection: policy_rule_sets
+            policy_rules_source_id_fkey:
+              column_mapping:
+                source_id:
+                  - id
+              foreign_collection: policy_rule_sources
+            policy_rules_updated_by_fkey:
+              column_mapping:
+                updated_by:
+                  - id
+              foreign_collection: users
         policy_statuses:
           fields:
             comment:
@@ -21161,6 +22037,550 @@ definition:
                   name: uuid
                   type: named
           foreign_keys: {}
+        update_column_policy_rule_categories_comment:
+          description: Update the 'comment' column in the 'policy_rule_categories' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_categories_value:
+          description: Update the 'value' column in the 'policy_rule_categories' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_set_statuses_comment:
+          description: Update the 'comment' column in the 'policy_rule_set_statuses' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_set_statuses_value:
+          description: Update the 'value' column in the 'policy_rule_set_statuses' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_created_at:
+          description: Update the 'created_at' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_created_by:
+          description: Update the 'created_by' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_deleted_at:
+          description: Update the 'deleted_at' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_deleted_by:
+          description: Update the 'deleted_by' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_effective_date:
+          description: Update the 'effective_date' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_expiry_date:
+          description: Update the 'expiry_date' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_id:
+          description: Update the 'id' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_insurer_name:
+          description: Update the 'insurer_name' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_metadata:
+          description: Update the 'metadata' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: jsonb
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_policy_number:
+          description: Update the 'policy_number' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_product_name:
+          description: Update the 'product_name' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_reviewed_at:
+          description: Update the 'reviewed_at' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_reviewed_by:
+          description: Update the 'reviewed_by' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_status:
+          description: Update the 'status' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_tenant_id:
+          description: Update the 'tenant_id' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_updated_at:
+          description: Update the 'updated_at' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sets_updated_by:
+          description: Update the 'updated_by' column in the 'policy_rule_sets' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_created_at:
+          description: Update the 'created_at' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_created_by:
+          description: Update the 'created_by' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_deleted_at:
+          description: Update the 'deleted_at' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_deleted_by:
+          description: Update the 'deleted_by' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_drive_file_id:
+          description: Update the 'drive_file_id' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_drive_folder_path:
+          description: Update the 'drive_folder_path' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  element_type:
+                    type: nullable
+                    underlying_type:
+                      name: text
+                      type: named
+                  type: array
+          foreign_keys: {}
+        update_column_policy_rule_sources_extracted_at:
+          description: Update the 'extracted_at' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_extraction_model:
+          description: Update the 'extraction_model' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_file_category:
+          description: Update the 'file_category' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_file_name:
+          description: Update the 'file_name' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_id:
+          description: Update the 'id' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_page_count:
+          description: Update the 'page_count' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_raw_text:
+          description: Update the 'raw_text' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_rule_set_id:
+          description: Update the 'rule_set_id' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_updated_at:
+          description: Update the 'updated_at' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_policy_rule_sources_updated_by:
+          description: Update the 'updated_by' column in the 'policy_rule_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rules_benefit_type:
+          description: Update the 'benefit_type' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rules_category:
+          description: Update the 'category' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_policy_rules_created_at:
+          description: Update the 'created_at' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_policy_rules_created_by:
+          description: Update the 'created_by' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rules_deleted_at:
+          description: Update the 'deleted_at' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rules_deleted_by:
+          description: Update the 'deleted_by' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rules_description:
+          description: Update the 'description' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_policy_rules_id:
+          description: Update the 'id' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_policy_rules_priority:
+          description: Update the 'priority' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: int4
+                type: named
+          foreign_keys: {}
+        update_column_policy_rules_rule_key:
+          description: Update the 'rule_key' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_policy_rules_rule_set_id:
+          description: Update the 'rule_set_id' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_policy_rules_rule_value:
+          description: Update the 'rule_value' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: jsonb
+                type: named
+          foreign_keys: {}
+        update_column_policy_rules_source_id:
+          description: Update the 'source_id' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rules_source_page:
+          description: Update the 'source_page' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: int4
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rules_source_text:
+          description: Update the 'source_text' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_policy_rules_updated_at:
+          description: Update the 'updated_at' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_policy_rules_updated_by:
+          description: Update the 'updated_by' column in the 'policy_rules' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
         update_column_policy_statuses_comment:
           description: Update the 'comment' column in the 'policy_statuses' collection
           fields:
@@ -26661,6 +28081,484 @@ definition:
                   name: update_column_policies_updated_by
                   type: named
           foreign_keys: {}
+        update_policy_rule_categories_by_value_response:
+          description: Responses from the 'update_policy_rule_categories_by_value' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rule_categories
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_policy_rule_categories_by_value_update_columns:
+          description: Update the columns of the 'policy_rule_categories' collection
+          fields:
+            comment:
+              description: Update the 'comment' column in the 'policy_rule_categories' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_categories_comment
+                  type: named
+            value:
+              description: Update the 'value' column in the 'policy_rule_categories' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_categories_value
+                  type: named
+          foreign_keys: {}
+        update_policy_rule_set_statuses_by_value_response:
+          description: Responses from the 'update_policy_rule_set_statuses_by_value' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rule_set_statuses
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_policy_rule_set_statuses_by_value_update_columns:
+          description: Update the columns of the 'policy_rule_set_statuses' collection
+          fields:
+            comment:
+              description: Update the 'comment' column in the 'policy_rule_set_statuses' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_set_statuses_comment
+                  type: named
+            value:
+              description: Update the 'value' column in the 'policy_rule_set_statuses' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_set_statuses_value
+                  type: named
+          foreign_keys: {}
+        update_policy_rule_sets_by_id_response:
+          description: Responses from the 'update_policy_rule_sets_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rule_sets
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_policy_rule_sets_by_id_update_columns:
+          description: Update the columns of the 'policy_rule_sets' collection
+          fields:
+            created_at:
+              description: Update the 'created_at' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_created_at
+                  type: named
+            created_by:
+              description: Update the 'created_by' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_created_by
+                  type: named
+            deleted_at:
+              description: Update the 'deleted_at' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_deleted_at
+                  type: named
+            deleted_by:
+              description: Update the 'deleted_by' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_deleted_by
+                  type: named
+            effective_date:
+              description: Update the 'effective_date' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_effective_date
+                  type: named
+            expiry_date:
+              description: Update the 'expiry_date' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_expiry_date
+                  type: named
+            id:
+              description: Update the 'id' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_id
+                  type: named
+            insurer_name:
+              description: Update the 'insurer_name' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_insurer_name
+                  type: named
+            metadata:
+              description: Update the 'metadata' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_metadata
+                  type: named
+            policy_number:
+              description: Update the 'policy_number' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_policy_number
+                  type: named
+            product_name:
+              description: Update the 'product_name' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_product_name
+                  type: named
+            reviewed_at:
+              description: Update the 'reviewed_at' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_reviewed_at
+                  type: named
+            reviewed_by:
+              description: Update the 'reviewed_by' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_reviewed_by
+                  type: named
+            status:
+              description: Update the 'status' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_status
+                  type: named
+            tenant_id:
+              description: Update the 'tenant_id' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_tenant_id
+                  type: named
+            updated_at:
+              description: Update the 'updated_at' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_updated_at
+                  type: named
+            updated_by:
+              description: Update the 'updated_by' column in the 'policy_rule_sets' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sets_updated_by
+                  type: named
+          foreign_keys: {}
+        update_policy_rule_sources_by_id_response:
+          description: Responses from the 'update_policy_rule_sources_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rule_sources
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_policy_rule_sources_by_id_update_columns:
+          description: Update the columns of the 'policy_rule_sources' collection
+          fields:
+            created_at:
+              description: Update the 'created_at' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_created_at
+                  type: named
+            created_by:
+              description: Update the 'created_by' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_created_by
+                  type: named
+            deleted_at:
+              description: Update the 'deleted_at' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_deleted_at
+                  type: named
+            deleted_by:
+              description: Update the 'deleted_by' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_deleted_by
+                  type: named
+            drive_file_id:
+              description: Update the 'drive_file_id' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_drive_file_id
+                  type: named
+            drive_folder_path:
+              description: Update the 'drive_folder_path' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_drive_folder_path
+                  type: named
+            extracted_at:
+              description: Update the 'extracted_at' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_extracted_at
+                  type: named
+            extraction_model:
+              description: Update the 'extraction_model' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_extraction_model
+                  type: named
+            file_category:
+              description: Update the 'file_category' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_file_category
+                  type: named
+            file_name:
+              description: Update the 'file_name' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_file_name
+                  type: named
+            id:
+              description: Update the 'id' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_id
+                  type: named
+            page_count:
+              description: Update the 'page_count' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_page_count
+                  type: named
+            raw_text:
+              description: Update the 'raw_text' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_raw_text
+                  type: named
+            rule_set_id:
+              description: Update the 'rule_set_id' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_rule_set_id
+                  type: named
+            updated_at:
+              description: Update the 'updated_at' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_updated_at
+                  type: named
+            updated_by:
+              description: Update the 'updated_by' column in the 'policy_rule_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rule_sources_updated_by
+                  type: named
+          foreign_keys: {}
+        update_policy_rules_by_id_response:
+          description: Responses from the 'update_policy_rules_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: policy_rules
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_policy_rules_by_id_update_columns:
+          description: Update the columns of the 'policy_rules' collection
+          fields:
+            benefit_type:
+              description: Update the 'benefit_type' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_benefit_type
+                  type: named
+            category:
+              description: Update the 'category' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_category
+                  type: named
+            created_at:
+              description: Update the 'created_at' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_created_at
+                  type: named
+            created_by:
+              description: Update the 'created_by' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_created_by
+                  type: named
+            deleted_at:
+              description: Update the 'deleted_at' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_deleted_at
+                  type: named
+            deleted_by:
+              description: Update the 'deleted_by' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_deleted_by
+                  type: named
+            description:
+              description: Update the 'description' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_description
+                  type: named
+            id:
+              description: Update the 'id' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_id
+                  type: named
+            priority:
+              description: Update the 'priority' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_priority
+                  type: named
+            rule_key:
+              description: Update the 'rule_key' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_rule_key
+                  type: named
+            rule_set_id:
+              description: Update the 'rule_set_id' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_rule_set_id
+                  type: named
+            rule_value:
+              description: Update the 'rule_value' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_rule_value
+                  type: named
+            source_id:
+              description: Update the 'source_id' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_source_id
+                  type: named
+            source_page:
+              description: Update the 'source_page' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_source_page
+                  type: named
+            source_text:
+              description: Update the 'source_text' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_source_text
+                  type: named
+            updated_at:
+              description: Update the 'updated_at' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_updated_at
+                  type: named
+            updated_by:
+              description: Update the 'updated_by' column in the 'policy_rules' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_policy_rules_updated_by
+                  type: named
+          foreign_keys: {}
         update_policy_statuses_by_value_response:
           description: Responses from the 'update_policy_statuses_by_value' procedure
           fields:
@@ -29511,6 +31409,91 @@ definition:
                 name: text
                 type: named
             pre_check:
+              description: Delete permission predicate over the 'policy_rule_categories' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_categories
+                  type: predicate
+          description: Delete any row on the 'policy_rule_categories' collection using the 'value' key
+          name: delete_policy_rule_categories_by_value
+          result_type:
+            name: delete_policy_rule_categories_by_value_response
+            type: named
+        - arguments:
+            key_value:
+              type:
+                name: text
+                type: named
+            pre_check:
+              description: Delete permission predicate over the 'policy_rule_set_statuses' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_set_statuses
+                  type: predicate
+          description: Delete any row on the 'policy_rule_set_statuses' collection using the 'value' key
+          name: delete_policy_rule_set_statuses_by_value
+          result_type:
+            name: delete_policy_rule_set_statuses_by_value_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            pre_check:
+              description: Delete permission predicate over the 'policy_rule_sets' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_sets
+                  type: predicate
+          description: Delete any row on the 'policy_rule_sets' collection using the 'id' key
+          name: delete_policy_rule_sets_by_id
+          result_type:
+            name: delete_policy_rule_sets_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            pre_check:
+              description: Delete permission predicate over the 'policy_rule_sources' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_sources
+                  type: predicate
+          description: Delete any row on the 'policy_rule_sources' collection using the 'id' key
+          name: delete_policy_rule_sources_by_id
+          result_type:
+            name: delete_policy_rule_sources_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            pre_check:
+              description: Delete permission predicate over the 'policy_rules' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rules
+                  type: predicate
+          description: Delete any row on the 'policy_rules' collection using the 'id' key
+          name: delete_policy_rules_by_id
+          result_type:
+            name: delete_policy_rules_by_id_response
+            type: named
+        - arguments:
+            key_value:
+              type:
+                name: text
+                type: named
+            pre_check:
               description: Delete permission predicate over the 'policy_statuses' collection
               type:
                 type: nullable
@@ -30777,6 +32760,101 @@ definition:
           name: insert_policies
           result_type:
             name: insert_policies_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
+                  name: insert_policy_rule_categories_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'policy_rule_categories' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_categories
+                  type: predicate
+          description: Insert into the policy_rule_categories table
+          name: insert_policy_rule_categories
+          result_type:
+            name: insert_policy_rule_categories_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
+                  name: insert_policy_rule_set_statuses_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'policy_rule_set_statuses' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_set_statuses
+                  type: predicate
+          description: Insert into the policy_rule_set_statuses table
+          name: insert_policy_rule_set_statuses
+          result_type:
+            name: insert_policy_rule_set_statuses_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
+                  name: insert_policy_rule_sets_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'policy_rule_sets' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_sets
+                  type: predicate
+          description: Insert into the policy_rule_sets table
+          name: insert_policy_rule_sets
+          result_type:
+            name: insert_policy_rule_sets_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
+                  name: insert_policy_rule_sources_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'policy_rule_sources' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_sources
+                  type: predicate
+          description: Insert into the policy_rule_sources table
+          name: insert_policy_rule_sources
+          result_type:
+            name: insert_policy_rule_sources_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
+                  name: insert_policy_rules_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'policy_rules' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rules
+                  type: predicate
+          description: Insert into the policy_rules table
+          name: insert_policy_rules
+          result_type:
+            name: insert_policy_rules_response
             type: named
         - arguments:
             objects:
@@ -32538,6 +34616,146 @@ definition:
           name: update_policies_by_id
           result_type:
             name: update_policies_by_id_response
+            type: named
+        - arguments:
+            key_value:
+              type:
+                name: text
+                type: named
+            post_check:
+              description: Update permission post-condition predicate over the 'policy_rule_categories' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_categories
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'policy_rule_categories' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_categories
+                  type: predicate
+            update_columns:
+              type:
+                name: update_policy_rule_categories_by_value_update_columns
+                type: named
+          description: Update any row on the 'policy_rule_categories' collection using the 'value' key
+          name: update_policy_rule_categories_by_value
+          result_type:
+            name: update_policy_rule_categories_by_value_response
+            type: named
+        - arguments:
+            key_value:
+              type:
+                name: text
+                type: named
+            post_check:
+              description: Update permission post-condition predicate over the 'policy_rule_set_statuses' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_set_statuses
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'policy_rule_set_statuses' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_set_statuses
+                  type: predicate
+            update_columns:
+              type:
+                name: update_policy_rule_set_statuses_by_value_update_columns
+                type: named
+          description: Update any row on the 'policy_rule_set_statuses' collection using the 'value' key
+          name: update_policy_rule_set_statuses_by_value
+          result_type:
+            name: update_policy_rule_set_statuses_by_value_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            post_check:
+              description: Update permission post-condition predicate over the 'policy_rule_sets' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_sets
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'policy_rule_sets' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_sets
+                  type: predicate
+            update_columns:
+              type:
+                name: update_policy_rule_sets_by_id_update_columns
+                type: named
+          description: Update any row on the 'policy_rule_sets' collection using the 'id' key
+          name: update_policy_rule_sets_by_id
+          result_type:
+            name: update_policy_rule_sets_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            post_check:
+              description: Update permission post-condition predicate over the 'policy_rule_sources' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_sources
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'policy_rule_sources' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rule_sources
+                  type: predicate
+            update_columns:
+              type:
+                name: update_policy_rule_sources_by_id_update_columns
+                type: named
+          description: Update any row on the 'policy_rule_sources' collection using the 'id' key
+          name: update_policy_rule_sources_by_id
+          result_type:
+            name: update_policy_rule_sources_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            post_check:
+              description: Update permission post-condition predicate over the 'policy_rules' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rules
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'policy_rules' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: policy_rules
+                  type: predicate
+            update_columns:
+              type:
+                name: update_policy_rules_by_id_update_columns
+                type: named
+          description: Update any row on the 'policy_rules' collection using the 'id' key
+          name: update_policy_rules_by_id
+          result_type:
+            name: update_policy_rules_by_id_response
             type: named
         - arguments:
             key_value:

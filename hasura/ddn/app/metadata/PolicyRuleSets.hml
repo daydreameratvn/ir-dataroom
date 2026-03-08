@@ -1,0 +1,392 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyRuleSets
+  fields:
+    - name: id
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: insurerName
+      type: String_1!
+    - name: productName
+      type: String_1
+    - name: policyNumber
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: effectiveDate
+      type: Timestamptz
+    - name: expiryDate
+      type: Timestamptz
+    - name: metadata
+      type: Json!
+    - name: reviewedBy
+      type: Uuid
+    - name: reviewedAt
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: updatedBy
+      type: Uuid
+    - name: deletedBy
+      type: Uuid
+  graphql:
+    typeName: PolicyRuleSets
+    inputTypeName: PolicyRuleSetsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: policy_rule_sets
+      fieldMapping:
+        id:
+          column:
+            name: id
+        tenantId:
+          column:
+            name: tenant_id
+        insurerName:
+          column:
+            name: insurer_name
+        productName:
+          column:
+            name: product_name
+        policyNumber:
+          column:
+            name: policy_number
+        status:
+          column:
+            name: status
+        effectiveDate:
+          column:
+            name: effective_date
+        expiryDate:
+          column:
+            name: expiry_date
+        metadata:
+          column:
+            name: metadata
+        reviewedBy:
+          column:
+            name: reviewed_by
+        reviewedAt:
+          column:
+            name: reviewed_at
+        createdAt:
+          column:
+            name: created_at
+        updatedAt:
+          column:
+            name: updated_at
+        deletedAt:
+          column:
+            name: deleted_at
+        createdBy:
+          column:
+            name: created_by
+        updatedBy:
+          column:
+            name: updated_by
+        deletedBy:
+          column:
+            name: deleted_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyRuleSets
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - tenantId
+          - insurerName
+          - productName
+          - policyNumber
+          - status
+          - effectiveDate
+          - expiryDate
+          - metadata
+          - reviewedBy
+          - reviewedAt
+          - createdAt
+          - updatedAt
+          - deletedAt
+          - createdBy
+          - updatedBy
+          - deletedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyRuleSetsAggExp
+  operand:
+    object:
+      aggregatedType: PolicyRuleSets
+      aggregatableFields:
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerName
+          aggregateExpression: TextAggExp
+        - fieldName: productName
+          aggregateExpression: TextAggExp
+        - fieldName: policyNumber
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: effectiveDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: expiryDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: reviewedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: reviewedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyRuleSetsAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyRuleSets
+  objectType: PolicyRuleSets
+  source:
+    dataConnectorName: banyan_pg
+    collection: policy_rule_sets
+  filterExpressionType: PolicyRuleSetsBoolExp
+  aggregateExpression: PolicyRuleSetsAggExp
+  orderByExpression: PolicyRuleSetsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyRuleSets
+      subscription:
+        rootField: policyRuleSets
+    selectUniques:
+      - queryRootField: policyRuleSetsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: policyRuleSetsById
+    filterInputTypeName: PolicyRuleSetsFilterInput
+    aggregate:
+      queryRootField: policyRuleSetsAggregate
+      subscription:
+        rootField: policyRuleSetsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyRuleSets
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyRuleSources
+  sourceType: PolicyRuleSets
+  target:
+    model:
+      name: PolicyRuleSources
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyRuleSourcesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: ruleSetId
+  graphql:
+    aggregateFieldName: policyRuleSourcesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyRules
+  sourceType: PolicyRuleSets
+  target:
+    model:
+      name: PolicyRules
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyRulesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: ruleSetId
+  graphql:
+    aggregateFieldName: policyRulesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: reviewer
+  sourceType: PolicyRuleSets
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: reviewedBy
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: statusByStatus
+  sourceType: PolicyRuleSets
+  target:
+    model:
+      name: PolicyRuleSetStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyRuleSetsBoolExp
+  operand:
+    object:
+      type: PolicyRuleSets
+      comparableFields:
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerName
+          booleanExpressionType: TextBoolExp
+        - fieldName: productName
+          booleanExpressionType: TextBoolExp
+        - fieldName: policyNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: effectiveDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: expiryDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: reviewedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: reviewedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: policyRuleSources
+        - relationshipName: policyRules
+        - relationshipName: reviewer
+        - relationshipName: statusByStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyRuleSetsBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyRuleSetsOrderByExp
+  operand:
+    object:
+      orderedType: PolicyRuleSets
+      orderableFields:
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerName
+          orderByExpression: String1OrderByExp
+        - fieldName: productName
+          orderByExpression: String1OrderByExp
+        - fieldName: policyNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: effectiveDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: expiryDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: reviewedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: reviewedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: reviewer
+        - relationshipName: statusByStatus
+  graphql:
+    expressionTypeName: PolicyRuleSetsOrderByExp

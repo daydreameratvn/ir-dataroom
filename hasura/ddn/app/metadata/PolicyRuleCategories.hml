@@ -1,0 +1,148 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyRuleCategories
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PolicyRuleCategories
+    inputTypeName: PolicyRuleCategoriesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: policy_rule_categories
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyRuleCategories
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyRuleCategoriesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyRuleCategories
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyRuleCategoriesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyRuleCategoriesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyRuleCategories
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicyRuleCategoriesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyRuleCategories
+  objectType: PolicyRuleCategories
+  source:
+    dataConnectorName: banyan_pg
+    collection: policy_rule_categories
+  filterExpressionType: PolicyRuleCategoriesBoolExp
+  aggregateExpression: PolicyRuleCategoriesAggExp
+  orderByExpression: PolicyRuleCategoriesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyRuleCategories
+      subscription:
+        rootField: policyRuleCategories
+    selectUniques:
+      - queryRootField: policyRuleCategoriesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: policyRuleCategoriesByValue
+    filterInputTypeName: PolicyRuleCategoriesFilterInput
+    aggregate:
+      queryRootField: policyRuleCategoriesAggregate
+      subscription:
+        rootField: policyRuleCategoriesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyRuleCategories
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyRules
+  sourceType: PolicyRuleCategories
+  target:
+    model:
+      name: PolicyRules
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyRulesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: category
+  graphql:
+    aggregateFieldName: policyRulesAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyRuleCategoriesBoolExp
+  operand:
+    object:
+      type: PolicyRuleCategories
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policyRules
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyRuleCategoriesBoolExp

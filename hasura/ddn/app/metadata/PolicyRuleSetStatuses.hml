@@ -1,0 +1,148 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyRuleSetStatuses
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PolicyRuleSetStatuses
+    inputTypeName: PolicyRuleSetStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: policy_rule_set_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyRuleSetStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyRuleSetStatusesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyRuleSetStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyRuleSetStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyRuleSetStatusesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyRuleSetStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicyRuleSetStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyRuleSetStatuses
+  objectType: PolicyRuleSetStatuses
+  source:
+    dataConnectorName: banyan_pg
+    collection: policy_rule_set_statuses
+  filterExpressionType: PolicyRuleSetStatusesBoolExp
+  aggregateExpression: PolicyRuleSetStatusesAggExp
+  orderByExpression: PolicyRuleSetStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyRuleSetStatuses
+      subscription:
+        rootField: policyRuleSetStatuses
+    selectUniques:
+      - queryRootField: policyRuleSetStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: policyRuleSetStatusesByValue
+    filterInputTypeName: PolicyRuleSetStatusesFilterInput
+    aggregate:
+      queryRootField: policyRuleSetStatusesAggregate
+      subscription:
+        rootField: policyRuleSetStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyRuleSetStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyRuleSets
+  sourceType: PolicyRuleSetStatuses
+  target:
+    model:
+      name: PolicyRuleSets
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyRuleSetsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: policyRuleSetsAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyRuleSetStatusesBoolExp
+  operand:
+    object:
+      type: PolicyRuleSetStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policyRuleSets
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyRuleSetStatusesBoolExp

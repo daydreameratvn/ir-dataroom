@@ -22,6 +22,7 @@ import {
   medicalProvidersTool,
   policyDocFetchTool,
   policyDocSearchTool,
+  policyRulesTool,
   saveDetailFormTool,
 } from "../shared/tools/index.ts";
 import { invokeComplianceAgentTool } from "../claim-assessor/tools/document-compliance.ts";
@@ -219,6 +220,7 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
     icdTool,
     ...(!skipCompliance ? [invokeComplianceAgentTool] : []),
     googleSearchTool,
+    policyRulesTool,
     policyDocSearchTool,
     policyDocFetchTool,
     ...(!hasDetailData ? [saveDetailFormTool] : []),
@@ -308,15 +310,28 @@ ${options?.mode === "policy-doc"
     **Pre-analyzed Document Data**:
       The claim documents (PDFs) have been pre-analyzed by Gemini Flash AI. The structured extraction — including invoice line items, prescription items, test results, cross-checks, and an EXCLUSION VERDICT — will be injected as a [DOCUMENT ANALYSIS] message after data gathering is done. This is your PRIMARY source for document content. You MUST use the EXCLUSION VERDICT to determine non_paid_amount.
 
-    **Policy Document Lookup**:
+    **Policy Rules (MANDATORY)**:
+      After gathering claim data, call policyRules with the claim code.
+      This returns pre-extracted coverage rules for this insurer/policy.
+      Use these rules to determine:
+      - Benefit limits (per visit, annual)
+      - Copay rates
+      - Drug coverage rules (registration, formulary)
+      - Exclusions (conditions, drugs, procedures)
+      - Diagnostic test coverage policy
+      - Waiting periods
+
+      If policyRules returns no results (insurer not yet compiled), fall back to
+      policyDocSearch + policyDocFetch for on-demand extraction.
+
+    **Policy Document Lookup (FALLBACK)**:
 ${options?.mode === "policy-doc"
-      ? `      You MUST call policyDocSearch with the claim code. Then call policyDocFetch on the 1–2 MOST relevant files (the main contract or T&C — NOT every file found) to understand coverage terms BEFORE calling assessBenefit.
-      This is MANDATORY in policy-doc mode — do NOT skip this step.
+      ? `      If policyRules returns no rules, you MUST call policyDocSearch with the claim code. Then call policyDocFetch on the 1–2 MOST relevant files (the main contract or T&C — NOT every file found) to understand coverage terms BEFORE calling assessBenefit.
       1. Call policyDocSearch with the claim code to find available policy documents.
       2. Pick the 1–2 most relevant files (contract, T&C). Do NOT fetch more than 2 files — this wastes turns.
       3. Call policyDocFetch on those files to read the document text.
       4. Use the extracted policy terms to verify coverage rules, exclusion clauses, and benefit conditions during assessment.`
-      : `      When you need to check policy terms, coverage conditions, exclusion clauses, or benefit limits:
+      : `      When policyRules returns no results and you need to check policy terms:
       1. Call policyDocSearch with the claim code to find available policy documents (contracts, T&C, amendments).
       2. Call policyDocFetch with the relevant file ID to read the document text.
       3. Use the extracted text to verify coverage rules, exclusion clauses, and benefit conditions.
@@ -325,7 +340,7 @@ ${options?.mode === "policy-doc"
     **Assessment Workflow (MUST complete ALL steps)**:
       ${skipCompliance ? "" : "1. Call invokeComplianceAgent first (see above).\n      "}2. Call claim tool to get claim data. Pay attention to past claims from same insured — note any non_paid_amount > 0 and their assessment_summary for drug exclusion history.
       3. Call benefits and insured tools to get policy context.
-${options?.mode === "policy-doc" ? `      3b. **MANDATORY**: Call policyDocSearch with the claim code to find policy documents. Then call policyDocFetch on the 1–2 MOST relevant files only (contract or T&C — do NOT fetch more than 2). Review coverage terms, exclusion clauses, and benefit conditions BEFORE proceeding to drug validation and assessment.` : ""}
+      3b. **MANDATORY**: Call policyRules with the claim code to get pre-extracted coverage rules. If policyRules returns rules, use them for coverage determination. If no rules found, fall back to policyDocSearch + policyDocFetch.${options?.mode === "policy-doc" ? " In policy-doc mode, if policyRules returns no rules, you MUST call policyDocSearch + policyDocFetch on the 1–2 MOST relevant files." : ""}
       4. Skip saveDetailForm if claim already has diagnosis and medical_provider populated. Only call when missing.
       5. **Drug & line item validation (MANDATORY — DO NOT SKIP)**:
          a. Review the DOCUMENT ANALYSIS section below for invoice line items, prescription items, and test results.
@@ -452,10 +467,11 @@ ${options?.mode === "policy-doc" ? `      3b. **MANDATORY**: Call policyDocSearc
       const hasClaim = hasToolCall("claim");
       const hasBenefits = hasToolCall("benefits");
       const hasInsured = hasToolCall("insured");
+      const hasPolicyRules = hasToolCall("policyRules");
       const hasAssessBenefit = hasToolCall("assessBenefit");
       const hasCreateSignOff = hasToolCall("createSignOff");
 
-      const dataGatheringDone = hasCompliance && hasClaim && (hasBenefits || hasInsured);
+      const dataGatheringDone = hasCompliance && hasClaim && (hasBenefits || hasInsured) && hasPolicyRules;
 
       // Resolve Gemini analysis when data gathering is done (runs in parallel with agent)
       if (dataGatheringDone && !isComplianceFailed() && documentAnalysisPromise && !documentAnalysis) {

@@ -1,0 +1,360 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyRules
+  fields:
+    - name: id
+      type: Uuid!
+    - name: ruleSetId
+      type: Uuid!
+    - name: sourceId
+      type: Uuid
+    - name: category
+      type: String_1!
+    - name: benefitType
+      type: String_1
+    - name: ruleKey
+      type: String_1!
+    - name: ruleValue
+      type: Json!
+    - name: description
+      type: String_1!
+    - name: sourcePage
+      type: Int32
+    - name: sourceText
+      type: String_1
+    - name: priority
+      type: Int32!
+    - name: createdAt
+      type: Timestamptz!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: updatedBy
+      type: Uuid
+    - name: deletedBy
+      type: Uuid
+  graphql:
+    typeName: PolicyRules
+    inputTypeName: PolicyRulesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: policy_rules
+      fieldMapping:
+        id:
+          column:
+            name: id
+        ruleSetId:
+          column:
+            name: rule_set_id
+        sourceId:
+          column:
+            name: source_id
+        category:
+          column:
+            name: category
+        benefitType:
+          column:
+            name: benefit_type
+        ruleKey:
+          column:
+            name: rule_key
+        ruleValue:
+          column:
+            name: rule_value
+        description:
+          column:
+            name: description
+        sourcePage:
+          column:
+            name: source_page
+        sourceText:
+          column:
+            name: source_text
+        priority:
+          column:
+            name: priority
+        createdAt:
+          column:
+            name: created_at
+        updatedAt:
+          column:
+            name: updated_at
+        deletedAt:
+          column:
+            name: deleted_at
+        createdBy:
+          column:
+            name: created_by
+        updatedBy:
+          column:
+            name: updated_by
+        deletedBy:
+          column:
+            name: deleted_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyRules
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - ruleSetId
+          - sourceId
+          - category
+          - benefitType
+          - ruleKey
+          - ruleValue
+          - description
+          - sourcePage
+          - sourceText
+          - priority
+          - createdAt
+          - updatedAt
+          - deletedAt
+          - createdBy
+          - updatedBy
+          - deletedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyRulesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyRules
+      aggregatableFields:
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: ruleSetId
+          aggregateExpression: UuidAggExp
+        - fieldName: sourceId
+          aggregateExpression: UuidAggExp
+        - fieldName: category
+          aggregateExpression: TextAggExp
+        - fieldName: benefitType
+          aggregateExpression: TextAggExp
+        - fieldName: ruleKey
+          aggregateExpression: TextAggExp
+        - fieldName: sourcePage
+          aggregateExpression: Int4AggExp
+        - fieldName: sourceText
+          aggregateExpression: TextAggExp
+        - fieldName: priority
+          aggregateExpression: Int4AggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyRulesAggExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyRules
+  objectType: PolicyRules
+  source:
+    dataConnectorName: banyan_pg
+    collection: policy_rules
+  filterExpressionType: PolicyRulesBoolExp
+  aggregateExpression: PolicyRulesAggExp
+  orderByExpression: PolicyRulesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyRules
+      subscription:
+        rootField: policyRules
+    selectUniques:
+      - queryRootField: policyRulesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: policyRulesById
+    filterInputTypeName: PolicyRulesFilterInput
+    aggregate:
+      queryRootField: policyRulesAggregate
+      subscription:
+        rootField: policyRulesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyRules
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ruleSet
+  sourceType: PolicyRules
+  target:
+    model:
+      name: PolicyRuleSets
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ruleSetId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: source
+  sourceType: PolicyRules
+  target:
+    model:
+      name: PolicyRuleSources
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: sourceId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: categoryByCategory
+  sourceType: PolicyRules
+  target:
+    model:
+      name: PolicyRuleCategories
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: category
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyRulesBoolExp
+  operand:
+    object:
+      type: PolicyRules
+      comparableFields:
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: ruleSetId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: sourceId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: category
+          booleanExpressionType: TextBoolExp
+        - fieldName: benefitType
+          booleanExpressionType: TextBoolExp
+        - fieldName: ruleKey
+          booleanExpressionType: TextBoolExp
+        - fieldName: sourcePage
+          booleanExpressionType: Int4BoolExp
+        - fieldName: sourceText
+          booleanExpressionType: TextBoolExp
+        - fieldName: priority
+          booleanExpressionType: Int4BoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: ruleSet
+        - relationshipName: source
+        - relationshipName: categoryByCategory
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyRulesBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyRulesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyRules
+      orderableFields:
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: ruleSetId
+          orderByExpression: UuidOrderByExp
+        - fieldName: sourceId
+          orderByExpression: UuidOrderByExp
+        - fieldName: category
+          orderByExpression: String1OrderByExp
+        - fieldName: benefitType
+          orderByExpression: String1OrderByExp
+        - fieldName: ruleKey
+          orderByExpression: String1OrderByExp
+        - fieldName: sourcePage
+          orderByExpression: Int32OrderByExp
+        - fieldName: sourceText
+          orderByExpression: String1OrderByExp
+        - fieldName: priority
+          orderByExpression: Int32OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: ruleSet
+        - relationshipName: source
+        - relationshipName: categoryByCategory
+  graphql:
+    expressionTypeName: PolicyRulesOrderByExp
