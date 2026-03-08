@@ -14,6 +14,7 @@ import {
   EyeOff,
   ShieldCheck,
   ShieldOff,
+  LogOut,
 } from 'lucide-react';
 import type { UserType, UserLevel } from '@papaya/shared-types';
 import {
@@ -47,7 +48,7 @@ import {
 } from '@papaya/shared-ui';
 import { useAuth } from '@papaya/auth';
 import useUsers from '../hooks/useUsers';
-import { deleteUser, setUserImpersonatable, setUserCanImpersonate, type AdminUser } from '../api';
+import { deleteUser, revokeUserSessions, setUserImpersonatable, setUserCanImpersonate, type AdminUser } from '../api';
 import NewDataBanner from '../../../components/NewDataBanner';
 import UserDialog from './UserDialog';
 import TenantFilter from './TenantFilter';
@@ -100,6 +101,11 @@ export default function UserTable() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingUser, setDeletingUser] = useState<AdminUser | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // ── Revoke sessions state ──
+  const [revokeSessionsDialogOpen, setRevokeSessionsDialogOpen] = useState(false);
+  const [revokingSessionsUser, setRevokingSessionsUser] = useState<AdminUser | null>(null);
+  const [isRevokingSessions, setIsRevokingSessions] = useState(false);
 
   // ── Impersonation state ──
   const [impersonateDialogOpen, setImpersonateDialogOpen] = useState(false);
@@ -173,6 +179,26 @@ export default function UserTable() {
       // Error handling could be improved with a toast
     } finally {
       setIsDeleting(false);
+    }
+  }
+
+  function handleRevokeSessionsClick(user: AdminUser) {
+    setRevokingSessionsUser(user);
+    setRevokeSessionsDialogOpen(true);
+  }
+
+  async function handleConfirmRevokeSessions() {
+    if (!revokingSessionsUser) return;
+
+    setIsRevokingSessions(true);
+    try {
+      await revokeUserSessions(revokingSessionsUser.id);
+      setRevokeSessionsDialogOpen(false);
+      setRevokingSessionsUser(null);
+    } catch {
+      // Error handling could be improved with a toast
+    } finally {
+      setIsRevokingSessions(false);
     }
   }
 
@@ -369,6 +395,12 @@ export default function UserTable() {
                   <DropdownMenuItem onClick={() => handleImpersonateClick(user)}>
                     <Eye className="mr-2 h-4 w-4" />
                     {t('admin.table.impersonate')}
+                  </DropdownMenuItem>
+                )}
+                {!isSelf && (
+                  <DropdownMenuItem onClick={() => handleRevokeSessionsClick(user)}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {t('admin.table.revokeSessions')}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem
@@ -592,6 +624,30 @@ export default function UserTable() {
               {isImpersonating
                 ? t('admin.impersonateDialog.impersonating')
                 : t('admin.impersonateDialog.confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Revoke sessions confirmation */}
+      <AlertDialog open={revokeSessionsDialogOpen} onOpenChange={setRevokeSessionsDialogOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('admin.revokeSessionsDialog.title')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('admin.revokeSessionsDialog.description', { name: revokingSessionsUser?.name })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isRevokingSessions}>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={handleConfirmRevokeSessions}
+              disabled={isRevokingSessions}
+            >
+              {isRevokingSessions
+                ? t('admin.revokeSessionsDialog.revoking')
+                : t('admin.revokeSessionsDialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

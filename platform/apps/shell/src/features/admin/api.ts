@@ -136,6 +136,18 @@ export async function setUserImpersonatable(userId: string, impersonatable: bool
   }
 }
 
+export async function revokeUserSessions(userId: string): Promise<void> {
+  const response = await fetch(`${BASE}/users/${userId}/revoke-sessions`, {
+    method: 'POST',
+    headers: getHeaders(),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const message = (body as Record<string, unknown>).error ?? response.statusText;
+    throw new Error(String(message));
+  }
+}
+
 export async function setUserCanImpersonate(userId: string, canImpersonate: boolean): Promise<void> {
   const response = await fetch(`${BASE}/users/${userId}/can-impersonate`, {
     method: 'PUT',

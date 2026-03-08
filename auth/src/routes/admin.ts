@@ -25,6 +25,7 @@ import {
   createSession,
   generateRefreshToken,
   revokeSession,
+  revokeAllUserSessions,
   validateRefreshToken,
 } from "../services/session.ts";
 import { logImpersonation } from "../services/impersonation.ts";
@@ -229,6 +230,31 @@ admin.delete("/admin/users/:id", async (c) => {
     return c.json({ error: "User not found" }, 404);
   }
 
+  return c.json({ success: true });
+});
+
+// POST /auth/admin/users/:id/revoke-sessions — Revoke all sessions for a user
+admin.post("/admin/users/:id/revoke-sessions", async (c) => {
+  const user = c.get("user");
+  const userId = c.req.param("id");
+  const tenantId = getEffectiveTenantId(c);
+
+  if (!isSuperAdmin(user) && tenantId !== user.tenantId) {
+    return c.json({ error: "Cannot revoke sessions for users in another tenant" }, 403);
+  }
+
+  // Prevent self-revocation
+  if (userId === user.sub) {
+    return c.json({ error: "Cannot revoke your own sessions" }, 400);
+  }
+
+  // Verify target user exists
+  const target = await findAdminUserById(userId, tenantId);
+  if (!target) {
+    return c.json({ error: "User not found" }, 404);
+  }
+
+  await revokeAllUserSessions(userId, tenantId);
   return c.json({ success: true });
 });
 

@@ -428,6 +428,7 @@ const translations = {
       disallowImpersonation: '禁止身份模拟',
       grantCanImpersonate: '授予模拟权限',
       revokeCanImpersonate: '撤销模拟权限',
+      revokeSessions: '撤销所有会话',
     },
     searchPlaceholder: '按姓名或邮箱搜索...',
     filters: {
@@ -473,6 +474,12 @@ const translations = {
       description: '您将以 {{name}} 的身份查看 Oasis。所有操作将被记录。',
       confirm: '开始模拟',
       impersonating: '正在模拟...',
+    },
+    revokeSessionsDialog: {
+      title: '撤销所有会话',
+      description: '此操作将立即强制 {{name}} 退出所有设备。用户需要重新登录。',
+      confirm: '撤销会话',
+      revoking: '正在撤销...',
     },
     form: {
       name: '姓名',

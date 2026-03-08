@@ -428,6 +428,7 @@ const translations = {
       disallowImpersonation: 'Không cho phép mạo danh',
       grantCanImpersonate: 'Cấp quyền mạo danh',
       revokeCanImpersonate: 'Thu hồi quyền mạo danh',
+      revokeSessions: 'Thu hồi tất cả phiên',
     },
     searchPlaceholder: 'Tìm theo tên hoặc email...',
     filters: {
@@ -473,6 +474,12 @@ const translations = {
       description: 'Bạn sẽ xem Oasis với tư cách {{name}}. Mọi hành động sẽ được ghi lại.',
       confirm: 'Bắt đầu mạo danh',
       impersonating: 'Đang mạo danh...',
+    },
+    revokeSessionsDialog: {
+      title: 'Thu hồi tất cả phiên',
+      description: 'Hành động này sẽ buộc {{name}} đăng xuất khỏi tất cả thiết bị ngay lập tức. Họ sẽ cần đăng nhập lại.',
+      confirm: 'Thu hồi phiên',
+      revoking: 'Đang thu hồi...',
     },
     form: {
       name: 'Tên',

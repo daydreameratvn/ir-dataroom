@@ -901,6 +901,7 @@ const translations = {
       disallowImpersonation: 'ยกเลิกการอนุญาตสวมบทบาท',
       grantCanImpersonate: 'ให้สิทธิ์สวมบทบาท',
       revokeCanImpersonate: 'ถอนสิทธิ์สวมบทบาท',
+      revokeSessions: 'เพิกถอนเซสชันทั้งหมด',
     },
     searchPlaceholder: 'ค้นหาตามชื่อหรืออีเมล...',
     filters: {
@@ -946,6 +947,12 @@ const translations = {
       description: 'คุณจะเห็น Oasis ในมุมมองของ {{name}} การดำเนินการทั้งหมดจะถูกบันทึก',
       confirm: 'เริ่มสวมบทบาท',
       impersonating: 'กำลังสวมบทบาท...',
+    },
+    revokeSessionsDialog: {
+      title: 'เพิกถอนเซสชันทั้งหมด',
+      description: 'การดำเนินการนี้จะบังคับให้ {{name}} ออกจากระบบทุกอุปกรณ์ทันที ผู้ใช้จะต้องลงชื่อเข้าใช้ใหม่',
+      confirm: 'เพิกถอนเซสชัน',
+      revoking: 'กำลังเพิกถอน...',
     },
     form: {
       name: 'ชื่อ',

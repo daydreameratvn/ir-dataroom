@@ -915,6 +915,7 @@ const translations = {
       disallowImpersonation: 'Disallow Impersonation',
       grantCanImpersonate: 'Grant Impersonation Rights',
       revokeCanImpersonate: 'Revoke Impersonation Rights',
+      revokeSessions: 'Revoke All Sessions',
     },
     searchPlaceholder: 'Search by name or email...',
     filters: {
@@ -960,6 +961,12 @@ const translations = {
       description: 'You will view Oasis as {{name}}. All actions will be logged.',
       confirm: 'Start Impersonation',
       impersonating: 'Impersonating...',
+    },
+    revokeSessionsDialog: {
+      title: 'Revoke All Sessions',
+      description: 'This will immediately log out {{name}} from all devices. They will need to sign in again.',
+      confirm: 'Revoke Sessions',
+      revoking: 'Revoking...',
     },
     form: {
       name: 'Name',
