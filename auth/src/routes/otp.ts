@@ -179,6 +179,7 @@ otp.post("/otp/verify", async (c) => {
         tenantId: user.tenantId,
         userType: user.userType,
         userLevel: user.userLevel,
+        canImpersonate: user.canImpersonate,
       },
     });
   } catch (err) {

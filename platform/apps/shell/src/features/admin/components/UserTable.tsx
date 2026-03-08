@@ -417,7 +417,7 @@ export default function UserTable() {
         },
       },
     ],
-    [currentUser?.id, t],
+    [currentUser?.id, currentUser?.canImpersonate, isSuperAdmin, t],
   );
 
   // ── Pagination info ──
