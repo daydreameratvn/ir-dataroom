@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { authConfig } from "../config.ts";
 import {
   requireAuth,
   requireAdmin,
@@ -398,7 +399,7 @@ admin.post("/admin/impersonate/:userId", async (c) => {
 
   return c.json({
     accessToken,
-    expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+    expiresAt: new Date(Date.now() + authConfig.accessTokenTtlMs).toISOString(),
     user: {
       id: target.id,
       email: target.email,

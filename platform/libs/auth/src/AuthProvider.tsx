@@ -58,14 +58,9 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const originalSessionRef = useRef<AuthSession | null>(null);
 
-  const scheduleRefresh = useCallback((expiresAt: string) => {
-    if (refreshTimerRef.current) {
-      clearTimeout(refreshTimerRef.current);
-    }
-
-    // Refresh 1 minute before expiry
-    const delay = Math.max(0, getTimeUntilExpiry() - 60 * 1000);
-    refreshTimerRef.current = setTimeout(async () => {
+  const doRefresh = useCallback(async (): Promise<boolean> => {
+    // Retry up to 3 times with exponential backoff before giving up
+    for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const result = await refreshAccessToken();
         setAccessToken(result.accessToken, result.expiresAt);
@@ -75,15 +70,34 @@ export default function AuthProvider({ children }: AuthProviderProps) {
           expiresAt: result.expiresAt,
           impersonation: result.impersonation,
         });
-        scheduleRefresh(result.expiresAt);
+        return true;
       } catch {
-        // Refresh failed — user needs to re-login
-        clearAccessToken();
-        setSession(null);
-        originalSessionRef.current = null;
+        if (attempt < 2) {
+          await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
+        }
+      }
+    }
+    // All retries exhausted — user needs to re-login
+    clearAccessToken();
+    setSession(null);
+    originalSessionRef.current = null;
+    return false;
+  }, []);
+
+  const scheduleRefresh = useCallback((_expiresAt?: string) => {
+    if (refreshTimerRef.current) {
+      clearTimeout(refreshTimerRef.current);
+    }
+
+    // Refresh 2 minutes before expiry
+    const delay = Math.max(0, getTimeUntilExpiry() - 2 * 60 * 1000);
+    refreshTimerRef.current = setTimeout(async () => {
+      const ok = await doRefresh();
+      if (ok) {
+        scheduleRefresh();
       }
     }, delay);
-  }, []);
+  }, [doRefresh]);
 
   const fetchAndSetPreferences = useCallback(async (accessToken: string) => {
     try {
@@ -238,12 +252,30 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
     bootstrap();
 
+    // When the tab becomes visible or gains focus, check if the token
+    // is expired or about to expire and refresh proactively.
+    // Browsers throttle setTimeout in background tabs, so the scheduled
+    // refresh may have been delayed past the token's expiry.
+    function handleReactivation() {
+      if (document.visibilityState === 'hidden') return;
+      const remaining = getTimeUntilExpiry();
+      if (remaining > 2 * 60 * 1000) return; // still plenty of time
+      doRefresh().then((ok) => {
+        if (ok) scheduleRefresh();
+      });
+    }
+
+    document.addEventListener('visibilitychange', handleReactivation);
+    window.addEventListener('focus', handleReactivation);
+
     return () => {
       if (refreshTimerRef.current) {
         clearTimeout(refreshTimerRef.current);
       }
+      document.removeEventListener('visibilitychange', handleReactivation);
+      window.removeEventListener('focus', handleReactivation);
     };
-  }, [scheduleRefresh]);
+  }, [scheduleRefresh, doRefresh]);
 
   return (
     <AuthContext.Provider

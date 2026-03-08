@@ -99,7 +99,8 @@ export async function getOAuthConfig(
 
 export const authConfig = {
   port: Number(process.env.PORT || 4000),
-  accessTokenExpiry: "15m" as const,
+  accessTokenExpiry: "1h" as const,
+  accessTokenTtlMs: 60 * 60 * 1000, // must match accessTokenExpiry
   refreshTokenDays: 30,
   otpExpiry: 10 * 60 * 1000, // 10 minutes
   otpMaxAttempts: 5,

@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { authConfig } from "../config.ts";
 import { requireAuth, getTenantId, getClientInfo } from "../middleware.ts";
 import {
   generateRegOptions,
@@ -216,7 +217,7 @@ passkey.post("/passkey/login/verify", async (c) => {
 
   return c.json({
     accessToken,
-    expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+    expiresAt: new Date(Date.now() + authConfig.accessTokenTtlMs).toISOString(),
     user: {
       id: user.id,
       email: user.email,

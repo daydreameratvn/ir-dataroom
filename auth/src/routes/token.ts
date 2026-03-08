@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
+import { authConfig } from "../config.ts";
 import { requireAuth, getClientInfo } from "../middleware.ts";
 import {
   validateRefreshToken,
@@ -96,7 +97,7 @@ token.post("/token/refresh", async (c) => {
 
     const response: Record<string, unknown> = {
       accessToken,
-      expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+      expiresAt: new Date(Date.now() + authConfig.accessTokenTtlMs).toISOString(),
       user: {
         id: user.id,
         email: user.email,
