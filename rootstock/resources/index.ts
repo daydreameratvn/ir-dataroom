@@ -19,4 +19,5 @@ export * from "./cloud-map.ts";
 export * from "./doltgres.ts";
 export * from "./s3-portal.ts";
 export * from "./phoenix.ts";
+export * from "./hasura-proxy.ts";
 export * from "./gcp/index.ts";

@@ -63,6 +63,19 @@ export const stackOutputs = {
   ForensicsEcrRepoUrl: resources.banyanForensicsEcrRepo.repositoryUrl,
   ForensicsGpuEcrRepoUrl: resources.banyanForensicsGpuEcrRepo.repositoryUrl,
 
+  // Hasura Proxy
+  HasuraProxyCertArn: resources.banyanHasuraProxyCert.arn,
+  HasuraProxyCertValidationCname:
+    resources.banyanHasuraProxyCert.domainValidationOptions.apply((opts) =>
+      opts.map((o) => ({
+        name: o.resourceRecordName,
+        value: o.resourceRecordValue,
+        type: o.resourceRecordType,
+      })),
+    ),
+  HasuraProxyCfDomainName: resources.banyanHasuraProxyCf.domainName,
+  HasuraProxyCfDistributionId: resources.banyanHasuraProxyCf.id,
+
   // Portal Documents
   PortalDocumentsBucketName: resources.banyanPortalDocumentsBucket.bucket,
 

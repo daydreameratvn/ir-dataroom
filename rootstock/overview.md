@@ -243,6 +243,16 @@ GPU-accelerated forensics using a g4dn.xlarge EC2 instance (NVIDIA T4). Starts a
   * ACM certificate: `arn:aws:acm:us-east-1:812652266901:certificate/f446a33f-1c60-4fc8-8049-fd7d67af67a3` (wildcard `*.papaya.asia`).
 * **DNS:** CNAME `phoenix.papaya.asia` → CloudFront domain (Route 53 in account `089192911254`).
 
+### 2.10.1 Hasura DDN Proxy (CloudFront)
+
+* **Purpose:** Custom domain reverse proxy for Hasura DDN Cloud (DDN doesn't support custom domains natively).
+* **CloudFront Distribution:** `banyan.services.papaya.asia`
+  * Custom HTTPS origin: `banyan-prod.ddn.hasura.app` (origin protocol: HTTPS-only, TLS 1.2).
+  * Default behavior: All methods allowed, CachingDisabled + AllViewer policies (GraphQL API — no caching).
+  * PriceClass_200, HTTP/2+3, TLS 1.2+.
+  * ACM certificate: `arn:aws:acm:us-east-1:812652266901:certificate/f446a33f-1c60-4fc8-8049-fd7d67af67a3` (wildcard `*.papaya.asia`).
+* **DNS:** CNAME `banyan.services.papaya.asia` → CloudFront domain (Route 53 in account `089192911254`).
+
 ### 2.11 GCP Project & APIs
 
 * **Project:** `banyan-489002`
@@ -372,6 +382,8 @@ new gcp.Provider("banyan-gcp-provider", {
 * `PhoenixBucketName`: S3 bucket for Phoenix static assets
 * `PhoenixCloudFrontDistributionId`: CloudFront distribution ID for Phoenix
 * `PhoenixCloudFrontDomainName`: CloudFront domain name for Phoenix
+* `HasuraProxyCfDomainName`: CloudFront domain name for Hasura DDN proxy
+* `HasuraProxyCfDistributionId`: CloudFront distribution ID for Hasura DDN proxy
 * `gcpProject`: GCP project ID
 * `gcpRegion`: GCP region
 * `gcpEnabledApis`: List of enabled GCP API service names
@@ -416,6 +428,7 @@ rootstock/
     ├── doltgres.ts              # Doltgres Fargate + EFS + SG + Secrets + Cloud Map + NLB integration
     ├── s3-portal.ts             # S3 bucket for portal document uploads
     ├── phoenix.ts               # Phoenix portal: S3, OAC, CloudFront (phoenix.papaya.asia)
+    ├── hasura-proxy.ts          # Hasura DDN Cloud reverse proxy: CloudFront (banyan.services.papaya.asia)
     └── gcp/
         ├── index.ts             # Barrel export
         └── apis.ts              # GCP API enablement (admin, people, IAM)
