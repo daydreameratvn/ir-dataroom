@@ -1,0 +1,272 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: TenantDomains
+  fields:
+    - name: autoAdmit
+      type: Boolean_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: domain
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: verificationToken
+      type: String_1
+    - name: verified
+      type: Boolean_1!
+  graphql:
+    typeName: TenantDomains
+    inputTypeName: TenantDomainsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: tenant_domains
+      fieldMapping:
+        autoAdmit:
+          column:
+            name: auto_admit
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        domain:
+          column:
+            name: domain
+        id:
+          column:
+            name: id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        verificationToken:
+          column:
+            name: verification_token
+        verified:
+          column:
+            name: verified
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: TenantDomains
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoAdmit
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - domain
+          - id
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - verificationToken
+          - verified
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: TenantDomainsAggExp
+  operand:
+    object:
+      aggregatedType: TenantDomains
+      aggregatableFields:
+        - fieldName: autoAdmit
+          aggregateExpression: BoolAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: domain
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: verificationToken
+          aggregateExpression: TextAggExp
+        - fieldName: verified
+          aggregateExpression: BoolAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: TenantDomainsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: TenantDomainsOrderByExp
+  operand:
+    object:
+      orderedType: TenantDomains
+      orderableFields:
+        - fieldName: autoAdmit
+          orderByExpression: BoolOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: domain
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: verificationToken
+          orderByExpression: String1OrderByExp
+        - fieldName: verified
+          orderByExpression: BoolOrderByExp
+      orderableRelationships:
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: TenantDomainsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: TenantDomains
+  objectType: TenantDomains
+  source:
+    dataConnectorName: banyan_pg
+    collection: tenant_domains
+  filterExpressionType: TenantDomainsBoolExp
+  aggregateExpression: TenantDomainsAggExp
+  orderByExpression: TenantDomainsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: tenantDomains
+      subscription:
+        rootField: tenantDomains
+    selectUniques:
+      - queryRootField: tenantDomainsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: tenantDomainsById
+    filterInputTypeName: TenantDomainsFilterInput
+    aggregate:
+      queryRootField: tenantDomainsAggregate
+      subscription:
+        rootField: tenantDomainsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: TenantDomains
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: TenantDomains
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: TenantDomainsBoolExp
+  operand:
+    object:
+      type: TenantDomains
+      comparableFields:
+        - fieldName: autoAdmit
+          booleanExpressionType: BoolBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: domain
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: verificationToken
+          booleanExpressionType: TextBoolExp
+        - fieldName: verified
+          booleanExpressionType: BoolBoolExp
+      comparableRelationships:
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: TenantDomainsBoolExp
