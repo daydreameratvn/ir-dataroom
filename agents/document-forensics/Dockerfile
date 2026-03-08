@@ -7,7 +7,7 @@
 # ==============================================================
 
 # ── Stage 1: Python dependencies ──────────────────────────────
-FROM python:3.10-slim AS python-deps
+FROM python:3.14-slim AS python-deps
 
 RUN pip install --no-cache-dir uv
 
@@ -36,7 +36,7 @@ COPY agents/document-forensics/ ./agents/document-forensics/
 COPY tsconfig.json ./tsconfig.json
 
 # ── Stage 3: Runtime ──────────────────────────────────────────
-FROM python:3.10-slim AS runtime
+FROM python:3.14-slim AS runtime
 
 # System dependencies for sharp (libvips), OpenCV, and general use
 RUN apt-get update && \
