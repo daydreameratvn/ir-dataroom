@@ -1,3 +1,5 @@
+-- migrate:up
+
 -- Add new statuses to enum table
 INSERT INTO ir_investor_statuses (value, comment) VALUES
   ('nda_signed', 'Investor has signed NDA (digital or offline)'),
@@ -17,3 +19,6 @@ UPDATE ir_investor_rounds SET status = 'viewing' WHERE status = 'active' AND del
 
 -- For investors where nda_required=false (current "skip NDA"), set nda_mode='offline'
 UPDATE ir_investor_rounds SET nda_mode = 'offline' WHERE nda_required = false AND deleted_at IS NULL;
+
+-- migrate:down
+ALTER TABLE ir_investor_rounds DROP COLUMN IF EXISTS nda_mode;
