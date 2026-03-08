@@ -1,0 +1,398 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: TenantMembers
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: email
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: invitedAt
+      type: Timestamptz
+    - name: invitedBy
+      type: Uuid
+    - name: joinedAt
+      type: Timestamptz
+    - name: removedAt
+      type: Timestamptz
+    - name: source
+      type: String_1!
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid
+  graphql:
+    typeName: TenantMembers
+    inputTypeName: TenantMembersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: tenant_members
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        email:
+          column:
+            name: email
+        id:
+          column:
+            name: id
+        invitedAt:
+          column:
+            name: invited_at
+        invitedBy:
+          column:
+            name: invited_by
+        joinedAt:
+          column:
+            name: joined_at
+        removedAt:
+          column:
+            name: removed_at
+        source:
+          column:
+            name: source
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: TenantMembers
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - email
+          - id
+          - invitedAt
+          - invitedBy
+          - joinedAt
+          - removedAt
+          - source
+          - status
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - userId
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: TenantMembersAggExp
+  operand:
+    object:
+      aggregatedType: TenantMembers
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: email
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: invitedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: invitedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: joinedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: removedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: source
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: TenantMembersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: TenantMembersOrderByExp
+  operand:
+    object:
+      orderedType: TenantMembers
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: email
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: invitedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: invitedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: joinedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: removedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: source
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: tenant
+        - relationshipName: user
+        - relationshipName: inviter
+  graphql:
+    expressionTypeName: TenantMembersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: TenantMembers
+  objectType: TenantMembers
+  source:
+    dataConnectorName: banyan_pg
+    collection: tenant_members
+  filterExpressionType: TenantMembersBoolExp
+  aggregateExpression: TenantMembersAggExp
+  orderByExpression: TenantMembersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: tenantMembers
+      subscription:
+        rootField: tenantMembers
+    selectUniques:
+      - queryRootField: tenantMembersById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: tenantMembersById
+    filterInputTypeName: TenantMembersFilterInput
+    aggregate:
+      queryRootField: tenantMembersAggregate
+      subscription:
+        rootField: tenantMembersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: TenantMembers
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: TenantMembers
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: user
+  sourceType: TenantMembers
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: inviter
+  sourceType: TenantMembers
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: invitedBy
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: memberStatus
+  sourceType: TenantMembers
+  target:
+    model:
+      name: MemberStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: memberSource
+  sourceType: TenantMembers
+  target:
+    model:
+      name: MemberSources
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: source
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: TenantMembersBoolExp
+  operand:
+    object:
+      type: TenantMembers
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: email
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: invitedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: invitedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: joinedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: removedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: source
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: tenant
+        - relationshipName: user
+        - relationshipName: inviter
+        - relationshipName: memberStatus
+        - relationshipName: memberSource
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: TenantMembersBoolExp

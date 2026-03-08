@@ -1,9 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { ScrollText } from 'lucide-react';
 import {
   PageHeader,
-  EmptyState,
-  Button,
   Tabs,
   TabsContent,
   TabsList,
@@ -12,6 +9,9 @@ import {
 import UserTable from './components/UserTable';
 import ErrorTracker from './components/ErrorTracker';
 import IdentityProviders from './components/IdentityProviders';
+import MembersTable from './components/MembersTable';
+import DomainsManager from './components/DomainsManager';
+import AuditLogTable from './components/AuditLogTable';
 
 export default function AdminPage() {
   const { t } = useTranslation();
@@ -25,6 +25,8 @@ export default function AdminPage() {
       <Tabs defaultValue="users">
         <TabsList>
           <TabsTrigger value="users">{t('nav.adminUsers')}</TabsTrigger>
+          <TabsTrigger value="members">Members</TabsTrigger>
+          <TabsTrigger value="domains">Domains</TabsTrigger>
           <TabsTrigger value="settings">{t('nav.adminSettings')}</TabsTrigger>
           <TabsTrigger value="audit">{t('nav.adminAudit')}</TabsTrigger>
           <TabsTrigger value="errors">Errors</TabsTrigger>
@@ -32,16 +34,17 @@ export default function AdminPage() {
         <TabsContent value="users" className="mt-4">
           <UserTable />
         </TabsContent>
+        <TabsContent value="members" className="mt-4">
+          <MembersTable />
+        </TabsContent>
+        <TabsContent value="domains" className="mt-4">
+          <DomainsManager />
+        </TabsContent>
         <TabsContent value="settings" className="mt-4">
           <IdentityProviders />
         </TabsContent>
         <TabsContent value="audit" className="mt-4">
-          <EmptyState
-            icon={<ScrollText className="h-6 w-6" />}
-            title={t('admin.auditTitle')}
-            description={t('admin.auditDesc')}
-            action={<Button variant="outline">{t('common.getStarted')}</Button>}
-          />
+          <AuditLogTable />
         </TabsContent>
         <TabsContent value="errors" className="mt-4">
           <ErrorTracker />

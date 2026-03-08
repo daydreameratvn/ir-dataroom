@@ -1,0 +1,148 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MemberStatuses
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MemberStatuses
+    inputTypeName: MemberStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: member_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MemberStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MemberStatusesAggExp
+  operand:
+    object:
+      aggregatedType: MemberStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MemberStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MemberStatusesOrderByExp
+  operand:
+    object:
+      orderedType: MemberStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MemberStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MemberStatuses
+  objectType: MemberStatuses
+  source:
+    dataConnectorName: banyan_pg
+    collection: member_statuses
+  filterExpressionType: MemberStatusesBoolExp
+  aggregateExpression: MemberStatusesAggExp
+  orderByExpression: MemberStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: memberStatuses
+      subscription:
+        rootField: memberStatuses
+    selectUniques:
+      - queryRootField: memberStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: memberStatusesByValue
+    filterInputTypeName: MemberStatusesFilterInput
+    aggregate:
+      queryRootField: memberStatusesAggregate
+      subscription:
+        rootField: memberStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MemberStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenantMembers
+  sourceType: MemberStatuses
+  target:
+    model:
+      name: TenantMembers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: TenantMembersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: tenantMembersAggregate
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MemberStatusesBoolExp
+  operand:
+    object:
+      type: MemberStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: tenantMembers
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MemberStatusesBoolExp

@@ -342,6 +342,20 @@ definition:
               unique_columns:
                 - id
         - arguments: {}
+          name: member_sources
+          type: member_sources
+          uniqueness_constraints:
+            member_sources_pkey:
+              unique_columns:
+                - value
+        - arguments: {}
+          name: member_statuses
+          type: member_statuses
+          uniqueness_constraints:
+            member_statuses_pkey:
+              unique_columns:
+                - value
+        - arguments: {}
           name: nationalities
           type: nationalities
           uniqueness_constraints:
@@ -433,10 +447,31 @@ definition:
               unique_columns:
                 - id
         - arguments: {}
+          name: tenant_activity_logs
+          type: tenant_activity_logs
+          uniqueness_constraints:
+            tenant_activity_logs_pkey:
+              unique_columns:
+                - id
+        - arguments: {}
+          name: tenant_domains
+          type: tenant_domains
+          uniqueness_constraints:
+            tenant_domains_pkey:
+              unique_columns:
+                - id
+        - arguments: {}
           name: tenant_identity_providers
           type: tenant_identity_providers
           uniqueness_constraints:
             tenant_identity_providers_pkey:
+              unique_columns:
+                - id
+        - arguments: {}
+          name: tenant_members
+          type: tenant_members
+          uniqueness_constraints:
+            tenant_members_pkey:
               unique_columns:
                 - id
         - arguments: {}
@@ -2680,6 +2715,38 @@ definition:
                   type: named
                 type: array
           foreign_keys: {}
+        delete_member_sources_by_value_response:
+          description: Responses from the 'delete_member_sources_by_value' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: member_sources
+                  type: named
+                type: array
+          foreign_keys: {}
+        delete_member_statuses_by_value_response:
+          description: Responses from the 'delete_member_statuses_by_value' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: member_statuses
+                  type: named
+                type: array
+          foreign_keys: {}
         delete_nationalities_by_value_response:
           description: Responses from the 'delete_nationalities_by_value' procedure
           fields:
@@ -2888,6 +2955,38 @@ definition:
                   type: named
                 type: array
           foreign_keys: {}
+        delete_tenant_activity_logs_by_id_response:
+          description: Responses from the 'delete_tenant_activity_logs_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: tenant_activity_logs
+                  type: named
+                type: array
+          foreign_keys: {}
+        delete_tenant_domains_by_id_response:
+          description: Responses from the 'delete_tenant_domains_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: tenant_domains
+                  type: named
+                type: array
+          foreign_keys: {}
         delete_tenant_identity_providers_by_id_response:
           description: Responses from the 'delete_tenant_identity_providers_by_id' procedure
           fields:
@@ -2901,6 +3000,22 @@ definition:
               type:
                 element_type:
                   name: tenant_identity_providers
+                  type: named
+                type: array
+          foreign_keys: {}
+        delete_tenant_members_by_id_response:
+          description: Responses from the 'delete_tenant_members_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: tenant_members
                   type: named
                 type: array
           foreign_keys: {}
@@ -8897,6 +9012,64 @@ definition:
                   type: named
                 type: array
           foreign_keys: {}
+        insert_member_sources_object:
+          fields:
+            comment:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            value:
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        insert_member_sources_response:
+          description: Responses from the 'insert_member_sources' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: member_sources
+                  type: named
+                type: array
+          foreign_keys: {}
+        insert_member_statuses_object:
+          fields:
+            comment:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            value:
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        insert_member_statuses_response:
+          description: Responses from the 'insert_member_statuses' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: member_statuses
+                  type: named
+                type: array
+          foreign_keys: {}
         insert_nationalities_object:
           fields:
             comment:
@@ -9908,6 +10081,192 @@ definition:
                   type: named
                 type: array
           foreign_keys: {}
+        insert_tenant_activity_logs_object:
+          fields:
+            action:
+              type:
+                name: text
+                type: named
+            actor_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            created_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            description:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            metadata:
+              type:
+                type: nullable
+                underlying_type:
+                  name: jsonb
+                  type: named
+            resource_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            resource_type:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            updated_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        insert_tenant_activity_logs_response:
+          description: Responses from the 'insert_tenant_activity_logs' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: tenant_activity_logs
+                  type: named
+                type: array
+          foreign_keys: {}
+        insert_tenant_domains_object:
+          fields:
+            auto_admit:
+              type:
+                type: nullable
+                underlying_type:
+                  name: bool
+                  type: named
+            created_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            domain:
+              type:
+                name: text
+                type: named
+            id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            updated_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            verification_token:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            verified:
+              type:
+                type: nullable
+                underlying_type:
+                  name: bool
+                  type: named
+          foreign_keys: {}
+        insert_tenant_domains_response:
+          description: Responses from the 'insert_tenant_domains' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: tenant_domains
+                  type: named
+                type: array
+          foreign_keys: {}
         insert_tenant_identity_providers_object:
           fields:
             admin_email:
@@ -10054,6 +10413,117 @@ definition:
               type:
                 element_type:
                   name: tenant_identity_providers
+                  type: named
+                type: array
+          foreign_keys: {}
+        insert_tenant_members_object:
+          fields:
+            created_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            email:
+              type:
+                name: text
+                type: named
+            id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            invited_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            invited_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            joined_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            removed_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            source:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            status:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            updated_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            user_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        insert_tenant_members_response:
+          description: Responses from the 'insert_tenant_members' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: tenant_members
                   type: named
                 type: array
           foreign_keys: {}
@@ -11051,6 +11521,32 @@ definition:
                 updated_by:
                   - id
               foreign_collection: users
+        member_sources:
+          fields:
+            comment:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            value:
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        member_statuses:
+          fields:
+            comment:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            value:
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
         nationalities:
           fields:
             comment:
@@ -11920,6 +12416,159 @@ definition:
                 updated_by:
                   - id
               foreign_collection: users
+        tenant_activity_logs:
+          fields:
+            action:
+              type:
+                name: text
+                type: named
+            actor_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            created_at:
+              type:
+                name: timestamptz
+                type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            description:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            id:
+              type:
+                name: uuid
+                type: named
+            metadata:
+              type:
+                type: nullable
+                underlying_type:
+                  name: jsonb
+                  type: named
+            resource_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            resource_type:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            updated_at:
+              type:
+                name: timestamptz
+                type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys:
+            tenant_activity_logs_actor_id_fkey:
+              column_mapping:
+                actor_id:
+                  - id
+              foreign_collection: users
+            tenant_activity_logs_tenant_id_fkey:
+              column_mapping:
+                tenant_id:
+                  - id
+              foreign_collection: tenants
+        tenant_domains:
+          fields:
+            auto_admit:
+              type:
+                name: bool
+                type: named
+            created_at:
+              type:
+                name: timestamptz
+                type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            domain:
+              type:
+                name: text
+                type: named
+            id:
+              type:
+                name: uuid
+                type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            updated_at:
+              type:
+                name: timestamptz
+                type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            verification_token:
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+            verified:
+              type:
+                name: bool
+                type: named
+          foreign_keys:
+            tenant_domains_tenant_id_fkey:
+              column_mapping:
+                tenant_id:
+                  - id
+              foreign_collection: tenants
         tenant_identity_providers:
           fields:
             admin_email:
@@ -12072,6 +12721,116 @@ definition:
             tenant_identity_providers_updated_by_fkey:
               column_mapping:
                 updated_by:
+                  - id
+              foreign_collection: users
+        tenant_members:
+          fields:
+            created_at:
+              type:
+                name: timestamptz
+                type: named
+            created_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            deleted_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            deleted_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            email:
+              type:
+                name: text
+                type: named
+            id:
+              type:
+                name: uuid
+                type: named
+            invited_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            invited_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            joined_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            removed_at:
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+            source:
+              type:
+                name: text
+                type: named
+            status:
+              type:
+                name: text
+                type: named
+            tenant_id:
+              type:
+                name: uuid
+                type: named
+            updated_at:
+              type:
+                name: timestamptz
+                type: named
+            updated_by:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+            user_id:
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys:
+            tenant_members_invited_by_fkey:
+              column_mapping:
+                invited_by:
+                  - id
+              foreign_collection: users
+            tenant_members_source_fkey:
+              column_mapping:
+                source:
+                  - value
+              foreign_collection: member_sources
+            tenant_members_status_fkey:
+              column_mapping:
+                status:
+                  - value
+              foreign_collection: member_statuses
+            tenant_members_tenant_id_fkey:
+              column_mapping:
+                tenant_id:
+                  - id
+              foreign_collection: tenants
+            tenant_members_user_id_fkey:
+              column_mapping:
+                user_id:
                   - id
               foreign_collection: users
         tenants:
@@ -20078,6 +20837,46 @@ definition:
                   name: uuid
                   type: named
           foreign_keys: {}
+        update_column_member_sources_comment:
+          description: Update the 'comment' column in the 'member_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_member_sources_value:
+          description: Update the 'value' column in the 'member_sources' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_member_statuses_comment:
+          description: Update the 'comment' column in the 'member_statuses' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_member_statuses_value:
+          description: Update the 'value' column in the 'member_statuses' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
         update_column_nationalities_comment:
           description: Update the 'comment' column in the 'nationalities' collection
           fields:
@@ -21448,6 +22247,268 @@ definition:
                   name: uuid
                   type: named
           foreign_keys: {}
+        update_column_tenant_activity_logs_action:
+          description: Update the 'action' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_actor_id:
+          description: Update the 'actor_id' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_created_at:
+          description: Update the 'created_at' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_created_by:
+          description: Update the 'created_by' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_deleted_at:
+          description: Update the 'deleted_at' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_deleted_by:
+          description: Update the 'deleted_by' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_description:
+          description: Update the 'description' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_id:
+          description: Update the 'id' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_metadata:
+          description: Update the 'metadata' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: jsonb
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_resource_id:
+          description: Update the 'resource_id' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_resource_type:
+          description: Update the 'resource_type' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_tenant_id:
+          description: Update the 'tenant_id' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_updated_at:
+          description: Update the 'updated_at' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_tenant_activity_logs_updated_by:
+          description: Update the 'updated_by' column in the 'tenant_activity_logs' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_domains_auto_admit:
+          description: Update the 'auto_admit' column in the 'tenant_domains' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: bool
+                type: named
+          foreign_keys: {}
+        update_column_tenant_domains_created_at:
+          description: Update the 'created_at' column in the 'tenant_domains' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_tenant_domains_created_by:
+          description: Update the 'created_by' column in the 'tenant_domains' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_domains_deleted_at:
+          description: Update the 'deleted_at' column in the 'tenant_domains' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_domains_deleted_by:
+          description: Update the 'deleted_by' column in the 'tenant_domains' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_domains_domain:
+          description: Update the 'domain' column in the 'tenant_domains' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_tenant_domains_id:
+          description: Update the 'id' column in the 'tenant_domains' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_tenant_domains_tenant_id:
+          description: Update the 'tenant_id' column in the 'tenant_domains' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_tenant_domains_updated_at:
+          description: Update the 'updated_at' column in the 'tenant_domains' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_tenant_domains_updated_by:
+          description: Update the 'updated_by' column in the 'tenant_domains' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_domains_verification_token:
+          description: Update the 'verification_token' column in the 'tenant_domains' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: text
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_domains_verified:
+          description: Update the 'verified' column in the 'tenant_domains' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: bool
+                type: named
+          foreign_keys: {}
         update_column_tenant_identity_providers_admin_email:
           description: Update the 'admin_email' column in the 'tenant_identity_providers' collection
           fields:
@@ -21665,6 +22726,168 @@ definition:
           foreign_keys: {}
         update_column_tenant_identity_providers_updated_by:
           description: Update the 'updated_by' column in the 'tenant_identity_providers' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_members_created_at:
+          description: Update the 'created_at' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_tenant_members_created_by:
+          description: Update the 'created_by' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_members_deleted_at:
+          description: Update the 'deleted_at' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_members_deleted_by:
+          description: Update the 'deleted_by' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_members_email:
+          description: Update the 'email' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_tenant_members_id:
+          description: Update the 'id' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_tenant_members_invited_at:
+          description: Update the 'invited_at' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_members_invited_by:
+          description: Update the 'invited_by' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_members_joined_at:
+          description: Update the 'joined_at' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_members_removed_at:
+          description: Update the 'removed_at' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: timestamptz
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_members_source:
+          description: Update the 'source' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_tenant_members_status:
+          description: Update the 'status' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: text
+                type: named
+          foreign_keys: {}
+        update_column_tenant_members_tenant_id:
+          description: Update the 'tenant_id' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: uuid
+                type: named
+          foreign_keys: {}
+        update_column_tenant_members_updated_at:
+          description: Update the 'updated_at' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                name: timestamptz
+                type: named
+          foreign_keys: {}
+        update_column_tenant_members_updated_by:
+          description: Update the 'updated_by' column in the 'tenant_members' collection
+          fields:
+            _set:
+              description: Set the column to this value
+              type:
+                type: nullable
+                underlying_type:
+                  name: uuid
+                  type: named
+          foreign_keys: {}
+        update_column_tenant_members_user_id:
+          description: Update the 'user_id' column in the 'tenant_members' collection
           fields:
             _set:
               description: Set the column to this value
@@ -25134,6 +26357,74 @@ definition:
                   name: update_column_ir_rounds_updated_by
                   type: named
           foreign_keys: {}
+        update_member_sources_by_value_response:
+          description: Responses from the 'update_member_sources_by_value' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: member_sources
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_member_sources_by_value_update_columns:
+          description: Update the columns of the 'member_sources' collection
+          fields:
+            comment:
+              description: Update the 'comment' column in the 'member_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_member_sources_comment
+                  type: named
+            value:
+              description: Update the 'value' column in the 'member_sources' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_member_sources_value
+                  type: named
+          foreign_keys: {}
+        update_member_statuses_by_value_response:
+          description: Responses from the 'update_member_statuses_by_value' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: member_statuses
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_member_statuses_by_value_update_columns:
+          description: Update the columns of the 'member_statuses' collection
+          fields:
+            comment:
+              description: Update the 'comment' column in the 'member_statuses' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_member_statuses_comment
+                  type: named
+            value:
+              description: Update the 'value' column in the 'member_statuses' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_member_statuses_value
+                  type: named
+          foreign_keys: {}
         update_nationalities_by_value_response:
           description: Responses from the 'update_nationalities_by_value' procedure
           fields:
@@ -26346,6 +27637,228 @@ definition:
                   name: update_column_status_snapshots_updated_by
                   type: named
           foreign_keys: {}
+        update_tenant_activity_logs_by_id_response:
+          description: Responses from the 'update_tenant_activity_logs_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: tenant_activity_logs
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_tenant_activity_logs_by_id_update_columns:
+          description: Update the columns of the 'tenant_activity_logs' collection
+          fields:
+            action:
+              description: Update the 'action' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_action
+                  type: named
+            actor_id:
+              description: Update the 'actor_id' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_actor_id
+                  type: named
+            created_at:
+              description: Update the 'created_at' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_created_at
+                  type: named
+            created_by:
+              description: Update the 'created_by' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_created_by
+                  type: named
+            deleted_at:
+              description: Update the 'deleted_at' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_deleted_at
+                  type: named
+            deleted_by:
+              description: Update the 'deleted_by' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_deleted_by
+                  type: named
+            description:
+              description: Update the 'description' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_description
+                  type: named
+            id:
+              description: Update the 'id' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_id
+                  type: named
+            metadata:
+              description: Update the 'metadata' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_metadata
+                  type: named
+            resource_id:
+              description: Update the 'resource_id' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_resource_id
+                  type: named
+            resource_type:
+              description: Update the 'resource_type' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_resource_type
+                  type: named
+            tenant_id:
+              description: Update the 'tenant_id' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_tenant_id
+                  type: named
+            updated_at:
+              description: Update the 'updated_at' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_updated_at
+                  type: named
+            updated_by:
+              description: Update the 'updated_by' column in the 'tenant_activity_logs' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_activity_logs_updated_by
+                  type: named
+          foreign_keys: {}
+        update_tenant_domains_by_id_response:
+          description: Responses from the 'update_tenant_domains_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: tenant_domains
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_tenant_domains_by_id_update_columns:
+          description: Update the columns of the 'tenant_domains' collection
+          fields:
+            auto_admit:
+              description: Update the 'auto_admit' column in the 'tenant_domains' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_domains_auto_admit
+                  type: named
+            created_at:
+              description: Update the 'created_at' column in the 'tenant_domains' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_domains_created_at
+                  type: named
+            created_by:
+              description: Update the 'created_by' column in the 'tenant_domains' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_domains_created_by
+                  type: named
+            deleted_at:
+              description: Update the 'deleted_at' column in the 'tenant_domains' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_domains_deleted_at
+                  type: named
+            deleted_by:
+              description: Update the 'deleted_by' column in the 'tenant_domains' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_domains_deleted_by
+                  type: named
+            domain:
+              description: Update the 'domain' column in the 'tenant_domains' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_domains_domain
+                  type: named
+            id:
+              description: Update the 'id' column in the 'tenant_domains' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_domains_id
+                  type: named
+            tenant_id:
+              description: Update the 'tenant_id' column in the 'tenant_domains' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_domains_tenant_id
+                  type: named
+            updated_at:
+              description: Update the 'updated_at' column in the 'tenant_domains' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_domains_updated_at
+                  type: named
+            updated_by:
+              description: Update the 'updated_by' column in the 'tenant_domains' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_domains_updated_by
+                  type: named
+            verification_token:
+              description: Update the 'verification_token' column in the 'tenant_domains' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_domains_verification_token
+                  type: named
+            verified:
+              description: Update the 'verified' column in the 'tenant_domains' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_domains_verified
+                  type: named
+          foreign_keys: {}
         update_tenant_identity_providers_by_id_response:
           description: Responses from the 'update_tenant_identity_providers_by_id' procedure
           fields:
@@ -26518,6 +28031,138 @@ definition:
                 type: nullable
                 underlying_type:
                   name: update_column_tenant_identity_providers_updated_by
+                  type: named
+          foreign_keys: {}
+        update_tenant_members_by_id_response:
+          description: Responses from the 'update_tenant_members_by_id' procedure
+          fields:
+            affected_rows:
+              description: The number of rows affected by the mutation
+              type:
+                name: int4
+                type: named
+            returning:
+              description: Data from rows affected by the mutation
+              type:
+                element_type:
+                  name: tenant_members
+                  type: named
+                type: array
+          foreign_keys: {}
+        update_tenant_members_by_id_update_columns:
+          description: Update the columns of the 'tenant_members' collection
+          fields:
+            created_at:
+              description: Update the 'created_at' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_created_at
+                  type: named
+            created_by:
+              description: Update the 'created_by' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_created_by
+                  type: named
+            deleted_at:
+              description: Update the 'deleted_at' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_deleted_at
+                  type: named
+            deleted_by:
+              description: Update the 'deleted_by' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_deleted_by
+                  type: named
+            email:
+              description: Update the 'email' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_email
+                  type: named
+            id:
+              description: Update the 'id' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_id
+                  type: named
+            invited_at:
+              description: Update the 'invited_at' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_invited_at
+                  type: named
+            invited_by:
+              description: Update the 'invited_by' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_invited_by
+                  type: named
+            joined_at:
+              description: Update the 'joined_at' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_joined_at
+                  type: named
+            removed_at:
+              description: Update the 'removed_at' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_removed_at
+                  type: named
+            source:
+              description: Update the 'source' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_source
+                  type: named
+            status:
+              description: Update the 'status' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_status
+                  type: named
+            tenant_id:
+              description: Update the 'tenant_id' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_tenant_id
+                  type: named
+            updated_at:
+              description: Update the 'updated_at' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_updated_at
+                  type: named
+            updated_by:
+              description: Update the 'updated_by' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_updated_by
+                  type: named
+            user_id:
+              description: Update the 'user_id' column in the 'tenant_members' collection.
+              type:
+                type: nullable
+                underlying_type:
+                  name: update_column_tenant_members_user_id
                   type: named
           foreign_keys: {}
         update_tenants_by_id_response:
@@ -27798,6 +29443,40 @@ definition:
                 name: text
                 type: named
             pre_check:
+              description: Delete permission predicate over the 'member_sources' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: member_sources
+                  type: predicate
+          description: Delete any row on the 'member_sources' collection using the 'value' key
+          name: delete_member_sources_by_value
+          result_type:
+            name: delete_member_sources_by_value_response
+            type: named
+        - arguments:
+            key_value:
+              type:
+                name: text
+                type: named
+            pre_check:
+              description: Delete permission predicate over the 'member_statuses' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: member_statuses
+                  type: predicate
+          description: Delete any row on the 'member_statuses' collection using the 'value' key
+          name: delete_member_statuses_by_value
+          result_type:
+            name: delete_member_statuses_by_value_response
+            type: named
+        - arguments:
+            key_value:
+              type:
+                name: text
+                type: named
+            pre_check:
               description: Delete permission predicate over the 'nationalities' collection
               type:
                 type: nullable
@@ -28019,6 +29698,40 @@ definition:
                 name: uuid
                 type: named
             pre_check:
+              description: Delete permission predicate over the 'tenant_activity_logs' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: tenant_activity_logs
+                  type: predicate
+          description: Delete any row on the 'tenant_activity_logs' collection using the 'id' key
+          name: delete_tenant_activity_logs_by_id
+          result_type:
+            name: delete_tenant_activity_logs_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            pre_check:
+              description: Delete permission predicate over the 'tenant_domains' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: tenant_domains
+                  type: predicate
+          description: Delete any row on the 'tenant_domains' collection using the 'id' key
+          name: delete_tenant_domains_by_id
+          result_type:
+            name: delete_tenant_domains_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            pre_check:
               description: Delete permission predicate over the 'tenant_identity_providers' collection
               type:
                 type: nullable
@@ -28029,6 +29742,23 @@ definition:
           name: delete_tenant_identity_providers_by_id
           result_type:
             name: delete_tenant_identity_providers_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            pre_check:
+              description: Delete permission predicate over the 'tenant_members' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: tenant_members
+                  type: predicate
+          description: Delete any row on the 'tenant_members' collection using the 'id' key
+          name: delete_tenant_members_by_id
+          result_type:
+            name: delete_tenant_members_by_id_response
             type: named
         - arguments:
             key_id:
@@ -28976,6 +30706,44 @@ definition:
             objects:
               type:
                 element_type:
+                  name: insert_member_sources_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'member_sources' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: member_sources
+                  type: predicate
+          description: Insert into the member_sources table
+          name: insert_member_sources
+          result_type:
+            name: insert_member_sources_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
+                  name: insert_member_statuses_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'member_statuses' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: member_statuses
+                  type: predicate
+          description: Insert into the member_statuses table
+          name: insert_member_statuses
+          result_type:
+            name: insert_member_statuses_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
                   name: insert_nationalities_object
                   type: named
                 type: array
@@ -29223,6 +30991,44 @@ definition:
             objects:
               type:
                 element_type:
+                  name: insert_tenant_activity_logs_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'tenant_activity_logs' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: tenant_activity_logs
+                  type: predicate
+          description: Insert into the tenant_activity_logs table
+          name: insert_tenant_activity_logs
+          result_type:
+            name: insert_tenant_activity_logs_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
+                  name: insert_tenant_domains_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'tenant_domains' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: tenant_domains
+                  type: predicate
+          description: Insert into the tenant_domains table
+          name: insert_tenant_domains
+          result_type:
+            name: insert_tenant_domains_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
                   name: insert_tenant_identity_providers_object
                   type: named
                 type: array
@@ -29237,6 +31043,25 @@ definition:
           name: insert_tenant_identity_providers
           result_type:
             name: insert_tenant_identity_providers_response
+            type: named
+        - arguments:
+            objects:
+              type:
+                element_type:
+                  name: insert_tenant_members_object
+                  type: named
+                type: array
+            post_check:
+              description: Insert permission predicate over the 'tenant_members' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: tenant_members
+                  type: predicate
+          description: Insert into the tenant_members table
+          name: insert_tenant_members
+          result_type:
+            name: insert_tenant_members_response
             type: named
         - arguments:
             objects:
@@ -30608,6 +32433,62 @@ definition:
                 name: text
                 type: named
             post_check:
+              description: Update permission post-condition predicate over the 'member_sources' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: member_sources
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'member_sources' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: member_sources
+                  type: predicate
+            update_columns:
+              type:
+                name: update_member_sources_by_value_update_columns
+                type: named
+          description: Update any row on the 'member_sources' collection using the 'value' key
+          name: update_member_sources_by_value
+          result_type:
+            name: update_member_sources_by_value_response
+            type: named
+        - arguments:
+            key_value:
+              type:
+                name: text
+                type: named
+            post_check:
+              description: Update permission post-condition predicate over the 'member_statuses' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: member_statuses
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'member_statuses' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: member_statuses
+                  type: predicate
+            update_columns:
+              type:
+                name: update_member_statuses_by_value_update_columns
+                type: named
+          description: Update any row on the 'member_statuses' collection using the 'value' key
+          name: update_member_statuses_by_value
+          result_type:
+            name: update_member_statuses_by_value_response
+            type: named
+        - arguments:
+            key_value:
+              type:
+                name: text
+                type: named
+            post_check:
               description: Update permission post-condition predicate over the 'nationalities' collection
               type:
                 type: nullable
@@ -30972,6 +32853,62 @@ definition:
                 name: uuid
                 type: named
             post_check:
+              description: Update permission post-condition predicate over the 'tenant_activity_logs' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: tenant_activity_logs
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'tenant_activity_logs' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: tenant_activity_logs
+                  type: predicate
+            update_columns:
+              type:
+                name: update_tenant_activity_logs_by_id_update_columns
+                type: named
+          description: Update any row on the 'tenant_activity_logs' collection using the 'id' key
+          name: update_tenant_activity_logs_by_id
+          result_type:
+            name: update_tenant_activity_logs_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            post_check:
+              description: Update permission post-condition predicate over the 'tenant_domains' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: tenant_domains
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'tenant_domains' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: tenant_domains
+                  type: predicate
+            update_columns:
+              type:
+                name: update_tenant_domains_by_id_update_columns
+                type: named
+          description: Update any row on the 'tenant_domains' collection using the 'id' key
+          name: update_tenant_domains_by_id
+          result_type:
+            name: update_tenant_domains_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            post_check:
               description: Update permission post-condition predicate over the 'tenant_identity_providers' collection
               type:
                 type: nullable
@@ -30993,6 +32930,34 @@ definition:
           name: update_tenant_identity_providers_by_id
           result_type:
             name: update_tenant_identity_providers_by_id_response
+            type: named
+        - arguments:
+            key_id:
+              type:
+                name: uuid
+                type: named
+            post_check:
+              description: Update permission post-condition predicate over the 'tenant_members' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: tenant_members
+                  type: predicate
+            pre_check:
+              description: Update permission pre-condition predicate over the 'tenant_members' collection
+              type:
+                type: nullable
+                underlying_type:
+                  object_type_name: tenant_members
+                  type: predicate
+            update_columns:
+              type:
+                name: update_tenant_members_by_id_update_columns
+                type: named
+          description: Update any row on the 'tenant_members' collection using the 'id' key
+          name: update_tenant_members_by_id
+          result_type:
+            name: update_tenant_members_by_id_response
             type: named
         - arguments:
             key_id:

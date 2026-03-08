@@ -1,0 +1,310 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: TenantActivityLogs
+  fields:
+    - name: action
+      type: String_1!
+    - name: actorId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: metadata
+      type: Jsonb
+    - name: resourceId
+      type: String_1
+    - name: resourceType
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: TenantActivityLogs
+    inputTypeName: TenantActivityLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: tenant_activity_logs
+      fieldMapping:
+        action:
+          column:
+            name: action
+        actorId:
+          column:
+            name: actor_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        metadata:
+          column:
+            name: metadata
+        resourceId:
+          column:
+            name: resource_id
+        resourceType:
+          column:
+            name: resource_type
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: TenantActivityLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - actorId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - description
+          - id
+          - metadata
+          - resourceId
+          - resourceType
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: TenantActivityLogsAggExp
+  operand:
+    object:
+      aggregatedType: TenantActivityLogs
+      aggregatableFields:
+        - fieldName: action
+          aggregateExpression: TextAggExp
+        - fieldName: actorId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: resourceId
+          aggregateExpression: TextAggExp
+        - fieldName: resourceType
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: TenantActivityLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: TenantActivityLogsOrderByExp
+  operand:
+    object:
+      orderedType: TenantActivityLogs
+      orderableFields:
+        - fieldName: action
+          orderByExpression: String1OrderByExp
+        - fieldName: actorId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: resourceId
+          orderByExpression: String1OrderByExp
+        - fieldName: resourceType
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: actor
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: TenantActivityLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: TenantActivityLogs
+  objectType: TenantActivityLogs
+  source:
+    dataConnectorName: banyan_pg
+    collection: tenant_activity_logs
+  filterExpressionType: TenantActivityLogsBoolExp
+  aggregateExpression: TenantActivityLogsAggExp
+  orderByExpression: TenantActivityLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: tenantActivityLogs
+      subscription:
+        rootField: tenantActivityLogs
+    selectUniques:
+      - queryRootField: tenantActivityLogsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: tenantActivityLogsById
+    filterInputTypeName: TenantActivityLogsFilterInput
+    aggregate:
+      queryRootField: tenantActivityLogsAggregate
+      subscription:
+        rootField: tenantActivityLogsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: TenantActivityLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: actor
+  sourceType: TenantActivityLogs
+  target:
+    model:
+      name: Users
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: actorId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: TenantActivityLogs
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: TenantActivityLogsBoolExp
+  operand:
+    object:
+      type: TenantActivityLogs
+      comparableFields:
+        - fieldName: action
+          booleanExpressionType: TextBoolExp
+        - fieldName: actorId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: resourceId
+          booleanExpressionType: TextBoolExp
+        - fieldName: resourceType
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: actor
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: TenantActivityLogsBoolExp
