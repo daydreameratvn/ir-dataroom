@@ -122,6 +122,8 @@ export default defineConfig({
         changeOrigin: true,
         // When proxying to HTTPS (deployed), rewrite the origin header
         ...(process.env.AUTH_PROXY_TARGET?.startsWith('https') ? { secure: true } : {}),
+        // Strip cookie domain so httpOnly refresh tokens work on localhost
+        cookieDomainRewrite: '',
       },
     },
   },

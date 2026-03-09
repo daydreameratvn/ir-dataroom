@@ -20,6 +20,42 @@ function stripLargeFields(obj: Record<string, unknown> | null | undefined): Reco
   return clone;
 }
 
+/** Strip reportMarkdown and other verbose fields from MN/pre-existing results — FWA only needs conclusions */
+function stripAgentReport(obj: Record<string, unknown> | null | undefined): Record<string, unknown> | null {
+  if (!obj) return null;
+  const clone = JSON.parse(JSON.stringify(obj)) as Record<string, unknown>;
+  delete clone.reportMarkdown;
+  delete clone.report;
+  delete clone.fullReport;
+  return clone;
+}
+
+/** Summarize classifiedDocuments — FWA only needs type + page count, not full extracted text */
+function summarizeClassifiedDocuments(docs: unknown): unknown {
+  if (!Array.isArray(docs)) return docs;
+  return docs.map((doc: Record<string, unknown>) => ({
+    documentType: doc.documentType ?? doc.type,
+    pageNumbers: doc.pageNumbers ?? doc.pages,
+    confidence: doc.confidence,
+    // Strip extracted text content — FWA doesn't need it
+  }));
+}
+
+/** Truncate medicalReport to key fields only — FWA needs diagnosis/treatment, not full narrative */
+function summarizeMedicalReport(report: unknown): unknown {
+  if (!report || typeof report !== "object") return report;
+  const r = report as Record<string, unknown>;
+  return {
+    diagnosis: r.diagnosis,
+    icdCode: r.icdCode,
+    chiefComplaint: r.chiefComplaint,
+    treatmentSummary: r.treatmentSummary ?? r.treatment,
+    admissionDate: r.admissionDate,
+    dischargeDate: r.dischargeDate,
+    // Strip full narrative, history, examination details
+  };
+}
+
 // ─── GraphQL Queries ─────────────────────────────────────────────────────────
 
 const FETCH_CLAIM_WITH_ALL_RESULTS_QUERY = `
@@ -115,13 +151,13 @@ export function createFWATools(claimId: string) {
             extractedTreatmentInfo: getExtractedField(extractedData, "extraction", "extractedTreatmentInfo") ?? null,
             expenses: getExtractedField(extractedData, "assessment", "expenses")
               ?? getExtractedField(extractedData, "extraction", "expenses") ?? null,
-            medicalReport: getExtractedField(extractedData, "extraction", "medicalReport") ?? null,
-            classifiedDocuments: getExtractedField(extractedData, "extraction", "classifiedDocuments") ?? null,
+            medicalReport: summarizeMedicalReport(getExtractedField(extractedData, "extraction", "medicalReport")),
+            classifiedDocuments: summarizeClassifiedDocuments(getExtractedField(extractedData, "extraction", "classifiedDocuments")),
             coverageAnalysis: getExtractedField(extractedData, "assessment", "coverageAnalysis") ?? null,
             benefitGrouping: getExtractedField(extractedData, "assessment", "benefitGrouping") ?? null,
             automationResult: getExtractedField(extractedData, "assessment", "automationResult") ?? null,
-            medicalNecessityResult: (extractedData.medicalNecessity as Record<string, unknown>) ?? extractedData._mnResult ?? null,
-            preExistingResult: (extractedData.preExisting as Record<string, unknown>) ?? extractedData._preExResult ?? null,
+            medicalNecessityResult: stripAgentReport(extractedData.medicalNecessity as Record<string, unknown> ?? extractedData._mnResult as Record<string, unknown>),
+            preExistingResult: stripAgentReport(extractedData.preExisting as Record<string, unknown> ?? extractedData._preExResult as Record<string, unknown>),
             imageForensicsResult: stripLargeFields(extractedData.imageForensics as Record<string, unknown> | null),
           }, null, 2),
         }],

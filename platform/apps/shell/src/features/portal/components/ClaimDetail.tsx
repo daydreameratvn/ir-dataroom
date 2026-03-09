@@ -5,7 +5,7 @@ import { useTranslation } from '@papaya/i18n';
 import { usePortalClaim } from '../hooks/usePortalClaim';
 import { usePortalConfig } from '../hooks/usePortalConfig';
 import { useExtractedData } from '../hooks/useExtractedData';
-import { reprocessClaim } from '../api';
+import { reprocessClaim, reprocessFWA } from '../api';
 import OverviewTab from './OverviewTab';
 import DocumentViewer from './DocumentViewer';
 import PipelineProgress from './PipelineProgress';
@@ -35,6 +35,7 @@ export default function ClaimDetail() {
   const { data: claim, isLoading, error, refetch } = usePortalClaim(id!, { enabled: !isMockClaim });
   const isModuleEnabled = usePortalConfig((s) => s.isModuleEnabled);
   const [reprocessing, setReprocessing] = useState(false);
+  const [reprocessingFwa, setReprocessingFwa] = useState(false);
   const [viewerNav, setViewerNav] = useState<ViewerNavigation | null>(null);
 
   const handleNavigateToPage = useCallback((page: number, sourceRef?: ExtractionSourceRef) => {
@@ -56,6 +57,17 @@ export default function ClaimDetail() {
       refetch();
     } finally {
       setReprocessing(false);
+    }
+  }
+
+  async function handleReprocessFwa() {
+    if (!id || reprocessingFwa) return;
+    setReprocessingFwa(true);
+    try {
+      await reprocessFWA(id);
+      refetch();
+    } finally {
+      setReprocessingFwa(false);
     }
   }
 
@@ -127,19 +139,34 @@ export default function ClaimDetail() {
         title={t('portal.claimDetail.claim', { number: claim.claimNumber })}
         subtitle={isProcessing ? t('portal.claimDetail.autoRefreshing') : undefined}
         action={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleReprocess}
-            disabled={reprocessing || isProcessing}
-          >
-            {reprocessing ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
-            )}
-            {t('portal.claimDetail.reprocess')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReprocessFwa}
+              disabled={reprocessingFwa || isProcessing}
+            >
+              {reprocessingFwa ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-2 h-4 w-4" />
+              )}
+              Reprocess FWA Only
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleReprocess}
+              disabled={reprocessing || isProcessing}
+            >
+              {reprocessing ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-2 h-4 w-4" />
+              )}
+              {t('portal.claimDetail.reprocess')}
+            </Button>
+          </div>
         }
       />
 
