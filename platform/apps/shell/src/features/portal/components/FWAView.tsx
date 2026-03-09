@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldX, AlertTriangle, FileText, Loader2, ExternalLink, Flag, Link2, RefreshCw } from 'lucide-react';
+import { ShieldX, ShieldAlert, Shield, AlertTriangle, FileText, Loader2, ExternalLink, Flag, Link2, RefreshCw, Eye } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -11,7 +11,7 @@ import {
   cn,
 } from '@papaya/shared-ui';
 import { useTranslation } from '@papaya/i18n';
-import type { FWAResultData, ImageForensicsResult, FWAClassificationType } from '../types';
+import type { FWAResultData, ImageForensicsResult, ImageForensicsVerdict, FWAClassificationType } from '../types';
 import { FWA_CLASSIFICATION_CONFIG } from '../types';
 import { useClaimFWACaseLink, useCreateFWACase, useFlagClaimForReview } from '../hooks/useFWACases';
 import { reprocessFWA } from '../api';
@@ -187,6 +187,65 @@ function FWAActionsBar({ claimId }: { claimId: string }) {
   );
 }
 
+// ─── Forensics Quick Summary ────────────────────────────────────────────────
+
+const VERDICT_ICON: Record<ImageForensicsVerdict, typeof Shield> = {
+  AUTHENTIC: Shield,
+  SUSPICIOUS: ShieldAlert,
+  TAMPERED: ShieldX,
+};
+
+const VERDICT_COLORS: Record<ImageForensicsVerdict, { bg: string; border: string; text: string; icon: string }> = {
+  AUTHENTIC: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', icon: 'text-emerald-600' },
+  SUSPICIOUS: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', icon: 'text-amber-600' },
+  TAMPERED: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', icon: 'text-red-600' },
+};
+
+function ForensicsQuickSummary({ data }: { data: ImageForensicsResult }) {
+  const style = VERDICT_COLORS[data.overallVerdict];
+  const Icon = VERDICT_ICON[data.overallVerdict];
+
+  function scrollToDetail() {
+    document.getElementById('image-forensics-detail')?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  return (
+    <Card className={cn('border', style.border, style.bg)}>
+      <CardContent className="flex items-center gap-4 p-3">
+        <Icon className={cn('h-5 w-5 shrink-0', style.icon)} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold">Document Forensics</span>
+            <Badge variant="secondary" className={cn('text-xs font-bold', style.text, style.bg)}>
+              {data.overallVerdict}
+            </Badge>
+            <span className="text-sm tabular-nums text-muted-foreground">
+              {data.confidenceScore}% confidence
+            </span>
+          </div>
+          <div className="flex items-center gap-4 mt-0.5 text-xs text-muted-foreground">
+            <span>{data.totalDocumentsAnalyzed} document(s) analyzed</span>
+            {data.totalAnomaliesFound > 0 && (
+              <span className="text-amber-600 font-medium">{data.totalAnomaliesFound} anomaly/anomalies</span>
+            )}
+            {data.documentFindings.some(f => f.heatmapBase64) && (
+              <span className="text-blue-600">Heatmaps available</span>
+            )}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={scrollToDetail}
+          className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 transition-colors shrink-0"
+        >
+          <Eye className="h-3.5 w-3.5" />
+          View Details
+        </button>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function FWAView({ data, claimId, imageForensicsData }: FWAViewProps) {
@@ -318,7 +377,12 @@ export default function FWAView({ data, claimId, imageForensicsData }: FWAViewPr
         </div>
       )}
 
-      {/* Section 4 — Flags grouped by category */}
+      {/* Section 4 — Document Forensics Quick Summary */}
+      {imageForensicsData && imageForensicsData.totalDocumentsAnalyzed > 0 && (
+        <ForensicsQuickSummary data={imageForensicsData} />
+      )}
+
+      {/* Section 5 — Flags grouped by category */}
       {data.flags.length > 0 && (
         <Card>
           <CardHeader className="pb-1.5 pt-2.5 px-3">
@@ -375,10 +439,12 @@ export default function FWAView({ data, claimId, imageForensicsData }: FWAViewPr
         </Card>
       )}
 
-      {/* Section 5 — Image Forensics */}
-      <ImageForensicsSection data={imageForensicsData} />
+      {/* Section 6 — Image Forensics (full detail) */}
+      <div id="image-forensics-detail">
+        <ImageForensicsSection data={imageForensicsData} />
+      </div>
 
-      {/* Section 6 — Summary Callout */}
+      {/* Section 7 — Summary Callout */}
       {data.summary && (
         <div className="flex items-start gap-3 rounded-lg border p-4 bg-muted/30">
           <FileText className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
