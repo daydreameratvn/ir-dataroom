@@ -56,11 +56,23 @@ interface ImageForensicsAnomaly {
   location?: string;
 }
 
+interface RiskyField {
+  type: string;
+  text: string;
+  anomalyScore: number;
+}
+
 interface DocumentFinding {
   documentType: string;
   pageNumbers: number[];
   verdict: ImageForensicsVerdict;
   anomalies: ImageForensicsAnomaly[];
+  overallScore: number;
+  riskLevel: string;
+  truforGlobalScore: number;
+  fieldsAnalyzed: number;
+  topRiskyFields: RiskyField[];
+  heatmapBase64: string | null;
 }
 
 // ─── Verdict Mapping ─────────────────────────────────────────────────────────
@@ -142,7 +154,29 @@ function mapApiResultToFinding(
     }
   }
 
-  return { documentType, pageNumbers, verdict, anomalies };
+  // Top risky fields — sorted by anomaly score desc, take top 5
+  const topRiskyFields: RiskyField[] = [...apiResult.fields]
+    .sort((a, b) => b.scores.anomaly - a.scores.anomaly)
+    .filter((f) => f.scores.anomaly > 0.15)
+    .slice(0, 5)
+    .map((f) => ({
+      type: f.type,
+      text: f.text.slice(0, 80),
+      anomalyScore: Math.round(f.scores.anomaly * 100) / 100,
+    }));
+
+  return {
+    documentType,
+    pageNumbers,
+    verdict,
+    anomalies,
+    overallScore: Math.round(apiResult.overall_score * 1000) / 1000,
+    riskLevel: apiResult.risk_level,
+    truforGlobalScore: Math.round(apiResult.trufor.global_score * 1000) / 1000,
+    fieldsAnalyzed: apiResult.ocr_analysis.total_fields,
+    topRiskyFields,
+    heatmapBase64: apiResult.heatmap_b64 ?? null,
+  };
 }
 
 function buildReportMarkdown(

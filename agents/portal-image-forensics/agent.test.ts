@@ -307,6 +307,42 @@ describe("portal-image-forensics agent", () => {
     expect(savedResult.reportMarkdown).toContain("data:image/jpeg;base64,");
   });
 
+  it("should include enriched per-document data (score, TruFor, fields, topRiskyFields, heatmap)", async () => {
+    setupClaimWithDocuments();
+    mockS3Download();
+    mockCallForensicsApi.mockResolvedValue(makeForensicsResult({
+      overall_score: 0.42,
+      risk_level: "medium",
+      trufor: { global_score: 0.38, detection_score: 0.25 },
+      ocr_analysis: { total_fields: 7, field_types_found: ["patient_name", "amount", "date"] },
+      heatmap_b64: "heatmapData123",
+      fields: [
+        { type: "amount", risk_weight: 0.8, text: "50,000 THB", confidence: 0.9, bbox: null, scores: { anomaly: 0.6, heatmap_mean: 0.3, heatmap_max: 0.7 } },
+        { type: "date", risk_weight: 0.3, text: "2024-01-15", confidence: 0.95, bbox: null, scores: { anomaly: 0.2, heatmap_mean: 0.1, heatmap_max: 0.15 } },
+        { type: "name", risk_weight: 0.5, text: "John Doe", confidence: 0.88, bbox: null, scores: { anomaly: 0.05, heatmap_mean: 0.02, heatmap_max: 0.05 } },
+      ],
+    }));
+
+    const agent = await createPortalAgent("claim-123");
+    await agent.prompt("Process");
+    await agent.waitForIdle();
+
+    const savedResult = mockMergeExtractedData.mock.calls[0]![1];
+    const finding = savedResult.documentFindings[0];
+
+    expect(finding.overallScore).toBe(0.42);
+    expect(finding.riskLevel).toBe("medium");
+    expect(finding.truforGlobalScore).toBe(0.38);
+    expect(finding.fieldsAnalyzed).toBe(7);
+    expect(finding.heatmapBase64).toBe("heatmapData123");
+
+    // Top risky fields: only amount (0.6 > 0.15) and date (0.2 > 0.15)
+    expect(finding.topRiskyFields).toHaveLength(2);
+    expect(finding.topRiskyFields[0].type).toBe("amount");
+    expect(finding.topRiskyFields[0].anomalyScore).toBe(0.6);
+    expect(finding.topRiskyFields[1].type).toBe("date");
+  });
+
   it("should extract anomalies from fields with high anomaly scores", async () => {
     setupClaimWithDocuments();
     mockS3Download();
