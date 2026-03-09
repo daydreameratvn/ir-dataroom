@@ -40,7 +40,7 @@ const VALID_MARKETS = new Set<string>(['VN', 'TH', 'HK', 'ID']);
  * Throws if the value is missing or unrecognized.
  */
 export function resolveMarket(raw: string | undefined | null): MarketCode {
-  if (!raw) {
+  if (!raw || !raw.trim()) {
     throw new Error('market is required. Supported values: VN, TH, HK, ID');
   }
   const upper = raw.trim().toUpperCase();
@@ -113,7 +113,7 @@ const TH_RULES: MarketFieldRule[] = [
 
   // AMOUNT — Thai Baht
   { re: /[₫$€£¥฿]\s*\d[\d,.]*/, label: 'amount' },
-  { re: /\d[\d,.]*\s*(?:บาท|baht|฿)\b/i, label: 'amount' },
+  { re: /\d[\d,.]*\s*(?:บาท|baht|฿)/i, label: 'amount' },
   { re: /\d{1,3}(?:[.,]\d{3})+/, label: 'amount' },
   { re: /(?:รวม|ยอด)\s*(?:เงิน|ทั้งหมด|สุทธิ)/i, label: 'amount' },
 

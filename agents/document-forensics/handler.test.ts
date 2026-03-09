@@ -1,4 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// Mock the forensics functions with factory
+const mockAdvancedDocumentForensics = vi.fn();
+const mockBatchDocumentForensics = vi.fn();
+const mockExtractDocumentFields = vi.fn();
+
+vi.mock('./forensics.ts', () => ({
+  advancedDocumentForensics: (...args: any[]) => mockAdvancedDocumentForensics(...args),
+  extractDocumentFields: (...args: any[]) => mockExtractDocumentFields(...args),
+  batchDocumentForensics: (...args: any[]) => mockBatchDocumentForensics(...args),
+}));
+
 import {
   handleAnalyze,
   handleBatch,
@@ -7,17 +19,6 @@ import {
   type BatchRequest,
   type ExtractFieldsRequest
 } from './handler.ts';
-
-// Mock the forensics functions
-vi.mock('./forensics.ts');
-
-const mockAdvancedDocumentForensics = vi.fn();
-const mockBatchDocumentForensics = vi.fn();
-const mockExtractDocumentFields = vi.fn();
-
-vi.mocked(require('./forensics.ts')).advancedDocumentForensics = mockAdvancedDocumentForensics;
-vi.mocked(require('./forensics.ts')).batchDocumentForensics = mockBatchDocumentForensics;
-vi.mocked(require('./forensics.ts')).extractDocumentFields = mockExtractDocumentFields;
 
 describe('handlers', () => {
   beforeEach(() => {
@@ -235,33 +236,9 @@ describe('handlers', () => {
           min_score: 0.2
         },
         results: [
-          {
-            image: '/test/img1.jpg',
-            verdict: 'NORMAL',
-            score: 0.2,
-            fields: 5,
-            highest_risk: null,
-            visualization: '/output/img1_summary.jpg',
-            error: null
-          },
-          {
-            image: '/test/img2.jpg',
-            verdict: 'SUSPICIOUS',
-            score: 0.65,
-            fields: 7,
-            highest_risk: { type: 'amount', score: 0.65 },
-            visualization: '/output/img2_summary.jpg',
-            error: null
-          },
-          {
-            image: '/test/img3.jpg',
-            verdict: 'NORMAL',
-            score: 0.2,
-            fields: 3,
-            highest_risk: null,
-            visualization: '/output/img3_summary.jpg',
-            error: null
-          }
+          { image: '/test/img1.jpg', verdict: 'NORMAL', score: 0.2, fields: 5, highest_risk: null, visualization: '/output/img1_summary.jpg', error: null },
+          { image: '/test/img2.jpg', verdict: 'SUSPICIOUS', score: 0.65, fields: 7, highest_risk: { type: 'amount', score: 0.65 }, visualization: '/output/img2_summary.jpg', error: null },
+          { image: '/test/img3.jpg', verdict: 'NORMAL', score: 0.2, fields: 3, highest_risk: null, visualization: '/output/img3_summary.jpg', error: null }
         ],
         output_dir: '/output'
       };
@@ -299,15 +276,7 @@ describe('handlers', () => {
           min_score: 0.1
         },
         results: [
-          {
-            image: '/test/img1.jpg',
-            verdict: 'NORMAL',
-            score: 0.1,
-            fields: 2,
-            highest_risk: null,
-            visualization: null,
-            error: null
-          }
+          { image: '/test/img1.jpg', verdict: 'NORMAL', score: 0.1, fields: 2, highest_risk: null, visualization: null, error: null }
         ],
         output_dir: '/default/output'
       };
@@ -384,24 +353,8 @@ describe('handlers', () => {
           min_score: 0.25
         },
         results: [
-          {
-            image: '/test/img1.jpg',
-            verdict: 'NORMAL',
-            score: 0.25,
-            fields: 4,
-            highest_risk: null,
-            visualization: '/output/img1_summary.jpg',
-            error: null
-          },
-          {
-            image: '/test/img2.jpg',
-            verdict: 'ERROR',
-            score: 0,
-            fields: 0,
-            highest_risk: null,
-            visualization: null,
-            error: 'OCR extraction failed'
-          }
+          { image: '/test/img1.jpg', verdict: 'NORMAL', score: 0.25, fields: 4, highest_risk: null, visualization: '/output/img1_summary.jpg', error: null },
+          { image: '/test/img2.jpg', verdict: 'ERROR', score: 0, fields: 0, highest_risk: null, visualization: null, error: 'OCR extraction failed' }
         ],
         output_dir: '/output'
       };
@@ -428,20 +381,8 @@ describe('handlers', () => {
         document_type: 'auto',
         image: { path: '/test/document.jpg', width: 800, height: 600 },
         fields: [
-          {
-            label: 'patient_name',
-            text: 'Alice Johnson',
-            confidence: 0.96,
-            bbox: { x: 20, y: 40, width: 150, height: 25 },
-            page_number: 1
-          },
-          {
-            label: 'amount',
-            text: '2500 THB',
-            confidence: 0.89,
-            bbox: { x: 100, y: 200, width: 80, height: 20 },
-            page_number: 1
-          }
+          { label: 'patient_name', text: 'Alice Johnson', confidence: 0.96, bbox: { x: 20, y: 40, width: 150, height: 25 }, page_number: 1 },
+          { label: 'amount', text: '2500 THB', confidence: 0.89, bbox: { x: 100, y: 200, width: 80, height: 20 }, page_number: 1 }
         ],
         total_fields: 2,
         processing_time_ms: 1500
@@ -518,20 +459,8 @@ describe('handlers', () => {
         document_type: 'auto',
         image: { path: '/test/medical_report.pdf', width: 0, height: 0 },
         fields: [
-          {
-            label: 'diagnosis',
-            text: 'A10.2 - Type 1 diabetes with kidney complications',
-            confidence: 0.98,
-            bbox: null, // PDF doesn't have bbox
-            page_number: 1
-          },
-          {
-            label: 'doctor_name',
-            text: 'Dr. Somchai Pattanachote',
-            confidence: 0.94,
-            bbox: null,
-            page_number: 2
-          }
+          { label: 'diagnosis', text: 'A10.2 - Type 1 diabetes with kidney complications', confidence: 0.98, bbox: null, page_number: 1 },
+          { label: 'doctor_name', text: 'Dr. Somchai Pattanachote', confidence: 0.94, bbox: null, page_number: 2 }
         ],
         total_fields: 2,
         processing_time_ms: 3200

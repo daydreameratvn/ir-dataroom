@@ -7,7 +7,7 @@
 # ==============================================================
 
 # ── Stage 1: Python dependencies ──────────────────────────────
-FROM python:3.14-slim AS python-deps
+FROM python:3.12-slim AS python-deps
 
 RUN pip install --no-cache-dir uv
 
@@ -27,6 +27,7 @@ WORKDIR /app
 
 # Install root dependencies
 COPY package.json bun.lock ./
+COPY patches/ ./patches/
 RUN bun install --frozen-lockfile --production
 
 # Copy TypeScript source for the forensics service
@@ -36,7 +37,7 @@ COPY agents/document-forensics/ ./agents/document-forensics/
 COPY tsconfig.json ./tsconfig.json
 
 # ── Stage 3: Runtime ──────────────────────────────────────────
-FROM python:3.14-slim AS runtime
+FROM python:3.12-slim AS runtime
 
 # System dependencies for sharp (libvips), OpenCV, and general use
 RUN apt-get update && \
