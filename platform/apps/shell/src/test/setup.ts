@@ -1,4 +1,7 @@
-import '@testing-library/jest-dom/vitest';
+import * as matchers from '@testing-library/jest-dom/matchers';
+import { expect } from 'vitest';
+
+expect.extend(matchers);
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import en from '../../../../libs/i18n/src/locales/en';
