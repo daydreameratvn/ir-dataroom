@@ -13,7 +13,8 @@ import { existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import sharp from 'sharp';
 import { PYTHON_PROJECT_PATH } from '../config.ts';
-import type { ExtractedField, ExtractionResult } from './types.ts';
+import type { ExtractedField, ExtractionResult, DetectedTable } from './types.ts';
+import { detectTablesFromFields } from './table-detector.ts';
 import { getMarketConfig } from './market-config.ts';
 import type { MarketCode, MarketConfig } from './market-config.ts';
 
@@ -153,8 +154,12 @@ export class EasyOCRExtractor {
       };
     });
 
+    // Detect tables from spatial layout of OCR bboxes
+    const tables: DetectedTable[] = detectTablesFromFields(fields, imageWidth);
+
     return {
       fields,
+      tables: tables.length > 0 ? tables : undefined,
       engine: 'easyocr',
       image_width:  imageWidth,
       image_height: imageHeight,

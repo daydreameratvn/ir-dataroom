@@ -44,6 +44,7 @@ function hasFlag(name: string): boolean {
 
 const BASE_URL = flag("url", "https://prod.banyan.services.papaya.asia");
 const MARKET = flag("market", "");
+const OCR_ENGINE = flag("ocr", "");
 const compareOnly = hasFlag("compare");
 
 const folder = rawArgs[0];
@@ -158,7 +159,9 @@ for (const imgPath of images) {
 
   const form = new FormData();
   form.append("image", Bun.file(imgPath), name);
-  form.append("options", JSON.stringify({ market: MARKET }));
+  const opts: Record<string, string> = { market: MARKET };
+  if (OCR_ENGINE) opts.ocr_engine = OCR_ENGINE;
+  form.append("options", JSON.stringify(opts));
 
   const start = Date.now();
   let result: AnalyzeResult;

@@ -16,7 +16,7 @@ import sharp from 'sharp';
 
 import { getGeminiApiKey } from '../config.ts';
 import { FIELD_TYPES } from './types.ts';
-import type { ExtractedField, ExtractionResult, UsageStats } from './types.ts';
+import type { ExtractedField, ExtractionResult, UsageStats, DetectedTable, TableCell } from './types.ts';
 import { getMarketConfig } from './market-config.ts';
 import type { MarketCode, MarketConfig } from './market-config.ts';
 
@@ -62,7 +62,34 @@ const fieldItemSchema = z.object({
     .describe('1-based page number where the field appears'),
 });
 
-const responseSchema = z.array(fieldItemSchema);
+const tableCellSchema = z.object({
+  row: z.number().describe('0-based row index'),
+  column: z.number().describe('0-based column index'),
+  text: z.string().nullable().describe('Cell text content'),
+  box_2d: z
+    .array(z.number())
+    .nullable()
+    .describe('Cell bounding box [y_min, x_min, y_max, x_max] normalized 0–1000'),
+  confidence: z.number().min(0).max(1).optional(),
+});
+
+const tableItemSchema = z.object({
+  type: z.literal('table').describe('Must be "table"'),
+  box_2d: z
+    .array(z.number())
+    .nullable()
+    .describe('Bounding box enclosing entire table [y_min, x_min, y_max, x_max] normalized 0–1000'),
+  headers: z.array(z.string()).describe('Column header texts from first row'),
+  rows: z.number().describe('Total number of rows including header'),
+  columns: z.number().describe('Total number of columns'),
+  cells: z.array(tableCellSchema).describe('All cells in reading order'),
+  confidence: z.number().min(0).max(1).optional(),
+});
+
+const responseSchema = z.object({
+  fields: z.array(fieldItemSchema),
+  tables: z.array(tableItemSchema).optional(),
+});
 
 // ── MIME type helpers ─────────────────────────────────────────────────────────
 
@@ -151,9 +178,10 @@ function buildSystemPrompt(promptLanguage: string): string {
   ).join('\n');
 
   return `You are an expert in ${promptLanguage} and English medical document analysis.
-Your task is to extract EVERY visible text element from this document — headings, labels, values, numbers, stamps, codes, and any other text — as individual items.
+Your task is to extract EVERY visible text element AND any tables from this document.
 
-For each text element:
+## Part 1: Text Fields
+For each text element (headings, labels, values, numbers, stamps, codes, etc.):
 - Set box_2d to [y_min, x_min, y_max, x_max] normalized 0–1000.
 - Set text to the verbatim text exactly as it appears in the document.
 - Set label to the best matching semantic type from the list below, or "text" if none fits.
@@ -164,11 +192,23 @@ Known semantic labels (use when the content clearly matches):
 ${fieldList}
 - text  (generic — use for any element that does not match the above types)
 
-Rules:
+Rules for fields:
 - Return EVERY text element visible in the document. Do NOT skip elements.
 - Do NOT merge separate text blocks into one entry.
 - Do NOT omit labels, headings, structural text, or repeated values.
-- Return entries in approximate top-to-bottom, left-to-right reading order.`;
+- Return entries in approximate top-to-bottom, left-to-right reading order.
+- Do NOT include text that is inside a detected table (tables are extracted separately).
+
+## Part 2: Tables
+If the document contains any tables (grids, spreadsheets, checklists with aligned columns):
+- For each table, return an object with type="table".
+- Set box_2d to the bounding box enclosing the entire table.
+- Set headers to the column header texts from the first row.
+- Set rows and columns to the total counts.
+- Set cells to an array of ALL cells, each with row (0-based), column (0-based), text, box_2d, and confidence.
+- Include EVERY cell — even empty ones (text="").
+
+Return the response as a JSON object with two keys: "fields" (array of field items) and "tables" (array of table items). If no tables are found, omit or set "tables" to [].`;
 }
 
 // ── Main extractor ────────────────────────────────────────────────────────────
@@ -246,7 +286,7 @@ export class GeminiExtractor {
         const lastBrace = text.lastIndexOf('}');
         if (lastBrace !== -1) {
           try {
-            parsedRaw = JSON.parse(text.slice(0, lastBrace + 1) + ']');
+            parsedRaw = JSON.parse(text.slice(0, lastBrace + 1) + '}');
           } catch {
             throw new Error(`Gemini returned malformed JSON (truncated?): ${text.slice(0, 200)}`);
           }
@@ -254,9 +294,21 @@ export class GeminiExtractor {
           throw new Error(`Gemini returned unparseable JSON: ${text.slice(0, 200)}`);
         }
       }
-      const parsed = responseSchema.parse(parsedRaw);
 
-      const fields: ExtractedField[] = parsed
+      // Handle both old (array) and new (object with fields+tables) response formats
+      let parsedFields: z.infer<typeof fieldItemSchema>[] = [];
+      let parsedTables: z.infer<typeof tableItemSchema>[] = [];
+
+      if (Array.isArray(parsedRaw)) {
+        // Legacy format: flat array of fields
+        parsedFields = z.array(fieldItemSchema).parse(parsedRaw);
+      } else {
+        const parsed = responseSchema.parse(parsedRaw);
+        parsedFields = parsed.fields;
+        parsedTables = parsed.tables ?? [];
+      }
+
+      const fields: ExtractedField[] = parsedFields
         .filter(
           (item) =>
             item.label != null &&
@@ -279,6 +331,34 @@ export class GeminiExtractor {
           };
         });
 
+      // Convert Gemini tables to DetectedTable[]
+      const tables: DetectedTable[] = parsedTables.map((t) => {
+        const tableBbox = t.box_2d?.length === 4 && imageWidth > 0 && imageHeight > 0
+          ? convertBbox(t.box_2d, imageWidth, imageHeight)
+          : { x: 0, y: 0, width: imageWidth, height: imageHeight };
+
+        const cells: TableCell[] = t.cells
+          .filter((c) => c.text != null)
+          .map((c) => ({
+            row: c.row,
+            column: c.column,
+            text: c.text ?? '',
+            bbox: c.box_2d?.length === 4 && imageWidth > 0 && imageHeight > 0
+              ? convertBbox(c.box_2d, imageWidth, imageHeight)
+              : null,
+            confidence: c.confidence ?? 0.9,
+          }));
+
+        return {
+          bbox: tableBbox,
+          rows: t.rows,
+          columns: t.columns,
+          headers: t.headers,
+          cells,
+          confidence: t.confidence ?? 0.9,
+        };
+      });
+
       const meta2 = response.usageMetadata as Record<string, number> | undefined;
       const inputTokens    = meta2?.promptTokenCount      ?? 0;
       const outputTokens   = meta2?.candidatesTokenCount  ?? 0;
@@ -297,6 +377,7 @@ export class GeminiExtractor {
 
       return {
         fields,
+        tables: tables.length > 0 ? tables : undefined,
         engine: 'gemini',
         image_width: imageWidth,
         image_height: imageHeight,

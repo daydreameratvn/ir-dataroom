@@ -15,6 +15,38 @@ export interface ExtractedField {
   page_number?: number;
 }
 
+/** A single cell inside a detected table. */
+export interface TableCell {
+  /** 0-based row index. */
+  row: number;
+  /** 0-based column index. */
+  column: number;
+  /** OCR'd text content of the cell. */
+  text: string;
+  /** Pixel bounding box in original image coordinates. */
+  bbox: { x: number; y: number; width: number; height: number } | null;
+  /** OCR confidence 0–1. */
+  confidence: number;
+}
+
+/** A table detected in the document. */
+export interface DetectedTable {
+  /** Bounding box enclosing the entire table. */
+  bbox: { x: number; y: number; width: number; height: number };
+  /** Number of rows detected. */
+  rows: number;
+  /** Number of columns detected. */
+  columns: number;
+  /** Header texts (first row). */
+  headers: string[];
+  /** All cells in reading order. */
+  cells: TableCell[];
+  /** Overall detection confidence 0–1. */
+  confidence: number;
+  /** 1-based page number. */
+  page_number?: number;
+}
+
 export interface UsageStats {
   /** Number of external AI API calls made (0 for local models). */
   api_calls: number;
@@ -28,6 +60,8 @@ export interface UsageStats {
 
 export interface ExtractionResult {
   fields: ExtractedField[];
+  /** Tables detected in the document (with headers, rows, cells). */
+  tables?: DetectedTable[];
   engine: string;
   image_width: number;
   image_height: number;
@@ -50,6 +84,7 @@ export const FIELD_TYPES = [
   'quantity',
   'stamp',
   'hospital_name',
+  'table_cell',
 ] as const;
 
 export type FieldType = (typeof FIELD_TYPES)[number] | 'unknown';
@@ -69,6 +104,7 @@ export const RISK_WEIGHTS: Record<string, number> = {
   quantity: 0.6,
   stamp: 0.6,
   hospital_name: 0.5,
+  table_cell: 0.8,
   unknown: 0.0,
 };
 

@@ -15,6 +15,53 @@ export interface FieldResult {
   };
 }
 
+/** A scored table cell with heatmap anomaly data. */
+export interface ScoredTableCell {
+  row: number;
+  column: number;
+  text: string;
+  confidence: number;
+  bbox: { x: number; y: number; width: number; height: number } | null;
+  scores: {
+    anomaly: number;
+    heatmap_mean: number;
+    heatmap_max: number;
+  };
+}
+
+/** A cell flagged as abnormal by Gemini analysis. */
+export interface AbnormalCell {
+  row: number;
+  column: number;
+  header: string;
+  text: string;
+  reason?: string;
+}
+
+/** A detected table with per-cell heatmap scoring. */
+export interface ScoredTable {
+  bbox: { x: number; y: number; width: number; height: number };
+  rows: number;
+  columns: number;
+  headers: string[];
+  cells: ScoredTableCell[];
+  confidence: number;
+  /** Max anomaly score across all cells. */
+  overall_anomaly: number;
+  /** Gemini-analyzed cell values (accurate OCR). Only present when Gemini is available. */
+  gemini_headers?: string[];
+  gemini_cells?: Array<{
+    row: number;
+    column: number;
+    header: string;
+    text: string;
+    is_abnormal: boolean;
+    abnormal_reason?: string;
+  }>;
+  /** Cells flagged as abnormal by Gemini. */
+  abnormal_cells?: AbnormalCell[];
+}
+
 export interface DocumentForensicsResult {
   success: boolean;
   method: string;
@@ -48,6 +95,16 @@ export interface DocumentForensicsResult {
     };
   } | null;
   fields: FieldResult[];
+  /** Detected tables with per-cell heatmap scoring. */
+  tables?: ScoredTable[];
+  /** Gemini-identified suspicious regions from heatmap analysis. */
+  suspicious_regions?: Array<{
+    region: string;
+    content: string;
+    concern: string;
+  }>;
+  /** Gemini overall forensic assessment summary. */
+  gemini_summary?: string;
   visualization_path: string | null;
   /** Base64-encoded JPEG of forensics summary (heatmap + bboxes + sidebar). */
   heatmap_b64?: string | null;

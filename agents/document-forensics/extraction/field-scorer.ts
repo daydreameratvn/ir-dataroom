@@ -9,9 +9,9 @@
  *   overall = max(key_scores)×0.6 + mean(key_scores)×0.4
  */
 
-import type { ExtractedField } from './types.ts';
+import type { ExtractedField, DetectedTable } from './types.ts';
 import { RISK_WEIGHTS, KEY_FIELDS } from './types.ts';
-import type { FieldResult } from '../types.ts';
+import type { FieldResult, ScoredTable, ScoredTableCell } from '../types.ts';
 
 // ── Region extraction ─────────────────────────────────────────────────────────
 
@@ -115,6 +115,63 @@ export function scoreFieldsAgainstHeatmap(
         heatmap_mean: Math.round(heatmapMean * 10000) / 10000,
         heatmap_max: Math.round(heatmapMax * 10000) / 10000,
       },
+    };
+  });
+}
+
+/**
+ * Score detected tables against a TruFor heatmap.
+ * Each cell gets its own anomaly score; the table gets the max across all cells.
+ */
+export function scoreTablesAgainstHeatmap(
+  tables: DetectedTable[],
+  heatmap: Float32Array,
+  heatmapW: number,
+  heatmapH: number,
+  imageW: number,
+  imageH: number,
+): ScoredTable[] {
+  const cellRiskWeight = RISK_WEIGHTS['table_cell'] ?? 0.8;
+
+  return tables.map((table) => {
+    const scoredCells: ScoredTableCell[] = table.cells.map((cell) => {
+      let anomaly = 0;
+      let heatmapMean = 0;
+      let heatmapMax = 0;
+
+      if (cell.bbox && heatmap.length > 0) {
+        const stats = extractRegionStats(heatmap, heatmapW, heatmapH, cell.bbox, imageW, imageH);
+        anomaly = calcAnomalyScore(stats, cellRiskWeight);
+        heatmapMean = stats.mean;
+        heatmapMax = stats.max;
+      }
+
+      return {
+        row: cell.row,
+        column: cell.column,
+        text: cell.text,
+        confidence: cell.confidence,
+        bbox: cell.bbox,
+        scores: {
+          anomaly: Math.round(anomaly * 10000) / 10000,
+          heatmap_mean: Math.round(heatmapMean * 10000) / 10000,
+          heatmap_max: Math.round(heatmapMax * 10000) / 10000,
+        },
+      };
+    });
+
+    const overallAnomaly = scoredCells.length > 0
+      ? Math.max(...scoredCells.map((c) => c.scores.anomaly))
+      : 0;
+
+    return {
+      bbox: table.bbox,
+      rows: table.rows,
+      columns: table.columns,
+      headers: table.headers,
+      cells: scoredCells,
+      confidence: table.confidence,
+      overall_anomaly: Math.round(overallAnomaly * 10000) / 10000,
     };
   });
 }

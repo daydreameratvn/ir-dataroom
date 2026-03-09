@@ -16,12 +16,15 @@ import { GeminiExtractor } from './extraction/gemini-extractor.ts';
 import { EasyOCRExtractor } from './extraction/easyocr-extractor.ts';
 import { resolveMarket } from './extraction/market-config.ts';
 import type { MarketCode } from './extraction/market-config.ts';
-import { scoreFieldsAgainstHeatmap, computeVerdict } from './extraction/field-scorer.ts';
+import { scoreFieldsAgainstHeatmap, scoreTablesAgainstHeatmap, computeVerdict } from './extraction/field-scorer.ts';
 import { KEY_FIELDS } from './extraction/types.ts';
 import type { ExtractionResult } from './extraction/types.ts';
+import { analyzeDocumentWithGemini } from './extraction/gemini-table-analyzer.ts';
+import type { SuspiciousRegion } from './extraction/gemini-table-analyzer.ts';
+import { getGeminiApiKey } from './config.ts';
 import { generateForensicsSummary } from './utils/forensics-visualizer.ts';
-import type { BboxField } from './utils/forensics-visualizer.ts';
-import type { FieldResult, DocumentForensicsResult, BatchForensicsResult, FieldExtractionResult } from './types.ts';
+import type { BboxField, BboxTable } from './utils/forensics-visualizer.ts';
+import type { FieldResult, ScoredTable, DocumentForensicsResult, BatchForensicsResult, FieldExtractionResult } from './types.ts';
 
 const execFileAsync = promisify(execFile);
 
@@ -239,8 +242,10 @@ async function runHybridForensics(
     };
   }
 
-  const { fields: extractedFields, image_width, image_height } = extractionResult;
-  console.log(`[forensics] OCR done: ${extractedFields.length} fields in ${Date.now() - t0}ms`);
+  const { fields: extractedFields, tables: extractedTables, image_width, image_height } = extractionResult;
+  const tableCount = extractedTables?.length ?? 0;
+  const tableCellCount = extractedTables?.reduce((s, t) => s + t.cells.length, 0) ?? 0;
+  console.log(`[forensics] OCR done: ${extractedFields.length} fields, ${tableCount} tables (${tableCellCount} cells) in ${Date.now() - t0}ms`);
 
   // Step 2: TruFor raw heatmap
   const t1 = Date.now();
@@ -269,6 +274,34 @@ async function runHybridForensics(
     }));
   }
 
+  // Step 3b: Score tables against heatmap
+  let scoredTables: ScoredTable[] | undefined;
+  if (extractedTables && extractedTables.length > 0) {
+    if (truforResult.heatmap && truforResult.width > 0 && truforResult.height > 0) {
+      scoredTables = scoreTablesAgainstHeatmap(
+        extractedTables,
+        truforResult.heatmap,
+        truforResult.width,
+        truforResult.height,
+        image_width,
+        image_height,
+      );
+    } else {
+      scoredTables = extractedTables.map((t) => ({
+        bbox: t.bbox,
+        rows: t.rows,
+        columns: t.columns,
+        headers: t.headers,
+        cells: t.cells.map((c) => ({
+          ...c,
+          scores: { anomaly: 0, heatmap_mean: 0, heatmap_max: 0 },
+        })),
+        confidence: t.confidence,
+        overall_anomaly: 0,
+      }));
+    }
+  }
+
   // Step 4: Compute verdict from ALL fields
   const { verdict, overall_score, risk_level } = computeVerdict(allScoredFields);
 
@@ -283,16 +316,53 @@ async function runHybridForensics(
       )
     : null;
 
-  // Step 5: Generate forensics summary image (heatmap overlay + bboxes + sidebar)
+  // Step 5: Build heatmap buffer + Gemini analysis
+  let heatmapBuf: Buffer | null = null;
+  if (truforResult.heatmap && truforResult.width > 0 && truforResult.height > 0) {
+    heatmapBuf = await heatmapToJetPng(
+      truforResult.heatmap, truforResult.width, truforResult.height,
+    );
+  }
+
+  // Step 5b: Single Gemini call — table analysis + suspicious region summary
+  let suspiciousRegions: Array<{ region: string; content: string; concern: string }> | undefined;
+  let geminiSummary: string | undefined;
+  if (getGeminiApiKey()) {
+    try {
+      const geminiResult = await analyzeDocumentWithGemini(
+        imagePath, extractedTables ?? [], market, heatmapBuf, allScoredFields,
+      );
+      // Merge table analysis into scored tables
+      if (scoredTables && geminiResult.tables.length > 0) {
+        for (let i = 0; i < Math.min(scoredTables.length, geminiResult.tables.length); i++) {
+          const gr = geminiResult.tables[i]!;
+          const st = scoredTables[i]!;
+          st.gemini_headers = gr.headers;
+          st.gemini_cells = gr.cells.map((c) => ({
+            row: c.row, column: c.column, header: c.header, text: c.text,
+            is_abnormal: c.is_abnormal, abnormal_reason: c.abnormal_reason,
+          }));
+          st.abnormal_cells = gr.abnormal_cells.map((c) => ({
+            row: c.row, column: c.column, header: c.header, text: c.text,
+            reason: c.abnormal_reason,
+          }));
+        }
+      }
+      suspiciousRegions = geminiResult.suspicious_regions.length > 0
+        ? geminiResult.suspicious_regions : undefined;
+      geminiSummary = geminiResult.summary || undefined;
+
+      const totalAbnormal = scoredTables?.reduce((s, t) => s + (t.abnormal_cells?.length ?? 0), 0) ?? 0;
+      const suspCount = geminiResult.suspicious_regions.length;
+      console.log(`[forensics] Gemini analysis: ${geminiResult.tables.length} tables, ${totalAbnormal} abnormal cells, ${suspCount} suspicious regions`);
+    } catch (err) {
+      console.warn(`[forensics] Gemini analysis skipped: ${err instanceof Error ? err.message : err}`);
+    }
+  }
+
+  // Step 6: Generate forensics summary image (heatmap overlay + bboxes + sidebar)
   let summaryB64: string | null = null;
   try {
-    // Build a JET-colormap PNG buffer from the raw TruFor heatmap
-    let heatmapBuf: Buffer | null = null;
-    if (truforResult.heatmap && truforResult.width > 0 && truforResult.height > 0) {
-      heatmapBuf = await heatmapToJetPng(
-        truforResult.heatmap, truforResult.width, truforResult.height,
-      );
-    }
 
     // Map scored fields → BboxField format for the visualizer
     const bboxFields: BboxField[] = allScoredFields.map((f) => ({
@@ -303,9 +373,28 @@ async function runHybridForensics(
       bbox: f.bbox,
     }));
 
+    // Map scored tables → BboxTable format for the visualizer
+    const bboxTables = scoredTables?.map((t) => ({
+      bbox: t.bbox,
+      rows: t.rows,
+      columns: t.columns,
+      headers: t.headers,
+      overall_anomaly: t.overall_anomaly,
+      cells: t.cells.map((c) => ({
+        row: c.row,
+        column: c.column,
+        text: c.text,
+        bbox: c.bbox,
+        anomaly: c.scores.anomaly,
+      })),
+      gemini_headers: t.gemini_headers,
+      abnormal_cells: t.abnormal_cells,
+    })) ?? null;
+
     const finalVerdict = truforResult.heatmap ? verdict : 'NORMAL';
     const summaryBuf = await generateForensicsSummary(
-      imagePath, bboxFields, finalVerdict, overall_score, null, heatmapBuf,
+      imagePath, bboxFields, finalVerdict, overall_score, null, heatmapBuf, bboxTables,
+      suspiciousRegions, geminiSummary,
     );
     summaryB64 = summaryBuf.toString('base64');
   } catch (vizErr) {
@@ -315,6 +404,25 @@ async function runHybridForensics(
   const notes: string[] = [
     `${ocrEngine} extracted ${extractedFields.length} fields, ${keyFields.length} key regions`,
   ];
+  if (scoredTables && scoredTables.length > 0) {
+    for (const t of scoredTables) {
+      const hdrs = t.gemini_headers ?? t.headers;
+      notes.push(`Table detected: ${t.rows}×${t.columns} (${hdrs.join(', ')})${t.overall_anomaly > 0 ? ` anomaly=${t.overall_anomaly.toFixed(3)}` : ''}`);
+      if (t.abnormal_cells && t.abnormal_cells.length > 0) {
+        for (const ac of t.abnormal_cells) {
+          notes.push(`  ABNORMAL [${ac.header}]: "${ac.text}"${ac.reason ? ` — ${ac.reason}` : ''}`);
+        }
+      }
+    }
+  }
+  if (geminiSummary) {
+    notes.push(`Gemini assessment: ${geminiSummary}`);
+  }
+  if (suspiciousRegions) {
+    for (const sr of suspiciousRegions) {
+      notes.push(`  SUSPICIOUS [${sr.region}]: ${sr.content} — ${sr.concern}`);
+    }
+  }
   if (truforResult.success && truforResult.heatmap) {
     notes.push(`TruFor heatmap generated (mean=${truforResult.global_score.toFixed(3)})`);
   } else if (truforResult.error) {
@@ -351,6 +459,9 @@ async function runHybridForensics(
         }
       : null,
     fields: keyFields,
+    tables: scoredTables && scoredTables.length > 0 ? scoredTables : undefined,
+    suspicious_regions: suspiciousRegions,
+    gemini_summary: geminiSummary,
     visualization_path: null,
     heatmap_b64: summaryB64,
     notes,
