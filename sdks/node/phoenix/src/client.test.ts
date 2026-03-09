@@ -560,7 +560,7 @@ describe('PhoenixClient', () => {
     });
 
     it('clears timeout after successful request', async () => {
-      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+      const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
       mockFetch.mockResolvedValueOnce(jsonResponse({ results: [] }));
 
       await client.login(['X']);
@@ -570,7 +570,7 @@ describe('PhoenixClient', () => {
     });
 
     it('clears timeout after failed request', async () => {
-      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+      const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
       mockFetch.mockResolvedValueOnce(errorResponse(500));
 
       await expect(client.login(['X'])).rejects.toThrow('Phoenix API error: 500');

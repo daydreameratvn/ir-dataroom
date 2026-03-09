@@ -25,17 +25,19 @@ function htmlResponse(body: string, status = 200) {
 }
 
 describe('api client', () => {
-  let mockFetch: ReturnType<typeof vi.fn>;
-  let locationHrefSetter: ReturnType<typeof vi.fn>;
-  let getItemSpy: ReturnType<typeof vi.fn>;
-  let removeItemSpy: ReturnType<typeof vi.fn>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  type MockFn = ReturnType<typeof vi.fn<(...args: any[]) => any>>;
+  let mockFetch: MockFn;
+  let locationHrefSetter: MockFn;
+  let getItemSpy: MockFn;
+  let removeItemSpy: MockFn;
 
   beforeEach(() => {
     vi.useFakeTimers();
     vi.clearAllMocks();
 
     mockFetch = vi.fn();
-    globalThis.fetch = mockFetch;
+    globalThis.fetch = mockFetch as typeof fetch;
 
     // Mock localStorage methods directly on the object
     getItemSpy = vi.fn().mockReturnValue(null);
