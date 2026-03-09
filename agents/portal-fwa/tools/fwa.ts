@@ -3,6 +3,23 @@ import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { gqlQuery } from "../../shared/graphql-client.ts";
 import { mergeExtractedData, parseExtractedData, getExtractedField } from "../../portal-extraction/tools/claims.ts";
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+/** Strip large base64 fields (heatmaps, images) from forensics result to avoid blowing up the LLM prompt */
+function stripLargeFields(obj: Record<string, unknown> | null | undefined): Record<string, unknown> | null {
+  if (!obj) return null;
+  const clone = JSON.parse(JSON.stringify(obj)) as Record<string, unknown>;
+  // Remove top-level large fields
+  delete clone.reportMarkdown;
+  // Strip heatmaps from documentFindings
+  if (Array.isArray(clone.documentFindings)) {
+    for (const finding of clone.documentFindings as Record<string, unknown>[]) {
+      if (finding.heatmapBase64) finding.heatmapBase64 = "[stripped]";
+    }
+  }
+  return clone;
+}
+
 // ─── GraphQL Queries ─────────────────────────────────────────────────────────
 
 const FETCH_CLAIM_WITH_ALL_RESULTS_QUERY = `
@@ -105,7 +122,7 @@ export function createFWATools(claimId: string) {
             automationResult: getExtractedField(extractedData, "assessment", "automationResult") ?? null,
             medicalNecessityResult: (extractedData.medicalNecessity as Record<string, unknown>) ?? extractedData._mnResult ?? null,
             preExistingResult: (extractedData.preExisting as Record<string, unknown>) ?? extractedData._preExResult ?? null,
-            imageForensicsResult: (extractedData.imageForensics as Record<string, unknown>) ?? null,
+            imageForensicsResult: stripLargeFields(extractedData.imageForensics as Record<string, unknown> | null),
           }, null, 2),
         }],
         details: { claimId: params.claimId },
