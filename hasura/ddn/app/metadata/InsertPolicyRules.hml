@@ -1,0 +1,198 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyRulesObject
+  fields:
+    - name: benefitType
+      type: String_1
+    - name: category
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: description
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: priority
+      type: Int32
+    - name: ruleKey
+      type: String_1!
+    - name: ruleSetId
+      type: Uuid!
+    - name: ruleValue
+      type: Json!
+    - name: sourceId
+      type: Uuid
+    - name: sourcePage
+      type: Int32
+    - name: sourceText
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertPolicyRulesObject
+    inputTypeName: InsertPolicyRulesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_policy_rules_object
+      fieldMapping:
+        benefitType:
+          column:
+            name: benefit_type
+        category:
+          column:
+            name: category
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        priority:
+          column:
+            name: priority
+        ruleKey:
+          column:
+            name: rule_key
+        ruleSetId:
+          column:
+            name: rule_set_id
+        ruleValue:
+          column:
+            name: rule_value
+        sourceId:
+          column:
+            name: source_id
+        sourcePage:
+          column:
+            name: source_page
+        sourceText:
+          column:
+            name: source_text
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyRulesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - benefitType
+          - category
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - description
+          - id
+          - priority
+          - ruleKey
+          - ruleSetId
+          - ruleValue
+          - sourceId
+          - sourcePage
+          - sourceText
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyRulesResponse
+  description: Responses from the 'insert_policy_rules' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyRules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyRulesResponse
+    inputTypeName: InsertPolicyRulesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_policy_rules_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyRulesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyRules
+  outputType: InsertPolicyRulesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyRulesObject!]!"
+    - name: postCheck
+      type: PolicyRulesBoolExp
+      description: Insert permission predicate over the 'policy_rules' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_policy_rules
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyRules
+    rootFieldKind: Mutation
+  description: Insert into the policy_rules table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyRules
+  permissions:
+    - role: admin
+      allowExecution: true
+

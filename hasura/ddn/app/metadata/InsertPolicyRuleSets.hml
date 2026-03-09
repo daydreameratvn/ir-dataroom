@@ -1,0 +1,204 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyRuleSetsObject
+  fields:
+    - name: companyName
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: effectiveDate
+      type: Timestamptz
+    - name: expiryDate
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insurerName
+      type: String_1!
+    - name: metadata
+      type: Json
+    - name: policyNumber
+      type: String_1
+    - name: productName
+      type: String_1
+    - name: reviewedAt
+      type: Timestamptz
+    - name: reviewedBy
+      type: Uuid
+    - name: status
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertPolicyRuleSetsObject
+    inputTypeName: InsertPolicyRuleSetsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_policy_rule_sets_object
+      fieldMapping:
+        companyName:
+          column:
+            name: company_name
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        effectiveDate:
+          column:
+            name: effective_date
+        expiryDate:
+          column:
+            name: expiry_date
+        id:
+          column:
+            name: id
+        insurerName:
+          column:
+            name: insurer_name
+        metadata:
+          column:
+            name: metadata
+        policyNumber:
+          column:
+            name: policy_number
+        productName:
+          column:
+            name: product_name
+        reviewedAt:
+          column:
+            name: reviewed_at
+        reviewedBy:
+          column:
+            name: reviewed_by
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyRuleSetsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyName
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - effectiveDate
+          - expiryDate
+          - id
+          - insurerName
+          - metadata
+          - policyNumber
+          - productName
+          - reviewedAt
+          - reviewedBy
+          - status
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyRuleSetsResponse
+  description: Responses from the 'insert_policy_rule_sets' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyRuleSets!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyRuleSetsResponse
+    inputTypeName: InsertPolicyRuleSetsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_policy_rule_sets_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyRuleSetsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyRuleSets
+  outputType: InsertPolicyRuleSetsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyRuleSetsObject!]!"
+    - name: postCheck
+      type: PolicyRuleSetsBoolExp
+      description: Insert permission predicate over the 'policy_rule_sets' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_policy_rule_sets
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyRuleSets
+    rootFieldKind: Mutation
+  description: Insert into the policy_rule_sets table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyRuleSets
+  permissions:
+    - role: admin
+      allowExecution: true
+

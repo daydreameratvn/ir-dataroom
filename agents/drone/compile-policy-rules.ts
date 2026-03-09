@@ -115,7 +115,7 @@ const INSERT_RULE = `
 `;
 
 const FIND_EXISTING_RULE_SETS = `
-  query FindExistingRuleSets($insurerName: String_1!, $policyNumber: String_1!) {
+  query FindExistingRuleSets($insurerName: String1!, $policyNumber: String1!) {
     policyRuleSets(
       where: {
         insurerName: { _eq: $insurerName }
@@ -172,7 +172,7 @@ const LIST_DRAFT_RULE_SETS = `
 `;
 
 const UPDATE_RULE_SET_STATUS = `
-  mutation UpdateRuleSetStatus($id: Uuid!, $status: String_1!, $now: Timestamptz!) {
+  mutation UpdateRuleSetStatus($id: Uuid!, $status: String1!, $now: Timestamptz!) {
     updatePolicyRuleSetsById(
       keyId: $id
       updateColumns: {

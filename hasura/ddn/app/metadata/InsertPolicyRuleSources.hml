@@ -1,0 +1,192 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyRuleSourcesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: driveFileId
+      type: String_1!
+    - name: driveFolderPath
+      type: "[String_1]"
+    - name: extractedAt
+      type: Timestamptz
+    - name: extractionModel
+      type: String_1
+    - name: fileCategory
+      type: String_1!
+    - name: fileName
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: pageCount
+      type: Int32
+    - name: rawText
+      type: String_1
+    - name: ruleSetId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertPolicyRuleSourcesObject
+    inputTypeName: InsertPolicyRuleSourcesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_policy_rule_sources_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        driveFileId:
+          column:
+            name: drive_file_id
+        driveFolderPath:
+          column:
+            name: drive_folder_path
+        extractedAt:
+          column:
+            name: extracted_at
+        extractionModel:
+          column:
+            name: extraction_model
+        fileCategory:
+          column:
+            name: file_category
+        fileName:
+          column:
+            name: file_name
+        id:
+          column:
+            name: id
+        pageCount:
+          column:
+            name: page_count
+        rawText:
+          column:
+            name: raw_text
+        ruleSetId:
+          column:
+            name: rule_set_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyRuleSourcesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - driveFileId
+          - driveFolderPath
+          - extractedAt
+          - extractionModel
+          - fileCategory
+          - fileName
+          - id
+          - pageCount
+          - rawText
+          - ruleSetId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyRuleSourcesResponse
+  description: Responses from the 'insert_policy_rule_sources' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyRuleSources!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyRuleSourcesResponse
+    inputTypeName: InsertPolicyRuleSourcesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_policy_rule_sources_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyRuleSourcesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyRuleSources
+  outputType: InsertPolicyRuleSourcesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyRuleSourcesObject!]!"
+    - name: postCheck
+      type: PolicyRuleSourcesBoolExp
+      description: Insert permission predicate over the 'policy_rule_sources' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_policy_rule_sources
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyRuleSources
+    rootFieldKind: Mutation
+  description: Insert into the policy_rule_sources table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyRuleSources
+  permissions:
+    - role: admin
+      allowExecution: true
+

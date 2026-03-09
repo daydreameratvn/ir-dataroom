@@ -64,7 +64,7 @@ interface GroupedRules {
  * Uses ILIKE for fuzzy matching (claim may have "33.02.01.0107.25" while folder is "HD33.02.01.0107.25").
  */
 const FIND_RULE_SET_BY_POLICY_NUMBER = `
-  query FindRuleSetByPolicyNumber($policyNumber: String_1!) {
+  query FindRuleSetByPolicyNumber($policyNumber: String1!) {
     policyRuleSets(
       where: {
         policyNumber: { _ilike: $policyNumber }
