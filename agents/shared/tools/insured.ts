@@ -80,8 +80,8 @@ export const benefitsTool: AgentTool = {
   }),
   execute: async (toolCallId, { claim_code }) => {
     const claimQuery = graphql(`
-      query ClaimForBenefitsV2($code: bpchar!) {
-        claim_cases(where: { code: { _eq: $code } }, limit: 1) {
+      query ClaimForBenefitsV2($code: String!) {
+        claim_cases(where: { code_v2: { _eq: $code } }, limit: 1) {
           id
           insured_certificate {
             id

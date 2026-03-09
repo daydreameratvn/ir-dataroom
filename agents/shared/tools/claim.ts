@@ -67,8 +67,8 @@ const ClaimFragment = graphql(`
 
 const ClaimCaseDocument = graphql(
   `
-    query ClaimCaseV2($code: bpchar!) {
-      claim_cases(where: { code: { _eq: $code } }, limit: 1) {
+    query ClaimCaseV2($code: String!) {
+      claim_cases(where: { code_v2: { _eq: $code } }, limit: 1) {
         id
         ...ClaimV2
         code

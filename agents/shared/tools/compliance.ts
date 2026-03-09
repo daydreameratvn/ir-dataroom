@@ -70,8 +70,8 @@ const SimilarApprovedClaimsDocument = graphql(
 
 const ClaimDocumentsForComplianceDocument = graphql(
   `
-    query ClaimDocumentsForComplianceV2Pi($claimCode: bpchar!) {
-      claim_cases(where: { code: { _eq: $claimCode } }, limit: 1) {
+    query ClaimDocumentsForComplianceV2Pi($claimCode: String!) {
+      claim_cases(where: { code_v2: { _eq: $claimCode } }, limit: 1) {
         ...ClaimWithDocumentsV2Pi
         insured_certificate {
           id

@@ -74,7 +74,7 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
         `),
         variables: {
           where: {
-            claim_case: { code: { _eq: claimCode } },
+            claim_case: { code_v2: { _eq: claimCode } },
             deleted_at: { _is_null: true },
             file: { original_file_id: { _is_null: true } },
             type: { _nin: ["SignOffForm"] },

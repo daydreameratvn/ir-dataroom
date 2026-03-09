@@ -27,7 +27,7 @@ async function fetchClaimDocumentImages(claimCode: string): Promise<{ data: stri
     `),
     variables: {
       where: {
-        claim_case: { code: { _eq: claimCode } },
+        claim_case: { code_v2: { _eq: claimCode } },
         file: { original_file_id: { _is_null: true } },
         type: { _nin: ["SignOffForm"] },
       },

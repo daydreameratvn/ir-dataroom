@@ -50,7 +50,7 @@ export async function createClaimAssessorAgent(claimCode: string) {
     `),
     variables: {
       where: {
-        claim_case: { code: { _eq: claimCode } },
+        claim_case: { code_v2: { _eq: claimCode } },
         file: { original_file_id: { _is_null: true } },
         type: { _nin: ["SignOffForm"] },
       },
@@ -82,8 +82,8 @@ export async function createClaimAssessorAgent(claimCode: string) {
   // 2. Check if saveDetailForm fields are already populated
   const { data: claimData } = await client.query({
     query: graphql(`
-      query ClaimCaseDetailCheckV2($code: bpchar!) {
-        claim_cases(where: { code: { _eq: $code } }, limit: 1) {
+      query ClaimCaseDetailCheckV2($code: String!) {
+        claim_cases(where: { code_v2: { _eq: $code } }, limit: 1) {
           physical_examination_date
           treatment_method
         }

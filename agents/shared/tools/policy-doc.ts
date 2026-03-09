@@ -12,8 +12,8 @@ const client = getClient();
 // ============================================================================
 
 const ClaimPolicyContextDocument = graphql(`
-  query ClaimPolicyContextV2($code: bpchar!) {
-    claim_cases(where: { code: { _eq: $code } }, limit: 1) {
+  query ClaimPolicyContextV2($code: String!) {
+    claim_cases(where: { code_v2: { _eq: $code } }, limit: 1) {
       id
       insured_certificate {
         id

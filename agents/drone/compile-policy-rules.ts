@@ -21,7 +21,7 @@ import { GoogleGenAI } from "@google/genai";
 import got from "got";
 import { parseArgs } from "util";
 
-import { gqlQuery } from "../shared/graphql-client.ts";
+import { ddnQuery } from "../shared/graphql-client.ts";
 import {
   CATEGORY_PATTERNS,
   type CompanyFolder,
@@ -312,7 +312,7 @@ async function getExistingExtraction(insurerName: string, policyNumber: string):
   extractedFileIds: Set<string>;
   extractedTimes: Map<string, string>;
 }> {
-  const result = await gqlQuery<{
+  const result = await ddnQuery<{
     policyRuleSets: Array<{
       id: string;
       status: string;
@@ -617,7 +617,7 @@ async function writeToDb(
 ): Promise<string> {
   const now = new Date().toISOString();
 
-  const ruleSetResult = await gqlQuery<{
+  const ruleSetResult = await ddnQuery<{
     insertPolicyRuleSets: { returning: Array<{ id: string }> };
   }>(INSERT_RULE_SET, {
     object: {
@@ -639,7 +639,7 @@ async function writeToDb(
 
   const sourceIdMap = new Map<string, string>();
   for (const source of sources) {
-    const sourceResult = await gqlQuery<{
+    const sourceResult = await ddnQuery<{
       insertPolicyRuleSources: { returning: Array<{ id: string }> };
     }>(INSERT_RULE_SOURCE, {
       object: {
@@ -663,7 +663,7 @@ async function writeToDb(
     const sourceId = sourceIdMap.get(rule.source_file) ?? null;
     const priority = rule.category === "amendment_override" ? 10 : 0;
 
-    await gqlQuery(INSERT_RULE, {
+    await ddnQuery(INSERT_RULE, {
       object: {
         ruleSetId,
         sourceId,
@@ -672,7 +672,7 @@ async function writeToDb(
         ruleKey: rule.rule_key,
         ruleValue: rule.rule_value,
         description: rule.description,
-        sourcePage: rule.source_page,
+        sourcePage: typeof rule.source_page === "number" ? rule.source_page : (parseInt(String(rule.source_page)) || null),
         priority,
       },
     });
@@ -688,7 +688,7 @@ async function writeToDb(
 // ============================================================================
 
 async function listDrafts(): Promise<void> {
-  const result = await gqlQuery<{
+  const result = await ddnQuery<{
     policyRuleSets: Array<{
       id: string;
       insurerName: string;
@@ -726,7 +726,7 @@ async function listDrafts(): Promise<void> {
 async function activateRuleSet(ruleSetId: string): Promise<void> {
   const now = new Date().toISOString();
 
-  const result = await gqlQuery<{
+  const result = await ddnQuery<{
     policyRuleSetsById: { id: string; insurerName: string; companyName: string | null; policyNumber: string | null; status: string } | null;
   }>(FIND_RULE_SET_BY_ID, { id: ruleSetId });
 
@@ -742,19 +742,19 @@ async function activateRuleSet(ruleSetId: string): Promise<void> {
   }
 
   if (ruleSet.policyNumber) {
-    const existing = await gqlQuery<{
+    const existing = await ddnQuery<{
       policyRuleSets: Array<{ id: string; status: string }>;
     }>(FIND_EXISTING_RULE_SETS, { insurerName: ruleSet.insurerName, policyNumber: ruleSet.policyNumber });
 
     for (const existingSet of existing?.policyRuleSets ?? []) {
       if (existingSet.id !== ruleSetId && existingSet.status === "active") {
-        await gqlQuery(UPDATE_RULE_SET_STATUS, { id: existingSet.id, status: "archived", now });
+        await ddnQuery(UPDATE_RULE_SET_STATUS, { id: existingSet.id, status: "archived", now });
         console.log(`Archived previous active rule set: ${existingSet.id}`);
       }
     }
   }
 
-  await gqlQuery(UPDATE_RULE_SET_STATUS, { id: ruleSetId, status: "active", now });
+  await ddnQuery(UPDATE_RULE_SET_STATUS, { id: ruleSetId, status: "active", now });
   console.log(`✅ Activated rule set ${ruleSetId} for "${ruleSet.insurerName}" / "${ruleSet.companyName}" / policy "${ruleSet.policyNumber}"`);
 }
 
@@ -1028,7 +1028,7 @@ async function main() {
   let insurerNames: string[];
 
   if (args["rule-set-id"]) {
-    const result = await gqlQuery<{
+    const result = await ddnQuery<{
       policyRuleSetsById: { id: string; insurerName: string; companyName: string | null; policyNumber: string | null } | null;
     }>(FIND_RULE_SET_BY_ID, { id: args["rule-set-id"] });
 

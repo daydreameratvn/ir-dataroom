@@ -2,7 +2,7 @@ import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { Type } from "@mariozechner/pi-ai";
 import { graphql } from "@papaya/graphql/sdk";
 
-import { getClient, gqlQuery } from "../graphql-client.ts";
+import { getClient, ddnQuery } from "../graphql-client.ts";
 
 const client = getClient();
 
@@ -11,8 +11,8 @@ const client = getClient();
 // ============================================================================
 
 const ClaimPolicyContextDocument = graphql(`
-  query ClaimPolicyContextForRules($code: bpchar!) {
-    claim_cases(where: { code: { _eq: $code } }, limit: 1) {
+  query ClaimPolicyContextForRules($code: String!) {
+    claim_cases(where: { code_v2: { _eq: $code } }, limit: 1) {
       id
       insured_certificate {
         id
@@ -243,7 +243,7 @@ export const policyRulesTool: AgentTool = {
         };
       }
 
-      const result = await gqlQuery<{
+      const result = await ddnQuery<{
         policyRuleSets: RuleSetResult[];
       }>(FIND_RULE_SET_BY_POLICY_NUMBER, {
         policyNumber: `%${policyNumber}%`,
@@ -275,13 +275,13 @@ export const policyRulesTool: AgentTool = {
           });
         }
         const where = whereConditions.length === 1 ? whereConditions[0] : { _and: whereConditions };
-        const rulesResult = await gqlQuery<{ policyRules: PolicyRule[] }>(
+        const rulesResult = await ddnQuery<{ policyRules: PolicyRule[] }>(
           GET_POLICY_RULES,
           { ruleSetId: ruleSet.id, where },
         );
         rules = rulesResult?.policyRules ?? [];
       } else {
-        const rulesResult = await gqlQuery<{ policyRules: PolicyRule[] }>(
+        const rulesResult = await ddnQuery<{ policyRules: PolicyRule[] }>(
           GET_ALL_POLICY_RULES,
           { ruleSetId: ruleSet.id },
         );

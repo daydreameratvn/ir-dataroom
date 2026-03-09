@@ -49,8 +49,8 @@ function formatCurrencyVi(amount: number | null | undefined): string {
 }
 
 const GetClaimContextDocument = graphql(`
-  query GetClaimContextForPendingV2($claimCode: bpchar!) {
-    claim_cases(where: { code: { _eq: $claimCode } }, limit: 1) {
+  query GetClaimContextForPendingV2($claimCode: String!) {
+    claim_cases(where: { code_v2: { _eq: $claimCode } }, limit: 1) {
       id claim_case_id code diagnosis request_amount physical_examination_date admission_date discharge_date tenant_id
       insured_benefit_type { value comment }
       medical_provider { id name }

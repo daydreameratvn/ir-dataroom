@@ -105,8 +105,8 @@ export const claimForFraudAnalysisTool: AgentTool = {
   }),
   execute: async (toolCallId, { code }) => {
     const ClaimForAnalysisDocument = graphql(`
-      query ClaimForAnalysis($code: bpchar!) {
-        claim_cases(where: { code: { _eq: $code } }, limit: 1) {
+      query ClaimForAnalysis($code: String!) {
+        claim_cases(where: { code_v2: { _eq: $code } }, limit: 1) {
           ...FraudDetectionClaim
           insured_certificate {
             id effective_date expiry_date
