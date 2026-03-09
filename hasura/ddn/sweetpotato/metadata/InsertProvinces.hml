@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertProvincesObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: countryCode
+      type: String_1!
+    - name: displayOrder
+      type: Bigdecimal!
+    - name: id
+      type: Bigdecimal
+    - name: name
+      type: String_1!
+    - name: placeType
+      type: String_1!
+    - name: shortName
+      type: String_1!
+  graphql:
+    typeName: InsertProvincesObject
+    inputTypeName: InsertProvincesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_provinces_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        countryCode:
+          column:
+            name: country_code
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        placeType:
+          column:
+            name: place_type
+        shortName:
+          column:
+            name: short_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertProvincesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - countryCode
+          - displayOrder
+          - id
+          - name
+          - placeType
+          - shortName
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertProvincesResponse
+  description: Responses from the 'insert_provinces' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Provinces!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertProvincesResponse
+    inputTypeName: InsertProvincesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_provinces_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertProvincesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertProvinces
+  outputType: InsertProvincesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertProvincesObject!]!"
+    - name: postCheck
+      type: ProvincesBoolExp
+      description: Insert permission predicate over the 'provinces' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_provinces
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertProvinces
+    rootFieldKind: Mutation
+  description: Insert into the provinces table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertProvinces
+  permissions:
+    - role: admin
+      allowExecution: true
+

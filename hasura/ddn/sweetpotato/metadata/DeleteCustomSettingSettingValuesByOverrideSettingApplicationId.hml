@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCustomSettingSettingValuesByOverrideSettingApplicationIdResponse
+  description: Responses from the
+    'delete_custom_setting_setting_values_by_override_setting_application_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingSettingValues!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCustomSettingSettingValuesByOverrideSettingApplicationIdResponse
+    inputTypeName: DeleteCustomSettingSettingValuesByOverrideSettingApplicationIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_custom_setting_setting_values_by_override_setting_application_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCustomSettingSettingValuesByOverrideSettingApplicationIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCustomSettingSettingValuesByOverrideSettingApplicationId
+  outputType: DeleteCustomSettingSettingValuesByOverrideSettingApplicationIdResponse!
+  arguments:
+    - name: keyOverrideSettingApplicationId
+      type: Uuid
+    - name: preCheck
+      type: CustomSettingSettingValuesBoolExp
+      description: Delete permission predicate over the
+        'custom_setting_setting_values' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_custom_setting_setting_values_by_override_setting_application_id
+    argumentMapping:
+      keyOverrideSettingApplicationId: key_override_setting_application_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCustomSettingSettingValuesByOverrideSettingApplicationId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'custom_setting_setting_values' collection
+    using the 'override_setting_application_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCustomSettingSettingValuesByOverrideSettingApplicationId
+  permissions:
+    - role: admin
+      allowExecution: true
+

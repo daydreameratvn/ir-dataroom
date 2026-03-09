@@ -1,0 +1,202 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateUpdateColumns
+  description: Update the columns of the 'insured_certificate_histories' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnInsuredCertificateHistoriesCreatedAt
+      description: Update the 'created_at' column in the
+        'insured_certificate_histories' collection.
+    - name: createdBy
+      type: UpdateColumnInsuredCertificateHistoriesCreatedBy
+      description: Update the 'created_by' column in the
+        'insured_certificate_histories' collection.
+    - name: deletedAt
+      type: UpdateColumnInsuredCertificateHistoriesDeletedAt
+      description: Update the 'deleted_at' column in the
+        'insured_certificate_histories' collection.
+    - name: endDate
+      type: UpdateColumnInsuredCertificateHistoriesEndDate
+      description: Update the 'end_date' column in the 'insured_certificate_histories'
+        collection.
+    - name: id
+      type: UpdateColumnInsuredCertificateHistoriesId
+      description: Update the 'id' column in the 'insured_certificate_histories' collection.
+    - name: insuredCertificateId
+      type: UpdateColumnInsuredCertificateHistoriesInsuredCertificateId
+      description: Update the 'insured_certificate_id' column in the
+        'insured_certificate_histories' collection.
+    - name: planId
+      type: UpdateColumnInsuredCertificateHistoriesPlanId
+      description: Update the 'plan_id' column in the 'insured_certificate_histories'
+        collection.
+    - name: startDate
+      type: UpdateColumnInsuredCertificateHistoriesStartDate
+      description: Update the 'start_date' column in the
+        'insured_certificate_histories' collection.
+    - name: sumAssured
+      type: UpdateColumnInsuredCertificateHistoriesSumAssured
+      description: Update the 'sum_assured' column in the
+        'insured_certificate_histories' collection.
+    - name: updatedAt
+      type: UpdateColumnInsuredCertificateHistoriesUpdatedAt
+      description: Update the 'updated_at' column in the
+        'insured_certificate_histories' collection.
+    - name: updatedBy
+      type: UpdateColumnInsuredCertificateHistoriesUpdatedBy
+      description: Update the 'updated_by' column in the
+        'insured_certificate_histories' collection.
+  graphql:
+    typeName: UpdateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateUpdateColumns
+    inputTypeName: UpdateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insured_certificate_histories_by_insured_certificate_id_and_plan_id_and_start_date_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        endDate:
+          column:
+            name: end_date
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        planId:
+          column:
+            name: plan_id
+        startDate:
+          column:
+            name: start_date
+        sumAssured:
+          column:
+            name: sum_assured
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - endDate
+          - id
+          - insuredCertificateId
+          - planId
+          - startDate
+          - sumAssured
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateResponse
+  description: Responses from the
+    'update_insured_certificate_histories_by_insured_certificate_id_and_plan_id_and_start_date'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateResponse
+    inputTypeName: UpdateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insured_certificate_histories_by_insured_certificate_id_and_plan_id_and_start_date_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDate
+  outputType: UpdateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateResponse!
+  arguments:
+    - name: keyInsuredCertificateId
+      type: Uuid!
+    - name: keyPlanId
+      type: Uuid!
+    - name: keyStartDate
+      type: Timestamptz
+    - name: postCheck
+      type: InsuredCertificateHistoriesBoolExp
+      description: Update permission post-condition predicate over the
+        'insured_certificate_histories' collection
+    - name: preCheck
+      type: InsuredCertificateHistoriesBoolExp
+      description: Update permission pre-condition predicate over the
+        'insured_certificate_histories' collection
+    - name: updateColumns
+      type: UpdateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_insured_certificate_histories_by_insured_certificate_id_and_plan_id_and_start_date
+    argumentMapping:
+      keyInsuredCertificateId: key_insured_certificate_id
+      keyPlanId: key_plan_id
+      keyStartDate: key_start_date
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDate
+    rootFieldKind: Mutation
+  description: Update any row on the 'insured_certificate_histories' collection
+    using the 'insured_certificate_id', 'plan_id' and 'start_date' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDate
+  permissions:
+    - role: admin
+      allowExecution: true
+

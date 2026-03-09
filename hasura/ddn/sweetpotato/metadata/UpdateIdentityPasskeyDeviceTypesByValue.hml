@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnIdentityPasskeyDeviceTypesComment
+  description: Update the 'comment' column in the 'identity_passkey_device_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnIdentityPasskeyDeviceTypesComment
+    inputTypeName: UpdateColumnIdentityPasskeyDeviceTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_identity_passkey_device_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnIdentityPasskeyDeviceTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnIdentityPasskeyDeviceTypesValue
+  description: Update the 'value' column in the 'identity_passkey_device_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnIdentityPasskeyDeviceTypesValue
+    inputTypeName: UpdateColumnIdentityPasskeyDeviceTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_identity_passkey_device_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnIdentityPasskeyDeviceTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityPasskeyDeviceTypesByValueUpdateColumns
+  description: Update the columns of the 'identity_passkey_device_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnIdentityPasskeyDeviceTypesComment
+      description: Update the 'comment' column in the 'identity_passkey_device_types'
+        collection.
+    - name: value
+      type: UpdateColumnIdentityPasskeyDeviceTypesValue
+      description: Update the 'value' column in the 'identity_passkey_device_types'
+        collection.
+  graphql:
+    typeName: UpdateIdentityPasskeyDeviceTypesByValueUpdateColumns
+    inputTypeName: UpdateIdentityPasskeyDeviceTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_passkey_device_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityPasskeyDeviceTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityPasskeyDeviceTypesByValueResponse
+  description: Responses from the 'update_identity_passkey_device_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityPasskeyDeviceTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateIdentityPasskeyDeviceTypesByValueResponse
+    inputTypeName: UpdateIdentityPasskeyDeviceTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_passkey_device_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityPasskeyDeviceTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateIdentityPasskeyDeviceTypesByValue
+  outputType: UpdateIdentityPasskeyDeviceTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: IdentityPasskeyDeviceTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'identity_passkey_device_types' collection
+    - name: preCheck
+      type: IdentityPasskeyDeviceTypesBoolExp
+      description: Update permission pre-condition predicate over the
+        'identity_passkey_device_types' collection
+    - name: updateColumns
+      type: UpdateIdentityPasskeyDeviceTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_identity_passkey_device_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateIdentityPasskeyDeviceTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'identity_passkey_device_types' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateIdentityPasskeyDeviceTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

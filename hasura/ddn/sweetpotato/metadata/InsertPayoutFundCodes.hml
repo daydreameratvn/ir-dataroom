@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutFundCodesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertPayoutFundCodesObject
+    inputTypeName: InsertPayoutFundCodesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_fund_codes_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutFundCodesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutFundCodesResponse
+  description: Responses from the 'insert_payout_fund_codes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutFundCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPayoutFundCodesResponse
+    inputTypeName: InsertPayoutFundCodesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_fund_codes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutFundCodesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPayoutFundCodes
+  outputType: InsertPayoutFundCodesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPayoutFundCodesObject!]!"
+    - name: postCheck
+      type: PayoutFundCodesBoolExp
+      description: Insert permission predicate over the 'payout_fund_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_payout_fund_codes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPayoutFundCodes
+    rootFieldKind: Mutation
+  description: Insert into the payout_fund_codes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPayoutFundCodes
+  permissions:
+    - role: admin
+      allowExecution: true
+

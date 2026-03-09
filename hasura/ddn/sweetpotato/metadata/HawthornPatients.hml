@@ -1,0 +1,563 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornPatients
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: dob
+      type: Timestamptz
+    - name: email
+      type: String_1
+    - name: fullName
+      type: String_1
+    - name: gender
+      type: String_1
+    - name: healthProfileId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: paperNumber
+      type: String_1
+    - name: phone
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid
+    - name: yob
+      type: Int32
+  graphql:
+    typeName: HawthornPatients
+    inputTypeName: HawthornPatientsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_patients
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        dob:
+          column:
+            name: dob
+        email:
+          column:
+            name: email
+        fullName:
+          column:
+            name: full_name
+        gender:
+          column:
+            name: gender
+        healthProfileId:
+          column:
+            name: health_profile_id
+        id:
+          column:
+            name: id
+        paperNumber:
+          column:
+            name: paper_number
+        phone:
+          column:
+            name: phone
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+        yob:
+          column:
+            name: yob
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornPatients
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - dob
+          - email
+          - fullName
+          - gender
+          - healthProfileId
+          - id
+          - paperNumber
+          - phone
+          - updatedAt
+          - updatedBy
+          - userId
+          - yob
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornPatientsBoolExp
+  operand:
+    object:
+      type: HawthornPatients
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: dob
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: email
+          booleanExpressionType: TextBoolExp
+        - fieldName: fullName
+          booleanExpressionType: TextBoolExp
+        - fieldName: gender
+          booleanExpressionType: TextBoolExp
+        - fieldName: healthProfileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paperNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: phone
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: yob
+          booleanExpressionType: Int4BoolExp
+      comparableRelationships:
+        - relationshipName: hawthornConclusions
+        - relationshipName: hawthornDiagnoses
+        - relationshipName: hawthornDiagnosticTests
+        - relationshipName: hawthornDocuments
+        - relationshipName: hawthornHealthCheckups
+        - relationshipName: hawthornHealthProfiles
+        - relationshipName: hawthornHealthcareAppointments
+        - relationshipName: genderByGender
+        - relationshipName: hawthornHealthProfile
+        - relationshipName: identityUser
+        - relationshipName: hawthornPhysicalExaminations
+        - relationshipName: hawthornSuggestions
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornPatientsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornPatientsAggExp
+  operand:
+    object:
+      aggregatedType: HawthornPatients
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: dob
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: email
+          aggregateExpression: TextAggExp
+        - fieldName: fullName
+          aggregateExpression: TextAggExp
+        - fieldName: gender
+          aggregateExpression: TextAggExp
+        - fieldName: healthProfileId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: paperNumber
+          aggregateExpression: TextAggExp
+        - fieldName: phone
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+        - fieldName: yob
+          aggregateExpression: Int4AggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornPatientsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornPatientsOrderByExp
+  operand:
+    object:
+      orderedType: HawthornPatients
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: dob
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: email
+          orderByExpression: String1OrderByExp
+        - fieldName: fullName
+          orderByExpression: String1OrderByExp
+        - fieldName: gender
+          orderByExpression: String1OrderByExp
+        - fieldName: healthProfileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: paperNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: phone
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+        - fieldName: yob
+          orderByExpression: Int32OrderByExp
+      orderableRelationships:
+        - relationshipName: genderByGender
+        - relationshipName: hawthornHealthProfile
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: HawthornPatientsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornPatients
+  objectType: HawthornPatients
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_patients
+  filterExpressionType: HawthornPatientsBoolExp
+  aggregateExpression: HawthornPatientsAggExp
+  orderByExpression: HawthornPatientsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornPatients
+      subscription:
+        rootField: hawthornPatients
+    selectUniques:
+      - queryRootField: hawthornPatientsByPatientsFullNameDobGenderKey
+        uniqueIdentifier:
+          - dob
+          - fullName
+          - gender
+        subscription:
+          rootField: hawthornPatientsByPatientsFullNameDobGenderKey
+      - queryRootField: hawthornPatientsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hawthornPatientsById
+    filterInputTypeName: HawthornPatientsFilterInput
+    aggregate:
+      queryRootField: hawthornPatientsAggregate
+      subscription:
+        rootField: hawthornPatientsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornPatients
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornConclusions
+  sourceType: HawthornPatients
+  target:
+    model:
+      name: HawthornConclusions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornConclusionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: patientId
+  graphql:
+    aggregateFieldName: hawthornConclusionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnoses
+  sourceType: HawthornPatients
+  target:
+    model:
+      name: HawthornDiagnoses
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornDiagnosesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: patientId
+  graphql:
+    aggregateFieldName: hawthornDiagnosesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnosticTests
+  sourceType: HawthornPatients
+  target:
+    model:
+      name: HawthornDiagnosticTests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornDiagnosticTestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: patientId
+  graphql:
+    aggregateFieldName: hawthornDiagnosticTestsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDocuments
+  sourceType: HawthornPatients
+  target:
+    model:
+      name: HawthornDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: patientId
+  graphql:
+    aggregateFieldName: hawthornDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornHealthCheckups
+  sourceType: HawthornPatients
+  target:
+    model:
+      name: HawthornHealthCheckups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornHealthCheckupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: patientId
+  graphql:
+    aggregateFieldName: hawthornHealthCheckupsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornHealthProfiles
+  sourceType: HawthornPatients
+  target:
+    model:
+      name: HawthornHealthProfiles
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornHealthProfilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: patientId
+  graphql:
+    aggregateFieldName: hawthornHealthProfilesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornHealthcareAppointments
+  sourceType: HawthornPatients
+  target:
+    model:
+      name: HawthornHealthcareAppointments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornHealthcareAppointmentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: patientId
+  graphql:
+    aggregateFieldName: hawthornHealthcareAppointmentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: genderByGender
+  sourceType: HawthornPatients
+  target:
+    model:
+      name: Genders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: gender
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornHealthProfile
+  sourceType: HawthornPatients
+  target:
+    model:
+      name: HawthornHealthProfiles
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: healthProfileId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: HawthornPatients
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPhysicalExaminations
+  sourceType: HawthornPatients
+  target:
+    model:
+      name: HawthornPhysicalExaminations
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornPhysicalExaminationsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: patientId
+  graphql:
+    aggregateFieldName: hawthornPhysicalExaminationsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornSuggestions
+  sourceType: HawthornPatients
+  target:
+    model:
+      name: HawthornSuggestions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornSuggestionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: patientId
+  graphql:
+    aggregateFieldName: hawthornSuggestionsAggregate
+

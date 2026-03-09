@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertIdentityUserNotificationStatusObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertIdentityUserNotificationStatusObject
+    inputTypeName: InsertIdentityUserNotificationStatusObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_identity_user_notification_status_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertIdentityUserNotificationStatusObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertIdentityUserNotificationStatusResponse
+  description: Responses from the 'insert_identity_user_notification_status' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityUserNotificationStatus!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertIdentityUserNotificationStatusResponse
+    inputTypeName: InsertIdentityUserNotificationStatusResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_identity_user_notification_status_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertIdentityUserNotificationStatusResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertIdentityUserNotificationStatus
+  outputType: InsertIdentityUserNotificationStatusResponse!
+  arguments:
+    - name: objects
+      type: "[InsertIdentityUserNotificationStatusObject!]!"
+    - name: postCheck
+      type: IdentityUserNotificationStatusBoolExp
+      description: Insert permission predicate over the
+        'identity_user_notification_status' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_identity_user_notification_status
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertIdentityUserNotificationStatus
+    rootFieldKind: Mutation
+  description: Insert into the identity_user_notification_status table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertIdentityUserNotificationStatus
+  permissions:
+    - role: admin
+      allowExecution: true
+

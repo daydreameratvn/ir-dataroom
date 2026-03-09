@@ -1,0 +1,165 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePlanBalanceBenefitsByIdUpdateColumns
+  description: Update the columns of the 'plan_balance_benefits' collection
+  fields:
+    - name: autoSelected
+      type: UpdateColumnPlanBalanceBenefitsAutoSelected
+      description: Update the 'auto_selected' column in the 'plan_balance_benefits'
+        collection.
+    - name: createdAt
+      type: UpdateColumnPlanBalanceBenefitsCreatedAt
+      description: Update the 'created_at' column in the 'plan_balance_benefits' collection.
+    - name: deletedAt
+      type: UpdateColumnPlanBalanceBenefitsDeletedAt
+      description: Update the 'deleted_at' column in the 'plan_balance_benefits' collection.
+    - name: id
+      type: UpdateColumnPlanBalanceBenefitsId
+      description: Update the 'id' column in the 'plan_balance_benefits' collection.
+    - name: planBalanceId
+      type: UpdateColumnPlanBalanceBenefitsPlanBalanceId
+      description: Update the 'plan_balance_id' column in the 'plan_balance_benefits'
+        collection.
+    - name: planInsuredBenefitId
+      type: UpdateColumnPlanBalanceBenefitsPlanInsuredBenefitId
+      description: Update the 'plan_insured_benefit_id' column in the
+        'plan_balance_benefits' collection.
+    - name: tenantId
+      type: UpdateColumnPlanBalanceBenefitsTenantId
+      description: Update the 'tenant_id' column in the 'plan_balance_benefits' collection.
+    - name: updatedAt
+      type: UpdateColumnPlanBalanceBenefitsUpdatedAt
+      description: Update the 'updated_at' column in the 'plan_balance_benefits' collection.
+  graphql:
+    typeName: UpdatePlanBalanceBenefitsByIdUpdateColumns
+    inputTypeName: UpdatePlanBalanceBenefitsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_plan_balance_benefits_by_id_update_columns
+      fieldMapping:
+        autoSelected:
+          column:
+            name: auto_selected
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        planBalanceId:
+          column:
+            name: plan_balance_id
+        planInsuredBenefitId:
+          column:
+            name: plan_insured_benefit_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePlanBalanceBenefitsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoSelected
+          - createdAt
+          - deletedAt
+          - id
+          - planBalanceId
+          - planInsuredBenefitId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePlanBalanceBenefitsByIdResponse
+  description: Responses from the 'update_plan_balance_benefits_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanBalanceBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePlanBalanceBenefitsByIdResponse
+    inputTypeName: UpdatePlanBalanceBenefitsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_plan_balance_benefits_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePlanBalanceBenefitsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePlanBalanceBenefitsById
+  outputType: UpdatePlanBalanceBenefitsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: PlanBalanceBenefitsBoolExp
+      description: Update permission post-condition predicate over the
+        'plan_balance_benefits' collection
+    - name: preCheck
+      type: PlanBalanceBenefitsBoolExp
+      description: Update permission pre-condition predicate over the
+        'plan_balance_benefits' collection
+    - name: updateColumns
+      type: UpdatePlanBalanceBenefitsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_plan_balance_benefits_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePlanBalanceBenefitsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'plan_balance_benefits' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePlanBalanceBenefitsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

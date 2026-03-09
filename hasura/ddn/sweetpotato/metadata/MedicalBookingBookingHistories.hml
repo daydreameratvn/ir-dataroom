@@ -1,0 +1,363 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MedicalBookingBookingHistories
+  description: booking_histories
+  fields:
+    - name: action
+      type: String_1
+    - name: actorId
+      type: Uuid
+    - name: bookingId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: dob
+      type: Timestamptz
+    - name: gender
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: medicalProviderId
+      type: Uuid
+    - name: name
+      type: String_1
+    - name: note
+      type: String_1
+    - name: status
+      type: String_1
+  graphql:
+    typeName: MedicalBookingBookingHistories
+    inputTypeName: MedicalBookingBookingHistoriesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: medical_booking_booking_histories
+      fieldMapping:
+        action:
+          column:
+            name: action
+        actorId:
+          column:
+            name: actor_id
+        bookingId:
+          column:
+            name: booking_id
+        createdAt:
+          column:
+            name: created_at
+        dob:
+          column:
+            name: dob
+        gender:
+          column:
+            name: gender
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        name:
+          column:
+            name: name
+        note:
+          column:
+            name: note
+        status:
+          column:
+            name: status
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MedicalBookingBookingHistories
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - actorId
+          - bookingId
+          - createdAt
+          - dob
+          - gender
+          - id
+          - medicalProviderId
+          - name
+          - note
+          - status
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MedicalBookingBookingHistoriesBoolExp
+  operand:
+    object:
+      type: MedicalBookingBookingHistories
+      comparableFields:
+        - fieldName: action
+          booleanExpressionType: TextBoolExp
+        - fieldName: actorId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: bookingId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: dob
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: gender
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: note
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: medicalBookingBookingHistoriesAction
+        - relationshipName: identityUser
+        - relationshipName: medicalBookingBooking
+        - relationshipName: genderByGender
+        - relationshipName: mpMedicalProvider
+        - relationshipName: medicalBookingBookingStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MedicalBookingBookingHistoriesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MedicalBookingBookingHistoriesAggExp
+  operand:
+    object:
+      aggregatedType: MedicalBookingBookingHistories
+      aggregatableFields:
+        - fieldName: action
+          aggregateExpression: TextAggExp
+        - fieldName: actorId
+          aggregateExpression: UuidAggExp
+        - fieldName: bookingId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: dob
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: gender
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: note
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MedicalBookingBookingHistoriesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MedicalBookingBookingHistoriesOrderByExp
+  operand:
+    object:
+      orderedType: MedicalBookingBookingHistories
+      orderableFields:
+        - fieldName: action
+          orderByExpression: String1OrderByExp
+        - fieldName: actorId
+          orderByExpression: UuidOrderByExp
+        - fieldName: bookingId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: dob
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: gender
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: note
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: medicalBookingBookingHistoriesAction
+        - relationshipName: identityUser
+        - relationshipName: medicalBookingBooking
+        - relationshipName: genderByGender
+        - relationshipName: mpMedicalProvider
+        - relationshipName: medicalBookingBookingStatus
+  graphql:
+    expressionTypeName: MedicalBookingBookingHistoriesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MedicalBookingBookingHistories
+  objectType: MedicalBookingBookingHistories
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: medical_booking_booking_histories
+  filterExpressionType: MedicalBookingBookingHistoriesBoolExp
+  aggregateExpression: MedicalBookingBookingHistoriesAggExp
+  orderByExpression: MedicalBookingBookingHistoriesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: medicalBookingBookingHistories
+      subscription:
+        rootField: medicalBookingBookingHistories
+    selectUniques:
+      - queryRootField: medicalBookingBookingHistoriesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: medicalBookingBookingHistoriesById
+    filterInputTypeName: MedicalBookingBookingHistoriesFilterInput
+    aggregate:
+      queryRootField: medicalBookingBookingHistoriesAggregate
+      subscription:
+        rootField: medicalBookingBookingHistoriesAggregate
+  description: booking_histories
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MedicalBookingBookingHistories
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingBookingHistoriesAction
+  sourceType: MedicalBookingBookingHistories
+  target:
+    model:
+      name: MedicalBookingBookingHistoriesActions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: action
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: MedicalBookingBookingHistories
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: actorId
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingBooking
+  sourceType: MedicalBookingBookingHistories
+  target:
+    model:
+      name: MedicalBookingBookings
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bookingId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: genderByGender
+  sourceType: MedicalBookingBookingHistories
+  target:
+    model:
+      name: Genders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: gender
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: MedicalBookingBookingHistories
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingBookingStatus
+  sourceType: MedicalBookingBookingHistories
+  target:
+    model:
+      name: MedicalBookingBookingStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+

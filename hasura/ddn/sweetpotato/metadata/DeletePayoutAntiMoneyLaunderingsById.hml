@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutAntiMoneyLaunderingsByIdResponse
+  description: Responses from the 'delete_payout_anti_money_launderings_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutAntiMoneyLaunderings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutAntiMoneyLaunderingsByIdResponse
+    inputTypeName: DeletePayoutAntiMoneyLaunderingsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_anti_money_launderings_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutAntiMoneyLaunderingsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutAntiMoneyLaunderingsById
+  outputType: DeletePayoutAntiMoneyLaunderingsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: PayoutAntiMoneyLaunderingsBoolExp
+      description: Delete permission predicate over the
+        'payout_anti_money_launderings' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_anti_money_launderings_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutAntiMoneyLaunderingsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_anti_money_launderings' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutAntiMoneyLaunderingsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

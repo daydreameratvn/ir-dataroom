@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePolicyFaqsByIdUpdateColumns
+  description: Update the columns of the 'policy_faqs' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnPolicyFaqsCreatedAt
+      description: Update the 'created_at' column in the 'policy_faqs' collection.
+    - name: deletedAt
+      type: UpdateColumnPolicyFaqsDeletedAt
+      description: Update the 'deleted_at' column in the 'policy_faqs' collection.
+    - name: displayOrder
+      type: UpdateColumnPolicyFaqsDisplayOrder
+      description: Update the 'display_order' column in the 'policy_faqs' collection.
+    - name: faqId
+      type: UpdateColumnPolicyFaqsFaqId
+      description: Update the 'faq_id' column in the 'policy_faqs' collection.
+    - name: id
+      type: UpdateColumnPolicyFaqsId
+      description: Update the 'id' column in the 'policy_faqs' collection.
+    - name: planId
+      type: UpdateColumnPolicyFaqsPlanId
+      description: Update the 'plan_id' column in the 'policy_faqs' collection.
+    - name: policyId
+      type: UpdateColumnPolicyFaqsPolicyId
+      description: Update the 'policy_id' column in the 'policy_faqs' collection.
+    - name: tenantId
+      type: UpdateColumnPolicyFaqsTenantId
+      description: Update the 'tenant_id' column in the 'policy_faqs' collection.
+    - name: updatedAt
+      type: UpdateColumnPolicyFaqsUpdatedAt
+      description: Update the 'updated_at' column in the 'policy_faqs' collection.
+  graphql:
+    typeName: UpdatePolicyFaqsByIdUpdateColumns
+    inputTypeName: UpdatePolicyFaqsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_policy_faqs_by_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        displayOrder:
+          column:
+            name: display_order
+        faqId:
+          column:
+            name: faq_id
+        id:
+          column:
+            name: id
+        planId:
+          column:
+            name: plan_id
+        policyId:
+          column:
+            name: policy_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePolicyFaqsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - displayOrder
+          - faqId
+          - id
+          - planId
+          - policyId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePolicyFaqsByIdResponse
+  description: Responses from the 'update_policy_faqs_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyFaqs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePolicyFaqsByIdResponse
+    inputTypeName: UpdatePolicyFaqsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_policy_faqs_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePolicyFaqsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePolicyFaqsById
+  outputType: UpdatePolicyFaqsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: PolicyFaqsBoolExp
+      description: Update permission post-condition predicate over the 'policy_faqs'
+        collection
+    - name: preCheck
+      type: PolicyFaqsBoolExp
+      description: Update permission pre-condition predicate over the 'policy_faqs'
+        collection
+    - name: updateColumns
+      type: UpdatePolicyFaqsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_policy_faqs_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePolicyFaqsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'policy_faqs' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePolicyFaqsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

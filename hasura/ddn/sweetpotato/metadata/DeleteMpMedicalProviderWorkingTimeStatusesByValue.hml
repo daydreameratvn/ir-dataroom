@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMpMedicalProviderWorkingTimeStatusesByValueResponse
+  description: Responses from the
+    'delete_mp_medical_provider_working_time_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderWorkingTimeStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMpMedicalProviderWorkingTimeStatusesByValueResponse
+    inputTypeName: DeleteMpMedicalProviderWorkingTimeStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mp_medical_provider_working_time_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMpMedicalProviderWorkingTimeStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMpMedicalProviderWorkingTimeStatusesByValue
+  outputType: DeleteMpMedicalProviderWorkingTimeStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: MpMedicalProviderWorkingTimeStatusesBoolExp
+      description: Delete permission predicate over the
+        'mp_medical_provider_working_time_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mp_medical_provider_working_time_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMpMedicalProviderWorkingTimeStatusesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mp_medical_provider_working_time_statuses'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMpMedicalProviderWorkingTimeStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

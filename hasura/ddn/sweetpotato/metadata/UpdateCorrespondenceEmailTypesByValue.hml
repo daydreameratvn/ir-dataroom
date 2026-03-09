@@ -1,0 +1,179 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCorrespondenceEmailTypesComment
+  description: Update the 'comment' column in the 'correspondence_email_types' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCorrespondenceEmailTypesComment
+    inputTypeName: UpdateColumnCorrespondenceEmailTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_correspondence_email_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCorrespondenceEmailTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCorrespondenceEmailTypesValue
+  description: Update the 'value' column in the 'correspondence_email_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCorrespondenceEmailTypesValue
+    inputTypeName: UpdateColumnCorrespondenceEmailTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_correspondence_email_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCorrespondenceEmailTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorrespondenceEmailTypesByValueUpdateColumns
+  description: Update the columns of the 'correspondence_email_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnCorrespondenceEmailTypesComment
+      description: Update the 'comment' column in the 'correspondence_email_types'
+        collection.
+    - name: value
+      type: UpdateColumnCorrespondenceEmailTypesValue
+      description: Update the 'value' column in the 'correspondence_email_types' collection.
+  graphql:
+    typeName: UpdateCorrespondenceEmailTypesByValueUpdateColumns
+    inputTypeName: UpdateCorrespondenceEmailTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_correspondence_email_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorrespondenceEmailTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorrespondenceEmailTypesByValueResponse
+  description: Responses from the 'update_correspondence_email_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmailTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCorrespondenceEmailTypesByValueResponse
+    inputTypeName: UpdateCorrespondenceEmailTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_correspondence_email_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorrespondenceEmailTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCorrespondenceEmailTypesByValue
+  outputType: UpdateCorrespondenceEmailTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: CorrespondenceEmailTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'correspondence_email_types' collection
+    - name: preCheck
+      type: CorrespondenceEmailTypesBoolExp
+      description: Update permission pre-condition predicate over the
+        'correspondence_email_types' collection
+    - name: updateColumns
+      type: UpdateCorrespondenceEmailTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_correspondence_email_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCorrespondenceEmailTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'correspondence_email_types' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCorrespondenceEmailTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

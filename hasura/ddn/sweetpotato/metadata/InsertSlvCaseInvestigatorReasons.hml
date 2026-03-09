@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvCaseInvestigatorReasonsObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertSlvCaseInvestigatorReasonsObject
+    inputTypeName: InsertSlvCaseInvestigatorReasonsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_case_investigator_reasons_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvCaseInvestigatorReasonsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvCaseInvestigatorReasonsResponse
+  description: Responses from the 'insert_slv_case_investigator_reasons' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvCaseInvestigatorReasons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertSlvCaseInvestigatorReasonsResponse
+    inputTypeName: InsertSlvCaseInvestigatorReasonsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_case_investigator_reasons_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvCaseInvestigatorReasonsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertSlvCaseInvestigatorReasons
+  outputType: InsertSlvCaseInvestigatorReasonsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertSlvCaseInvestigatorReasonsObject!]!"
+    - name: postCheck
+      type: SlvCaseInvestigatorReasonsBoolExp
+      description: Insert permission predicate over the
+        'slv_case_investigator_reasons' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_slv_case_investigator_reasons
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertSlvCaseInvestigatorReasons
+    rootFieldKind: Mutation
+  description: Insert into the slv_case_investigator_reasons table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertSlvCaseInvestigatorReasons
+  permissions:
+    - role: admin
+      allowExecution: true
+

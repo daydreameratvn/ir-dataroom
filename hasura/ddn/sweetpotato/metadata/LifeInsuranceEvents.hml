@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LifeInsuranceEvents
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: LifeInsuranceEvents
+    inputTypeName: LifeInsuranceEventsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: life_insurance_events
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LifeInsuranceEvents
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: LifeInsuranceEventsBoolExp
+  operand:
+    object:
+      type: LifeInsuranceEvents
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimCases
+        - relationshipName: originalClaimCases
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: LifeInsuranceEventsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: LifeInsuranceEventsAggExp
+  operand:
+    object:
+      aggregatedType: LifeInsuranceEvents
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: LifeInsuranceEventsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: LifeInsuranceEventsOrderByExp
+  operand:
+    object:
+      orderedType: LifeInsuranceEvents
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: LifeInsuranceEventsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: LifeInsuranceEvents
+  objectType: LifeInsuranceEvents
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: life_insurance_events
+  filterExpressionType: LifeInsuranceEventsBoolExp
+  aggregateExpression: LifeInsuranceEventsAggExp
+  orderByExpression: LifeInsuranceEventsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: lifeInsuranceEvents
+      subscription:
+        rootField: lifeInsuranceEvents
+    selectUniques:
+      - queryRootField: lifeInsuranceEventsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: lifeInsuranceEventsByValue
+    filterInputTypeName: LifeInsuranceEventsFilterInput
+    aggregate:
+      queryRootField: lifeInsuranceEventsAggregate
+      subscription:
+        rootField: lifeInsuranceEventsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: LifeInsuranceEvents
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCases
+  sourceType: LifeInsuranceEvents
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: insuranceEvent
+  graphql:
+    aggregateFieldName: claimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: originalClaimCases
+  sourceType: LifeInsuranceEvents
+  target:
+    model:
+      name: OriginalClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OriginalClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: insuranceEvent
+  graphql:
+    aggregateFieldName: originalClaimCasesAggregate
+

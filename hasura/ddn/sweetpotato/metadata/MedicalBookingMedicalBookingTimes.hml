@@ -1,0 +1,303 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MedicalBookingMedicalBookingTimes
+  description: Chi tiết thời gian hẹn
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: date
+      type: Date!
+    - name: dayOfWeek
+      type: Int32!
+    - name: fromTime
+      type: Timestamptz!
+    - name: medicalBookingId
+      type: Uuid!
+    - name: medicalBookingTimeId
+      type: Uuid!
+    - name: remark
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: timePeriod
+      type: String_1!
+    - name: toTime
+      type: Timestamptz!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: MedicalBookingMedicalBookingTimes
+    inputTypeName: MedicalBookingMedicalBookingTimesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: medical_booking_medical_booking_times
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        date:
+          column:
+            name: date
+        dayOfWeek:
+          column:
+            name: day_of_week
+        fromTime:
+          column:
+            name: from_time
+        medicalBookingId:
+          column:
+            name: medical_booking_id
+        medicalBookingTimeId:
+          column:
+            name: medical_booking_time_id
+        remark:
+          column:
+            name: remark
+        status:
+          column:
+            name: status
+        timePeriod:
+          column:
+            name: time_period
+        toTime:
+          column:
+            name: to_time
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MedicalBookingMedicalBookingTimes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - date
+          - dayOfWeek
+          - fromTime
+          - medicalBookingId
+          - medicalBookingTimeId
+          - remark
+          - status
+          - timePeriod
+          - toTime
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MedicalBookingMedicalBookingTimesBoolExp
+  operand:
+    object:
+      type: MedicalBookingMedicalBookingTimes
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: date
+          booleanExpressionType: DateBoolExp
+        - fieldName: dayOfWeek
+          booleanExpressionType: Int4BoolExp
+        - fieldName: fromTime
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: medicalBookingId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalBookingTimeId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: remark
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: timePeriod
+          booleanExpressionType: TextBoolExp
+        - fieldName: toTime
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: medicalBookingMedicalBooking
+        - relationshipName: medicalBookingMedicalBookingStatus
+        - relationshipName: mpMedicalProviderWorkingTimePeriod
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MedicalBookingMedicalBookingTimesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MedicalBookingMedicalBookingTimesAggExp
+  operand:
+    object:
+      aggregatedType: MedicalBookingMedicalBookingTimes
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: date
+          aggregateExpression: DateAggExp
+        - fieldName: dayOfWeek
+          aggregateExpression: Int4AggExp
+        - fieldName: fromTime
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: medicalBookingId
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalBookingTimeId
+          aggregateExpression: UuidAggExp
+        - fieldName: remark
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: timePeriod
+          aggregateExpression: TextAggExp
+        - fieldName: toTime
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MedicalBookingMedicalBookingTimesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MedicalBookingMedicalBookingTimesOrderByExp
+  operand:
+    object:
+      orderedType: MedicalBookingMedicalBookingTimes
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: date
+          orderByExpression: DateOrderByExp
+        - fieldName: dayOfWeek
+          orderByExpression: Int32OrderByExp
+        - fieldName: fromTime
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: medicalBookingId
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalBookingTimeId
+          orderByExpression: UuidOrderByExp
+        - fieldName: remark
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: timePeriod
+          orderByExpression: String1OrderByExp
+        - fieldName: toTime
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: medicalBookingMedicalBooking
+        - relationshipName: medicalBookingMedicalBookingStatus
+        - relationshipName: mpMedicalProviderWorkingTimePeriod
+  graphql:
+    expressionTypeName: MedicalBookingMedicalBookingTimesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MedicalBookingMedicalBookingTimes
+  objectType: MedicalBookingMedicalBookingTimes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: medical_booking_medical_booking_times
+  filterExpressionType: MedicalBookingMedicalBookingTimesBoolExp
+  aggregateExpression: MedicalBookingMedicalBookingTimesAggExp
+  orderByExpression: MedicalBookingMedicalBookingTimesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: medicalBookingMedicalBookingTimes
+      subscription:
+        rootField: medicalBookingMedicalBookingTimes
+    selectUniques:
+      - queryRootField: medicalBookingMedicalBookingTimesByMedicalBookingTimeId
+        uniqueIdentifier:
+          - medicalBookingTimeId
+        subscription:
+          rootField: medicalBookingMedicalBookingTimesByMedicalBookingTimeId
+    filterInputTypeName: MedicalBookingMedicalBookingTimesFilterInput
+    aggregate:
+      queryRootField: medicalBookingMedicalBookingTimesAggregate
+      subscription:
+        rootField: medicalBookingMedicalBookingTimesAggregate
+  description: Chi tiết thời gian hẹn
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MedicalBookingMedicalBookingTimes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingMedicalBooking
+  sourceType: MedicalBookingMedicalBookingTimes
+  target:
+    model:
+      name: MedicalBookingMedicalBookings
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalBookingId
+      target:
+        modelField:
+          - fieldName: medicalBookingId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingMedicalBookingStatus
+  sourceType: MedicalBookingMedicalBookingTimes
+  target:
+    model:
+      name: MedicalBookingMedicalBookingStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderWorkingTimePeriod
+  sourceType: MedicalBookingMedicalBookingTimes
+  target:
+    model:
+      name: MpMedicalProviderWorkingTimePeriods
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: timePeriod
+      target:
+        modelField:
+          - fieldName: value
+

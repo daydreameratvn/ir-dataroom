@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimQualityCodes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimQualityCodes
+    inputTypeName: ClaimQualityCodesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_quality_codes
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimQualityCodes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimQualityCodesBoolExp
+  operand:
+    object:
+      type: ClaimQualityCodes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimQualityCodesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimQualityCodesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimQualityCodes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimQualityCodesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimQualityCodesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimQualityCodes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimQualityCodesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimQualityCodes
+  objectType: ClaimQualityCodes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_quality_codes
+  filterExpressionType: ClaimQualityCodesBoolExp
+  aggregateExpression: ClaimQualityCodesAggExp
+  orderByExpression: ClaimQualityCodesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimQualityCodes
+      subscription:
+        rootField: claimQualityCodes
+    selectUniques:
+      - queryRootField: claimQualityCodesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimQualityCodesByValue
+    filterInputTypeName: ClaimQualityCodesFilterInput
+    aggregate:
+      queryRootField: claimQualityCodesAggregate
+      subscription:
+        rootField: claimQualityCodesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimQualityCodes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

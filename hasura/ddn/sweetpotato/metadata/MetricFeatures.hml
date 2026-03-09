@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MetricFeatures
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MetricFeatures
+    inputTypeName: MetricFeaturesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: metric_features
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MetricFeatures
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MetricFeaturesBoolExp
+  operand:
+    object:
+      type: MetricFeatures
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: metricClicks
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MetricFeaturesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MetricFeaturesAggExp
+  operand:
+    object:
+      aggregatedType: MetricFeatures
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MetricFeaturesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MetricFeaturesOrderByExp
+  operand:
+    object:
+      orderedType: MetricFeatures
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MetricFeaturesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MetricFeatures
+  objectType: MetricFeatures
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: metric_features
+  filterExpressionType: MetricFeaturesBoolExp
+  aggregateExpression: MetricFeaturesAggExp
+  orderByExpression: MetricFeaturesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: metricFeatures
+      subscription:
+        rootField: metricFeatures
+    selectUniques:
+      - queryRootField: metricFeaturesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: metricFeaturesByValue
+    filterInputTypeName: MetricFeaturesFilterInput
+    aggregate:
+      queryRootField: metricFeaturesAggregate
+      subscription:
+        rootField: metricFeaturesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MetricFeatures
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: metricClicks
+  sourceType: MetricFeatures
+  target:
+    model:
+      name: MetricClicks
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MetricClicksAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: feature
+  graphql:
+    aggregateFieldName: metricClicksAggregate
+

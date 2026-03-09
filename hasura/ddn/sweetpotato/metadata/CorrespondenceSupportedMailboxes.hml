@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceSupportedMailboxes
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CorrespondenceSupportedMailboxes
+    inputTypeName: CorrespondenceSupportedMailboxesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_supported_mailboxes
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceSupportedMailboxes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceSupportedMailboxesBoolExp
+  operand:
+    object:
+      type: CorrespondenceSupportedMailboxes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceSupportedMailboxesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceSupportedMailboxesAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceSupportedMailboxes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceSupportedMailboxesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceSupportedMailboxesOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceSupportedMailboxes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CorrespondenceSupportedMailboxesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceSupportedMailboxes
+  objectType: CorrespondenceSupportedMailboxes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_supported_mailboxes
+  filterExpressionType: CorrespondenceSupportedMailboxesBoolExp
+  aggregateExpression: CorrespondenceSupportedMailboxesAggExp
+  orderByExpression: CorrespondenceSupportedMailboxesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceSupportedMailboxes
+      subscription:
+        rootField: correspondenceSupportedMailboxes
+    selectUniques:
+      - queryRootField: correspondenceSupportedMailboxesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: correspondenceSupportedMailboxesByValue
+    filterInputTypeName: CorrespondenceSupportedMailboxesFilterInput
+    aggregate:
+      queryRootField: correspondenceSupportedMailboxesAggregate
+      subscription:
+        rootField: correspondenceSupportedMailboxesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceSupportedMailboxes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

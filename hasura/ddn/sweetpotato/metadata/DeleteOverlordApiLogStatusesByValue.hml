@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteOverlordApiLogStatusesByValueResponse
+  description: Responses from the 'delete_overlord_api_log_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OverlordApiLogStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteOverlordApiLogStatusesByValueResponse
+    inputTypeName: DeleteOverlordApiLogStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_overlord_api_log_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteOverlordApiLogStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteOverlordApiLogStatusesByValue
+  outputType: DeleteOverlordApiLogStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: OverlordApiLogStatusesBoolExp
+      description: Delete permission predicate over the 'overlord_api_log_statuses'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_overlord_api_log_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteOverlordApiLogStatusesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'overlord_api_log_statuses' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteOverlordApiLogStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

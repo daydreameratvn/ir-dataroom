@@ -1,0 +1,265 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuditLogsRecordStatusChanges
+  fields:
+    - name: actorId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: newValue
+      type: String_1
+    - name: oldValue
+      type: String_1
+    - name: recordId
+      type: Uuid!
+    - name: tableName
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+  graphql:
+    typeName: AuditLogsRecordStatusChanges
+    inputTypeName: AuditLogsRecordStatusChangesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: audit_logs_record_status_changes
+      fieldMapping:
+        actorId:
+          column:
+            name: actor_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        newValue:
+          column:
+            name: new_value
+        oldValue:
+          column:
+            name: old_value
+        recordId:
+          column:
+            name: record_id
+        tableName:
+          column:
+            name: table_name
+        tenantId:
+          column:
+            name: tenant_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuditLogsRecordStatusChanges
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actorId
+          - createdAt
+          - id
+          - newValue
+          - oldValue
+          - recordId
+          - tableName
+          - tenantId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AuditLogsRecordStatusChangesBoolExp
+  operand:
+    object:
+      type: AuditLogsRecordStatusChanges
+      comparableFields:
+        - fieldName: actorId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: newValue
+          booleanExpressionType: TextBoolExp
+        - fieldName: oldValue
+          booleanExpressionType: TextBoolExp
+        - fieldName: recordId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tableName
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: auditLogsRecordStatusChangeTableName
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AuditLogsRecordStatusChangesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AuditLogsRecordStatusChangesAggExp
+  operand:
+    object:
+      aggregatedType: AuditLogsRecordStatusChanges
+      aggregatableFields:
+        - fieldName: actorId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: newValue
+          aggregateExpression: TextAggExp
+        - fieldName: oldValue
+          aggregateExpression: TextAggExp
+        - fieldName: recordId
+          aggregateExpression: UuidAggExp
+        - fieldName: tableName
+          aggregateExpression: VarcharAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AuditLogsRecordStatusChangesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AuditLogsRecordStatusChangesOrderByExp
+  operand:
+    object:
+      orderedType: AuditLogsRecordStatusChanges
+      orderableFields:
+        - fieldName: actorId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: newValue
+          orderByExpression: String1OrderByExp
+        - fieldName: oldValue
+          orderByExpression: String1OrderByExp
+        - fieldName: recordId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tableName
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: auditLogsRecordStatusChangeTableName
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: AuditLogsRecordStatusChangesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AuditLogsRecordStatusChanges
+  objectType: AuditLogsRecordStatusChanges
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: audit_logs_record_status_changes
+  filterExpressionType: AuditLogsRecordStatusChangesBoolExp
+  aggregateExpression: AuditLogsRecordStatusChangesAggExp
+  orderByExpression: AuditLogsRecordStatusChangesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: auditLogsRecordStatusChanges
+      subscription:
+        rootField: auditLogsRecordStatusChanges
+    selectUniques:
+      - queryRootField: auditLogsRecordStatusChangesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: auditLogsRecordStatusChangesById
+    filterInputTypeName: AuditLogsRecordStatusChangesFilterInput
+    aggregate:
+      queryRootField: auditLogsRecordStatusChangesAggregate
+      subscription:
+        rootField: auditLogsRecordStatusChangesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuditLogsRecordStatusChanges
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: AuditLogsRecordStatusChanges
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: actorId
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogsRecordStatusChangeTableName
+  sourceType: AuditLogsRecordStatusChanges
+  target:
+    model:
+      name: AuditLogsRecordStatusChangeTableNames
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tableName
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: AuditLogsRecordStatusChanges
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

@@ -1,0 +1,157 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFigClaimCaseAssignmentsObject
+  fields:
+    - name: assigneeUserId
+      type: Uuid
+    - name: assignerUserId
+      type: Uuid!
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: note
+      type: String_1
+    - name: originalAssigneeUserId
+      type: Uuid
+    - name: originalAssignerUserId
+      type: Uuid
+    - name: toDo
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertFigClaimCaseAssignmentsObject
+    inputTypeName: InsertFigClaimCaseAssignmentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fig_claim_case_assignments_object
+      fieldMapping:
+        assigneeUserId:
+          column:
+            name: assignee_user_id
+        assignerUserId:
+          column:
+            name: assigner_user_id
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        note:
+          column:
+            name: note
+        originalAssigneeUserId:
+          column:
+            name: original_assignee_user_id
+        originalAssignerUserId:
+          column:
+            name: original_assigner_user_id
+        toDo:
+          column:
+            name: to_do
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFigClaimCaseAssignmentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - assigneeUserId
+          - assignerUserId
+          - claimCaseId
+          - createdAt
+          - id
+          - note
+          - originalAssigneeUserId
+          - originalAssignerUserId
+          - toDo
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFigClaimCaseAssignmentsResponse
+  description: Responses from the 'insert_fig_claim_case_assignments' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FigClaimCaseAssignments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFigClaimCaseAssignmentsResponse
+    inputTypeName: InsertFigClaimCaseAssignmentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fig_claim_case_assignments_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFigClaimCaseAssignmentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFigClaimCaseAssignments
+  outputType: InsertFigClaimCaseAssignmentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFigClaimCaseAssignmentsObject!]!"
+    - name: postCheck
+      type: FigClaimCaseAssignmentsBoolExp
+      description: Insert permission predicate over the 'fig_claim_case_assignments'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fig_claim_case_assignments
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFigClaimCaseAssignments
+    rootFieldKind: Mutation
+  description: Insert into the fig_claim_case_assignments table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFigClaimCaseAssignments
+  permissions:
+    - role: admin
+      allowExecution: true
+

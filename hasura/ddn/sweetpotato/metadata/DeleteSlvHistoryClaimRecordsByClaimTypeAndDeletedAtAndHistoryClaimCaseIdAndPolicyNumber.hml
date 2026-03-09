@@ -1,0 +1,86 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteSlvHistoryClaimRecordsByClaimTypeAndDeletedAtAndHistoryClaimCaseIdAndPolicyNumberResponse
+  description: Responses from the
+    'delete_slv_history_claim_records_by_claim_type_and_deleted_at_and_history_claim_case_id_and_policy_number'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvHistoryClaimRecords!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteSlvHistoryClaimRecordsByClaimTypeAndDeletedAtAndHistoryClaimCaseIdAndPolicyNumberResponse
+    inputTypeName: DeleteSlvHistoryClaimRecordsByClaimTypeAndDeletedAtAndHistoryClaimCaseIdAndPolicyNumberResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_slv_history_claim_records_by_claim_type_and_deleted_at_and_history_claim_case_id_and_policy_number_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteSlvHistoryClaimRecordsByClaimTypeAndDeletedAtAndHistoryClaimCaseIdAndPolicyNumberResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteSlvHistoryClaimRecordsByClaimTypeAndDeletedAtAndHistoryClaimCaseIdAndPolicyNumber
+  outputType: DeleteSlvHistoryClaimRecordsByClaimTypeAndDeletedAtAndHistoryClaimCaseIdAndPolicyNumberResponse!
+  arguments:
+    - name: keyClaimType
+      type: String_1!
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyHistoryClaimCaseId
+      type: Uuid!
+    - name: keyPolicyNumber
+      type: String_1!
+    - name: preCheck
+      type: SlvHistoryClaimRecordsBoolExp
+      description: Delete permission predicate over the 'slv_history_claim_records'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_slv_history_claim_records_by_claim_type_and_deleted_at_and_history_claim_case_id_and_policy_number
+    argumentMapping:
+      keyClaimType: key_claim_type
+      keyDeletedAt: key_deleted_at
+      keyHistoryClaimCaseId: key_history_claim_case_id
+      keyPolicyNumber: key_policy_number
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteSlvHistoryClaimRecordsByClaimTypeAndDeletedAtAndHistoryClaimCaseIdAndPolicyNumber
+    rootFieldKind: Mutation
+  description: Delete any row on the 'slv_history_claim_records' collection using
+    the 'claim_type', 'deleted_at', 'history_claim_case_id' and 'policy_number'
+    keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteSlvHistoryClaimRecordsByClaimTypeAndDeletedAtAndHistoryClaimCaseIdAndPolicyNumber
+  permissions:
+    - role: admin
+      allowExecution: true
+

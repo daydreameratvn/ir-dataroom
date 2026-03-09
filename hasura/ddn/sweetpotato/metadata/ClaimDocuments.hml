@@ -1,0 +1,720 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimDocuments
+  description: All claim request documents
+  fields:
+    - name: assessedClaimPendingCodeIds
+      type: "[Uuid]"
+    - name: claimCaseId
+      type: Uuid!
+    - name: claimDocumentId
+      type: Uuid!
+    - name: claimPendingCodeId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: displayOrder
+      type: Int32
+    - name: emailId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: isEstimatedDocs
+      type: Boolean_1
+    - name: isSensitive
+      type: Boolean_1!
+    - name: isSupplemented
+      type: Boolean_1
+    - name: ocrPaperId
+      type: Uuid
+    - name: ocrType
+      type: String_1
+    - name: rawOcrData
+      type: Json
+      description: "@depreciated use file.raw_ocr_data for broader usage"
+    - name: source
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: uploaderId
+      type: Uuid
+    - name: userName
+      type: String_1
+    - name: userRoleId
+      type: Uuid
+  graphql:
+    typeName: ClaimDocuments_1
+    inputTypeName: ClaimDocumentsInput_1
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_documents
+      fieldMapping:
+        assessedClaimPendingCodeIds:
+          column:
+            name: assessed_claim_pending_code_ids
+        claimCaseId:
+          column:
+            name: claim_case_id
+        claimDocumentId:
+          column:
+            name: claim_document_id
+        claimPendingCodeId:
+          column:
+            name: claim_pending_code_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        displayOrder:
+          column:
+            name: display_order
+        emailId:
+          column:
+            name: email_id
+        id:
+          column:
+            name: id
+        isEstimatedDocs:
+          column:
+            name: is_estimated_docs
+        isSensitive:
+          column:
+            name: is_sensitive
+        isSupplemented:
+          column:
+            name: is_supplemented
+        ocrPaperId:
+          column:
+            name: ocr_paper_id
+        ocrType:
+          column:
+            name: ocr_type
+        rawOcrData:
+          column:
+            name: raw_ocr_data
+        source:
+          column:
+            name: source
+        tenantId:
+          column:
+            name: tenant_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        uploaderId:
+          column:
+            name: uploader_id
+        userName:
+          column:
+            name: user_name
+        userRoleId:
+          column:
+            name: user_role_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimDocuments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - assessedClaimPendingCodeIds
+          - claimCaseId
+          - claimDocumentId
+          - claimPendingCodeId
+          - createdAt
+          - deletedAt
+          - deletedBy
+          - displayOrder
+          - emailId
+          - id
+          - isEstimatedDocs
+          - isSensitive
+          - isSupplemented
+          - ocrPaperId
+          - ocrType
+          - rawOcrData
+          - source
+          - tenantId
+          - type
+          - updatedAt
+          - uploaderId
+          - userName
+          - userRoleId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimDocumentsBoolExp
+  operand:
+    object:
+      type: ClaimDocuments
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimDocumentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimPendingCodeId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: displayOrder
+          booleanExpressionType: Int4BoolExp
+        - fieldName: emailId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isEstimatedDocs
+          booleanExpressionType: BoolBoolExp
+        - fieldName: isSensitive
+          booleanExpressionType: BoolBoolExp
+        - fieldName: isSupplemented
+          booleanExpressionType: BoolBoolExp
+        - fieldName: ocrPaperId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: ocrType
+          booleanExpressionType: TextBoolExp
+        - fieldName: rawOcrData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: source
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: type
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: uploaderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userName
+          booleanExpressionType: TextBoolExp
+        - fieldName: userRoleId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimDocumentGroupClaimDocuments
+        - relationshipName: claimPendingCode
+        - relationshipName: identityUser
+        - relationshipName: correspondenceEmail
+        - relationshipName: ocrPaper
+        - relationshipName: claimDocumentType
+        - relationshipName: claimSource
+        - relationshipName: tenant
+        - relationshipName: claimDocumentTypeByType
+        - relationshipName: identityUserByUploaderId
+        - relationshipName: identityUserRole
+        - relationshipName: correspondenceEmailAttachments
+        - relationshipName: files
+        - relationshipName: fwdClaimDocumentSyncHistories
+        - relationshipName: fwdSyncDocumentPages
+        - relationshipName: ocrPapers
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimDocumentsBoolExp_1
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimDocumentsAggExp
+  operand:
+    object:
+      aggregatedType: ClaimDocuments
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimDocumentId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimPendingCodeId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: displayOrder
+          aggregateExpression: Int4AggExp
+        - fieldName: emailId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isEstimatedDocs
+          aggregateExpression: BoolAggExp
+        - fieldName: isSensitive
+          aggregateExpression: BoolAggExp
+        - fieldName: isSupplemented
+          aggregateExpression: BoolAggExp
+        - fieldName: ocrPaperId
+          aggregateExpression: UuidAggExp
+        - fieldName: ocrType
+          aggregateExpression: TextAggExp
+        - fieldName: rawOcrData
+          aggregateExpression: JsonbAggExp
+        - fieldName: source
+          aggregateExpression: VarcharAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: type
+          aggregateExpression: VarcharAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: uploaderId
+          aggregateExpression: UuidAggExp
+        - fieldName: userName
+          aggregateExpression: TextAggExp
+        - fieldName: userRoleId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimDocumentsAggExp_1
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimDocumentsOrderByExp
+  operand:
+    object:
+      orderedType: ClaimDocuments
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimDocumentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimPendingCodeId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: displayOrder
+          orderByExpression: Int32OrderByExp
+        - fieldName: emailId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isEstimatedDocs
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: isSensitive
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: isSupplemented
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: ocrPaperId
+          orderByExpression: UuidOrderByExp
+        - fieldName: ocrType
+          orderByExpression: String1OrderByExp
+        - fieldName: rawOcrData
+          orderByExpression: JsonOrderByExp
+        - fieldName: source
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: uploaderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: userName
+          orderByExpression: String1OrderByExp
+        - fieldName: userRoleId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimPendingCode
+        - relationshipName: identityUser
+        - relationshipName: correspondenceEmail
+        - relationshipName: ocrPaper
+        - relationshipName: claimDocumentType
+        - relationshipName: claimSource
+        - relationshipName: tenant
+        - relationshipName: claimDocumentTypeByType
+        - relationshipName: identityUserByUploaderId
+        - relationshipName: identityUserRole
+  graphql:
+    expressionTypeName: ClaimDocumentsOrderByExp_1
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimDocuments
+  objectType: ClaimDocuments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_documents
+  filterExpressionType: ClaimDocumentsBoolExp
+  aggregateExpression: ClaimDocumentsAggExp
+  orderByExpression: ClaimDocumentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimDocuments_1
+      subscription:
+        rootField: claimDocuments_1
+    selectUniques:
+      - queryRootField: claimDocumentsByClaimDocumentId
+        uniqueIdentifier:
+          - claimDocumentId
+        subscription:
+          rootField: claimDocumentsByClaimDocumentId
+    filterInputTypeName: ClaimDocumentsFilterInput_1
+    aggregate:
+      queryRootField: claimDocumentsAggregate_1
+      subscription:
+        rootField: claimDocumentsAggregate_1
+  description: All claim request documents
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimDocuments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocumentGroupClaimDocuments
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: ClaimDocumentGroupClaimDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimDocumentGroupClaimDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentId
+      target:
+        modelField:
+          - fieldName: claimDocumentId
+  graphql:
+    aggregateFieldName: claimDocumentGroupClaimDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimPendingCode
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: ClaimPendingCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimPendingCodeId
+      target:
+        modelField:
+          - fieldName: claimPendingCodeId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: deletedBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmail
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: CorrespondenceEmails
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: emailId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPaper
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: OcrPapers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ocrPaperId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocumentType
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: ClaimDocumentTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ocrType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimSource
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: ClaimSources
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: source
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocumentTypeByType
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: ClaimDocumentTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUploaderId
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: uploaderId
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserRole
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: IdentityUserRole
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userRoleId
+      target:
+        modelField:
+          - fieldName: userRoleId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmailAttachments
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: CorrespondenceEmailAttachments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceEmailAttachmentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentId
+      target:
+        modelField:
+          - fieldName: claimDocumentId
+  graphql:
+    aggregateFieldName: correspondenceEmailAttachmentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: files
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: Files
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentId
+      target:
+        modelField:
+          - fieldName: claimDocumentId
+  graphql:
+    aggregateFieldName: filesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdClaimDocumentSyncHistories
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: FwdClaimDocumentSyncHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdClaimDocumentSyncHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentId
+      target:
+        modelField:
+          - fieldName: claimDocumentId
+  graphql:
+    aggregateFieldName: fwdClaimDocumentSyncHistoriesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdSyncDocumentPages
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: FwdSyncDocumentPages
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdSyncDocumentPagesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentId
+      target:
+        modelField:
+          - fieldName: claimDocumentId
+  graphql:
+    aggregateFieldName: fwdSyncDocumentPagesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPapers
+  sourceType: ClaimDocuments
+  target:
+    model:
+      name: OcrPapers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrPapersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentId
+      target:
+        modelField:
+          - fieldName: claimDocumentId
+  graphql:
+    aggregateFieldName: ocrPapersAggregate
+

@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MetadataTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MetadataTypes
+    inputTypeName: MetadataTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: metadata_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MetadataTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MetadataTypesBoolExp
+  operand:
+    object:
+      type: MetadataTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: metadata
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MetadataTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MetadataTypesAggExp
+  operand:
+    object:
+      aggregatedType: MetadataTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MetadataTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MetadataTypesOrderByExp
+  operand:
+    object:
+      orderedType: MetadataTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MetadataTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MetadataTypes
+  objectType: MetadataTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: metadata_types
+  filterExpressionType: MetadataTypesBoolExp
+  aggregateExpression: MetadataTypesAggExp
+  orderByExpression: MetadataTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: metadataTypes
+      subscription:
+        rootField: metadataTypes
+    selectUniques:
+      - queryRootField: metadataTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: metadataTypesByValue
+    filterInputTypeName: MetadataTypesFilterInput
+    aggregate:
+      queryRootField: metadataTypesAggregate
+      subscription:
+        rootField: metadataTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MetadataTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: metadata
+  sourceType: MetadataTypes
+  target:
+    model:
+      name: Metadata
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MetadataAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: metadataAggregate
+

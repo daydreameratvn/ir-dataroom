@@ -1,0 +1,154 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateProvincesByIdUpdateColumns
+  description: Update the columns of the 'provinces' collection
+  fields:
+    - name: code
+      type: UpdateColumnProvincesCode
+      description: Update the 'code' column in the 'provinces' collection.
+    - name: countryCode
+      type: UpdateColumnProvincesCountryCode
+      description: Update the 'country_code' column in the 'provinces' collection.
+    - name: displayOrder
+      type: UpdateColumnProvincesDisplayOrder
+      description: Update the 'display_order' column in the 'provinces' collection.
+    - name: id
+      type: UpdateColumnProvincesId
+      description: Update the 'id' column in the 'provinces' collection.
+    - name: name
+      type: UpdateColumnProvincesName
+      description: Update the 'name' column in the 'provinces' collection.
+    - name: placeType
+      type: UpdateColumnProvincesPlaceType
+      description: Update the 'place_type' column in the 'provinces' collection.
+    - name: shortName
+      type: UpdateColumnProvincesShortName
+      description: Update the 'short_name' column in the 'provinces' collection.
+  graphql:
+    typeName: UpdateProvincesByIdUpdateColumns
+    inputTypeName: UpdateProvincesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_provinces_by_id_update_columns
+      fieldMapping:
+        code:
+          column:
+            name: code
+        countryCode:
+          column:
+            name: country_code
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        placeType:
+          column:
+            name: place_type
+        shortName:
+          column:
+            name: short_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateProvincesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - countryCode
+          - displayOrder
+          - id
+          - name
+          - placeType
+          - shortName
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateProvincesByIdResponse
+  description: Responses from the 'update_provinces_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Provinces!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateProvincesByIdResponse
+    inputTypeName: UpdateProvincesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_provinces_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateProvincesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateProvincesById
+  outputType: UpdateProvincesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Bigdecimal!
+    - name: postCheck
+      type: ProvincesBoolExp
+      description: Update permission post-condition predicate over the 'provinces'
+        collection
+    - name: preCheck
+      type: ProvincesBoolExp
+      description: Update permission pre-condition predicate over the 'provinces' collection
+    - name: updateColumns
+      type: UpdateProvincesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_provinces_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateProvincesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'provinces' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateProvincesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

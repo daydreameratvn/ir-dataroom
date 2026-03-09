@@ -1,0 +1,291 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: NotificationNotifications
+  description: notifications
+  fields:
+    - name: code
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: firstSeenAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: originId
+      type: Uuid!
+    - name: originType
+      type: String_1!
+    - name: reason
+      type: String_1
+    - name: receiverId
+      type: Uuid!
+    - name: receiverType
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: NotificationNotifications
+    inputTypeName: NotificationNotificationsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: notification_notifications
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        firstSeenAt:
+          column:
+            name: first_seen_at
+        id:
+          column:
+            name: id
+        originId:
+          column:
+            name: origin_id
+        originType:
+          column:
+            name: origin_type
+        reason:
+          column:
+            name: reason
+        receiverId:
+          column:
+            name: receiver_id
+        receiverType:
+          column:
+            name: receiver_type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: NotificationNotifications
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - firstSeenAt
+          - id
+          - originId
+          - originType
+          - reason
+          - receiverId
+          - receiverType
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NotificationNotificationsBoolExp
+  operand:
+    object:
+      type: NotificationNotifications
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: firstSeenAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: originId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: originType
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: reason
+          booleanExpressionType: TextBoolExp
+        - fieldName: receiverId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: receiverType
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: notificationOriginType
+        - relationshipName: notificationReason
+        - relationshipName: notificationReceiverType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NotificationNotificationsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: NotificationNotificationsAggExp
+  operand:
+    object:
+      aggregatedType: NotificationNotifications
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: firstSeenAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: originId
+          aggregateExpression: UuidAggExp
+        - fieldName: originType
+          aggregateExpression: VarcharAggExp
+        - fieldName: reason
+          aggregateExpression: TextAggExp
+        - fieldName: receiverId
+          aggregateExpression: UuidAggExp
+        - fieldName: receiverType
+          aggregateExpression: VarcharAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: NotificationNotificationsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: NotificationNotificationsOrderByExp
+  operand:
+    object:
+      orderedType: NotificationNotifications
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: firstSeenAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: originId
+          orderByExpression: UuidOrderByExp
+        - fieldName: originType
+          orderByExpression: String1OrderByExp
+        - fieldName: reason
+          orderByExpression: String1OrderByExp
+        - fieldName: receiverId
+          orderByExpression: UuidOrderByExp
+        - fieldName: receiverType
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: notificationOriginType
+        - relationshipName: notificationReason
+        - relationshipName: notificationReceiverType
+  graphql:
+    expressionTypeName: NotificationNotificationsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: NotificationNotifications
+  objectType: NotificationNotifications
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: notification_notifications
+  filterExpressionType: NotificationNotificationsBoolExp
+  aggregateExpression: NotificationNotificationsAggExp
+  orderByExpression: NotificationNotificationsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: notificationNotifications
+      subscription:
+        rootField: notificationNotifications
+    selectUniques:
+      - queryRootField: notificationNotificationsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: notificationNotificationsById
+    filterInputTypeName: NotificationNotificationsFilterInput
+    aggregate:
+      queryRootField: notificationNotificationsAggregate
+      subscription:
+        rootField: notificationNotificationsAggregate
+  description: notifications
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: NotificationNotifications
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: notificationOriginType
+  sourceType: NotificationNotifications
+  target:
+    model:
+      name: NotificationOriginTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: originType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: notificationReason
+  sourceType: NotificationNotifications
+  target:
+    model:
+      name: NotificationReasons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: reason
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: notificationReceiverType
+  sourceType: NotificationNotifications
+  target:
+    model:
+      name: NotificationReceiverTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: receiverType
+      target:
+        modelField:
+          - fieldName: value
+

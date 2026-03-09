@@ -1,0 +1,195 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeUpdateColumns
+  description: Update the columns of the 'payout_money_laundering_suspects' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnPayoutMoneyLaunderingSuspectsCreatedAt
+      description: Update the 'created_at' column in the
+        'payout_money_laundering_suspects' collection.
+    - name: dob
+      type: UpdateColumnPayoutMoneyLaunderingSuspectsDob
+      description: Update the 'dob' column in the 'payout_money_laundering_suspects'
+        collection.
+    - name: gender
+      type: UpdateColumnPayoutMoneyLaunderingSuspectsGender
+      description: Update the 'gender' column in the
+        'payout_money_laundering_suspects' collection.
+    - name: id
+      type: UpdateColumnPayoutMoneyLaunderingSuspectsId
+      description: Update the 'id' column in the 'payout_money_laundering_suspects'
+        collection.
+    - name: identityPaperType
+      type: UpdateColumnPayoutMoneyLaunderingSuspectsIdentityPaperType
+      description: Update the 'identity_paper_type' column in the
+        'payout_money_laundering_suspects' collection.
+    - name: insurerId
+      type: UpdateColumnPayoutMoneyLaunderingSuspectsInsurerId
+      description: Update the 'insurer_id' column in the
+        'payout_money_laundering_suspects' collection.
+    - name: name
+      type: UpdateColumnPayoutMoneyLaunderingSuspectsName
+      description: Update the 'name' column in the 'payout_money_laundering_suspects'
+        collection.
+    - name: paperId
+      type: UpdateColumnPayoutMoneyLaunderingSuspectsPaperId
+      description: Update the 'paper_id' column in the
+        'payout_money_laundering_suspects' collection.
+    - name: policyType
+      type: UpdateColumnPayoutMoneyLaunderingSuspectsPolicyType
+      description: Update the 'policy_type' column in the
+        'payout_money_laundering_suspects' collection.
+    - name: updatedAt
+      type: UpdateColumnPayoutMoneyLaunderingSuspectsUpdatedAt
+      description: Update the 'updated_at' column in the
+        'payout_money_laundering_suspects' collection.
+  graphql:
+    typeName: UpdatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeUpdateColumns
+    inputTypeName: UpdatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_money_laundering_suspects_by_insurer_id_and_paper_id_and_policy_type_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        dob:
+          column:
+            name: dob
+        gender:
+          column:
+            name: gender
+        id:
+          column:
+            name: id
+        identityPaperType:
+          column:
+            name: identity_paper_type
+        insurerId:
+          column:
+            name: insurer_id
+        name:
+          column:
+            name: name
+        paperId:
+          column:
+            name: paper_id
+        policyType:
+          column:
+            name: policy_type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - dob
+          - gender
+          - id
+          - identityPaperType
+          - insurerId
+          - name
+          - paperId
+          - policyType
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeResponse
+  description: Responses from the
+    'update_payout_money_laundering_suspects_by_insurer_id_and_paper_id_and_policy_type'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutMoneyLaunderingSuspects!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeResponse
+    inputTypeName: UpdatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_money_laundering_suspects_by_insurer_id_and_paper_id_and_policy_type_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyType
+  outputType: UpdatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeResponse!
+  arguments:
+    - name: keyInsurerId
+      type: Uuid!
+    - name: keyPaperId
+      type: String_1!
+    - name: keyPolicyType
+      type: String_1
+    - name: postCheck
+      type: PayoutMoneyLaunderingSuspectsBoolExp
+      description: Update permission post-condition predicate over the
+        'payout_money_laundering_suspects' collection
+    - name: preCheck
+      type: PayoutMoneyLaunderingSuspectsBoolExp
+      description: Update permission pre-condition predicate over the
+        'payout_money_laundering_suspects' collection
+    - name: updateColumns
+      type: UpdatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_payout_money_laundering_suspects_by_insurer_id_and_paper_id_and_policy_type
+    argumentMapping:
+      keyInsurerId: key_insurer_id
+      keyPaperId: key_paper_id
+      keyPolicyType: key_policy_type
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyType
+    rootFieldKind: Mutation
+  description: Update any row on the 'payout_money_laundering_suspects' collection
+    using the 'insurer_id', 'paper_id' and 'policy_type' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyType
+  permissions:
+    - role: admin
+      allowExecution: true
+

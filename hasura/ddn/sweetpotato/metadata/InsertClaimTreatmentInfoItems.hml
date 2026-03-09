@@ -1,0 +1,205 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimTreatmentInfoItemsObject
+  fields:
+    - name: claimId
+      type: Uuid!
+    - name: claimTreatmentInfoItemId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: dentalTartarRemovalFee
+      type: Bigdecimal
+    - name: examinationFee
+      type: Bigdecimal
+    - name: medicineFee
+      type: Bigdecimal
+    - name: numOfInHospitalDays
+      type: Bigdecimal
+    - name: otherFee
+      type: Bigdecimal
+    - name: roomFee
+      type: Bigdecimal
+    - name: surgeryFee
+      type: Bigdecimal
+    - name: teethTreatmentFee
+      type: Bigdecimal
+    - name: tenantId
+      type: Uuid!
+    - name: testFee
+      type: Bigdecimal
+    - name: timeInHospital
+      type: Int32
+    - name: totalRoomFee
+      type: Bigdecimal
+    - name: unitOfTimeInHospital
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertClaimTreatmentInfoItemsObject
+    inputTypeName: InsertClaimTreatmentInfoItemsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_treatment_info_items_object
+      fieldMapping:
+        claimId:
+          column:
+            name: claim_id
+        claimTreatmentInfoItemId:
+          column:
+            name: claim_treatment_info_item_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        dentalTartarRemovalFee:
+          column:
+            name: dental_tartar_removal_fee
+        examinationFee:
+          column:
+            name: examination_fee
+        medicineFee:
+          column:
+            name: medicine_fee
+        numOfInHospitalDays:
+          column:
+            name: num_of_in_hospital_days
+        otherFee:
+          column:
+            name: other_fee
+        roomFee:
+          column:
+            name: room_fee
+        surgeryFee:
+          column:
+            name: surgery_fee
+        teethTreatmentFee:
+          column:
+            name: teeth_treatment_fee
+        tenantId:
+          column:
+            name: tenant_id
+        testFee:
+          column:
+            name: test_fee
+        timeInHospital:
+          column:
+            name: time_in_hospital
+        totalRoomFee:
+          column:
+            name: total_room_fee
+        unitOfTimeInHospital:
+          column:
+            name: unit_of_time_in_hospital
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimTreatmentInfoItemsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimId
+          - claimTreatmentInfoItemId
+          - createdAt
+          - deletedAt
+          - dentalTartarRemovalFee
+          - examinationFee
+          - medicineFee
+          - numOfInHospitalDays
+          - otherFee
+          - roomFee
+          - surgeryFee
+          - teethTreatmentFee
+          - tenantId
+          - testFee
+          - timeInHospital
+          - totalRoomFee
+          - unitOfTimeInHospital
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimTreatmentInfoItemsResponse
+  description: Responses from the 'insert_claim_treatment_info_items' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimTreatmentInfoItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimTreatmentInfoItemsResponse
+    inputTypeName: InsertClaimTreatmentInfoItemsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_treatment_info_items_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimTreatmentInfoItemsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimTreatmentInfoItems
+  outputType: InsertClaimTreatmentInfoItemsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimTreatmentInfoItemsObject!]!"
+    - name: postCheck
+      type: ClaimTreatmentInfoItemsBoolExp
+      description: Insert permission predicate over the 'claim_treatment_info_items'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_treatment_info_items
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimTreatmentInfoItems
+    rootFieldKind: Mutation
+  description: Insert into the claim_treatment_info_items table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimTreatmentInfoItems
+  permissions:
+    - role: admin
+      allowExecution: true
+

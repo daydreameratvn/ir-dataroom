@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnSlvSyncTypesComment
+  description: Update the 'comment' column in the 'slv_sync_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnSlvSyncTypesComment
+    inputTypeName: UpdateColumnSlvSyncTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_slv_sync_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnSlvSyncTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnSlvSyncTypesValue
+  description: Update the 'value' column in the 'slv_sync_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnSlvSyncTypesValue
+    inputTypeName: UpdateColumnSlvSyncTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_slv_sync_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnSlvSyncTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateSlvSyncTypesByValueUpdateColumns
+  description: Update the columns of the 'slv_sync_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnSlvSyncTypesComment
+      description: Update the 'comment' column in the 'slv_sync_types' collection.
+    - name: value
+      type: UpdateColumnSlvSyncTypesValue
+      description: Update the 'value' column in the 'slv_sync_types' collection.
+  graphql:
+    typeName: UpdateSlvSyncTypesByValueUpdateColumns
+    inputTypeName: UpdateSlvSyncTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_slv_sync_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateSlvSyncTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateSlvSyncTypesByValueResponse
+  description: Responses from the 'update_slv_sync_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvSyncTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateSlvSyncTypesByValueResponse
+    inputTypeName: UpdateSlvSyncTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_slv_sync_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateSlvSyncTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateSlvSyncTypesByValue
+  outputType: UpdateSlvSyncTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: SlvSyncTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'slv_sync_types' collection
+    - name: preCheck
+      type: SlvSyncTypesBoolExp
+      description: Update permission pre-condition predicate over the 'slv_sync_types'
+        collection
+    - name: updateColumns
+      type: UpdateSlvSyncTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_slv_sync_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateSlvSyncTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'slv_sync_types' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateSlvSyncTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

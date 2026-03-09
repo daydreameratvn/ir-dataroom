@@ -1,0 +1,156 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertLabelsObject
+  fields:
+    - name: color
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: icon
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: name
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid!
+  graphql:
+    typeName: InsertLabelsObject
+    inputTypeName: InsertLabelsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_labels_object
+      fieldMapping:
+        color:
+          column:
+            name: color
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        icon:
+          column:
+            name: icon
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertLabelsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - color
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - icon
+          - id
+          - name
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertLabelsResponse
+  description: Responses from the 'insert_labels' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Labels!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertLabelsResponse
+    inputTypeName: InsertLabelsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_labels_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertLabelsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertLabels
+  outputType: InsertLabelsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertLabelsObject!]!"
+    - name: postCheck
+      type: LabelsBoolExp
+      description: Insert permission predicate over the 'labels' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_labels
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertLabels
+    rootFieldKind: Mutation
+  description: Insert into the labels table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertLabels
+  permissions:
+    - role: admin
+      allowExecution: true
+

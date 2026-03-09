@@ -1,0 +1,85 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMedicalBookingSchedulesByContractIdAndDateAndDayOfWeekAndTimePeriodResponse
+  description: Responses from the
+    'delete_medical_booking_schedules_by_contract_id_and_date_and_day_of_week_and_time_period'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingSchedules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMedicalBookingSchedulesByContractIdAndDateAndDayOfWeekAndTimePeriodResponse
+    inputTypeName: DeleteMedicalBookingSchedulesByContractIdAndDateAndDayOfWeekAndTimePeriodResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_medical_booking_schedules_by_contract_id_and_date_and_day_of_week_and_time_period_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMedicalBookingSchedulesByContractIdAndDateAndDayOfWeekAndTimePeriodResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMedicalBookingSchedulesByContractIdAndDateAndDayOfWeekAndTimePeriod
+  outputType: DeleteMedicalBookingSchedulesByContractIdAndDateAndDayOfWeekAndTimePeriodResponse!
+  arguments:
+    - name: keyContractId
+      type: Uuid
+    - name: keyDate
+      type: Date!
+    - name: keyDayOfWeek
+      type: Int32!
+    - name: keyTimePeriod
+      type: String_1!
+    - name: preCheck
+      type: MedicalBookingSchedulesBoolExp
+      description: Delete permission predicate over the 'medical_booking_schedules'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_medical_booking_schedules_by_contract_id_and_date_and_day_of_week_and_time_period
+    argumentMapping:
+      keyContractId: key_contract_id
+      keyDate: key_date
+      keyDayOfWeek: key_day_of_week
+      keyTimePeriod: key_time_period
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMedicalBookingSchedulesByContractIdAndDateAndDayOfWeekAndTimePeriod
+    rootFieldKind: Mutation
+  description: Delete any row on the 'medical_booking_schedules' collection using
+    the 'contract_id', 'date', 'day_of_week' and 'time_period' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMedicalBookingSchedulesByContractIdAndDateAndDayOfWeekAndTimePeriod
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,232 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceEmailLoops
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: firstMessageId
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: lastMessageId
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: CorrespondenceEmailLoops
+    inputTypeName: CorrespondenceEmailLoopsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_email_loops
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        firstMessageId:
+          column:
+            name: first_message_id
+        id:
+          column:
+            name: id
+        lastMessageId:
+          column:
+            name: last_message_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceEmailLoops
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - firstMessageId
+          - id
+          - lastMessageId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceEmailLoopsBoolExp
+  operand:
+    object:
+      type: CorrespondenceEmailLoops
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: firstMessageId
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: lastMessageId
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: correspondenceEmail
+        - relationshipName: correspondenceEmailByLastMessageId
+        - relationshipName: correspondenceEmails
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceEmailLoopsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceEmailLoopsAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceEmailLoops
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: firstMessageId
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: lastMessageId
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceEmailLoopsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceEmailLoopsOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceEmailLoops
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: firstMessageId
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: lastMessageId
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: correspondenceEmail
+        - relationshipName: correspondenceEmailByLastMessageId
+  graphql:
+    expressionTypeName: CorrespondenceEmailLoopsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceEmailLoops
+  objectType: CorrespondenceEmailLoops
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_email_loops
+  filterExpressionType: CorrespondenceEmailLoopsBoolExp
+  aggregateExpression: CorrespondenceEmailLoopsAggExp
+  orderByExpression: CorrespondenceEmailLoopsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceEmailLoops
+      subscription:
+        rootField: correspondenceEmailLoops
+    selectUniques:
+      - queryRootField: correspondenceEmailLoopsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: correspondenceEmailLoopsById
+    filterInputTypeName: CorrespondenceEmailLoopsFilterInput
+    aggregate:
+      queryRootField: correspondenceEmailLoopsAggregate
+      subscription:
+        rootField: correspondenceEmailLoopsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceEmailLoops
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmail
+  sourceType: CorrespondenceEmailLoops
+  target:
+    model:
+      name: CorrespondenceEmails
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: firstMessageId
+      target:
+        modelField:
+          - fieldName: messageId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmailByLastMessageId
+  sourceType: CorrespondenceEmailLoops
+  target:
+    model:
+      name: CorrespondenceEmails
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: lastMessageId
+      target:
+        modelField:
+          - fieldName: messageId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmails
+  sourceType: CorrespondenceEmailLoops
+  target:
+    model:
+      name: CorrespondenceEmails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceEmailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: emailLoopId
+  graphql:
+    aggregateFieldName: correspondenceEmailsAggregate
+

@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceCcBehaviorsObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertCorrespondenceCcBehaviorsObject
+    inputTypeName: InsertCorrespondenceCcBehaviorsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_cc_behaviors_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceCcBehaviorsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceCcBehaviorsResponse
+  description: Responses from the 'insert_correspondence_cc_behaviors' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceCcBehaviors!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCorrespondenceCcBehaviorsResponse
+    inputTypeName: InsertCorrespondenceCcBehaviorsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_cc_behaviors_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceCcBehaviorsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCorrespondenceCcBehaviors
+  outputType: InsertCorrespondenceCcBehaviorsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCorrespondenceCcBehaviorsObject!]!"
+    - name: postCheck
+      type: CorrespondenceCcBehaviorsBoolExp
+      description: Insert permission predicate over the 'correspondence_cc_behaviors'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_correspondence_cc_behaviors
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCorrespondenceCcBehaviors
+    rootFieldKind: Mutation
+  description: Insert into the correspondence_cc_behaviors table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCorrespondenceCcBehaviors
+  permissions:
+    - role: admin
+      allowExecution: true
+

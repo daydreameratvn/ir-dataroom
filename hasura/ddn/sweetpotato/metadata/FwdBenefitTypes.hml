@@ -1,0 +1,165 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdBenefitTypes
+  fields:
+    - name: code
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: ppyBenefitTypeCode
+      type: String_1!
+  graphql:
+    typeName: FwdBenefitTypes
+    inputTypeName: FwdBenefitTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_benefit_types
+      fieldMapping:
+        code:
+          column:
+            name: code
+        name:
+          column:
+            name: name
+        ppyBenefitTypeCode:
+          column:
+            name: ppy_benefit_type_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdBenefitTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - name
+          - ppyBenefitTypeCode
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdBenefitTypesBoolExp
+  operand:
+    object:
+      type: FwdBenefitTypes
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: ppyBenefitTypeCode
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: insuredBenefitType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdBenefitTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdBenefitTypesAggExp
+  operand:
+    object:
+      aggregatedType: FwdBenefitTypes
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: ppyBenefitTypeCode
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdBenefitTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdBenefitTypesOrderByExp
+  operand:
+    object:
+      orderedType: FwdBenefitTypes
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: ppyBenefitTypeCode
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: insuredBenefitType
+  graphql:
+    expressionTypeName: FwdBenefitTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdBenefitTypes
+  objectType: FwdBenefitTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_benefit_types
+  filterExpressionType: FwdBenefitTypesBoolExp
+  aggregateExpression: FwdBenefitTypesAggExp
+  orderByExpression: FwdBenefitTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdBenefitTypes
+      subscription:
+        rootField: fwdBenefitTypes
+    selectUniques:
+      - queryRootField: fwdBenefitTypesByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: fwdBenefitTypesByCode
+    filterInputTypeName: FwdBenefitTypesFilterInput
+    aggregate:
+      queryRootField: fwdBenefitTypesAggregate
+      subscription:
+        rootField: fwdBenefitTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdBenefitTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredBenefitType
+  sourceType: FwdBenefitTypes
+  target:
+    model:
+      name: InsuredBenefitTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ppyBenefitTypeCode
+      target:
+        modelField:
+          - fieldName: value
+

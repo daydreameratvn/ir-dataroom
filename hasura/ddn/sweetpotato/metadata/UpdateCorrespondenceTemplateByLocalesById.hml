@@ -1,0 +1,196 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorrespondenceTemplateByLocalesByIdUpdateColumns
+  description: Update the columns of the 'correspondence_template_by_locales' collection
+  fields:
+    - name: content
+      type: UpdateColumnCorrespondenceTemplateByLocalesContent
+      description: Update the 'content' column in the
+        'correspondence_template_by_locales' collection.
+    - name: createdAt
+      type: UpdateColumnCorrespondenceTemplateByLocalesCreatedAt
+      description: Update the 'created_at' column in the
+        'correspondence_template_by_locales' collection.
+    - name: deletedAt
+      type: UpdateColumnCorrespondenceTemplateByLocalesDeletedAt
+      description: Update the 'deleted_at' column in the
+        'correspondence_template_by_locales' collection.
+    - name: id
+      type: UpdateColumnCorrespondenceTemplateByLocalesId
+      description: Update the 'id' column in the 'correspondence_template_by_locales'
+        collection.
+    - name: locale
+      type: UpdateColumnCorrespondenceTemplateByLocalesLocale
+      description: Update the 'locale' column in the
+        'correspondence_template_by_locales' collection.
+    - name: mjmlContent
+      type: UpdateColumnCorrespondenceTemplateByLocalesMjmlContent
+      description: Update the 'mjml_content' column in the
+        'correspondence_template_by_locales' collection.
+    - name: reactEmailContent
+      type: UpdateColumnCorrespondenceTemplateByLocalesReactEmailContent
+      description: Update the 'react_email_content' column in the
+        'correspondence_template_by_locales' collection.
+    - name: subject
+      type: UpdateColumnCorrespondenceTemplateByLocalesSubject
+      description: Update the 'subject' column in the
+        'correspondence_template_by_locales' collection.
+    - name: templateId
+      type: UpdateColumnCorrespondenceTemplateByLocalesTemplateId
+      description: Update the 'template_id' column in the
+        'correspondence_template_by_locales' collection.
+    - name: type
+      type: UpdateColumnCorrespondenceTemplateByLocalesType
+      description: Update the 'type' column in the
+        'correspondence_template_by_locales' collection.
+    - name: updatedAt
+      type: UpdateColumnCorrespondenceTemplateByLocalesUpdatedAt
+      description: Update the 'updated_at' column in the
+        'correspondence_template_by_locales' collection.
+  graphql:
+    typeName: UpdateCorrespondenceTemplateByLocalesByIdUpdateColumns
+    inputTypeName: UpdateCorrespondenceTemplateByLocalesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_correspondence_template_by_locales_by_id_update_columns
+      fieldMapping:
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        locale:
+          column:
+            name: locale
+        mjmlContent:
+          column:
+            name: mjml_content
+        reactEmailContent:
+          column:
+            name: react_email_content
+        subject:
+          column:
+            name: subject
+        templateId:
+          column:
+            name: template_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorrespondenceTemplateByLocalesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - content
+          - createdAt
+          - deletedAt
+          - id
+          - locale
+          - mjmlContent
+          - reactEmailContent
+          - subject
+          - templateId
+          - type
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorrespondenceTemplateByLocalesByIdResponse
+  description: Responses from the
+    'update_correspondence_template_by_locales_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceTemplateByLocales!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCorrespondenceTemplateByLocalesByIdResponse
+    inputTypeName: UpdateCorrespondenceTemplateByLocalesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_correspondence_template_by_locales_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorrespondenceTemplateByLocalesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCorrespondenceTemplateByLocalesById
+  outputType: UpdateCorrespondenceTemplateByLocalesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: CorrespondenceTemplateByLocalesBoolExp
+      description: Update permission post-condition predicate over the
+        'correspondence_template_by_locales' collection
+    - name: preCheck
+      type: CorrespondenceTemplateByLocalesBoolExp
+      description: Update permission pre-condition predicate over the
+        'correspondence_template_by_locales' collection
+    - name: updateColumns
+      type: UpdateCorrespondenceTemplateByLocalesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_correspondence_template_by_locales_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCorrespondenceTemplateByLocalesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'correspondence_template_by_locales'
+    collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCorrespondenceTemplateByLocalesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

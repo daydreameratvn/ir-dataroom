@@ -1,0 +1,294 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpFiles
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: fileId
+      type: Uuid!
+    - name: fileType
+      type: String_1!
+    - name: medicalProviderId
+      type: Uuid!
+    - name: mimeType
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: status
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+    - name: url
+      type: String_1
+  graphql:
+    typeName: MpFiles
+    inputTypeName: MpFilesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_files
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        fileId:
+          column:
+            name: file_id
+        fileType:
+          column:
+            name: file_type
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        mimeType:
+          column:
+            name: mime_type
+        name:
+          column:
+            name: name
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+        url:
+          column:
+            name: url
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpFiles
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - fileId
+          - fileType
+          - medicalProviderId
+          - mimeType
+          - name
+          - status
+          - updatedAt
+          - url
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpFilesBoolExp
+  operand:
+    object:
+      type: MpFiles
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: fileType
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: mimeType
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: name
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: url
+          booleanExpressionType: VarcharBoolExp
+      comparableRelationships:
+        - relationshipName: mpFileType
+        - relationshipName: mpMedicalProvider
+        - relationshipName: mpFileStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpFilesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpFilesAggExp
+  operand:
+    object:
+      aggregatedType: MpFiles
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fileId
+          aggregateExpression: UuidAggExp
+        - fieldName: fileType
+          aggregateExpression: VarcharAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: mimeType
+          aggregateExpression: VarcharAggExp
+        - fieldName: name
+          aggregateExpression: VarcharAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: url
+          aggregateExpression: VarcharAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpFilesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpFilesOrderByExp
+  operand:
+    object:
+      orderedType: MpFiles
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: fileType
+          orderByExpression: String1OrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: mimeType
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: url
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: mpFileType
+        - relationshipName: mpMedicalProvider
+        - relationshipName: mpFileStatus
+  graphql:
+    expressionTypeName: MpFilesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpFiles
+  objectType: MpFiles
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_files
+  filterExpressionType: MpFilesBoolExp
+  aggregateExpression: MpFilesAggExp
+  orderByExpression: MpFilesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpFiles
+      subscription:
+        rootField: mpFiles
+    selectUniques:
+      - queryRootField: mpFilesByFileId
+        uniqueIdentifier:
+          - fileId
+        subscription:
+          rootField: mpFilesByFileId
+      - queryRootField: mpFilesByUrl
+        uniqueIdentifier:
+          - url
+        subscription:
+          rootField: mpFilesByUrl
+    filterInputTypeName: MpFilesFilterInput
+    aggregate:
+      queryRootField: mpFilesAggregate
+      subscription:
+        rootField: mpFilesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpFiles
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpFileType
+  sourceType: MpFiles
+  target:
+    model:
+      name: MpFileTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: MpFiles
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpFileStatus
+  sourceType: MpFiles
+  target:
+    model:
+      name: MpFileStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+

@@ -1,0 +1,254 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlansObject
+  fields:
+    - name: cardId
+      type: Uuid
+    - name: code
+      type: String_1!
+      description: "deprecated: use policy_plan.plan_code"
+    - name: copayMechanism
+      type: String_1
+    - name: corporateId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: details
+      type: Json
+    - name: document
+      type: String_1
+    - name: insurerId
+      type: Uuid!
+    - name: jetRuleSetId
+      type: Uuid
+    - name: name
+      type: String_1!
+      description: "deprecated: use policy_plan.plan_name"
+    - name: ocrJetRuleSetId
+      type: Uuid
+    - name: planId
+      type: Uuid
+    - name: policyId
+      type: Uuid
+    - name: premium
+      type: Bigdecimal
+    - name: productId
+      type: Uuid
+    - name: remarkCopay
+      type: Json
+    - name: serviceLevel
+      type: String_1
+    - name: stpRuleSetId
+      type: Uuid
+    - name: stpStateMachineArn
+      type: String_1
+    - name: stpStateMachineVersion
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: terms
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertPlansObject
+    inputTypeName: InsertPlansObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plans_object
+      fieldMapping:
+        cardId:
+          column:
+            name: card_id
+        code:
+          column:
+            name: code
+        copayMechanism:
+          column:
+            name: copay_mechanism
+        corporateId:
+          column:
+            name: corporate_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        details:
+          column:
+            name: details
+        document:
+          column:
+            name: document
+        insurerId:
+          column:
+            name: insurer_id
+        jetRuleSetId:
+          column:
+            name: jet_rule_set_id
+        name:
+          column:
+            name: name
+        ocrJetRuleSetId:
+          column:
+            name: ocr_jet_rule_set_id
+        planId:
+          column:
+            name: plan_id
+        policyId:
+          column:
+            name: policy_id
+        premium:
+          column:
+            name: premium
+        productId:
+          column:
+            name: product_id
+        remarkCopay:
+          column:
+            name: remark_copay
+        serviceLevel:
+          column:
+            name: service_level
+        stpRuleSetId:
+          column:
+            name: stp_rule_set_id
+        stpStateMachineArn:
+          column:
+            name: stp_state_machine_arn
+        stpStateMachineVersion:
+          column:
+            name: stp_state_machine_version
+        tenantId:
+          column:
+            name: tenant_id
+        terms:
+          column:
+            name: terms
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlansObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - cardId
+          - code
+          - copayMechanism
+          - corporateId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - details
+          - document
+          - insurerId
+          - jetRuleSetId
+          - name
+          - ocrJetRuleSetId
+          - planId
+          - policyId
+          - premium
+          - productId
+          - remarkCopay
+          - serviceLevel
+          - stpRuleSetId
+          - stpStateMachineArn
+          - stpStateMachineVersion
+          - tenantId
+          - terms
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlansResponse
+  description: Responses from the 'insert_plans' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Plans!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPlansResponse
+    inputTypeName: InsertPlansResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plans_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlansResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPlans
+  outputType: InsertPlansResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPlansObject!]!"
+    - name: postCheck
+      type: PlansBoolExp
+      description: Insert permission predicate over the 'plans' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_plans
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPlans
+    rootFieldKind: Mutation
+  description: Insert into the plans table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPlans
+  permissions:
+    - role: admin
+      allowExecution: true
+

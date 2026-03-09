@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutPaymentRequestStatuses
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PayoutPaymentRequestStatuses
+    inputTypeName: PayoutPaymentRequestStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_payment_request_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutPaymentRequestStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutPaymentRequestStatusesBoolExp
+  operand:
+    object:
+      type: PayoutPaymentRequestStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: payoutPaymentRequests
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutPaymentRequestStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutPaymentRequestStatusesAggExp
+  operand:
+    object:
+      aggregatedType: PayoutPaymentRequestStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutPaymentRequestStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutPaymentRequestStatusesOrderByExp
+  operand:
+    object:
+      orderedType: PayoutPaymentRequestStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PayoutPaymentRequestStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutPaymentRequestStatuses
+  objectType: PayoutPaymentRequestStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_payment_request_statuses
+  filterExpressionType: PayoutPaymentRequestStatusesBoolExp
+  aggregateExpression: PayoutPaymentRequestStatusesAggExp
+  orderByExpression: PayoutPaymentRequestStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutPaymentRequestStatuses
+      subscription:
+        rootField: payoutPaymentRequestStatuses
+    selectUniques:
+      - queryRootField: payoutPaymentRequestStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: payoutPaymentRequestStatusesByValue
+    filterInputTypeName: PayoutPaymentRequestStatusesFilterInput
+    aggregate:
+      queryRootField: payoutPaymentRequestStatusesAggregate
+      subscription:
+        rootField: payoutPaymentRequestStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutPaymentRequestStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequests
+  sourceType: PayoutPaymentRequestStatuses
+  target:
+    model:
+      name: PayoutPaymentRequests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPaymentRequestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: payoutPaymentRequestsAggregate
+

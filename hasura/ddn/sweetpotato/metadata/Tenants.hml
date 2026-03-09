@@ -1,0 +1,1250 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Tenants
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: Tenants_1
+    inputTypeName: TenantsInput_1
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: tenants
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Tenants
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - name
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: TenantsBoolExp
+  operand:
+    object:
+      type: Tenants
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: auditLogsRecordStatusChanges
+        - relationshipName: auditLogsUserLoginLogs
+        - relationshipName: auditLogsUserPasswordChanges
+        - relationshipName: auditLogsUserRegisterLogs
+        - relationshipName: cards
+        - relationshipName: claimCaseDetails
+        - relationshipName: claimCasePayments
+        - relationshipName: claimCases
+        - relationshipName: claimDocuments
+        - relationshipName: claimFeeItems
+        - relationshipName: claimInformations
+        - relationshipName: claimNotes
+        - relationshipName: claimPendingCodes
+        - relationshipName: claimTreatmentInfoItems
+        - relationshipName: companies
+        - relationshipName: companyRoles
+        - relationshipName: files
+        - relationshipName: identityOtps
+        - relationshipName: identityPermissions
+        - relationshipName: identityRolePermissions
+        - relationshipName: identityUserRoles
+        - relationshipName: identityUsers
+        - relationshipName: insuredCertificateSalaries
+        - relationshipName: insuredCertificates
+        - relationshipName: insuredPersonRemarks
+        - relationshipName: insuredPersons
+        - relationshipName: insuredRelationships
+        - relationshipName: mpMedicalProviderBenefits
+        - relationshipName: mpMedicalProviderExtends
+        - relationshipName: mpMedicalProviderTpas
+        - relationshipName: mpMedicalProviders
+        - relationshipName: planBalanceBenefits
+        - relationshipName: planBalanceClaimCaseDetails
+        - relationshipName: planBalances
+        - relationshipName: planCoPaymentPlanInsuredBenefits
+        - relationshipName: planCoPayments
+        - relationshipName: planDisplayedBalances
+        - relationshipName: planDocuments
+        - relationshipName: planInsuredBenefits
+        - relationshipName: plans
+        - relationshipName: policies
+        - relationshipName: policyCoPaymentAgeRanges
+        - relationshipName: policyCoPaymentInsuredCertificates
+        - relationshipName: policyCoPaymentMedicalProviders
+        - relationshipName: policyCoPayments
+        - relationshipName: policyDocuments
+        - relationshipName: policyWaitingTimes
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: TenantsBoolExp_1
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: TenantsAggExp
+  operand:
+    object:
+      aggregatedType: Tenants
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: TenantsAggExp_1
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: TenantsOrderByExp
+  operand:
+    object:
+      orderedType: Tenants
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: TenantsOrderByExp_1
+
+---
+kind: Model
+version: v2
+definition:
+  name: Tenants
+  objectType: Tenants
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: tenants
+  filterExpressionType: TenantsBoolExp
+  aggregateExpression: TenantsAggExp
+  orderByExpression: TenantsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: tenants_1
+      subscription:
+        rootField: tenants_1
+    selectUniques:
+      - queryRootField: tenantsById_1
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: tenantsById_1
+    filterInputTypeName: TenantsFilterInput_1
+    aggregate:
+      queryRootField: tenantsAggregate_1
+      subscription:
+        rootField: tenantsAggregate_1
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Tenants
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogsRecordStatusChanges
+  sourceType: Tenants
+  target:
+    model:
+      name: AuditLogsRecordStatusChanges
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuditLogsRecordStatusChangesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: auditLogsRecordStatusChangesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogsUserLoginLogs
+  sourceType: Tenants
+  target:
+    model:
+      name: AuditLogsUserLoginLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuditLogsUserLoginLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: auditLogsUserLoginLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogsUserPasswordChanges
+  sourceType: Tenants
+  target:
+    model:
+      name: AuditLogsUserPasswordChanges
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuditLogsUserPasswordChangesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: auditLogsUserPasswordChangesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogsUserRegisterLogs
+  sourceType: Tenants
+  target:
+    model:
+      name: AuditLogsUserRegisterLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuditLogsUserRegisterLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: auditLogsUserRegisterLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: cards
+  sourceType: Tenants
+  target:
+    model:
+      name: Cards
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CardsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: cardsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseDetails
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimCaseDetails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseDetailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimCaseDetailsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCasePayments
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimCasePayments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCasePaymentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimCasePaymentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCases
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocuments
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimFeeItems
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimFeeItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimFeeItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimFeeItemsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimInformations
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimInformations
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimInformationsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimInformationsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimNotes
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimNotes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimNotesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimNotesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimPendingCodes
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimPendingCodes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimPendingCodesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimPendingCodesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimTreatmentInfoItems
+  sourceType: Tenants
+  target:
+    model:
+      name: ClaimTreatmentInfoItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimTreatmentInfoItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: claimTreatmentInfoItemsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: companies
+  sourceType: Tenants
+  target:
+    model:
+      name: Companies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CompaniesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: companiesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: companyRoles
+  sourceType: Tenants
+  target:
+    model:
+      name: CompanyRoles
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CompanyRolesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: companyRolesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: files
+  sourceType: Tenants
+  target:
+    model:
+      name: Files
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: filesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityOtps
+  sourceType: Tenants
+  target:
+    model:
+      name: IdentityOtps
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityOtpsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: identityOtpsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityPermissions
+  sourceType: Tenants
+  target:
+    model:
+      name: IdentityPermissions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityPermissionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: identityPermissionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityRolePermissions
+  sourceType: Tenants
+  target:
+    model:
+      name: IdentityRolePermissions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityRolePermissionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: identityRolePermissionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserRoles
+  sourceType: Tenants
+  target:
+    model:
+      name: IdentityUserRole
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityUserRoleAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: identityUserRolesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUsers
+  sourceType: Tenants
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityUsersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: identityUsersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateSalaries
+  sourceType: Tenants
+  target:
+    model:
+      name: InsuredCertificateSalaries
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredCertificateSalariesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: insuredCertificateSalariesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificates
+  sourceType: Tenants
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredCertificatesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: insuredCertificatesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersonRemarks
+  sourceType: Tenants
+  target:
+    model:
+      name: InsuredPersonRemarks
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredPersonRemarksAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: insuredPersonRemarksAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersons
+  sourceType: Tenants
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: insuredPersonsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredRelationships
+  sourceType: Tenants
+  target:
+    model:
+      name: InsuredRelationships
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredRelationshipsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: insuredRelationshipsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderBenefits
+  sourceType: Tenants
+  target:
+    model:
+      name: MpMedicalProviderBenefits
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProviderBenefitsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: mpMedicalProviderBenefitsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderExtends
+  sourceType: Tenants
+  target:
+    model:
+      name: MpMedicalProviderExtends
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProviderExtendsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: mpMedicalProviderExtendsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderTpas
+  sourceType: Tenants
+  target:
+    model:
+      name: MpMedicalProviderTpa
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProviderTpaAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: mpMedicalProviderTpasAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviders
+  sourceType: Tenants
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProvidersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: mpMedicalProvidersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalanceBenefits
+  sourceType: Tenants
+  target:
+    model:
+      name: PlanBalanceBenefits
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanBalanceBenefitsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: planBalanceBenefitsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalanceClaimCaseDetails
+  sourceType: Tenants
+  target:
+    model:
+      name: PlanBalanceClaimCaseDetails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanBalanceClaimCaseDetailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: planBalanceClaimCaseDetailsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalances
+  sourceType: Tenants
+  target:
+    model:
+      name: PlanBalances
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanBalancesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: planBalancesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planCoPaymentPlanInsuredBenefits
+  sourceType: Tenants
+  target:
+    model:
+      name: PlanCoPaymentPlanInsuredBenefit
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanCoPaymentPlanInsuredBenefitAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: planCoPaymentPlanInsuredBenefitsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planCoPayments
+  sourceType: Tenants
+  target:
+    model:
+      name: PlanCoPayments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanCoPaymentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: planCoPaymentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planDisplayedBalances
+  sourceType: Tenants
+  target:
+    model:
+      name: PlanDisplayedBalances
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanDisplayedBalancesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: planDisplayedBalancesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planDocuments
+  sourceType: Tenants
+  target:
+    model:
+      name: PlanDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: planDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planInsuredBenefits
+  sourceType: Tenants
+  target:
+    model:
+      name: PlanInsuredBenefits
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanInsuredBenefitsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: planInsuredBenefitsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plans
+  sourceType: Tenants
+  target:
+    model:
+      name: Plans
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlansAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: plansAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: Tenants
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: policiesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPaymentAgeRanges
+  sourceType: Tenants
+  target:
+    model:
+      name: PolicyCoPaymentAgeRanges
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyCoPaymentAgeRangesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: policyCoPaymentAgeRangesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPaymentInsuredCertificates
+  sourceType: Tenants
+  target:
+    model:
+      name: PolicyCoPaymentInsuredCertificate
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyCoPaymentInsuredCertificateAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: policyCoPaymentInsuredCertificatesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPaymentMedicalProviders
+  sourceType: Tenants
+  target:
+    model:
+      name: PolicyCoPaymentMedicalProvider
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyCoPaymentMedicalProviderAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: policyCoPaymentMedicalProvidersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPayments
+  sourceType: Tenants
+  target:
+    model:
+      name: PolicyCoPayments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyCoPaymentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: policyCoPaymentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyDocuments
+  sourceType: Tenants
+  target:
+    model:
+      name: PolicyDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: policyDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyWaitingTimes
+  sourceType: Tenants
+  target:
+    model:
+      name: PolicyWaitingTimes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyWaitingTimesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: tenantId
+  graphql:
+    aggregateFieldName: policyWaitingTimesAggregate
+

@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimExclusionsByEmailResponse
+  description: Responses from the 'delete_claim_exclusions_by_email' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimExclusions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimExclusionsByEmailResponse
+    inputTypeName: DeleteClaimExclusionsByEmailResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_exclusions_by_email_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimExclusionsByEmailResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimExclusionsByEmail
+  outputType: DeleteClaimExclusionsByEmailResponse!
+  arguments:
+    - name: keyEmail
+      type: String_1!
+    - name: preCheck
+      type: ClaimExclusionsBoolExp
+      description: Delete permission predicate over the 'claim_exclusions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_exclusions_by_email
+    argumentMapping:
+      keyEmail: key_email
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimExclusionsByEmail
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_exclusions' collection using the 'email' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimExclusionsByEmail
+  permissions:
+    - role: admin
+      allowExecution: true
+

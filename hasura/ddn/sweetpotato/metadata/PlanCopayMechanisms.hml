@@ -1,0 +1,153 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanCopayMechanisms
+  description: Mechanisms are implemented in cassava, these enums are used for
+    mapping into plans
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PlanCopayMechanisms
+    inputTypeName: PlanCopayMechanismsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_copay_mechanisms
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanCopayMechanisms
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanCopayMechanismsBoolExp
+  operand:
+    object:
+      type: PlanCopayMechanisms
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: plans
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanCopayMechanismsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanCopayMechanismsAggExp
+  operand:
+    object:
+      aggregatedType: PlanCopayMechanisms
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanCopayMechanismsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanCopayMechanismsOrderByExp
+  operand:
+    object:
+      orderedType: PlanCopayMechanisms
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PlanCopayMechanismsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanCopayMechanisms
+  objectType: PlanCopayMechanisms
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_copay_mechanisms
+  filterExpressionType: PlanCopayMechanismsBoolExp
+  aggregateExpression: PlanCopayMechanismsAggExp
+  orderByExpression: PlanCopayMechanismsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planCopayMechanisms
+      subscription:
+        rootField: planCopayMechanisms
+    selectUniques:
+      - queryRootField: planCopayMechanismsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: planCopayMechanismsByValue
+    filterInputTypeName: PlanCopayMechanismsFilterInput
+    aggregate:
+      queryRootField: planCopayMechanismsAggregate
+      subscription:
+        rootField: planCopayMechanismsAggregate
+  description: Mechanisms are implemented in cassava, these enums are used for
+    mapping into plans
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanCopayMechanisms
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plans
+  sourceType: PlanCopayMechanisms
+  target:
+    model:
+      name: Plans
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlansAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: copayMechanism
+  graphql:
+    aggregateFieldName: plansAggregate
+

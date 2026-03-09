@@ -1,0 +1,210 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOverlordBookingsObject
+  fields:
+    - name: bookedAt
+      type: Timestamptz
+    - name: claimCaseId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: medicalProviderId
+      type: Uuid!
+    - name: name
+      type: String_1
+    - name: note
+      type: String_1
+    - name: paymentAmount
+      type: Bigdecimal
+    - name: phone
+      type: String_1!
+    - name: refCode
+      type: String_1
+    - name: sharedHistoryClaimCaseIds
+      type: "[Uuid]!"
+    - name: status
+      type: String_1!
+    - name: syncedAt
+      type: Timestamptz
+    - name: treatmentAt
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertOverlordBookingsObject
+    inputTypeName: InsertOverlordBookingsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_overlord_bookings_object
+      fieldMapping:
+        bookedAt:
+          column:
+            name: booked_at
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        name:
+          column:
+            name: name
+        note:
+          column:
+            name: note
+        paymentAmount:
+          column:
+            name: payment_amount
+        phone:
+          column:
+            name: phone
+        refCode:
+          column:
+            name: ref_code
+        sharedHistoryClaimCaseIds:
+          column:
+            name: shared_history_claim_case_ids
+        status:
+          column:
+            name: status
+        syncedAt:
+          column:
+            name: synced_at
+        treatmentAt:
+          column:
+            name: treatment_at
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOverlordBookingsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bookedAt
+          - claimCaseId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - insuredCertificateId
+          - medicalProviderId
+          - name
+          - note
+          - paymentAmount
+          - phone
+          - refCode
+          - sharedHistoryClaimCaseIds
+          - status
+          - syncedAt
+          - treatmentAt
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOverlordBookingsResponse
+  description: Responses from the 'insert_overlord_bookings' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OverlordBookings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOverlordBookingsResponse
+    inputTypeName: InsertOverlordBookingsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_overlord_bookings_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOverlordBookingsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOverlordBookings
+  outputType: InsertOverlordBookingsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOverlordBookingsObject!]!"
+    - name: postCheck
+      type: OverlordBookingsBoolExp
+      description: Insert permission predicate over the 'overlord_bookings' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_overlord_bookings
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOverlordBookings
+    rootFieldKind: Mutation
+  description: Insert into the overlord_bookings table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOverlordBookings
+  permissions:
+    - role: admin
+      allowExecution: true
+

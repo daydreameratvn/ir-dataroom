@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicyClaimApprovalProcessTypesByValueResponse
+  description: Responses from the
+    'delete_policy_claim_approval_process_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyClaimApprovalProcessTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicyClaimApprovalProcessTypesByValueResponse
+    inputTypeName: DeletePolicyClaimApprovalProcessTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_claim_approval_process_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicyClaimApprovalProcessTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicyClaimApprovalProcessTypesByValue
+  outputType: DeletePolicyClaimApprovalProcessTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: PolicyClaimApprovalProcessTypesBoolExp
+      description: Delete permission predicate over the
+        'policy_claim_approval_process_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_claim_approval_process_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicyClaimApprovalProcessTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_claim_approval_process_types'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicyClaimApprovalProcessTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

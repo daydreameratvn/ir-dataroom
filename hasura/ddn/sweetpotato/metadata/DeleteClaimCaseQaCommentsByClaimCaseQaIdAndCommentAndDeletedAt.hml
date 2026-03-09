@@ -1,0 +1,81 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimCaseQaCommentsByClaimCaseQaIdAndCommentAndDeletedAtResponse
+  description: Responses from the
+    'delete_claim_case_qa_comments_by_claim_case_qa_id_and_comment_and_deleted_at'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseQaComments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimCaseQaCommentsByClaimCaseQaIdAndCommentAndDeletedAtResponse
+    inputTypeName: DeleteClaimCaseQaCommentsByClaimCaseQaIdAndCommentAndDeletedAtResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_case_qa_comments_by_claim_case_qa_id_and_comment_and_deleted_at_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimCaseQaCommentsByClaimCaseQaIdAndCommentAndDeletedAtResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimCaseQaCommentsByClaimCaseQaIdAndCommentAndDeletedAt
+  outputType: DeleteClaimCaseQaCommentsByClaimCaseQaIdAndCommentAndDeletedAtResponse!
+  arguments:
+    - name: keyClaimCaseQaId
+      type: Uuid!
+    - name: keyComment
+      type: String_1
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: preCheck
+      type: ClaimCaseQaCommentsBoolExp
+      description: Delete permission predicate over the 'claim_case_qa_comments' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_case_qa_comments_by_claim_case_qa_id_and_comment_and_deleted_at
+    argumentMapping:
+      keyClaimCaseQaId: key_claim_case_qa_id
+      keyComment: key_comment
+      keyDeletedAt: key_deleted_at
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimCaseQaCommentsByClaimCaseQaIdAndCommentAndDeletedAt
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_case_qa_comments' collection using the
+    'claim_case_qa_id', 'comment' and 'deleted_at' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimCaseQaCommentsByClaimCaseQaIdAndCommentAndDeletedAt
+  permissions:
+    - role: admin
+      allowExecution: true
+

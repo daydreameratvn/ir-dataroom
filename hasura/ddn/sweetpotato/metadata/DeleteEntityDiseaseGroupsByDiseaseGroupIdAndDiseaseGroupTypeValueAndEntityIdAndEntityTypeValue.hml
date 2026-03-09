@@ -1,0 +1,85 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteEntityDiseaseGroupsByDiseaseGroupIdAndDiseaseGroupTypeValueAndEntityIdAndEntityTypeValueResponse
+  description: Responses from the
+    'delete_entity_disease_groups_by_disease_group_id_and_disease_group_type_value_and_entity_id_and_entity_type_value'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[EntityDiseaseGroups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteEntityDiseaseGroupsByDiseaseGroupIdAndDiseaseGroupTypeValueAndEntityIdAndEntityTypeValueResponse
+    inputTypeName: DeleteEntityDiseaseGroupsByDiseaseGroupIdAndDiseaseGroupTypeValueAndEntityIdAndEntityTypeValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_entity_disease_groups_by_disease_group_id_and_disease_group_type_value_and_entity_id_and_entity_type_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteEntityDiseaseGroupsByDiseaseGroupIdAndDiseaseGroupTypeValueAndEntityIdAndEntityTypeValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteEntityDiseaseGroupsByDiseaseGroupIdAndDiseaseGroupTypeValueAndEntityIdAndEntityTypeValue
+  outputType: DeleteEntityDiseaseGroupsByDiseaseGroupIdAndDiseaseGroupTypeValueAndEntityIdAndEntityTypeValueResponse!
+  arguments:
+    - name: keyDiseaseGroupId
+      type: Uuid!
+    - name: keyDiseaseGroupTypeValue
+      type: String_1!
+    - name: keyEntityId
+      type: Uuid!
+    - name: keyEntityTypeValue
+      type: String_1!
+    - name: preCheck
+      type: EntityDiseaseGroupsBoolExp
+      description: Delete permission predicate over the 'entity_disease_groups' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_entity_disease_groups_by_disease_group_id_and_disease_group_type_value_and_entity_id_and_entity_type_value
+    argumentMapping:
+      keyDiseaseGroupId: key_disease_group_id
+      keyDiseaseGroupTypeValue: key_disease_group_type_value
+      keyEntityId: key_entity_id
+      keyEntityTypeValue: key_entity_type_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteEntityDiseaseGroupsByDiseaseGroupIdAndDiseaseGroupTypeValueAndEntityIdAndEntityTypeValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'entity_disease_groups' collection using the
+    'disease_group_id', 'disease_group_type_value', 'entity_id' and
+    'entity_type_value' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteEntityDiseaseGroupsByDiseaseGroupIdAndDiseaseGroupTypeValueAndEntityIdAndEntityTypeValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

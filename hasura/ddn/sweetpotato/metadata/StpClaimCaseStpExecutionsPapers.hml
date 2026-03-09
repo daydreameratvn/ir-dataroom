@@ -1,0 +1,242 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StpClaimCaseStpExecutionsPapers
+  fields:
+    - name: claimCaseStpExecutionId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: paperId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: StpClaimCaseStpExecutionsPapers
+    inputTypeName: StpClaimCaseStpExecutionsPapersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: stp_claim_case_stp_executions_papers
+      fieldMapping:
+        claimCaseStpExecutionId:
+          column:
+            name: claim_case_stp_execution_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        paperId:
+          column:
+            name: paper_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StpClaimCaseStpExecutionsPapers
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseStpExecutionId
+          - createdAt
+          - deletedAt
+          - paperId
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StpClaimCaseStpExecutionsPapersBoolExp
+  operand:
+    object:
+      type: StpClaimCaseStpExecutionsPapers
+      comparableFields:
+        - fieldName: claimCaseStpExecutionId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: paperId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: stpClaimCaseStpExecution
+        - relationshipName: ocrPaper
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StpClaimCaseStpExecutionsPapersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: StpClaimCaseStpExecutionsPapersAggExp
+  operand:
+    object:
+      aggregatedType: StpClaimCaseStpExecutionsPapers
+      aggregatableFields:
+        - fieldName: claimCaseStpExecutionId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: paperId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: StpClaimCaseStpExecutionsPapersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: StpClaimCaseStpExecutionsPapersOrderByExp
+  operand:
+    object:
+      orderedType: StpClaimCaseStpExecutionsPapers
+      orderableFields:
+        - fieldName: claimCaseStpExecutionId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: paperId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: stpClaimCaseStpExecution
+        - relationshipName: ocrPaper
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: StpClaimCaseStpExecutionsPapersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: StpClaimCaseStpExecutionsPapers
+  objectType: StpClaimCaseStpExecutionsPapers
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: stp_claim_case_stp_executions_papers
+  filterExpressionType: StpClaimCaseStpExecutionsPapersBoolExp
+  aggregateExpression: StpClaimCaseStpExecutionsPapersAggExp
+  orderByExpression: StpClaimCaseStpExecutionsPapersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: stpClaimCaseStpExecutionsPapers
+      subscription:
+        rootField: stpClaimCaseStpExecutionsPapers
+    selectUniques:
+      - queryRootField: stpClaimCaseStpExecutionsPapersByClaimCaseStpExecutionsPapersPkey
+        uniqueIdentifier:
+          - claimCaseStpExecutionId
+          - paperId
+        subscription:
+          rootField: stpClaimCaseStpExecutionsPapersByClaimCaseStpExecutionsPapersPkey
+    filterInputTypeName: StpClaimCaseStpExecutionsPapersFilterInput
+    aggregate:
+      queryRootField: stpClaimCaseStpExecutionsPapersAggregate
+      subscription:
+        rootField: stpClaimCaseStpExecutionsPapersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: StpClaimCaseStpExecutionsPapers
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpClaimCaseStpExecution
+  sourceType: StpClaimCaseStpExecutionsPapers
+  target:
+    model:
+      name: StpClaimCaseStpExecutions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseStpExecutionId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPaper
+  sourceType: StpClaimCaseStpExecutionsPapers
+  target:
+    model:
+      name: OcrPapers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paperId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: StpClaimCaseStpExecutionsPapers
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+

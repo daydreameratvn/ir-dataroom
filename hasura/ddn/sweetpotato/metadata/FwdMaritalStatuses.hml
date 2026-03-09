@@ -1,0 +1,165 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdMaritalStatuses
+  fields:
+    - name: code
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: ppyMaritalStatusCode
+      type: String_1!
+  graphql:
+    typeName: FwdMaritalStatuses
+    inputTypeName: FwdMaritalStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_marital_statuses
+      fieldMapping:
+        code:
+          column:
+            name: code
+        name:
+          column:
+            name: name
+        ppyMaritalStatusCode:
+          column:
+            name: ppy_marital_status_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdMaritalStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - name
+          - ppyMaritalStatusCode
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdMaritalStatusesBoolExp
+  operand:
+    object:
+      type: FwdMaritalStatuses
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: ppyMaritalStatusCode
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: maritalStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdMaritalStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdMaritalStatusesAggExp
+  operand:
+    object:
+      aggregatedType: FwdMaritalStatuses
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: ppyMaritalStatusCode
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdMaritalStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdMaritalStatusesOrderByExp
+  operand:
+    object:
+      orderedType: FwdMaritalStatuses
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: ppyMaritalStatusCode
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: maritalStatus
+  graphql:
+    expressionTypeName: FwdMaritalStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdMaritalStatuses
+  objectType: FwdMaritalStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_marital_statuses
+  filterExpressionType: FwdMaritalStatusesBoolExp
+  aggregateExpression: FwdMaritalStatusesAggExp
+  orderByExpression: FwdMaritalStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdMaritalStatuses
+      subscription:
+        rootField: fwdMaritalStatuses
+    selectUniques:
+      - queryRootField: fwdMaritalStatusesByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: fwdMaritalStatusesByCode
+    filterInputTypeName: FwdMaritalStatusesFilterInput
+    aggregate:
+      queryRootField: fwdMaritalStatusesAggregate
+      subscription:
+        rootField: fwdMaritalStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdMaritalStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: maritalStatus
+  sourceType: FwdMaritalStatuses
+  target:
+    model:
+      name: MaritalStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ppyMaritalStatusCode
+      target:
+        modelField:
+          - fieldName: value
+

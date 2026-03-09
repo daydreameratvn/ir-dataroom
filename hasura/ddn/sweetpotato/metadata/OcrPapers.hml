@@ -1,0 +1,599 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OcrPapers
+  fields:
+    - name: claimDocumentId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: isOcrResultModified
+      type: Boolean_1
+    - name: qcAt
+      type: Timestamptz
+    - name: qcBy
+      type: Uuid
+    - name: qcResult
+      type: Boolean_1
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: OcrPapers
+    inputTypeName: OcrPapersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: ocr_papers
+      fieldMapping:
+        claimDocumentId:
+          column:
+            name: claim_document_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        isOcrResultModified:
+          column:
+            name: is_ocr_result_modified
+        qcAt:
+          column:
+            name: qc_at
+        qcBy:
+          column:
+            name: qc_by
+        qcResult:
+          column:
+            name: qc_result
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OcrPapers
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimDocumentId
+          - createdAt
+          - id
+          - isOcrResultModified
+          - qcAt
+          - qcBy
+          - qcResult
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OcrPapersBoolExp
+  operand:
+    object:
+      type: OcrPapers
+      comparableFields:
+        - fieldName: claimDocumentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isOcrResultModified
+          booleanExpressionType: BoolBoolExp
+        - fieldName: qcAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: qcBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: qcResult
+          booleanExpressionType: BoolBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimDocuments
+        - relationshipName: ocrDischargePapers
+        - relationshipName: ocrInvoices
+        - relationshipName: ocrMedicalRecords
+        - relationshipName: claimDocument
+        - relationshipName: identityUser
+        - relationshipName: claimDocumentType
+        - relationshipName: ocrPolsts
+        - relationshipName: ocrPrescriptions
+        - relationshipName: ocrQcDischargePapers
+        - relationshipName: ocrQcInvoices
+        - relationshipName: ocrQcMedicalRecords
+        - relationshipName: ocrQcPolsts
+        - relationshipName: ocrQcPrescriptions
+        - relationshipName: ocrQcSurgicalRecords
+        - relationshipName: ocrSurgicalRecords
+        - relationshipName: stpClaimCaseStpExecutionsPapers
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OcrPapersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OcrPapersAggExp
+  operand:
+    object:
+      aggregatedType: OcrPapers
+      aggregatableFields:
+        - fieldName: claimDocumentId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isOcrResultModified
+          aggregateExpression: BoolAggExp
+        - fieldName: qcAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: qcBy
+          aggregateExpression: UuidAggExp
+        - fieldName: qcResult
+          aggregateExpression: BoolAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OcrPapersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OcrPapersOrderByExp
+  operand:
+    object:
+      orderedType: OcrPapers
+      orderableFields:
+        - fieldName: claimDocumentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isOcrResultModified
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: qcAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: qcBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: qcResult
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimDocument
+        - relationshipName: identityUser
+        - relationshipName: claimDocumentType
+  graphql:
+    expressionTypeName: OcrPapersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OcrPapers
+  objectType: OcrPapers
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: ocr_papers
+  filterExpressionType: OcrPapersBoolExp
+  aggregateExpression: OcrPapersAggExp
+  orderByExpression: OcrPapersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: ocrPapers
+      subscription:
+        rootField: ocrPapers
+    selectUniques:
+      - queryRootField: ocrPapersById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: ocrPapersById
+    filterInputTypeName: OcrPapersFilterInput
+    aggregate:
+      queryRootField: ocrPapersAggregate
+      subscription:
+        rootField: ocrPapersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OcrPapers
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocuments
+  sourceType: OcrPapers
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: ocrPaperId
+  graphql:
+    aggregateFieldName: claimDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrDischargePapers
+  sourceType: OcrPapers
+  target:
+    model:
+      name: OcrDischargePapers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrDischargePapersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: ocrDischargePapersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrInvoices
+  sourceType: OcrPapers
+  target:
+    model:
+      name: OcrInvoices
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrInvoicesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: ocrInvoicesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrMedicalRecords
+  sourceType: OcrPapers
+  target:
+    model:
+      name: OcrMedicalRecords
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrMedicalRecordsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: ocrMedicalRecordsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocument
+  sourceType: OcrPapers
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentId
+      target:
+        modelField:
+          - fieldName: claimDocumentId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: OcrPapers
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: qcBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocumentType
+  sourceType: OcrPapers
+  target:
+    model:
+      name: ClaimDocumentTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPolsts
+  sourceType: OcrPapers
+  target:
+    model:
+      name: OcrPolsts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrPolstsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: ocrPolstsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPrescriptions
+  sourceType: OcrPapers
+  target:
+    model:
+      name: OcrPrescriptions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrPrescriptionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: ocrPrescriptionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrQcDischargePapers
+  sourceType: OcrPapers
+  target:
+    model:
+      name: OcrQcDischargePapers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrQcDischargePapersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: ocrQcDischargePapersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrQcInvoices
+  sourceType: OcrPapers
+  target:
+    model:
+      name: OcrQcInvoices
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrQcInvoicesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: ocrQcInvoicesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrQcMedicalRecords
+  sourceType: OcrPapers
+  target:
+    model:
+      name: OcrQcMedicalRecords
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrQcMedicalRecordsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: ocrQcMedicalRecordsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrQcPolsts
+  sourceType: OcrPapers
+  target:
+    model:
+      name: OcrQcPolsts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrQcPolstsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: ocrQcPolstsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrQcPrescriptions
+  sourceType: OcrPapers
+  target:
+    model:
+      name: OcrQcPrescriptions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrQcPrescriptionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: ocrQcPrescriptionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrQcSurgicalRecords
+  sourceType: OcrPapers
+  target:
+    model:
+      name: OcrQcSurgicalRecords
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrQcSurgicalRecordsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: ocrQcSurgicalRecordsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrSurgicalRecords
+  sourceType: OcrPapers
+  target:
+    model:
+      name: OcrSurgicalRecords
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrSurgicalRecordsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: ocrSurgicalRecordsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpClaimCaseStpExecutionsPapers
+  sourceType: OcrPapers
+  target:
+    model:
+      name: StpClaimCaseStpExecutionsPapers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: StpClaimCaseStpExecutionsPapersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paperId
+  graphql:
+    aggregateFieldName: stpClaimCaseStpExecutionsPapersAggregate
+

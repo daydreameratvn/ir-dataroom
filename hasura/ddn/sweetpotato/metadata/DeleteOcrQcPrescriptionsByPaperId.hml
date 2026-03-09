@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteOcrQcPrescriptionsByPaperIdResponse
+  description: Responses from the 'delete_ocr_qc_prescriptions_by_paper_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrQcPrescriptions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteOcrQcPrescriptionsByPaperIdResponse
+    inputTypeName: DeleteOcrQcPrescriptionsByPaperIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_ocr_qc_prescriptions_by_paper_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteOcrQcPrescriptionsByPaperIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteOcrQcPrescriptionsByPaperId
+  outputType: DeleteOcrQcPrescriptionsByPaperIdResponse!
+  arguments:
+    - name: keyPaperId
+      type: Uuid!
+    - name: preCheck
+      type: OcrQcPrescriptionsBoolExp
+      description: Delete permission predicate over the 'ocr_qc_prescriptions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_ocr_qc_prescriptions_by_paper_id
+    argumentMapping:
+      keyPaperId: key_paper_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteOcrQcPrescriptionsByPaperId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'ocr_qc_prescriptions' collection using the
+    'paper_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteOcrQcPrescriptionsByPaperId
+  permissions:
+    - role: admin
+      allowExecution: true
+

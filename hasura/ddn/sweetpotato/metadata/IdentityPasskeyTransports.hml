@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityPasskeyTransports
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: IdentityPasskeyTransports
+    inputTypeName: IdentityPasskeyTransportsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_passkey_transports
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityPasskeyTransports
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityPasskeyTransportsBoolExp
+  operand:
+    object:
+      type: IdentityPasskeyTransports
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityPasskeyTransportsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityPasskeyTransportsAggExp
+  operand:
+    object:
+      aggregatedType: IdentityPasskeyTransports
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityPasskeyTransportsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityPasskeyTransportsOrderByExp
+  operand:
+    object:
+      orderedType: IdentityPasskeyTransports
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: IdentityPasskeyTransportsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityPasskeyTransports
+  objectType: IdentityPasskeyTransports
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_passkey_transports
+  filterExpressionType: IdentityPasskeyTransportsBoolExp
+  aggregateExpression: IdentityPasskeyTransportsAggExp
+  orderByExpression: IdentityPasskeyTransportsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityPasskeyTransports
+      subscription:
+        rootField: identityPasskeyTransports
+    selectUniques:
+      - queryRootField: identityPasskeyTransportsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: identityPasskeyTransportsByValue
+    filterInputTypeName: IdentityPasskeyTransportsFilterInput
+    aggregate:
+      queryRootField: identityPasskeyTransportsAggregate
+      subscription:
+        rootField: identityPasskeyTransportsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityPasskeyTransports
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

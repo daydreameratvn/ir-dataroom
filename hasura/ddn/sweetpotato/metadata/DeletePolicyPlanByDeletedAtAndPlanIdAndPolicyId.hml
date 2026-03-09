@@ -1,0 +1,80 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicyPlanByDeletedAtAndPlanIdAndPolicyIdResponse
+  description: Responses from the
+    'delete_policy_plan_by_deleted_at_and_plan_id_and_policy_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyPlan!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicyPlanByDeletedAtAndPlanIdAndPolicyIdResponse
+    inputTypeName: DeletePolicyPlanByDeletedAtAndPlanIdAndPolicyIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_plan_by_deleted_at_and_plan_id_and_policy_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicyPlanByDeletedAtAndPlanIdAndPolicyIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicyPlanByDeletedAtAndPlanIdAndPolicyId
+  outputType: DeletePolicyPlanByDeletedAtAndPlanIdAndPolicyIdResponse!
+  arguments:
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyPlanId
+      type: Uuid!
+    - name: keyPolicyId
+      type: Uuid!
+    - name: preCheck
+      type: PolicyPlanBoolExp
+      description: Delete permission predicate over the 'policy_plan' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_plan_by_deleted_at_and_plan_id_and_policy_id
+    argumentMapping:
+      keyDeletedAt: key_deleted_at
+      keyPlanId: key_plan_id
+      keyPolicyId: key_policy_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicyPlanByDeletedAtAndPlanIdAndPolicyId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_plan' collection using the
+    'deleted_at', 'plan_id' and 'policy_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicyPlanByDeletedAtAndPlanIdAndPolicyId
+  permissions:
+    - role: admin
+      allowExecution: true
+

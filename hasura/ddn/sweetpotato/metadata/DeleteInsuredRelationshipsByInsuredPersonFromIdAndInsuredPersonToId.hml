@@ -1,0 +1,78 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredRelationshipsByInsuredPersonFromIdAndInsuredPersonToIdResponse
+  description: Responses from the
+    'delete_insured_relationships_by_insured_person_from_id_and_insured_person_to_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredRelationships!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredRelationshipsByInsuredPersonFromIdAndInsuredPersonToIdResponse
+    inputTypeName: DeleteInsuredRelationshipsByInsuredPersonFromIdAndInsuredPersonToIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_relationships_by_insured_person_from_id_and_insured_person_to_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredRelationshipsByInsuredPersonFromIdAndInsuredPersonToIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredRelationshipsByInsuredPersonFromIdAndInsuredPersonToId
+  outputType: DeleteInsuredRelationshipsByInsuredPersonFromIdAndInsuredPersonToIdResponse!
+  arguments:
+    - name: keyInsuredPersonFromId
+      type: Uuid!
+    - name: keyInsuredPersonToId
+      type: Uuid!
+    - name: preCheck
+      type: InsuredRelationshipsBoolExp
+      description: Delete permission predicate over the 'insured_relationships' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_relationships_by_insured_person_from_id_and_insured_person_to_id
+    argumentMapping:
+      keyInsuredPersonFromId: key_insured_person_from_id
+      keyInsuredPersonToId: key_insured_person_to_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredRelationshipsByInsuredPersonFromIdAndInsuredPersonToId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_relationships' collection using the
+    'insured_person_from_id' and 'insured_person_to_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredRelationshipsByInsuredPersonFromIdAndInsuredPersonToId
+  permissions:
+    - role: admin
+      allowExecution: true
+

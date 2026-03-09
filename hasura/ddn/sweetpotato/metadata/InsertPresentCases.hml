@@ -1,0 +1,181 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPresentCasesObject
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: decisionAt
+      type: Timestamptz
+    - name: decisionNote
+      type: String_1
+    - name: deletedAt
+      type: Timestamptz
+    - name: insurerAssessmentAt
+      type: Timestamptz
+      description: "@deprecated"
+    - name: insurerAssessmentBy
+      type: Uuid
+    - name: insurerAssessmentNote
+      type: String_1
+    - name: presentCaseId
+      type: Uuid
+    - name: presentCaseTime
+      type: Int32!
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertPresentCasesObject
+    inputTypeName: InsertPresentCasesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_present_cases_object
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        decisionAt:
+          column:
+            name: decision_at
+        decisionNote:
+          column:
+            name: decision_note
+        deletedAt:
+          column:
+            name: deleted_at
+        insurerAssessmentAt:
+          column:
+            name: insurer_assessment_at
+        insurerAssessmentBy:
+          column:
+            name: insurer_assessment_by
+        insurerAssessmentNote:
+          column:
+            name: insurer_assessment_note
+        presentCaseId:
+          column:
+            name: present_case_id
+        presentCaseTime:
+          column:
+            name: present_case_time
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPresentCasesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - createdBy
+          - decisionAt
+          - decisionNote
+          - deletedAt
+          - insurerAssessmentAt
+          - insurerAssessmentBy
+          - insurerAssessmentNote
+          - presentCaseId
+          - presentCaseTime
+          - status
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPresentCasesResponse
+  description: Responses from the 'insert_present_cases' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PresentCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPresentCasesResponse
+    inputTypeName: InsertPresentCasesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_present_cases_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPresentCasesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPresentCases
+  outputType: InsertPresentCasesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPresentCasesObject!]!"
+    - name: postCheck
+      type: PresentCasesBoolExp
+      description: Insert permission predicate over the 'present_cases' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_present_cases
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPresentCases
+    rootFieldKind: Mutation
+  description: Insert into the present_cases table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPresentCases
+  permissions:
+    - role: admin
+      allowExecution: true
+

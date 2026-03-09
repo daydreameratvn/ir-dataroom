@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPoliciesPlansInsuredBenefitsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: planId
+      type: Uuid!
+    - name: planInsuredBenefitId
+      type: Uuid!
+    - name: policyId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid!
+  graphql:
+    typeName: InsertPoliciesPlansInsuredBenefitsObject
+    inputTypeName: InsertPoliciesPlansInsuredBenefitsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policies_plans_insured_benefits_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        planId:
+          column:
+            name: plan_id
+        planInsuredBenefitId:
+          column:
+            name: plan_insured_benefit_id
+        policyId:
+          column:
+            name: policy_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPoliciesPlansInsuredBenefitsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - planId
+          - planInsuredBenefitId
+          - policyId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPoliciesPlansInsuredBenefitsResponse
+  description: Responses from the 'insert_policies_plans_insured_benefits' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PoliciesPlansInsuredBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPoliciesPlansInsuredBenefitsResponse
+    inputTypeName: InsertPoliciesPlansInsuredBenefitsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policies_plans_insured_benefits_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPoliciesPlansInsuredBenefitsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPoliciesPlansInsuredBenefits
+  outputType: InsertPoliciesPlansInsuredBenefitsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPoliciesPlansInsuredBenefitsObject!]!"
+    - name: postCheck
+      type: PoliciesPlansInsuredBenefitsBoolExp
+      description: Insert permission predicate over the
+        'policies_plans_insured_benefits' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policies_plans_insured_benefits
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPoliciesPlansInsuredBenefits
+    rootFieldKind: Mutation
+  description: Insert into the policies_plans_insured_benefits table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPoliciesPlansInsuredBenefits
+  permissions:
+    - role: admin
+      allowExecution: true
+

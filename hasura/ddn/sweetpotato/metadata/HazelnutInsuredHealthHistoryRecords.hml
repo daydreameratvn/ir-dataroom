@@ -1,0 +1,289 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HazelnutInsuredHealthHistoryRecords
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insuredHealthHistoryId
+      type: Uuid!
+    - name: treatmentDate
+      type: Timestamptz!
+    - name: treatmentDetails
+      type: String_1!
+    - name: treatmentResults
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: HazelnutInsuredHealthHistoryRecords
+    inputTypeName: HazelnutInsuredHealthHistoryRecordsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hazelnut_insured_health_history_records
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredHealthHistoryId:
+          column:
+            name: insured_health_history_id
+        treatmentDate:
+          column:
+            name: treatment_date
+        treatmentDetails:
+          column:
+            name: treatment_details
+        treatmentResults:
+          column:
+            name: treatment_results
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HazelnutInsuredHealthHistoryRecords
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - insuredHealthHistoryId
+          - treatmentDate
+          - treatmentDetails
+          - treatmentResults
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HazelnutInsuredHealthHistoryRecordsBoolExp
+  operand:
+    object:
+      type: HazelnutInsuredHealthHistoryRecords
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredHealthHistoryId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: treatmentDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: treatmentDetails
+          booleanExpressionType: TextBoolExp
+        - fieldName: treatmentResults
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: hazelnutInsuredHealthHistory
+        - relationshipName: identityUserByUpdatedBy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HazelnutInsuredHealthHistoryRecordsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HazelnutInsuredHealthHistoryRecordsAggExp
+  operand:
+    object:
+      aggregatedType: HazelnutInsuredHealthHistoryRecords
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredHealthHistoryId
+          aggregateExpression: UuidAggExp
+        - fieldName: treatmentDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: treatmentDetails
+          aggregateExpression: TextAggExp
+        - fieldName: treatmentResults
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HazelnutInsuredHealthHistoryRecordsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HazelnutInsuredHealthHistoryRecordsOrderByExp
+  operand:
+    object:
+      orderedType: HazelnutInsuredHealthHistoryRecords
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredHealthHistoryId
+          orderByExpression: UuidOrderByExp
+        - fieldName: treatmentDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: treatmentDetails
+          orderByExpression: String1OrderByExp
+        - fieldName: treatmentResults
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: hazelnutInsuredHealthHistory
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: HazelnutInsuredHealthHistoryRecordsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HazelnutInsuredHealthHistoryRecords
+  objectType: HazelnutInsuredHealthHistoryRecords
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hazelnut_insured_health_history_records
+  filterExpressionType: HazelnutInsuredHealthHistoryRecordsBoolExp
+  aggregateExpression: HazelnutInsuredHealthHistoryRecordsAggExp
+  orderByExpression: HazelnutInsuredHealthHistoryRecordsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hazelnutInsuredHealthHistoryRecords
+      subscription:
+        rootField: hazelnutInsuredHealthHistoryRecords
+    selectUniques:
+      - queryRootField: hazelnutInsuredHealthHistoryRecordsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hazelnutInsuredHealthHistoryRecordsById
+    filterInputTypeName: HazelnutInsuredHealthHistoryRecordsFilterInput
+    aggregate:
+      queryRootField: hazelnutInsuredHealthHistoryRecordsAggregate
+      subscription:
+        rootField: hazelnutInsuredHealthHistoryRecordsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HazelnutInsuredHealthHistoryRecords
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: HazelnutInsuredHealthHistoryRecords
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuredHealthHistory
+  sourceType: HazelnutInsuredHealthHistoryRecords
+  target:
+    model:
+      name: HazelnutInsuredHealthHistories
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredHealthHistoryId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: HazelnutInsuredHealthHistoryRecords
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+

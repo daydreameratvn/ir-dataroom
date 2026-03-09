@@ -1,0 +1,341 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CompanyCorrespondences
+  fields:
+    - name: autoSend
+      type: Boolean_1!
+    - name: companyId
+      type: Uuid!
+    - name: conditions
+      type: Json
+    - name: correspondenceTemplateId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: planId
+      type: Uuid
+    - name: sendWhen
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: CompanyCorrespondences
+    inputTypeName: CompanyCorrespondencesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: company_correspondences
+      fieldMapping:
+        autoSend:
+          column:
+            name: auto_send
+        companyId:
+          column:
+            name: company_id
+        conditions:
+          column:
+            name: conditions
+        correspondenceTemplateId:
+          column:
+            name: correspondence_template_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        planId:
+          column:
+            name: plan_id
+        sendWhen:
+          column:
+            name: send_when
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CompanyCorrespondences
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoSend
+          - companyId
+          - conditions
+          - correspondenceTemplateId
+          - createdAt
+          - deletedAt
+          - id
+          - planId
+          - sendWhen
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CompanyCorrespondencesBoolExp
+  operand:
+    object:
+      type: CompanyCorrespondences
+      comparableFields:
+        - fieldName: autoSend
+          booleanExpressionType: BoolBoolExp
+        - fieldName: companyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: conditions
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: correspondenceTemplateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: sendWhen
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: companySetting
+        - relationshipName: correspondenceTemplate
+        - relationshipName: plan
+        - relationshipName: correspondenceSendWhen
+        - relationshipName: correspondenceHistories
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CompanyCorrespondencesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CompanyCorrespondencesAggExp
+  operand:
+    object:
+      aggregatedType: CompanyCorrespondences
+      aggregatableFields:
+        - fieldName: autoSend
+          aggregateExpression: BoolAggExp
+        - fieldName: companyId
+          aggregateExpression: UuidAggExp
+        - fieldName: conditions
+          aggregateExpression: JsonbAggExp
+        - fieldName: correspondenceTemplateId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: sendWhen
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CompanyCorrespondencesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CompanyCorrespondencesOrderByExp
+  operand:
+    object:
+      orderedType: CompanyCorrespondences
+      orderableFields:
+        - fieldName: autoSend
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: companyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: conditions
+          orderByExpression: JsonOrderByExp
+        - fieldName: correspondenceTemplateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: sendWhen
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: companySetting
+        - relationshipName: correspondenceTemplate
+        - relationshipName: plan
+        - relationshipName: correspondenceSendWhen
+  graphql:
+    expressionTypeName: CompanyCorrespondencesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CompanyCorrespondences
+  objectType: CompanyCorrespondences
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: company_correspondences
+  filterExpressionType: CompanyCorrespondencesBoolExp
+  aggregateExpression: CompanyCorrespondencesAggExp
+  orderByExpression: CompanyCorrespondencesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: companyCorrespondences
+      subscription:
+        rootField: companyCorrespondences
+    selectUniques:
+      - queryRootField: companyCorrespondencesByCompanyCorrespondencesCompanyIdDeletedAtCorrespondenceTe
+        uniqueIdentifier:
+          - companyId
+          - correspondenceTemplateId
+          - deletedAt
+          - planId
+          - sendWhen
+        subscription:
+          rootField: companyCorrespondencesByCompanyCorrespondencesCompanyIdDeletedAtCorrespondenceTe
+      - queryRootField: companyCorrespondencesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: companyCorrespondencesById
+    filterInputTypeName: CompanyCorrespondencesFilterInput
+    aggregate:
+      queryRootField: companyCorrespondencesAggregate
+      subscription:
+        rootField: companyCorrespondencesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CompanyCorrespondences
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: companySetting
+  sourceType: CompanyCorrespondences
+  target:
+    model:
+      name: CompanySettings
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceTemplate
+  sourceType: CompanyCorrespondences
+  target:
+    model:
+      name: CorrespondenceTemplates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: correspondenceTemplateId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plan
+  sourceType: CompanyCorrespondences
+  target:
+    model:
+      name: Plans
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceSendWhen
+  sourceType: CompanyCorrespondences
+  target:
+    model:
+      name: CorrespondenceSendWhen
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: sendWhen
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceHistories
+  sourceType: CompanyCorrespondences
+  target:
+    model:
+      name: CorrespondenceHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: companyCorrespondenceId
+  graphql:
+    aggregateFieldName: correspondenceHistoriesAggregate
+

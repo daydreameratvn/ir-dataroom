@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCustomSettingSettingsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: fallbackPriority
+      type: Json
+    - name: id
+      type: Uuid
+    - name: module
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: overridePriority
+      type: Json
+    - name: test5
+      type: Int32
+    - name: updatedAt
+      type: Timestamptz
+    - name: valueType
+      type: String_1!
+  graphql:
+    typeName: InsertCustomSettingSettingsObject
+    inputTypeName: InsertCustomSettingSettingsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_custom_setting_settings_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        fallbackPriority:
+          column:
+            name: fallback_priority
+        id:
+          column:
+            name: id
+        module:
+          column:
+            name: module
+        name:
+          column:
+            name: name
+        overridePriority:
+          column:
+            name: override_priority
+        test5:
+          column:
+            name: test5
+        updatedAt:
+          column:
+            name: updated_at
+        valueType:
+          column:
+            name: value_type
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCustomSettingSettingsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - fallbackPriority
+          - id
+          - module
+          - name
+          - overridePriority
+          - test5
+          - updatedAt
+          - valueType
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCustomSettingSettingsResponse
+  description: Responses from the 'insert_custom_setting_settings' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingSettings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCustomSettingSettingsResponse
+    inputTypeName: InsertCustomSettingSettingsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_custom_setting_settings_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCustomSettingSettingsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCustomSettingSettings
+  outputType: InsertCustomSettingSettingsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCustomSettingSettingsObject!]!"
+    - name: postCheck
+      type: CustomSettingSettingsBoolExp
+      description: Insert permission predicate over the 'custom_setting_settings' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_custom_setting_settings
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCustomSettingSettings
+    rootFieldKind: Mutation
+  description: Insert into the custom_setting_settings table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCustomSettingSettings
+  permissions:
+    - role: admin
+      allowExecution: true
+

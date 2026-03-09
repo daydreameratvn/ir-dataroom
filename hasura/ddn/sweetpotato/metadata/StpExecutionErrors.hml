@@ -1,0 +1,265 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StpExecutionErrors
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: errorCode
+      type: String_1!
+    - name: extensions
+      type: Json!
+    - name: id
+      type: Uuid!
+    - name: message
+      type: String_1
+    - name: stpExecutionId
+      type: Uuid!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: StpExecutionErrors
+    inputTypeName: StpExecutionErrorsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: stp_execution_errors
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        errorCode:
+          column:
+            name: error_code
+        extensions:
+          column:
+            name: extensions
+        id:
+          column:
+            name: id
+        message:
+          column:
+            name: message
+        stpExecutionId:
+          column:
+            name: stp_execution_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StpExecutionErrors
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - errorCode
+          - extensions
+          - id
+          - message
+          - stpExecutionId
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StpExecutionErrorsBoolExp
+  operand:
+    object:
+      type: StpExecutionErrors
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: errorCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: extensions
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: message
+          booleanExpressionType: TextBoolExp
+        - fieldName: stpExecutionId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: stpExecutionErrorCode
+        - relationshipName: stpClaimCaseStpExecution
+        - relationshipName: stpExecutionErrorType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StpExecutionErrorsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: StpExecutionErrorsAggExp
+  operand:
+    object:
+      aggregatedType: StpExecutionErrors
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: errorCode
+          aggregateExpression: TextAggExp
+        - fieldName: extensions
+          aggregateExpression: JsonbAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: message
+          aggregateExpression: TextAggExp
+        - fieldName: stpExecutionId
+          aggregateExpression: UuidAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: StpExecutionErrorsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: StpExecutionErrorsOrderByExp
+  operand:
+    object:
+      orderedType: StpExecutionErrors
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: errorCode
+          orderByExpression: String1OrderByExp
+        - fieldName: extensions
+          orderByExpression: JsonOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: message
+          orderByExpression: String1OrderByExp
+        - fieldName: stpExecutionId
+          orderByExpression: UuidOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: stpExecutionErrorCode
+        - relationshipName: stpClaimCaseStpExecution
+        - relationshipName: stpExecutionErrorType
+  graphql:
+    expressionTypeName: StpExecutionErrorsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: StpExecutionErrors
+  objectType: StpExecutionErrors
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: stp_execution_errors
+  filterExpressionType: StpExecutionErrorsBoolExp
+  aggregateExpression: StpExecutionErrorsAggExp
+  orderByExpression: StpExecutionErrorsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: stpExecutionErrors
+      subscription:
+        rootField: stpExecutionErrors
+    selectUniques:
+      - queryRootField: stpExecutionErrorsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: stpExecutionErrorsById
+    filterInputTypeName: StpExecutionErrorsFilterInput
+    aggregate:
+      queryRootField: stpExecutionErrorsAggregate
+      subscription:
+        rootField: stpExecutionErrorsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: StpExecutionErrors
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpExecutionErrorCode
+  sourceType: StpExecutionErrors
+  target:
+    model:
+      name: StpExecutionErrorCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: errorCode
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpClaimCaseStpExecution
+  sourceType: StpExecutionErrors
+  target:
+    model:
+      name: StpClaimCaseStpExecutions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: stpExecutionId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpExecutionErrorType
+  sourceType: StpExecutionErrors
+  target:
+    model:
+      name: StpExecutionErrorTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

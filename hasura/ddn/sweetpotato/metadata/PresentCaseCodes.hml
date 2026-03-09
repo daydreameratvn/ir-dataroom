@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PresentCaseCodes
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PresentCaseCodes
+    inputTypeName: PresentCaseCodesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: present_case_codes
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PresentCaseCodes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PresentCaseCodesBoolExp
+  operand:
+    object:
+      type: PresentCaseCodes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimPresentCaseCodes
+        - relationshipName: insurerPresentCaseCodesMappings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PresentCaseCodesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PresentCaseCodesAggExp
+  operand:
+    object:
+      aggregatedType: PresentCaseCodes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PresentCaseCodesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PresentCaseCodesOrderByExp
+  operand:
+    object:
+      orderedType: PresentCaseCodes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PresentCaseCodesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PresentCaseCodes
+  objectType: PresentCaseCodes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: present_case_codes
+  filterExpressionType: PresentCaseCodesBoolExp
+  aggregateExpression: PresentCaseCodesAggExp
+  orderByExpression: PresentCaseCodesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: presentCaseCodes
+      subscription:
+        rootField: presentCaseCodes
+    selectUniques:
+      - queryRootField: presentCaseCodesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: presentCaseCodesByValue
+    filterInputTypeName: PresentCaseCodesFilterInput
+    aggregate:
+      queryRootField: presentCaseCodesAggregate
+      subscription:
+        rootField: presentCaseCodesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PresentCaseCodes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimPresentCaseCodes
+  sourceType: PresentCaseCodes
+  target:
+    model:
+      name: ClaimPresentCaseCodes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimPresentCaseCodesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: code
+  graphql:
+    aggregateFieldName: claimPresentCaseCodesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insurerPresentCaseCodesMappings
+  sourceType: PresentCaseCodes
+  target:
+    model:
+      name: InsurerPresentCaseCodesMapping
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsurerPresentCaseCodesMappingAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: ppyPresentCaseCode
+  graphql:
+    aggregateFieldName: insurerPresentCaseCodesMappingsAggregate
+

@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCorrespondenceEmailStatusesByValueResponse
+  description: Responses from the 'delete_correspondence_email_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmailStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCorrespondenceEmailStatusesByValueResponse
+    inputTypeName: DeleteCorrespondenceEmailStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_correspondence_email_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCorrespondenceEmailStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCorrespondenceEmailStatusesByValue
+  outputType: DeleteCorrespondenceEmailStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: CorrespondenceEmailStatusesBoolExp
+      description: Delete permission predicate over the
+        'correspondence_email_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_correspondence_email_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCorrespondenceEmailStatusesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'correspondence_email_statuses' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCorrespondenceEmailStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

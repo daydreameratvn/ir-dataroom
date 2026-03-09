@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanDetailsObject
+  fields:
+    - name: code
+      type: String_1
+    - name: coverageDescription
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: fee
+      type: String_1
+    - name: name
+      type: String_1
+    - name: parentPlanDetailId
+      type: Uuid
+    - name: planDetailId
+      type: Uuid
+    - name: planId
+      type: Uuid!
+    - name: territorialLimit
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPlanDetailsObject
+    inputTypeName: InsertPlanDetailsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_details_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        coverageDescription:
+          column:
+            name: coverage_description
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        fee:
+          column:
+            name: fee
+        name:
+          column:
+            name: name
+        parentPlanDetailId:
+          column:
+            name: parent_plan_detail_id
+        planDetailId:
+          column:
+            name: plan_detail_id
+        planId:
+          column:
+            name: plan_id
+        territorialLimit:
+          column:
+            name: territorial_limit
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanDetailsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - coverageDescription
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - fee
+          - name
+          - parentPlanDetailId
+          - planDetailId
+          - planId
+          - territorialLimit
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanDetailsResponse
+  description: Responses from the 'insert_plan_details' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanDetails!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPlanDetailsResponse
+    inputTypeName: InsertPlanDetailsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_details_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanDetailsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPlanDetails
+  outputType: InsertPlanDetailsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPlanDetailsObject!]!"
+    - name: postCheck
+      type: PlanDetailsBoolExp
+      description: Insert permission predicate over the 'plan_details' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_plan_details
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPlanDetails
+    rootFieldKind: Mutation
+  description: Insert into the plan_details table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPlanDetails
+  permissions:
+    - role: admin
+      allowExecution: true
+

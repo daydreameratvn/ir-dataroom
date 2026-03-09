@@ -1,0 +1,164 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateJetResultsByOriginalClaimCaseIdUpdateColumns
+  description: Update the columns of the 'jet_results' collection
+  fields:
+    - name: claimCaseId
+      type: UpdateColumnJetResultsClaimCaseId
+      description: Update the 'claim_case_id' column in the 'jet_results' collection.
+    - name: createdAt
+      type: UpdateColumnJetResultsCreatedAt
+      description: Update the 'created_at' column in the 'jet_results' collection.
+    - name: id
+      type: UpdateColumnJetResultsId
+      description: Update the 'id' column in the 'jet_results' collection.
+    - name: isJet
+      type: UpdateColumnJetResultsIsJet
+      description: Update the 'is_jet' column in the 'jet_results' collection.
+    - name: isJetByAssessor
+      type: UpdateColumnJetResultsIsJetByAssessor
+      description: Update the 'is_jet_by_assessor' column in the 'jet_results' collection.
+    - name: jetRuleSetId
+      type: UpdateColumnJetResultsJetRuleSetId
+      description: Update the 'jet_rule_set_id' column in the 'jet_results' collection.
+    - name: originalClaimCaseId
+      type: UpdateColumnJetResultsOriginalClaimCaseId
+      description: Update the 'original_claim_case_id' column in the 'jet_results'
+        collection.
+    - name: updatedAt
+      type: UpdateColumnJetResultsUpdatedAt
+      description: Update the 'updated_at' column in the 'jet_results' collection.
+  graphql:
+    typeName: UpdateJetResultsByOriginalClaimCaseIdUpdateColumns
+    inputTypeName: UpdateJetResultsByOriginalClaimCaseIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_jet_results_by_original_claim_case_id_update_columns
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        isJet:
+          column:
+            name: is_jet
+        isJetByAssessor:
+          column:
+            name: is_jet_by_assessor
+        jetRuleSetId:
+          column:
+            name: jet_rule_set_id
+        originalClaimCaseId:
+          column:
+            name: original_claim_case_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateJetResultsByOriginalClaimCaseIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - id
+          - isJet
+          - isJetByAssessor
+          - jetRuleSetId
+          - originalClaimCaseId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateJetResultsByOriginalClaimCaseIdResponse
+  description: Responses from the 'update_jet_results_by_original_claim_case_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[JetResults!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateJetResultsByOriginalClaimCaseIdResponse
+    inputTypeName: UpdateJetResultsByOriginalClaimCaseIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_jet_results_by_original_claim_case_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateJetResultsByOriginalClaimCaseIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateJetResultsByOriginalClaimCaseId
+  outputType: UpdateJetResultsByOriginalClaimCaseIdResponse!
+  arguments:
+    - name: keyOriginalClaimCaseId
+      type: Uuid
+    - name: postCheck
+      type: JetResultsBoolExp
+      description: Update permission post-condition predicate over the 'jet_results'
+        collection
+    - name: preCheck
+      type: JetResultsBoolExp
+      description: Update permission pre-condition predicate over the 'jet_results'
+        collection
+    - name: updateColumns
+      type: UpdateJetResultsByOriginalClaimCaseIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_jet_results_by_original_claim_case_id
+    argumentMapping:
+      keyOriginalClaimCaseId: key_original_claim_case_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateJetResultsByOriginalClaimCaseId
+    rootFieldKind: Mutation
+  description: Update any row on the 'jet_results' collection using the
+    'original_claim_case_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateJetResultsByOriginalClaimCaseId
+  permissions:
+    - role: admin
+      allowExecution: true
+

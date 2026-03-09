@@ -1,0 +1,157 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutDiscountCriteriaObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: discountCoverageType
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: noPaymentAtInternationalHospitals
+      type: Boolean_1
+    - name: onlyPaymentAtPublicHospitals
+      type: Boolean_1
+    - name: partialPayment
+      type: Boolean_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertHazelnutDiscountCriteriaObject
+    inputTypeName: InsertHazelnutDiscountCriteriaObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_discount_criteria_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        discountCoverageType:
+          column:
+            name: discount_coverage_type
+        id:
+          column:
+            name: id
+        noPaymentAtInternationalHospitals:
+          column:
+            name: no_payment_at_international_hospitals
+        onlyPaymentAtPublicHospitals:
+          column:
+            name: only_payment_at_public_hospitals
+        partialPayment:
+          column:
+            name: partial_payment
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutDiscountCriteriaObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - discountCoverageType
+          - id
+          - noPaymentAtInternationalHospitals
+          - onlyPaymentAtPublicHospitals
+          - partialPayment
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutDiscountCriteriaResponse
+  description: Responses from the 'insert_hazelnut_discount_criteria' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutDiscountCriteria!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHazelnutDiscountCriteriaResponse
+    inputTypeName: InsertHazelnutDiscountCriteriaResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_discount_criteria_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutDiscountCriteriaResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHazelnutDiscountCriteria
+  outputType: InsertHazelnutDiscountCriteriaResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHazelnutDiscountCriteriaObject!]!"
+    - name: postCheck
+      type: HazelnutDiscountCriteriaBoolExp
+      description: Insert permission predicate over the 'hazelnut_discount_criteria'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hazelnut_discount_criteria
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHazelnutDiscountCriteria
+    rootFieldKind: Mutation
+  description: Insert into the hazelnut_discount_criteria table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHazelnutDiscountCriteria
+  permissions:
+    - role: admin
+      allowExecution: true
+

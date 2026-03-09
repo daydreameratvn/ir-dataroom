@@ -1,0 +1,132 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertStpStpRuleSetsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: name
+      type: String_1!
+    - name: rules
+      type: Json
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertStpStpRuleSetsObject
+    inputTypeName: InsertStpStpRuleSetsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_stp_stp_rule_sets_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        rules:
+          column:
+            name: rules
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertStpStpRuleSetsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - description
+          - id
+          - name
+          - rules
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertStpStpRuleSetsResponse
+  description: Responses from the 'insert_stp_stp_rule_sets' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpStpRuleSets!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertStpStpRuleSetsResponse
+    inputTypeName: InsertStpStpRuleSetsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_stp_stp_rule_sets_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertStpStpRuleSetsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertStpStpRuleSets
+  outputType: InsertStpStpRuleSetsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertStpStpRuleSetsObject!]!"
+    - name: postCheck
+      type: StpStpRuleSetsBoolExp
+      description: Insert permission predicate over the 'stp_stp_rule_sets' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_stp_stp_rule_sets
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertStpStpRuleSets
+    rootFieldKind: Mutation
+  description: Insert into the stp_stp_rule_sets table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertStpStpRuleSets
+  permissions:
+    - role: admin
+      allowExecution: true
+

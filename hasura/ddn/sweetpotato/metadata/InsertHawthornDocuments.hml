@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornDocumentsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: fileId
+      type: Uuid!
+    - name: healthCheckupId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: medicalProviderId
+      type: Uuid
+    - name: mimeType
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: ocrRawText
+      type: String_1
+    - name: parentId
+      type: Uuid
+    - name: patientId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertHawthornDocumentsObject
+    inputTypeName: InsertHawthornDocumentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_documents_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        fileId:
+          column:
+            name: file_id
+        healthCheckupId:
+          column:
+            name: health_checkup_id
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        mimeType:
+          column:
+            name: mime_type
+        name:
+          column:
+            name: name
+        ocrRawText:
+          column:
+            name: ocr_raw_text
+        parentId:
+          column:
+            name: parent_id
+        patientId:
+          column:
+            name: patient_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornDocumentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - fileId
+          - healthCheckupId
+          - id
+          - medicalProviderId
+          - mimeType
+          - name
+          - ocrRawText
+          - parentId
+          - patientId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornDocumentsResponse
+  description: Responses from the 'insert_hawthorn_documents' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornDocuments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornDocumentsResponse
+    inputTypeName: InsertHawthornDocumentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_documents_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornDocumentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornDocuments
+  outputType: InsertHawthornDocumentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornDocumentsObject!]!"
+    - name: postCheck
+      type: HawthornDocumentsBoolExp
+      description: Insert permission predicate over the 'hawthorn_documents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_documents
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornDocuments
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_documents table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornDocuments
+  permissions:
+    - role: admin
+      allowExecution: true
+

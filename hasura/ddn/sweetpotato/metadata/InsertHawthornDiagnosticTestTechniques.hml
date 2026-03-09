@@ -1,0 +1,133 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornDiagnosticTestTechniquesObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: hierarchyLevel
+      type: Int32
+    - name: name
+      type: String_1!
+    - name: parentCode
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertHawthornDiagnosticTestTechniquesObject
+    inputTypeName: InsertHawthornDiagnosticTestTechniquesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_diagnostic_test_techniques_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        hierarchyLevel:
+          column:
+            name: hierarchy_level
+        name:
+          column:
+            name: name
+        parentCode:
+          column:
+            name: parent_code
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornDiagnosticTestTechniquesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - hierarchyLevel
+          - name
+          - parentCode
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornDiagnosticTestTechniquesResponse
+  description: Responses from the 'insert_hawthorn_diagnostic_test_techniques' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornDiagnosticTestTechniques!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornDiagnosticTestTechniquesResponse
+    inputTypeName: InsertHawthornDiagnosticTestTechniquesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_diagnostic_test_techniques_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornDiagnosticTestTechniquesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornDiagnosticTestTechniques
+  outputType: InsertHawthornDiagnosticTestTechniquesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornDiagnosticTestTechniquesObject!]!"
+    - name: postCheck
+      type: HawthornDiagnosticTestTechniquesBoolExp
+      description: Insert permission predicate over the
+        'hawthorn_diagnostic_test_techniques' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_diagnostic_test_techniques
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornDiagnosticTestTechniques
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_diagnostic_test_techniques table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornDiagnosticTestTechniques
+  permissions:
+    - role: admin
+      allowExecution: true
+

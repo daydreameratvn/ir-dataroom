@@ -1,0 +1,157 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPresentCaseAssessmentsObject
+  fields:
+    - name: assessedUserId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: decisionCode
+      type: String_1
+    - name: decisionNote
+      type: String_1
+    - name: emailId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: paidAmount
+      type: Bigdecimal
+    - name: presentCaseId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: userRole
+      type: String_1
+  graphql:
+    typeName: InsertPresentCaseAssessmentsObject
+    inputTypeName: InsertPresentCaseAssessmentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_present_case_assessments_object
+      fieldMapping:
+        assessedUserId:
+          column:
+            name: assessed_user_id
+        createdAt:
+          column:
+            name: created_at
+        decisionCode:
+          column:
+            name: decision_code
+        decisionNote:
+          column:
+            name: decision_note
+        emailId:
+          column:
+            name: email_id
+        id:
+          column:
+            name: id
+        paidAmount:
+          column:
+            name: paid_amount
+        presentCaseId:
+          column:
+            name: present_case_id
+        updatedAt:
+          column:
+            name: updated_at
+        userRole:
+          column:
+            name: user_role
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPresentCaseAssessmentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - assessedUserId
+          - createdAt
+          - decisionCode
+          - decisionNote
+          - emailId
+          - id
+          - paidAmount
+          - presentCaseId
+          - updatedAt
+          - userRole
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPresentCaseAssessmentsResponse
+  description: Responses from the 'insert_present_case_assessments' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PresentCaseAssessments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPresentCaseAssessmentsResponse
+    inputTypeName: InsertPresentCaseAssessmentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_present_case_assessments_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPresentCaseAssessmentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPresentCaseAssessments
+  outputType: InsertPresentCaseAssessmentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPresentCaseAssessmentsObject!]!"
+    - name: postCheck
+      type: PresentCaseAssessmentsBoolExp
+      description: Insert permission predicate over the 'present_case_assessments'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_present_case_assessments
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPresentCaseAssessments
+    rootFieldKind: Mutation
+  description: Insert into the present_case_assessments table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPresentCaseAssessments
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,466 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyCoPayments
+  description: Đồng chi trả
+  fields:
+    - name: applyTargetAgeRange
+      type: Boolean_1!
+    - name: applyTargetCondition
+      type: Boolean_1!
+    - name: applyToAllMedicalProvider
+      type: Boolean_1!
+    - name: applyToAllPlans
+      type: Boolean_1!
+    - name: applyToBlackList
+      type: Boolean_1!
+    - name: applyToVoluntaryTarget
+      type: Boolean_1!
+    - name: bonusPaymentRatio
+      type: Bigdecimal
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: policyCoPaymentId
+      type: Uuid!
+    - name: policyId
+      type: Uuid!
+    - name: target
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: value
+      type: Bigdecimal!
+  graphql:
+    typeName: PolicyCoPayments
+    inputTypeName: PolicyCoPaymentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_co_payments
+      fieldMapping:
+        applyTargetAgeRange:
+          column:
+            name: apply_target_age_range
+        applyTargetCondition:
+          column:
+            name: apply_target_condition
+        applyToAllMedicalProvider:
+          column:
+            name: apply_to_all_medical_provider
+        applyToAllPlans:
+          column:
+            name: apply_to_all_plans
+        applyToBlackList:
+          column:
+            name: apply_to_black_list
+        applyToVoluntaryTarget:
+          column:
+            name: apply_to_voluntary_target
+        bonusPaymentRatio:
+          column:
+            name: bonus_payment_ratio
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        policyCoPaymentId:
+          column:
+            name: policy_co_payment_id
+        policyId:
+          column:
+            name: policy_id
+        target:
+          column:
+            name: target
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyCoPayments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - applyTargetAgeRange
+          - applyTargetCondition
+          - applyToAllMedicalProvider
+          - applyToAllPlans
+          - applyToBlackList
+          - applyToVoluntaryTarget
+          - bonusPaymentRatio
+          - createdAt
+          - deletedAt
+          - policyCoPaymentId
+          - policyId
+          - target
+          - tenantId
+          - updatedAt
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyCoPaymentsBoolExp
+  operand:
+    object:
+      type: PolicyCoPayments
+      comparableFields:
+        - fieldName: applyTargetAgeRange
+          booleanExpressionType: BoolBoolExp
+        - fieldName: applyTargetCondition
+          booleanExpressionType: BoolBoolExp
+        - fieldName: applyToAllMedicalProvider
+          booleanExpressionType: BoolBoolExp
+        - fieldName: applyToAllPlans
+          booleanExpressionType: BoolBoolExp
+        - fieldName: applyToBlackList
+          booleanExpressionType: BoolBoolExp
+        - fieldName: applyToVoluntaryTarget
+          booleanExpressionType: BoolBoolExp
+        - fieldName: bonusPaymentRatio
+          booleanExpressionType: NumericBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: policyCoPaymentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: target
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: value
+          booleanExpressionType: NumericBoolExp
+      comparableRelationships:
+        - relationshipName: planCoPayments
+        - relationshipName: policyCoPaymentAgeRanges
+        - relationshipName: policyCoPaymentApplyRanges
+        - relationshipName: policyCoPaymentInsuredCertificates
+        - relationshipName: policyCoPaymentMedicalProviders
+        - relationshipName: policy
+        - relationshipName: policyCoPaymentTarget
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyCoPaymentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyCoPaymentsAggExp
+  operand:
+    object:
+      aggregatedType: PolicyCoPayments
+      aggregatableFields:
+        - fieldName: applyTargetAgeRange
+          aggregateExpression: BoolAggExp
+        - fieldName: applyTargetCondition
+          aggregateExpression: BoolAggExp
+        - fieldName: applyToAllMedicalProvider
+          aggregateExpression: BoolAggExp
+        - fieldName: applyToAllPlans
+          aggregateExpression: BoolAggExp
+        - fieldName: applyToBlackList
+          aggregateExpression: BoolAggExp
+        - fieldName: applyToVoluntaryTarget
+          aggregateExpression: BoolAggExp
+        - fieldName: bonusPaymentRatio
+          aggregateExpression: NumericAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: policyCoPaymentId
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: target
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: value
+          aggregateExpression: NumericAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyCoPaymentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyCoPaymentsOrderByExp
+  operand:
+    object:
+      orderedType: PolicyCoPayments
+      orderableFields:
+        - fieldName: applyTargetAgeRange
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: applyTargetCondition
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: applyToAllMedicalProvider
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: applyToAllPlans
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: applyToBlackList
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: applyToVoluntaryTarget
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: bonusPaymentRatio
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: policyCoPaymentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: target
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: value
+          orderByExpression: BigdecimalOrderByExp
+      orderableRelationships:
+        - relationshipName: policy
+        - relationshipName: policyCoPaymentTarget
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: PolicyCoPaymentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyCoPayments
+  objectType: PolicyCoPayments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_co_payments
+  filterExpressionType: PolicyCoPaymentsBoolExp
+  aggregateExpression: PolicyCoPaymentsAggExp
+  orderByExpression: PolicyCoPaymentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyCoPayments
+      subscription:
+        rootField: policyCoPayments
+    selectUniques:
+      - queryRootField: policyCoPaymentsByPolicyCoPaymentId
+        uniqueIdentifier:
+          - policyCoPaymentId
+        subscription:
+          rootField: policyCoPaymentsByPolicyCoPaymentId
+    filterInputTypeName: PolicyCoPaymentsFilterInput
+    aggregate:
+      queryRootField: policyCoPaymentsAggregate
+      subscription:
+        rootField: policyCoPaymentsAggregate
+  description: Đồng chi trả
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyCoPayments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planCoPayments
+  sourceType: PolicyCoPayments
+  target:
+    model:
+      name: PlanCoPayments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanCoPaymentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyCoPaymentId
+      target:
+        modelField:
+          - fieldName: policyCoPaymentId
+  graphql:
+    aggregateFieldName: planCoPaymentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPaymentAgeRanges
+  sourceType: PolicyCoPayments
+  target:
+    model:
+      name: PolicyCoPaymentAgeRanges
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyCoPaymentAgeRangesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyCoPaymentId
+      target:
+        modelField:
+          - fieldName: policyCoPaymentId
+  graphql:
+    aggregateFieldName: policyCoPaymentAgeRangesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPaymentApplyRanges
+  sourceType: PolicyCoPayments
+  target:
+    model:
+      name: PolicyCoPaymentApplyRanges
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyCoPaymentApplyRangesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyCoPaymentId
+      target:
+        modelField:
+          - fieldName: policyCoPaymentId
+  graphql:
+    aggregateFieldName: policyCoPaymentApplyRangesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPaymentInsuredCertificates
+  sourceType: PolicyCoPayments
+  target:
+    model:
+      name: PolicyCoPaymentInsuredCertificate
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyCoPaymentInsuredCertificateAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyCoPaymentId
+      target:
+        modelField:
+          - fieldName: policyCoPaymentId
+  graphql:
+    aggregateFieldName: policyCoPaymentInsuredCertificatesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPaymentMedicalProviders
+  sourceType: PolicyCoPayments
+  target:
+    model:
+      name: PolicyCoPaymentMedicalProvider
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyCoPaymentMedicalProviderAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyCoPaymentId
+      target:
+        modelField:
+          - fieldName: policyCoPaymentId
+  graphql:
+    aggregateFieldName: policyCoPaymentMedicalProvidersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: PolicyCoPayments
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPaymentTarget
+  sourceType: PolicyCoPayments
+  target:
+    model:
+      name: PolicyCoPaymentTargets
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: target
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: PolicyCoPayments
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

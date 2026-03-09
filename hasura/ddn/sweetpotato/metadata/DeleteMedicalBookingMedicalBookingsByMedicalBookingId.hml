@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMedicalBookingMedicalBookingsByMedicalBookingIdResponse
+  description: Responses from the
+    'delete_medical_booking_medical_bookings_by_medical_booking_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingMedicalBookings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMedicalBookingMedicalBookingsByMedicalBookingIdResponse
+    inputTypeName: DeleteMedicalBookingMedicalBookingsByMedicalBookingIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_medical_booking_medical_bookings_by_medical_booking_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMedicalBookingMedicalBookingsByMedicalBookingIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMedicalBookingMedicalBookingsByMedicalBookingId
+  outputType: DeleteMedicalBookingMedicalBookingsByMedicalBookingIdResponse!
+  arguments:
+    - name: keyMedicalBookingId
+      type: Uuid!
+    - name: preCheck
+      type: MedicalBookingMedicalBookingsBoolExp
+      description: Delete permission predicate over the
+        'medical_booking_medical_bookings' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_medical_booking_medical_bookings_by_medical_booking_id
+    argumentMapping:
+      keyMedicalBookingId: key_medical_booking_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMedicalBookingMedicalBookingsByMedicalBookingId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'medical_booking_medical_bookings' collection
+    using the 'medical_booking_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMedicalBookingMedicalBookingsByMedicalBookingId
+  permissions:
+    - role: admin
+      allowExecution: true
+

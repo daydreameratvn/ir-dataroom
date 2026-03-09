@@ -1,0 +1,227 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ReportItems
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: reportId
+      type: Uuid!
+    - name: reportType
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: ReportItems
+    inputTypeName: ReportItemsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: report_items
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        reportId:
+          column:
+            name: report_id
+        reportType:
+          column:
+            name: report_type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ReportItems
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - reportId
+          - reportType
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ReportItemsBoolExp
+  operand:
+    object:
+      type: ReportItems
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: reportId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: reportType
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: report
+        - relationshipName: reportTypeByReportType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ReportItemsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ReportItemsAggExp
+  operand:
+    object:
+      aggregatedType: ReportItems
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: reportId
+          aggregateExpression: UuidAggExp
+        - fieldName: reportType
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ReportItemsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ReportItemsOrderByExp
+  operand:
+    object:
+      orderedType: ReportItems
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: reportId
+          orderByExpression: UuidOrderByExp
+        - fieldName: reportType
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: report
+        - relationshipName: reportTypeByReportType
+  graphql:
+    expressionTypeName: ReportItemsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ReportItems
+  objectType: ReportItems
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: report_items
+  filterExpressionType: ReportItemsBoolExp
+  aggregateExpression: ReportItemsAggExp
+  orderByExpression: ReportItemsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: reportItems
+      subscription:
+        rootField: reportItems
+    selectUniques:
+      - queryRootField: reportItemsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: reportItemsById
+      - queryRootField: reportItemsByReportItemsReportIdReportTypeKey
+        uniqueIdentifier:
+          - reportId
+          - reportType
+        subscription:
+          rootField: reportItemsByReportItemsReportIdReportTypeKey
+    filterInputTypeName: ReportItemsFilterInput
+    aggregate:
+      queryRootField: reportItemsAggregate
+      subscription:
+        rootField: reportItemsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ReportItems
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: report
+  sourceType: ReportItems
+  target:
+    model:
+      name: Reports
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: reportId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: reportTypeByReportType
+  sourceType: ReportItems
+  target:
+    model:
+      name: ReportTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: reportType
+      target:
+        modelField:
+          - fieldName: value
+

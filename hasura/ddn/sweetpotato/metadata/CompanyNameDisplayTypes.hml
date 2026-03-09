@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CompanyNameDisplayTypes
+  description: company_name_display_type
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CompanyNameDisplayTypes
+    inputTypeName: CompanyNameDisplayTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: company_name_display_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CompanyNameDisplayTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CompanyNameDisplayTypesBoolExp
+  operand:
+    object:
+      type: CompanyNameDisplayTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policySettings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CompanyNameDisplayTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CompanyNameDisplayTypesAggExp
+  operand:
+    object:
+      aggregatedType: CompanyNameDisplayTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CompanyNameDisplayTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CompanyNameDisplayTypesOrderByExp
+  operand:
+    object:
+      orderedType: CompanyNameDisplayTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CompanyNameDisplayTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CompanyNameDisplayTypes
+  objectType: CompanyNameDisplayTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: company_name_display_types
+  filterExpressionType: CompanyNameDisplayTypesBoolExp
+  aggregateExpression: CompanyNameDisplayTypesAggExp
+  orderByExpression: CompanyNameDisplayTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: companyNameDisplayTypes
+      subscription:
+        rootField: companyNameDisplayTypes
+    selectUniques:
+      - queryRootField: companyNameDisplayTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: companyNameDisplayTypesByValue
+    filterInputTypeName: CompanyNameDisplayTypesFilterInput
+    aggregate:
+      queryRootField: companyNameDisplayTypesAggregate
+      subscription:
+        rootField: companyNameDisplayTypesAggregate
+  description: company_name_display_type
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CompanyNameDisplayTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policySettings
+  sourceType: CompanyNameDisplayTypes
+  target:
+    model:
+      name: PolicySettings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicySettingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: companyNameDisplayType
+  graphql:
+    aggregateFieldName: policySettingsAggregate
+

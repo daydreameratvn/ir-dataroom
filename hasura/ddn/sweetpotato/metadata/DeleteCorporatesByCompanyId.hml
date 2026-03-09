@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCorporatesByCompanyIdResponse
+  description: Responses from the 'delete_corporates_by_company_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Corporates!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCorporatesByCompanyIdResponse
+    inputTypeName: DeleteCorporatesByCompanyIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_corporates_by_company_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCorporatesByCompanyIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCorporatesByCompanyId
+  outputType: DeleteCorporatesByCompanyIdResponse!
+  arguments:
+    - name: keyCompanyId
+      type: Uuid
+      description: Quan hệ 1-1 với companies
+    - name: preCheck
+      type: CorporatesBoolExp
+      description: Delete permission predicate over the 'corporates' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_corporates_by_company_id
+    argumentMapping:
+      keyCompanyId: key_company_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCorporatesByCompanyId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'corporates' collection using the 'company_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCorporatesByCompanyId
+  permissions:
+    - role: admin
+      allowExecution: true
+

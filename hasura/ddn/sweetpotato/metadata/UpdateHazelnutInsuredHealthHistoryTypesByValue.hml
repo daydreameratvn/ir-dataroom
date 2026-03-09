@@ -1,0 +1,183 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnHazelnutInsuredHealthHistoryTypesComment
+  description: Update the 'comment' column in the
+    'hazelnut_insured_health_history_types' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnHazelnutInsuredHealthHistoryTypesComment
+    inputTypeName: UpdateColumnHazelnutInsuredHealthHistoryTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_hazelnut_insured_health_history_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnHazelnutInsuredHealthHistoryTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnHazelnutInsuredHealthHistoryTypesValue
+  description: Update the 'value' column in the
+    'hazelnut_insured_health_history_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnHazelnutInsuredHealthHistoryTypesValue
+    inputTypeName: UpdateColumnHazelnutInsuredHealthHistoryTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_hazelnut_insured_health_history_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnHazelnutInsuredHealthHistoryTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateHazelnutInsuredHealthHistoryTypesByValueUpdateColumns
+  description: Update the columns of the 'hazelnut_insured_health_history_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnHazelnutInsuredHealthHistoryTypesComment
+      description: Update the 'comment' column in the
+        'hazelnut_insured_health_history_types' collection.
+    - name: value
+      type: UpdateColumnHazelnutInsuredHealthHistoryTypesValue
+      description: Update the 'value' column in the
+        'hazelnut_insured_health_history_types' collection.
+  graphql:
+    typeName: UpdateHazelnutInsuredHealthHistoryTypesByValueUpdateColumns
+    inputTypeName: UpdateHazelnutInsuredHealthHistoryTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_hazelnut_insured_health_history_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateHazelnutInsuredHealthHistoryTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateHazelnutInsuredHealthHistoryTypesByValueResponse
+  description: Responses from the
+    'update_hazelnut_insured_health_history_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutInsuredHealthHistoryTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateHazelnutInsuredHealthHistoryTypesByValueResponse
+    inputTypeName: UpdateHazelnutInsuredHealthHistoryTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_hazelnut_insured_health_history_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateHazelnutInsuredHealthHistoryTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateHazelnutInsuredHealthHistoryTypesByValue
+  outputType: UpdateHazelnutInsuredHealthHistoryTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: HazelnutInsuredHealthHistoryTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'hazelnut_insured_health_history_types' collection
+    - name: preCheck
+      type: HazelnutInsuredHealthHistoryTypesBoolExp
+      description: Update permission pre-condition predicate over the
+        'hazelnut_insured_health_history_types' collection
+    - name: updateColumns
+      type: UpdateHazelnutInsuredHealthHistoryTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_hazelnut_insured_health_history_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateHazelnutInsuredHealthHistoryTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'hazelnut_insured_health_history_types'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateHazelnutInsuredHealthHistoryTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

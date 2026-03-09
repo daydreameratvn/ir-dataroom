@@ -1,0 +1,209 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseQa
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: isPassed
+      type: Boolean_1
+    - name: qaById
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: ClaimCaseQa
+    inputTypeName: ClaimCaseQaInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_qa
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        isPassed:
+          column:
+            name: is_passed
+        qaById:
+          column:
+            name: qa_by_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseQa
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - isPassed
+          - qaById
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseQaBoolExp
+  operand:
+    object:
+      type: ClaimCaseQa
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isPassed
+          booleanExpressionType: BoolBoolExp
+        - fieldName: qaById
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseQaBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseQaAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseQa
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isPassed
+          aggregateExpression: BoolAggExp
+        - fieldName: qaById
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseQaAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseQaOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseQa
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isPassed
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: qaById
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: ClaimCaseQaOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseQa
+  objectType: ClaimCaseQa
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_qa
+  filterExpressionType: ClaimCaseQaBoolExp
+  aggregateExpression: ClaimCaseQaAggExp
+  orderByExpression: ClaimCaseQaOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseQa
+      subscription:
+        rootField: claimCaseQa
+    selectUniques:
+      - queryRootField: claimCaseQaById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimCaseQaById
+    filterInputTypeName: ClaimCaseQaFilterInput
+    aggregate:
+      queryRootField: claimCaseQaAggregate
+      subscription:
+        rootField: claimCaseQaAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseQa
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: ClaimCaseQa
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: ClaimCaseQa
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: qaById
+      target:
+        modelField:
+          - fieldName: userId
+

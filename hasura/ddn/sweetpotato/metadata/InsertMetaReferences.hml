@@ -1,0 +1,168 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetaReferencesObject
+  fields:
+    - name: booleanValue
+      type: Boolean_1
+    - name: correspondenceTemplateReceiverValue
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: metaReferenceId
+      type: Uuid
+    - name: numberValue
+      type: Bigdecimal
+    - name: objectKey
+      type: String_1
+    - name: refId
+      type: Uuid!
+    - name: stringValue
+      type: String_1
+    - name: tenantId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertMetaReferencesObject
+    inputTypeName: InsertMetaReferencesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_meta_references_object
+      fieldMapping:
+        booleanValue:
+          column:
+            name: boolean_value
+        correspondenceTemplateReceiverValue:
+          column:
+            name: correspondence_template_receiver_value
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        metaReferenceId:
+          column:
+            name: meta_reference_id
+        numberValue:
+          column:
+            name: number_value
+        objectKey:
+          column:
+            name: object_key
+        refId:
+          column:
+            name: ref_id
+        stringValue:
+          column:
+            name: string_value
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetaReferencesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - booleanValue
+          - correspondenceTemplateReceiverValue
+          - createdAt
+          - deletedAt
+          - id
+          - metaReferenceId
+          - numberValue
+          - objectKey
+          - refId
+          - stringValue
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetaReferencesResponse
+  description: Responses from the 'insert_meta_references' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetaReferences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMetaReferencesResponse
+    inputTypeName: InsertMetaReferencesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_meta_references_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetaReferencesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMetaReferences
+  outputType: InsertMetaReferencesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMetaReferencesObject!]!"
+    - name: postCheck
+      type: MetaReferencesBoolExp
+      description: Insert permission predicate over the 'meta_references' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_meta_references
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMetaReferences
+    rootFieldKind: Mutation
+  description: Insert into the meta_references table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMetaReferences
+  permissions:
+    - role: admin
+      allowExecution: true
+

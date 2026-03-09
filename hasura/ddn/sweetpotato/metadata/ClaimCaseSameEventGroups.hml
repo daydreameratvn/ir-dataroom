@@ -1,0 +1,244 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseSameEventGroups
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: eventDate
+      type: Timestamptz
+    - name: handedOverToInsurerAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: ClaimCaseSameEventGroups
+    inputTypeName: ClaimCaseSameEventGroupsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_same_event_groups
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        eventDate:
+          column:
+            name: event_date
+        handedOverToInsurerAt:
+          column:
+            name: handed_over_to_insurer_at
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseSameEventGroups
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - deletedAt
+          - eventDate
+          - handedOverToInsurerAt
+          - id
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseSameEventGroupsBoolExp
+  operand:
+    object:
+      type: ClaimCaseSameEventGroups
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: eventDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: handedOverToInsurerAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCaseSameEventGroupsClaimCases
+        - relationshipName: slvClaimCaseSameEventGroups
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseSameEventGroupsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseSameEventGroupsAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseSameEventGroups
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: eventDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: handedOverToInsurerAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseSameEventGroupsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseSameEventGroupsOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseSameEventGroups
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: eventDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: handedOverToInsurerAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimCaseSameEventGroupsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseSameEventGroups
+  objectType: ClaimCaseSameEventGroups
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_same_event_groups
+  filterExpressionType: ClaimCaseSameEventGroupsBoolExp
+  aggregateExpression: ClaimCaseSameEventGroupsAggExp
+  orderByExpression: ClaimCaseSameEventGroupsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseSameEventGroups
+      subscription:
+        rootField: claimCaseSameEventGroups
+    selectUniques:
+      - queryRootField: claimCaseSameEventGroupsByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: claimCaseSameEventGroupsByCode
+      - queryRootField: claimCaseSameEventGroupsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimCaseSameEventGroupsById
+    filterInputTypeName: ClaimCaseSameEventGroupsFilterInput
+    aggregate:
+      queryRootField: claimCaseSameEventGroupsAggregate
+      subscription:
+        rootField: claimCaseSameEventGroupsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseSameEventGroups
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseSameEventGroupsClaimCases
+  sourceType: ClaimCaseSameEventGroups
+  target:
+    model:
+      name: ClaimCaseSameEventGroupsClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseSameEventGroupsClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claimCaseGroupId
+  graphql:
+    aggregateFieldName: claimCaseSameEventGroupsClaimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvClaimCaseSameEventGroups
+  sourceType: ClaimCaseSameEventGroups
+  target:
+    model:
+      name: SlvClaimCaseSameEventGroups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvClaimCaseSameEventGroupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claimCaseGroupId
+  graphql:
+    aggregateFieldName: slvClaimCaseSameEventGroupsAggregate
+

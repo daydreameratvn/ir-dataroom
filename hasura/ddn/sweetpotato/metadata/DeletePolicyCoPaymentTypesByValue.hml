@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicyCoPaymentTypesByValueResponse
+  description: Responses from the 'delete_policy_co_payment_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyCoPaymentTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicyCoPaymentTypesByValueResponse
+    inputTypeName: DeletePolicyCoPaymentTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_co_payment_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicyCoPaymentTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicyCoPaymentTypesByValue
+  outputType: DeletePolicyCoPaymentTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: PolicyCoPaymentTypesBoolExp
+      description: Delete permission predicate over the 'policy_co_payment_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_co_payment_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicyCoPaymentTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_co_payment_types' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicyCoPaymentTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

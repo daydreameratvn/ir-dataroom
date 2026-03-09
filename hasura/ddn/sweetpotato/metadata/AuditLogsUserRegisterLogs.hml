@@ -1,0 +1,189 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuditLogsUserRegisterLogs
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deviceInfo
+      type: Json!
+    - name: input
+      type: Json!
+    - name: tenantId
+      type: Uuid!
+    - name: userRegisterLogId
+      type: Uuid!
+  graphql:
+    typeName: AuditLogsUserRegisterLogs
+    inputTypeName: AuditLogsUserRegisterLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: audit_logs_user_register_logs
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deviceInfo:
+          column:
+            name: device_info
+        input:
+          column:
+            name: input
+        tenantId:
+          column:
+            name: tenant_id
+        userRegisterLogId:
+          column:
+            name: user_register_log_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuditLogsUserRegisterLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deviceInfo
+          - input
+          - tenantId
+          - userRegisterLogId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AuditLogsUserRegisterLogsBoolExp
+  operand:
+    object:
+      type: AuditLogsUserRegisterLogs
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deviceInfo
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: input
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userRegisterLogId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AuditLogsUserRegisterLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AuditLogsUserRegisterLogsAggExp
+  operand:
+    object:
+      aggregatedType: AuditLogsUserRegisterLogs
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deviceInfo
+          aggregateExpression: JsonbAggExp
+        - fieldName: input
+          aggregateExpression: JsonbAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: userRegisterLogId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AuditLogsUserRegisterLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AuditLogsUserRegisterLogsOrderByExp
+  operand:
+    object:
+      orderedType: AuditLogsUserRegisterLogs
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deviceInfo
+          orderByExpression: JsonOrderByExp
+        - fieldName: input
+          orderByExpression: JsonOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: userRegisterLogId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: AuditLogsUserRegisterLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AuditLogsUserRegisterLogs
+  objectType: AuditLogsUserRegisterLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: audit_logs_user_register_logs
+  filterExpressionType: AuditLogsUserRegisterLogsBoolExp
+  aggregateExpression: AuditLogsUserRegisterLogsAggExp
+  orderByExpression: AuditLogsUserRegisterLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: auditLogsUserRegisterLogs
+      subscription:
+        rootField: auditLogsUserRegisterLogs
+    selectUniques:
+      - queryRootField: auditLogsUserRegisterLogsByUserRegisterLogId
+        uniqueIdentifier:
+          - userRegisterLogId
+        subscription:
+          rootField: auditLogsUserRegisterLogsByUserRegisterLogId
+    filterInputTypeName: AuditLogsUserRegisterLogsFilterInput
+    aggregate:
+      queryRootField: auditLogsUserRegisterLogsAggregate
+      subscription:
+        rootField: auditLogsUserRegisterLogsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuditLogsUserRegisterLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: AuditLogsUserRegisterLogs
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

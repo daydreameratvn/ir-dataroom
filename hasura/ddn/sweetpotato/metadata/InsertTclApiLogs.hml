@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertTclApiLogsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: requestContent
+      type: Json!
+    - name: requestedAt
+      type: Timestamptz!
+    - name: respondedAt
+      type: Timestamptz!
+    - name: responseContent
+      type: Json
+    - name: responseStatus
+      type: Int32
+    - name: responseTime
+      type: Int32!
+    - name: url
+      type: String_1!
+  graphql:
+    typeName: InsertTclApiLogsObject
+    inputTypeName: InsertTclApiLogsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_tcl_api_logs_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        requestContent:
+          column:
+            name: request_content
+        requestedAt:
+          column:
+            name: requested_at
+        respondedAt:
+          column:
+            name: responded_at
+        responseContent:
+          column:
+            name: response_content
+        responseStatus:
+          column:
+            name: response_status
+        responseTime:
+          column:
+            name: response_time
+        url:
+          column:
+            name: url
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertTclApiLogsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - requestContent
+          - requestedAt
+          - respondedAt
+          - responseContent
+          - responseStatus
+          - responseTime
+          - url
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertTclApiLogsResponse
+  description: Responses from the 'insert_tcl_api_logs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[TclApiLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertTclApiLogsResponse
+    inputTypeName: InsertTclApiLogsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_tcl_api_logs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertTclApiLogsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertTclApiLogs
+  outputType: InsertTclApiLogsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertTclApiLogsObject!]!"
+    - name: postCheck
+      type: TclApiLogsBoolExp
+      description: Insert permission predicate over the 'tcl_api_logs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_tcl_api_logs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertTclApiLogs
+    rootFieldKind: Mutation
+  description: Insert into the tcl_api_logs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertTclApiLogs
+  permissions:
+    - role: admin
+      allowExecution: true
+

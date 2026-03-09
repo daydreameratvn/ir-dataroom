@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornBloodTypesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertHawthornBloodTypesObject
+    inputTypeName: InsertHawthornBloodTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_blood_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornBloodTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornBloodTypesResponse
+  description: Responses from the 'insert_hawthorn_blood_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornBloodTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornBloodTypesResponse
+    inputTypeName: InsertHawthornBloodTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_blood_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornBloodTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornBloodTypes
+  outputType: InsertHawthornBloodTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornBloodTypesObject!]!"
+    - name: postCheck
+      type: HawthornBloodTypesBoolExp
+      description: Insert permission predicate over the 'hawthorn_blood_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_blood_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornBloodTypes
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_blood_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornBloodTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

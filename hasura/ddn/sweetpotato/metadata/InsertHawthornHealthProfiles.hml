@@ -1,0 +1,145 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornHealthProfilesObject
+  fields:
+    - name: bloodType
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: height
+      type: Bigdecimal
+    - name: id
+      type: Uuid
+    - name: patientId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: weight
+      type: Bigdecimal
+  graphql:
+    typeName: InsertHawthornHealthProfilesObject
+    inputTypeName: InsertHawthornHealthProfilesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_health_profiles_object
+      fieldMapping:
+        bloodType:
+          column:
+            name: blood_type
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        height:
+          column:
+            name: height
+        id:
+          column:
+            name: id
+        patientId:
+          column:
+            name: patient_id
+        updatedAt:
+          column:
+            name: updated_at
+        weight:
+          column:
+            name: weight
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornHealthProfilesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bloodType
+          - createdAt
+          - deletedAt
+          - height
+          - id
+          - patientId
+          - updatedAt
+          - weight
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornHealthProfilesResponse
+  description: Responses from the 'insert_hawthorn_health_profiles' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornHealthProfiles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornHealthProfilesResponse
+    inputTypeName: InsertHawthornHealthProfilesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_health_profiles_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornHealthProfilesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornHealthProfiles
+  outputType: InsertHawthornHealthProfilesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornHealthProfilesObject!]!"
+    - name: postCheck
+      type: HawthornHealthProfilesBoolExp
+      description: Insert permission predicate over the 'hawthorn_health_profiles'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_health_profiles
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornHealthProfiles
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_health_profiles table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornHealthProfiles
+  permissions:
+    - role: admin
+      allowExecution: true
+

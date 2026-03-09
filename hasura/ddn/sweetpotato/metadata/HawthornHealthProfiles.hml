@@ -1,0 +1,268 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornHealthProfiles
+  fields:
+    - name: bloodType
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: height
+      type: Bigdecimal
+    - name: id
+      type: Uuid!
+    - name: patientId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: weight
+      type: Bigdecimal
+  graphql:
+    typeName: HawthornHealthProfiles
+    inputTypeName: HawthornHealthProfilesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_health_profiles
+      fieldMapping:
+        bloodType:
+          column:
+            name: blood_type
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        height:
+          column:
+            name: height
+        id:
+          column:
+            name: id
+        patientId:
+          column:
+            name: patient_id
+        updatedAt:
+          column:
+            name: updated_at
+        weight:
+          column:
+            name: weight
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornHealthProfiles
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bloodType
+          - createdAt
+          - deletedAt
+          - height
+          - id
+          - patientId
+          - updatedAt
+          - weight
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornHealthProfilesBoolExp
+  operand:
+    object:
+      type: HawthornHealthProfiles
+      comparableFields:
+        - fieldName: bloodType
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: height
+          booleanExpressionType: NumericBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: patientId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: weight
+          booleanExpressionType: NumericBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornBloodType
+        - relationshipName: hawthornPatient
+        - relationshipName: hawthornPatients
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornHealthProfilesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornHealthProfilesAggExp
+  operand:
+    object:
+      aggregatedType: HawthornHealthProfiles
+      aggregatableFields:
+        - fieldName: bloodType
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: height
+          aggregateExpression: NumericAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: patientId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: weight
+          aggregateExpression: NumericAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornHealthProfilesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornHealthProfilesOrderByExp
+  operand:
+    object:
+      orderedType: HawthornHealthProfiles
+      orderableFields:
+        - fieldName: bloodType
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: height
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: patientId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: weight
+          orderByExpression: BigdecimalOrderByExp
+      orderableRelationships:
+        - relationshipName: hawthornBloodType
+        - relationshipName: hawthornPatient
+  graphql:
+    expressionTypeName: HawthornHealthProfilesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornHealthProfiles
+  objectType: HawthornHealthProfiles
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_health_profiles
+  filterExpressionType: HawthornHealthProfilesBoolExp
+  aggregateExpression: HawthornHealthProfilesAggExp
+  orderByExpression: HawthornHealthProfilesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornHealthProfiles
+      subscription:
+        rootField: hawthornHealthProfiles
+    selectUniques:
+      - queryRootField: hawthornHealthProfilesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hawthornHealthProfilesById
+    filterInputTypeName: HawthornHealthProfilesFilterInput
+    aggregate:
+      queryRootField: hawthornHealthProfilesAggregate
+      subscription:
+        rootField: hawthornHealthProfilesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornHealthProfiles
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornBloodType
+  sourceType: HawthornHealthProfiles
+  target:
+    model:
+      name: HawthornBloodTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bloodType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPatient
+  sourceType: HawthornHealthProfiles
+  target:
+    model:
+      name: HawthornPatients
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: patientId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPatients
+  sourceType: HawthornHealthProfiles
+  target:
+    model:
+      name: HawthornPatients
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornPatientsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: healthProfileId
+  graphql:
+    aggregateFieldName: hawthornPatientsAggregate
+

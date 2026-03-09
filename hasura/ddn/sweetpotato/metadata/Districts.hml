@@ -1,0 +1,271 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Districts
+  fields:
+    - name: cityId
+      type: Int32!
+    - name: displayOrder
+      type: Int32
+    - name: fullName
+      type: String_1
+    - name: id
+      type: Int32!
+    - name: lat
+      type: String_1
+    - name: long
+      type: String_1
+    - name: name
+      type: String_1!
+    - name: prefix
+      type: String_1
+  graphql:
+    typeName: Districts
+    inputTypeName: DistrictsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: districts
+      fieldMapping:
+        cityId:
+          column:
+            name: city_id
+        displayOrder:
+          column:
+            name: display_order
+        fullName:
+          column:
+            name: full_name
+        id:
+          column:
+            name: id
+        lat:
+          column:
+            name: lat
+        long:
+          column:
+            name: long
+        name:
+          column:
+            name: name
+        prefix:
+          column:
+            name: prefix
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Districts
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - cityId
+          - displayOrder
+          - fullName
+          - id
+          - lat
+          - long
+          - name
+          - prefix
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: DistrictsBoolExp
+  operand:
+    object:
+      type: Districts
+      comparableFields:
+        - fieldName: cityId
+          booleanExpressionType: Int4BoolExp
+        - fieldName: displayOrder
+          booleanExpressionType: Int4BoolExp
+        - fieldName: fullName
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: id
+          booleanExpressionType: Int4BoolExp
+        - fieldName: lat
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: long
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: name
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: prefix
+          booleanExpressionType: VarcharBoolExp
+      comparableRelationships:
+        - relationshipName: city
+        - relationshipName: mpMedicalProviders
+        - relationshipName: wards
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: DistrictsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: DistrictsAggExp
+  operand:
+    object:
+      aggregatedType: Districts
+      aggregatableFields:
+        - fieldName: cityId
+          aggregateExpression: Int4AggExp
+        - fieldName: displayOrder
+          aggregateExpression: Int4AggExp
+        - fieldName: fullName
+          aggregateExpression: VarcharAggExp
+        - fieldName: id
+          aggregateExpression: Int4AggExp
+        - fieldName: lat
+          aggregateExpression: VarcharAggExp
+        - fieldName: long
+          aggregateExpression: VarcharAggExp
+        - fieldName: name
+          aggregateExpression: VarcharAggExp
+        - fieldName: prefix
+          aggregateExpression: VarcharAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: DistrictsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: DistrictsOrderByExp
+  operand:
+    object:
+      orderedType: Districts
+      orderableFields:
+        - fieldName: cityId
+          orderByExpression: Int32OrderByExp
+        - fieldName: displayOrder
+          orderByExpression: Int32OrderByExp
+        - fieldName: fullName
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: Int32OrderByExp
+        - fieldName: lat
+          orderByExpression: String1OrderByExp
+        - fieldName: long
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: prefix
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: city
+  graphql:
+    expressionTypeName: DistrictsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Districts
+  objectType: Districts
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: districts
+  filterExpressionType: DistrictsBoolExp
+  aggregateExpression: DistrictsAggExp
+  orderByExpression: DistrictsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: districts
+      subscription:
+        rootField: districts
+    selectUniques:
+      - queryRootField: districtsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: districtsById
+    filterInputTypeName: DistrictsFilterInput
+    aggregate:
+      queryRootField: districtsAggregate
+      subscription:
+        rootField: districtsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Districts
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: city
+  sourceType: Districts
+  target:
+    model:
+      name: Cities
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: cityId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviders
+  sourceType: Districts
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProvidersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: districtId
+  graphql:
+    aggregateFieldName: mpMedicalProvidersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: wards
+  sourceType: Districts
+  target:
+    model:
+      name: Wards
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: WardsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: districtId
+  graphql:
+    aggregateFieldName: wardsAggregate
+

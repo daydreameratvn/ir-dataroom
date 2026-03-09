@@ -1,0 +1,191 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MetricSurveys
+  description: surveys
+  fields:
+    - name: answer
+      type: Json
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: source
+      type: String_1
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: MetricSurveys
+    inputTypeName: MetricSurveysInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: metric_surveys
+      fieldMapping:
+        answer:
+          column:
+            name: answer
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        source:
+          column:
+            name: source
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MetricSurveys
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - answer
+          - createdAt
+          - id
+          - source
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MetricSurveysBoolExp
+  operand:
+    object:
+      type: MetricSurveys
+      comparableFields:
+        - fieldName: answer
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: source
+          booleanExpressionType: TextBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MetricSurveysBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MetricSurveysAggExp
+  operand:
+    object:
+      aggregatedType: MetricSurveys
+      aggregatableFields:
+        - fieldName: answer
+          aggregateExpression: JsonbAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: source
+          aggregateExpression: TextAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MetricSurveysAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MetricSurveysOrderByExp
+  operand:
+    object:
+      orderedType: MetricSurveys
+      orderableFields:
+        - fieldName: answer
+          orderByExpression: JsonOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: source
+          orderByExpression: String1OrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: MetricSurveysOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MetricSurveys
+  objectType: MetricSurveys
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: metric_surveys
+  filterExpressionType: MetricSurveysBoolExp
+  aggregateExpression: MetricSurveysAggExp
+  orderByExpression: MetricSurveysOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: metricSurveys
+      subscription:
+        rootField: metricSurveys
+    selectUniques:
+      - queryRootField: metricSurveysById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: metricSurveysById
+    filterInputTypeName: MetricSurveysFilterInput
+    aggregate:
+      queryRootField: metricSurveysAggregate
+      subscription:
+        rootField: metricSurveysAggregate
+  description: surveys
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MetricSurveys
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: MetricSurveys
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

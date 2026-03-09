@@ -1,0 +1,229 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvClaimCaseSameEventGroupsObject
+  fields:
+    - name: caseReasonInvestigator
+      type: String_1
+    - name: caseReasonReRw
+      type: String_1
+    - name: claimCaseGroupId
+      type: Uuid!
+    - name: claimantAddress
+      type: String_1
+    - name: claimantGender
+      type: String_1
+    - name: claimantName
+      type: String_1
+    - name: claimantPhone
+      type: String_1
+    - name: clientBlackList
+      type: Boolean_1
+    - name: createdAt
+      type: Timestamptz
+    - name: hasSurgeryDoc
+      type: Boolean_1
+    - name: hospitalDepartment
+      type: String_1
+    - name: hospitalDepartmentType
+      type: String_1
+    - name: hospitalStamp
+      type: Boolean_1
+    - name: id
+      type: Uuid
+    - name: lastSyncedAt
+      type: Timestamptz
+    - name: mrn
+      type: String_1
+    - name: patientId
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: syncCount
+      type: Int32
+    - name: treatmentMethods
+      type: "[String_1]"
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertSlvClaimCaseSameEventGroupsObject
+    inputTypeName: InsertSlvClaimCaseSameEventGroupsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_claim_case_same_event_groups_object
+      fieldMapping:
+        caseReasonInvestigator:
+          column:
+            name: case_reason_investigator
+        caseReasonReRw:
+          column:
+            name: case_reason_re_rw
+        claimCaseGroupId:
+          column:
+            name: claim_case_group_id
+        claimantAddress:
+          column:
+            name: claimant_address
+        claimantGender:
+          column:
+            name: claimant_gender
+        claimantName:
+          column:
+            name: claimant_name
+        claimantPhone:
+          column:
+            name: claimant_phone
+        clientBlackList:
+          column:
+            name: client_black_list
+        createdAt:
+          column:
+            name: created_at
+        hasSurgeryDoc:
+          column:
+            name: has_surgery_doc
+        hospitalDepartment:
+          column:
+            name: hospital_department
+        hospitalDepartmentType:
+          column:
+            name: hospital_department_type
+        hospitalStamp:
+          column:
+            name: hospital_stamp
+        id:
+          column:
+            name: id
+        lastSyncedAt:
+          column:
+            name: last_synced_at
+        mrn:
+          column:
+            name: mrn
+        patientId:
+          column:
+            name: patient_id
+        status:
+          column:
+            name: status
+        syncCount:
+          column:
+            name: sync_count
+        treatmentMethods:
+          column:
+            name: treatment_methods
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvClaimCaseSameEventGroupsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - caseReasonInvestigator
+          - caseReasonReRw
+          - claimCaseGroupId
+          - claimantAddress
+          - claimantGender
+          - claimantName
+          - claimantPhone
+          - clientBlackList
+          - createdAt
+          - hasSurgeryDoc
+          - hospitalDepartment
+          - hospitalDepartmentType
+          - hospitalStamp
+          - id
+          - lastSyncedAt
+          - mrn
+          - patientId
+          - status
+          - syncCount
+          - treatmentMethods
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvClaimCaseSameEventGroupsResponse
+  description: Responses from the 'insert_slv_claim_case_same_event_groups' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvClaimCaseSameEventGroups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertSlvClaimCaseSameEventGroupsResponse
+    inputTypeName: InsertSlvClaimCaseSameEventGroupsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_claim_case_same_event_groups_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvClaimCaseSameEventGroupsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertSlvClaimCaseSameEventGroups
+  outputType: InsertSlvClaimCaseSameEventGroupsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertSlvClaimCaseSameEventGroupsObject!]!"
+    - name: postCheck
+      type: SlvClaimCaseSameEventGroupsBoolExp
+      description: Insert permission predicate over the
+        'slv_claim_case_same_event_groups' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_slv_claim_case_same_event_groups
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertSlvClaimCaseSameEventGroups
+    rootFieldKind: Mutation
+  description: Insert into the slv_claim_case_same_event_groups table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertSlvClaimCaseSameEventGroups
+  permissions:
+    - role: admin
+      allowExecution: true
+

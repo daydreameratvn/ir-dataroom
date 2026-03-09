@@ -1,0 +1,248 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdOriginalClaimCases
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: exclusionInfo
+      type: String_1
+    - name: icuAdmissionDate
+      type: Timestamptz
+    - name: icuDischargeDate
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: isSurgery
+      type: Boolean_1!
+    - name: policyNote
+      type: String_1
+    - name: relatedToAccident
+      type: Boolean_1!
+  graphql:
+    typeName: FwdOriginalClaimCases
+    inputTypeName: FwdOriginalClaimCasesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_original_claim_cases
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        exclusionInfo:
+          column:
+            name: exclusion_info
+        icuAdmissionDate:
+          column:
+            name: icu_admission_date
+        icuDischargeDate:
+          column:
+            name: icu_discharge_date
+        id:
+          column:
+            name: id
+        isSurgery:
+          column:
+            name: is_surgery
+        policyNote:
+          column:
+            name: policy_note
+        relatedToAccident:
+          column:
+            name: related_to_accident
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdOriginalClaimCases
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - exclusionInfo
+          - icuAdmissionDate
+          - icuDischargeDate
+          - id
+          - isSurgery
+          - policyNote
+          - relatedToAccident
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdOriginalClaimCasesBoolExp
+  operand:
+    object:
+      type: FwdOriginalClaimCases
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: exclusionInfo
+          booleanExpressionType: TextBoolExp
+        - fieldName: icuAdmissionDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: icuDischargeDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isSurgery
+          booleanExpressionType: BoolBoolExp
+        - fieldName: policyNote
+          booleanExpressionType: TextBoolExp
+        - fieldName: relatedToAccident
+          booleanExpressionType: BoolBoolExp
+      comparableRelationships:
+        - relationshipName: originalClaimCase
+        - relationshipName: fwdSyncLogs
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdOriginalClaimCasesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdOriginalClaimCasesAggExp
+  operand:
+    object:
+      aggregatedType: FwdOriginalClaimCases
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: exclusionInfo
+          aggregateExpression: TextAggExp
+        - fieldName: icuAdmissionDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: icuDischargeDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isSurgery
+          aggregateExpression: BoolAggExp
+        - fieldName: policyNote
+          aggregateExpression: TextAggExp
+        - fieldName: relatedToAccident
+          aggregateExpression: BoolAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdOriginalClaimCasesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdOriginalClaimCasesOrderByExp
+  operand:
+    object:
+      orderedType: FwdOriginalClaimCases
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: exclusionInfo
+          orderByExpression: String1OrderByExp
+        - fieldName: icuAdmissionDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: icuDischargeDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isSurgery
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: policyNote
+          orderByExpression: String1OrderByExp
+        - fieldName: relatedToAccident
+          orderByExpression: Boolean1OrderByExp
+      orderableRelationships:
+        - relationshipName: originalClaimCase
+  graphql:
+    expressionTypeName: FwdOriginalClaimCasesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdOriginalClaimCases
+  objectType: FwdOriginalClaimCases
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_original_claim_cases
+  filterExpressionType: FwdOriginalClaimCasesBoolExp
+  aggregateExpression: FwdOriginalClaimCasesAggExp
+  orderByExpression: FwdOriginalClaimCasesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdOriginalClaimCases
+      subscription:
+        rootField: fwdOriginalClaimCases
+    selectUniques:
+      - queryRootField: fwdOriginalClaimCasesByClaimCaseId
+        uniqueIdentifier:
+          - claimCaseId
+        subscription:
+          rootField: fwdOriginalClaimCasesByClaimCaseId
+    filterInputTypeName: FwdOriginalClaimCasesFilterInput
+    aggregate:
+      queryRootField: fwdOriginalClaimCasesAggregate
+      subscription:
+        rootField: fwdOriginalClaimCasesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdOriginalClaimCases
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: originalClaimCase
+  sourceType: FwdOriginalClaimCases
+  target:
+    model:
+      name: OriginalClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdSyncLogs
+  sourceType: FwdOriginalClaimCases
+  target:
+    model:
+      name: FwdSyncLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdSyncLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+  graphql:
+    aggregateFieldName: fwdSyncLogsAggregate
+

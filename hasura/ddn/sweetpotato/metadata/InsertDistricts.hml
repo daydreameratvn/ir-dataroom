@@ -1,0 +1,144 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDistrictsObject
+  fields:
+    - name: cityId
+      type: Int32!
+    - name: displayOrder
+      type: Int32
+    - name: fullName
+      type: String_1
+    - name: id
+      type: Int32!
+    - name: lat
+      type: String_1
+    - name: long
+      type: String_1
+    - name: name
+      type: String_1!
+    - name: prefix
+      type: String_1
+  graphql:
+    typeName: InsertDistrictsObject
+    inputTypeName: InsertDistrictsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_districts_object
+      fieldMapping:
+        cityId:
+          column:
+            name: city_id
+        displayOrder:
+          column:
+            name: display_order
+        fullName:
+          column:
+            name: full_name
+        id:
+          column:
+            name: id
+        lat:
+          column:
+            name: lat
+        long:
+          column:
+            name: long
+        name:
+          column:
+            name: name
+        prefix:
+          column:
+            name: prefix
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDistrictsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - cityId
+          - displayOrder
+          - fullName
+          - id
+          - lat
+          - long
+          - name
+          - prefix
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDistrictsResponse
+  description: Responses from the 'insert_districts' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Districts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertDistrictsResponse
+    inputTypeName: InsertDistrictsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_districts_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDistrictsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertDistricts
+  outputType: InsertDistrictsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertDistrictsObject!]!"
+    - name: postCheck
+      type: DistrictsBoolExp
+      description: Insert permission predicate over the 'districts' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_districts
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertDistricts
+    rootFieldKind: Mutation
+  description: Insert into the districts table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertDistricts
+  permissions:
+    - role: admin
+      allowExecution: true
+

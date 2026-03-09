@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteImportedDataItemsByIdResponse
+  description: Responses from the 'delete_imported_data_items_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ImportedDataItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteImportedDataItemsByIdResponse
+    inputTypeName: DeleteImportedDataItemsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_imported_data_items_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteImportedDataItemsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteImportedDataItemsById
+  outputType: DeleteImportedDataItemsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: ImportedDataItemsBoolExp
+      description: Delete permission predicate over the 'imported_data_items' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_imported_data_items_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteImportedDataItemsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'imported_data_items' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteImportedDataItemsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,220 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseQaComments
+  fields:
+    - name: claimCaseQaId
+      type: Uuid!
+    - name: comment
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: notes
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: ClaimCaseQaComments
+    inputTypeName: ClaimCaseQaCommentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_qa_comments
+      fieldMapping:
+        claimCaseQaId:
+          column:
+            name: claim_case_qa_id
+        comment:
+          column:
+            name: comment
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        notes:
+          column:
+            name: notes
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseQaComments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseQaId
+          - comment
+          - createdAt
+          - deletedAt
+          - id
+          - notes
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseQaCommentsBoolExp
+  operand:
+    object:
+      type: ClaimCaseQaComments
+      comparableFields:
+        - fieldName: claimCaseQaId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: notes
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCaseQaPredefinedComment
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseQaCommentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseQaCommentsAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseQaComments
+      aggregatableFields:
+        - fieldName: claimCaseQaId
+          aggregateExpression: UuidAggExp
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: notes
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseQaCommentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseQaCommentsOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseQaComments
+      orderableFields:
+        - fieldName: claimCaseQaId
+          orderByExpression: UuidOrderByExp
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: notes
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCaseQaPredefinedComment
+  graphql:
+    expressionTypeName: ClaimCaseQaCommentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseQaComments
+  objectType: ClaimCaseQaComments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_qa_comments
+  filterExpressionType: ClaimCaseQaCommentsBoolExp
+  aggregateExpression: ClaimCaseQaCommentsAggExp
+  orderByExpression: ClaimCaseQaCommentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseQaComments
+      subscription:
+        rootField: claimCaseQaComments
+    selectUniques:
+      - queryRootField: claimCaseQaCommentsByClaimCaseQaCommentsCommentClaimCaseQaIdDeletedAtKey
+        uniqueIdentifier:
+          - claimCaseQaId
+          - comment
+          - deletedAt
+        subscription:
+          rootField: claimCaseQaCommentsByClaimCaseQaCommentsCommentClaimCaseQaIdDeletedAtKey
+      - queryRootField: claimCaseQaCommentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimCaseQaCommentsById
+    filterInputTypeName: ClaimCaseQaCommentsFilterInput
+    aggregate:
+      queryRootField: claimCaseQaCommentsAggregate
+      subscription:
+        rootField: claimCaseQaCommentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseQaComments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseQaPredefinedComment
+  sourceType: ClaimCaseQaComments
+  target:
+    model:
+      name: ClaimCaseQaPredefinedComments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: comment
+      target:
+        modelField:
+          - fieldName: value
+

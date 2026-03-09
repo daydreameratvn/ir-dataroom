@@ -1,0 +1,329 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HazelnutUnderwritingNotes
+  description: NỘI DUNG THẨM ĐỊNH BẢO HIỂM
+  fields:
+    - name: coverageFromSecondYear
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: exclusionFirstYear
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: insuranceRequestId
+      type: Uuid!
+    - name: insuredPersonId
+      type: Uuid!
+    - name: lifetimeExclusions
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: HazelnutUnderwritingNotes
+    inputTypeName: HazelnutUnderwritingNotesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hazelnut_underwriting_notes
+      fieldMapping:
+        coverageFromSecondYear:
+          column:
+            name: coverage_from_second_year
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        exclusionFirstYear:
+          column:
+            name: exclusion_first_year
+        id:
+          column:
+            name: id
+        insuranceRequestId:
+          column:
+            name: insurance_request_id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        lifetimeExclusions:
+          column:
+            name: lifetime_exclusions
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HazelnutUnderwritingNotes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - coverageFromSecondYear
+          - createdAt
+          - createdBy
+          - deletedAt
+          - exclusionFirstYear
+          - id
+          - insuranceRequestId
+          - insuredPersonId
+          - lifetimeExclusions
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HazelnutUnderwritingNotesBoolExp
+  operand:
+    object:
+      type: HazelnutUnderwritingNotes
+      comparableFields:
+        - fieldName: coverageFromSecondYear
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: exclusionFirstYear
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuranceRequestId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredPersonId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: lifetimeExclusions
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: hazelnutInsuranceRequest
+        - relationshipName: hazelnutInsuranceRequestsInsuredPerson
+        - relationshipName: identityUserByUpdatedBy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HazelnutUnderwritingNotesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HazelnutUnderwritingNotesAggExp
+  operand:
+    object:
+      aggregatedType: HazelnutUnderwritingNotes
+      aggregatableFields:
+        - fieldName: coverageFromSecondYear
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: exclusionFirstYear
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuranceRequestId
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredPersonId
+          aggregateExpression: UuidAggExp
+        - fieldName: lifetimeExclusions
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HazelnutUnderwritingNotesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HazelnutUnderwritingNotesOrderByExp
+  operand:
+    object:
+      orderedType: HazelnutUnderwritingNotes
+      orderableFields:
+        - fieldName: coverageFromSecondYear
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: exclusionFirstYear
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuranceRequestId
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredPersonId
+          orderByExpression: UuidOrderByExp
+        - fieldName: lifetimeExclusions
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: hazelnutInsuranceRequest
+        - relationshipName: hazelnutInsuranceRequestsInsuredPerson
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: HazelnutUnderwritingNotesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HazelnutUnderwritingNotes
+  objectType: HazelnutUnderwritingNotes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hazelnut_underwriting_notes
+  filterExpressionType: HazelnutUnderwritingNotesBoolExp
+  aggregateExpression: HazelnutUnderwritingNotesAggExp
+  orderByExpression: HazelnutUnderwritingNotesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hazelnutUnderwritingNotes
+      subscription:
+        rootField: hazelnutUnderwritingNotes
+    selectUniques:
+      - queryRootField: hazelnutUnderwritingNotesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hazelnutUnderwritingNotesById
+    filterInputTypeName: HazelnutUnderwritingNotesFilterInput
+    aggregate:
+      queryRootField: hazelnutUnderwritingNotesAggregate
+      subscription:
+        rootField: hazelnutUnderwritingNotesAggregate
+  description: NỘI DUNG THẨM ĐỊNH BẢO HIỂM
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HazelnutUnderwritingNotes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: HazelnutUnderwritingNotes
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequest
+  sourceType: HazelnutUnderwritingNotes
+  target:
+    model:
+      name: HazelnutInsuranceRequests
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuranceRequestId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequestsInsuredPerson
+  sourceType: HazelnutUnderwritingNotes
+  target:
+    model:
+      name: HazelnutInsuranceRequestsInsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuranceRequestId
+      target:
+        modelField:
+          - fieldName: insuranceRequestId
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: HazelnutUnderwritingNotes
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+

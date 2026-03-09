@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PtiInsuredBenefitTypes
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PtiInsuredBenefitTypes
+    inputTypeName: PtiInsuredBenefitTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: pti_insured_benefit_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PtiInsuredBenefitTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PtiInsuredBenefitTypesBoolExp
+  operand:
+    object:
+      type: PtiInsuredBenefitTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: ptiClaimCases
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PtiInsuredBenefitTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PtiInsuredBenefitTypesAggExp
+  operand:
+    object:
+      aggregatedType: PtiInsuredBenefitTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PtiInsuredBenefitTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PtiInsuredBenefitTypesOrderByExp
+  operand:
+    object:
+      orderedType: PtiInsuredBenefitTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PtiInsuredBenefitTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PtiInsuredBenefitTypes
+  objectType: PtiInsuredBenefitTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: pti_insured_benefit_types
+  filterExpressionType: PtiInsuredBenefitTypesBoolExp
+  aggregateExpression: PtiInsuredBenefitTypesAggExp
+  orderByExpression: PtiInsuredBenefitTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: ptiInsuredBenefitTypes
+      subscription:
+        rootField: ptiInsuredBenefitTypes
+    selectUniques:
+      - queryRootField: ptiInsuredBenefitTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: ptiInsuredBenefitTypesByValue
+    filterInputTypeName: PtiInsuredBenefitTypesFilterInput
+    aggregate:
+      queryRootField: ptiInsuredBenefitTypesAggregate
+      subscription:
+        rootField: ptiInsuredBenefitTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PtiInsuredBenefitTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ptiClaimCases
+  sourceType: PtiInsuredBenefitTypes
+  target:
+    model:
+      name: PtiClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PtiClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: benefitType
+  graphql:
+    aggregateFieldName: ptiClaimCasesAggregate
+

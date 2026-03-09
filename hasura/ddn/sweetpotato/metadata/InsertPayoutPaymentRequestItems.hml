@@ -1,0 +1,235 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutPaymentRequestItemsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: fundCode
+      type: String_1
+    - name: fwdHsClaimId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: paidAt
+      type: Timestamptz
+    - name: paidById
+      type: Uuid
+    - name: papayaCareClaimId
+      type: Uuid
+    - name: payAt
+      type: Timestamptz
+    - name: paymentAmount
+      type: Bigdecimal!
+    - name: paymentMethod
+      type: String_1
+    - name: paymentProvider
+      type: String_1
+    - name: paymentRequestId
+      type: Uuid
+    - name: payoutDurationType
+      type: String_1
+    - name: payoutType
+      type: String_1
+    - name: priorityScore
+      type: Bigdecimal
+    - name: refCode
+      type: String_1!
+    - name: refData
+      type: Json
+    - name: remark
+      type: String_1
+    - name: source
+      type: String_1!
+    - name: status
+      type: String_1
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPayoutPaymentRequestItemsObject
+    inputTypeName: InsertPayoutPaymentRequestItemsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_payment_request_items_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        fundCode:
+          column:
+            name: fund_code
+        fwdHsClaimId:
+          column:
+            name: fwd_hs_claim_id
+        id:
+          column:
+            name: id
+        paidAt:
+          column:
+            name: paid_at
+        paidById:
+          column:
+            name: paid_by_id
+        papayaCareClaimId:
+          column:
+            name: papaya_care_claim_id
+        payAt:
+          column:
+            name: pay_at
+        paymentAmount:
+          column:
+            name: payment_amount
+        paymentMethod:
+          column:
+            name: payment_method
+        paymentProvider:
+          column:
+            name: payment_provider
+        paymentRequestId:
+          column:
+            name: payment_request_id
+        payoutDurationType:
+          column:
+            name: payout_duration_type
+        payoutType:
+          column:
+            name: payout_type
+        priorityScore:
+          column:
+            name: priority_score
+        refCode:
+          column:
+            name: ref_code
+        refData:
+          column:
+            name: ref_data
+        remark:
+          column:
+            name: remark
+        source:
+          column:
+            name: source
+        status:
+          column:
+            name: status
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutPaymentRequestItemsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - fundCode
+          - fwdHsClaimId
+          - id
+          - paidAt
+          - paidById
+          - papayaCareClaimId
+          - payAt
+          - paymentAmount
+          - paymentMethod
+          - paymentProvider
+          - paymentRequestId
+          - payoutDurationType
+          - payoutType
+          - priorityScore
+          - refCode
+          - refData
+          - remark
+          - source
+          - status
+          - type
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutPaymentRequestItemsResponse
+  description: Responses from the 'insert_payout_payment_request_items' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPaymentRequestItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPayoutPaymentRequestItemsResponse
+    inputTypeName: InsertPayoutPaymentRequestItemsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_payment_request_items_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutPaymentRequestItemsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPayoutPaymentRequestItems
+  outputType: InsertPayoutPaymentRequestItemsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPayoutPaymentRequestItemsObject!]!"
+    - name: postCheck
+      type: PayoutPaymentRequestItemsBoolExp
+      description: Insert permission predicate over the 'payout_payment_request_items'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_payout_payment_request_items
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPayoutPaymentRequestItems
+    rootFieldKind: Mutation
+  description: Insert into the payout_payment_request_items table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPayoutPaymentRequestItems
+  permissions:
+    - role: admin
+      allowExecution: true
+

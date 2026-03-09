@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsuredCertificateRelatedEventsByIdUpdateColumns
+  description: Update the columns of the 'insured_certificate_related_events' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnInsuredCertificateRelatedEventsCreatedAt
+      description: Update the 'created_at' column in the
+        'insured_certificate_related_events' collection.
+    - name: deletedAt
+      type: UpdateColumnInsuredCertificateRelatedEventsDeletedAt
+      description: Update the 'deleted_at' column in the
+        'insured_certificate_related_events' collection.
+    - name: effectiveDate
+      type: UpdateColumnInsuredCertificateRelatedEventsEffectiveDate
+      description: Update the 'effective_date' column in the
+        'insured_certificate_related_events' collection.
+    - name: eventType
+      type: UpdateColumnInsuredCertificateRelatedEventsEventType
+      description: Update the 'event_type' column in the
+        'insured_certificate_related_events' collection.
+    - name: id
+      type: UpdateColumnInsuredCertificateRelatedEventsId
+      description: Update the 'id' column in the 'insured_certificate_related_events'
+        collection.
+    - name: insuredCertificateId
+      type: UpdateColumnInsuredCertificateRelatedEventsInsuredCertificateId
+      description: Update the 'insured_certificate_id' column in the
+        'insured_certificate_related_events' collection.
+    - name: medicalProviderId
+      type: UpdateColumnInsuredCertificateRelatedEventsMedicalProviderId
+      description: Update the 'medical_provider_id' column in the
+        'insured_certificate_related_events' collection.
+    - name: newValue
+      type: UpdateColumnInsuredCertificateRelatedEventsNewValue
+      description: Update the 'new_value' column in the
+        'insured_certificate_related_events' collection.
+    - name: oldValue
+      type: UpdateColumnInsuredCertificateRelatedEventsOldValue
+      description: Update the 'old_value' column in the
+        'insured_certificate_related_events' collection.
+  graphql:
+    typeName: UpdateInsuredCertificateRelatedEventsByIdUpdateColumns
+    inputTypeName: UpdateInsuredCertificateRelatedEventsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insured_certificate_related_events_by_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        effectiveDate:
+          column:
+            name: effective_date
+        eventType:
+          column:
+            name: event_type
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        newValue:
+          column:
+            name: new_value
+        oldValue:
+          column:
+            name: old_value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsuredCertificateRelatedEventsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - effectiveDate
+          - eventType
+          - id
+          - insuredCertificateId
+          - medicalProviderId
+          - newValue
+          - oldValue
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsuredCertificateRelatedEventsByIdResponse
+  description: Responses from the
+    'update_insured_certificate_related_events_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateRelatedEvents!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateInsuredCertificateRelatedEventsByIdResponse
+    inputTypeName: UpdateInsuredCertificateRelatedEventsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insured_certificate_related_events_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsuredCertificateRelatedEventsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateInsuredCertificateRelatedEventsById
+  outputType: UpdateInsuredCertificateRelatedEventsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: InsuredCertificateRelatedEventsBoolExp
+      description: Update permission post-condition predicate over the
+        'insured_certificate_related_events' collection
+    - name: preCheck
+      type: InsuredCertificateRelatedEventsBoolExp
+      description: Update permission pre-condition predicate over the
+        'insured_certificate_related_events' collection
+    - name: updateColumns
+      type: UpdateInsuredCertificateRelatedEventsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_insured_certificate_related_events_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateInsuredCertificateRelatedEventsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'insured_certificate_related_events'
+    collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateInsuredCertificateRelatedEventsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

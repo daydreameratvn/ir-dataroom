@@ -1,0 +1,120 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertProductsObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: insurerId
+      type: Uuid!
+    - name: name
+      type: String_1!
+  graphql:
+    typeName: InsertProductsObject_1
+    inputTypeName: InsertProductsObjectInput_1
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_products_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        name:
+          column:
+            name: name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertProductsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - id
+          - insurerId
+          - name
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertProductsResponse
+  description: Responses from the 'insert_products' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Products!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertProductsResponse_1
+    inputTypeName: InsertProductsResponseInput_1
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_products_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertProductsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertProducts
+  outputType: InsertProductsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertProductsObject!]!"
+    - name: postCheck
+      type: ProductsBoolExp
+      description: Insert permission predicate over the 'products' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_products
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertProducts_1
+    rootFieldKind: Mutation
+  description: Insert into the products table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertProducts
+  permissions:
+    - role: admin
+      allowExecution: true
+

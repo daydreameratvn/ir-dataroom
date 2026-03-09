@@ -1,0 +1,222 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceEmailsObject
+  fields:
+    - name: counter
+      type: Int32
+    - name: createdAt
+      type: Timestamptz
+    - name: date
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: deliveryType
+      type: String_1!
+    - name: emailLoopId
+      type: Uuid
+    - name: fromAddress
+      type: String_1!
+    - name: html
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: inReplyTo
+      type: String_1
+    - name: messageId
+      type: String_1!
+    - name: metadata
+      type: Json
+    - name: objectKey
+      type: String_1
+    - name: purposeType
+      type: String_1
+    - name: references
+      type: Json
+    - name: replyText
+      type: String_1
+    - name: status
+      type: String_1
+    - name: subject
+      type: String_1
+    - name: text
+      type: String_1
+    - name: textAsHtml
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertCorrespondenceEmailsObject
+    inputTypeName: InsertCorrespondenceEmailsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_emails_object
+      fieldMapping:
+        counter:
+          column:
+            name: counter
+        createdAt:
+          column:
+            name: created_at
+        date:
+          column:
+            name: date
+        deletedAt:
+          column:
+            name: deleted_at
+        deliveryType:
+          column:
+            name: delivery_type
+        emailLoopId:
+          column:
+            name: email_loop_id
+        fromAddress:
+          column:
+            name: from_address
+        html:
+          column:
+            name: html
+        id:
+          column:
+            name: id
+        inReplyTo:
+          column:
+            name: in_reply_to
+        messageId:
+          column:
+            name: message_id
+        metadata:
+          column:
+            name: metadata
+        objectKey:
+          column:
+            name: object_key
+        purposeType:
+          column:
+            name: purpose_type
+        references:
+          column:
+            name: references
+        replyText:
+          column:
+            name: reply_text
+        status:
+          column:
+            name: status
+        subject:
+          column:
+            name: subject
+        text:
+          column:
+            name: text
+        textAsHtml:
+          column:
+            name: text_as_html
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceEmailsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - counter
+          - createdAt
+          - date
+          - deletedAt
+          - deliveryType
+          - emailLoopId
+          - fromAddress
+          - html
+          - id
+          - inReplyTo
+          - messageId
+          - metadata
+          - objectKey
+          - purposeType
+          - references
+          - replyText
+          - status
+          - subject
+          - text
+          - textAsHtml
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceEmailsResponse
+  description: Responses from the 'insert_correspondence_emails' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmails!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCorrespondenceEmailsResponse
+    inputTypeName: InsertCorrespondenceEmailsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_emails_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceEmailsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCorrespondenceEmails
+  outputType: InsertCorrespondenceEmailsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCorrespondenceEmailsObject!]!"
+    - name: postCheck
+      type: CorrespondenceEmailsBoolExp
+      description: Insert permission predicate over the 'correspondence_emails' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_correspondence_emails
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCorrespondenceEmails
+    rootFieldKind: Mutation
+  description: Insert into the correspondence_emails table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCorrespondenceEmails
+  permissions:
+    - role: admin
+      allowExecution: true
+

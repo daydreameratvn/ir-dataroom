@@ -1,0 +1,218 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityRoles
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: IdentityRoles
+    inputTypeName: IdentityRolesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_roles
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityRoles
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityRolesBoolExp
+  operand:
+    object:
+      type: IdentityRoles
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: identityPermissions
+        - relationshipName: identityRolePermissions
+        - relationshipName: identityUserRoles
+        - relationshipName: presentCaseAssessments
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityRolesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityRolesAggExp
+  operand:
+    object:
+      aggregatedType: IdentityRoles
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityRolesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityRolesOrderByExp
+  operand:
+    object:
+      orderedType: IdentityRoles
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: IdentityRolesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityRoles
+  objectType: IdentityRoles
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_roles
+  filterExpressionType: IdentityRolesBoolExp
+  aggregateExpression: IdentityRolesAggExp
+  orderByExpression: IdentityRolesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityRoles
+      subscription:
+        rootField: identityRoles
+    selectUniques:
+      - queryRootField: identityRolesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: identityRolesByValue
+    filterInputTypeName: IdentityRolesFilterInput
+    aggregate:
+      queryRootField: identityRolesAggregate
+      subscription:
+        rootField: identityRolesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityRoles
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityPermissions
+  sourceType: IdentityRoles
+  target:
+    model:
+      name: IdentityPermissions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityPermissionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: role
+  graphql:
+    aggregateFieldName: identityPermissionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityRolePermissions
+  sourceType: IdentityRoles
+  target:
+    model:
+      name: IdentityRolePermissions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityRolePermissionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: roleName
+  graphql:
+    aggregateFieldName: identityRolePermissionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserRoles
+  sourceType: IdentityRoles
+  target:
+    model:
+      name: IdentityUserRole
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityUserRoleAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: role
+  graphql:
+    aggregateFieldName: identityUserRolesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: presentCaseAssessments
+  sourceType: IdentityRoles
+  target:
+    model:
+      name: PresentCaseAssessments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PresentCaseAssessmentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: userRole
+  graphql:
+    aggregateFieldName: presentCaseAssessmentsAggregate
+

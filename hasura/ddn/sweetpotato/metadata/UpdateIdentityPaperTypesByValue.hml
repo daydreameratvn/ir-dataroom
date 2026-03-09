@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnIdentityPaperTypesComment
+  description: Update the 'comment' column in the 'identity_paper_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnIdentityPaperTypesComment
+    inputTypeName: UpdateColumnIdentityPaperTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_identity_paper_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnIdentityPaperTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnIdentityPaperTypesValue
+  description: Update the 'value' column in the 'identity_paper_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnIdentityPaperTypesValue
+    inputTypeName: UpdateColumnIdentityPaperTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_identity_paper_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnIdentityPaperTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityPaperTypesByValueUpdateColumns
+  description: Update the columns of the 'identity_paper_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnIdentityPaperTypesComment
+      description: Update the 'comment' column in the 'identity_paper_types' collection.
+    - name: value
+      type: UpdateColumnIdentityPaperTypesValue
+      description: Update the 'value' column in the 'identity_paper_types' collection.
+  graphql:
+    typeName: UpdateIdentityPaperTypesByValueUpdateColumns
+    inputTypeName: UpdateIdentityPaperTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_paper_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityPaperTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityPaperTypesByValueResponse
+  description: Responses from the 'update_identity_paper_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityPaperTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateIdentityPaperTypesByValueResponse
+    inputTypeName: UpdateIdentityPaperTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_paper_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityPaperTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateIdentityPaperTypesByValue
+  outputType: UpdateIdentityPaperTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: IdentityPaperTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'identity_paper_types' collection
+    - name: preCheck
+      type: IdentityPaperTypesBoolExp
+      description: Update permission pre-condition predicate over the
+        'identity_paper_types' collection
+    - name: updateColumns
+      type: UpdateIdentityPaperTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_identity_paper_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateIdentityPaperTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'identity_paper_types' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateIdentityPaperTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

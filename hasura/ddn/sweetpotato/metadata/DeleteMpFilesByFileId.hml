@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMpFilesByFileIdResponse
+  description: Responses from the 'delete_mp_files_by_file_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpFiles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMpFilesByFileIdResponse
+    inputTypeName: DeleteMpFilesByFileIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mp_files_by_file_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMpFilesByFileIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMpFilesByFileId
+  outputType: DeleteMpFilesByFileIdResponse!
+  arguments:
+    - name: keyFileId
+      type: Uuid!
+    - name: preCheck
+      type: MpFilesBoolExp
+      description: Delete permission predicate over the 'mp_files' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mp_files_by_file_id
+    argumentMapping:
+      keyFileId: key_file_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMpFilesByFileId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mp_files' collection using the 'file_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMpFilesByFileId
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,304 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseDeclineHistories
+  fields:
+    - name: claimCaseId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: declineCode
+      type: String_1
+    - name: declineDescription
+      type: String_1
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: deletedReason
+      type: String_1
+    - name: id
+      type: Uuid!
+  graphql:
+    typeName: ClaimCaseDeclineHistories
+    inputTypeName: ClaimCaseDeclineHistoriesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_decline_histories
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        declineCode:
+          column:
+            name: decline_code
+        declineDescription:
+          column:
+            name: decline_description
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        deletedReason:
+          column:
+            name: deleted_reason
+        id:
+          column:
+            name: id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseDeclineHistories
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - createdBy
+          - declineCode
+          - declineDescription
+          - deletedAt
+          - deletedBy
+          - deletedReason
+          - id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseDeclineHistoriesBoolExp
+  operand:
+    object:
+      type: ClaimCaseDeclineHistories
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: declineCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: declineDescription
+          booleanExpressionType: TextBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedReason
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+        - relationshipName: declineCodeByDeclineCode
+        - relationshipName: identityUserByDeletedBy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseDeclineHistoriesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseDeclineHistoriesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseDeclineHistories
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: declineCode
+          aggregateExpression: TextAggExp
+        - fieldName: declineDescription
+          aggregateExpression: TextAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedReason
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseDeclineHistoriesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseDeclineHistoriesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseDeclineHistories
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: declineCode
+          orderByExpression: String1OrderByExp
+        - fieldName: declineDescription
+          orderByExpression: String1OrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedReason
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+        - relationshipName: declineCodeByDeclineCode
+        - relationshipName: identityUserByDeletedBy
+  graphql:
+    expressionTypeName: ClaimCaseDeclineHistoriesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseDeclineHistories
+  objectType: ClaimCaseDeclineHistories
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_decline_histories
+  filterExpressionType: ClaimCaseDeclineHistoriesBoolExp
+  aggregateExpression: ClaimCaseDeclineHistoriesAggExp
+  orderByExpression: ClaimCaseDeclineHistoriesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseDeclineHistories
+      subscription:
+        rootField: claimCaseDeclineHistories
+    selectUniques:
+      - queryRootField: claimCaseDeclineHistoriesByCcdhClaimCaseIdDeclineCodeDeletedAtUniq
+        uniqueIdentifier:
+          - claimCaseId
+          - declineCode
+          - deletedAt
+        subscription:
+          rootField: claimCaseDeclineHistoriesByCcdhClaimCaseIdDeclineCodeDeletedAtUniq
+      - queryRootField: claimCaseDeclineHistoriesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimCaseDeclineHistoriesById
+    filterInputTypeName: ClaimCaseDeclineHistoriesFilterInput
+    aggregate:
+      queryRootField: claimCaseDeclineHistoriesAggregate
+      subscription:
+        rootField: claimCaseDeclineHistoriesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseDeclineHistories
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: ClaimCaseDeclineHistories
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: ClaimCaseDeclineHistories
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: declineCodeByDeclineCode
+  sourceType: ClaimCaseDeclineHistories
+  target:
+    model:
+      name: DeclineCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: declineCode
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByDeletedBy
+  sourceType: ClaimCaseDeclineHistories
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: deletedBy
+      target:
+        modelField:
+          - fieldName: userId
+

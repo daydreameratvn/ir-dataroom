@@ -1,0 +1,139 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPresentCaseAssignmentsObject
+  fields:
+    - name: assignedById
+      type: Uuid!
+    - name: assigneeId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: newAssessmentId
+      type: Uuid
+    - name: previousAssessmentId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPresentCaseAssignmentsObject
+    inputTypeName: InsertPresentCaseAssignmentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_present_case_assignments_object
+      fieldMapping:
+        assignedById:
+          column:
+            name: assigned_by_id
+        assigneeId:
+          column:
+            name: assignee_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        newAssessmentId:
+          column:
+            name: new_assessment_id
+        previousAssessmentId:
+          column:
+            name: previous_assessment_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPresentCaseAssignmentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - assignedById
+          - assigneeId
+          - createdAt
+          - id
+          - newAssessmentId
+          - previousAssessmentId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPresentCaseAssignmentsResponse
+  description: Responses from the 'insert_present_case_assignments' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PresentCaseAssignments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPresentCaseAssignmentsResponse
+    inputTypeName: InsertPresentCaseAssignmentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_present_case_assignments_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPresentCaseAssignmentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPresentCaseAssignments
+  outputType: InsertPresentCaseAssignmentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPresentCaseAssignmentsObject!]!"
+    - name: postCheck
+      type: PresentCaseAssignmentsBoolExp
+      description: Insert permission predicate over the 'present_case_assignments'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_present_case_assignments
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPresentCaseAssignments
+    rootFieldKind: Mutation
+  description: Insert into the present_case_assignments table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPresentCaseAssignments
+  permissions:
+    - role: admin
+      allowExecution: true
+

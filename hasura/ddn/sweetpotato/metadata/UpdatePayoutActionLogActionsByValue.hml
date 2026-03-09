@@ -1,0 +1,179 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPayoutActionLogActionsComment
+  description: Update the 'comment' column in the 'payout_action_log_actions' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPayoutActionLogActionsComment
+    inputTypeName: UpdateColumnPayoutActionLogActionsCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_payout_action_log_actions_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPayoutActionLogActionsComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPayoutActionLogActionsValue
+  description: Update the 'value' column in the 'payout_action_log_actions' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPayoutActionLogActionsValue
+    inputTypeName: UpdateColumnPayoutActionLogActionsValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_payout_action_log_actions_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPayoutActionLogActionsValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutActionLogActionsByValueUpdateColumns
+  description: Update the columns of the 'payout_action_log_actions' collection
+  fields:
+    - name: comment
+      type: UpdateColumnPayoutActionLogActionsComment
+      description: Update the 'comment' column in the 'payout_action_log_actions'
+        collection.
+    - name: value
+      type: UpdateColumnPayoutActionLogActionsValue
+      description: Update the 'value' column in the 'payout_action_log_actions' collection.
+  graphql:
+    typeName: UpdatePayoutActionLogActionsByValueUpdateColumns
+    inputTypeName: UpdatePayoutActionLogActionsByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_action_log_actions_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutActionLogActionsByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutActionLogActionsByValueResponse
+  description: Responses from the 'update_payout_action_log_actions_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutActionLogActions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePayoutActionLogActionsByValueResponse
+    inputTypeName: UpdatePayoutActionLogActionsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_action_log_actions_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutActionLogActionsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePayoutActionLogActionsByValue
+  outputType: UpdatePayoutActionLogActionsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: PayoutActionLogActionsBoolExp
+      description: Update permission post-condition predicate over the
+        'payout_action_log_actions' collection
+    - name: preCheck
+      type: PayoutActionLogActionsBoolExp
+      description: Update permission pre-condition predicate over the
+        'payout_action_log_actions' collection
+    - name: updateColumns
+      type: UpdatePayoutActionLogActionsByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_payout_action_log_actions_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePayoutActionLogActionsByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'payout_action_log_actions' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePayoutActionLogActionsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

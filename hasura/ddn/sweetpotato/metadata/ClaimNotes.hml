@@ -1,0 +1,352 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimNotes
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: content
+      type: String_1!
+    - name: contentMd
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: emailIds
+      type: "[Uuid]"
+    - name: id
+      type: Uuid!
+    - name: shareToInsurer
+      type: Boolean_1!
+    - name: tenantId
+      type: Uuid!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid
+    - name: username
+      type: String_1
+      description: "@deprecated use user.name"
+  graphql:
+    typeName: ClaimNotes_1
+    inputTypeName: ClaimNotesInput_1
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_notes
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        content:
+          column:
+            name: content
+        contentMd:
+          column:
+            name: content_md
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        emailIds:
+          column:
+            name: email_ids
+        id:
+          column:
+            name: id
+        shareToInsurer:
+          column:
+            name: share_to_insurer
+        tenantId:
+          column:
+            name: tenant_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+        username:
+          column:
+            name: username
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimNotes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - content
+          - contentMd
+          - createdAt
+          - deletedAt
+          - emailIds
+          - id
+          - shareToInsurer
+          - tenantId
+          - type
+          - updatedAt
+          - updatedBy
+          - userId
+          - username
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimNotesBoolExp
+  operand:
+    object:
+      type: ClaimNotes
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: content
+          booleanExpressionType: TextBoolExp
+        - fieldName: contentMd
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: shareToInsurer
+          booleanExpressionType: BoolBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: type
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: username
+          booleanExpressionType: VarcharBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: tenant
+        - relationshipName: claimNoteType
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimNotesBoolExp_1
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimNotesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimNotes
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: content
+          aggregateExpression: TextAggExp
+        - fieldName: contentMd
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: shareToInsurer
+          aggregateExpression: BoolAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: type
+          aggregateExpression: VarcharAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+        - fieldName: username
+          aggregateExpression: VarcharAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimNotesAggExp_1
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimNotesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimNotes
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: content
+          orderByExpression: String1OrderByExp
+        - fieldName: contentMd
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: shareToInsurer
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+        - fieldName: username
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: tenant
+        - relationshipName: claimNoteType
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: ClaimNotesOrderByExp_1
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimNotes
+  objectType: ClaimNotes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_notes
+  filterExpressionType: ClaimNotesBoolExp
+  aggregateExpression: ClaimNotesAggExp
+  orderByExpression: ClaimNotesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimNotes_1
+      subscription:
+        rootField: claimNotes_1
+    selectUniques:
+      - queryRootField: claimNotesById_1
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimNotesById_1
+    filterInputTypeName: ClaimNotesFilterInput_1
+    aggregate:
+      queryRootField: claimNotesAggregate_1
+      subscription:
+        rootField: claimNotesAggregate_1
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimNotes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: ClaimNotes
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: ClaimNotes
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimNoteType
+  sourceType: ClaimNotes
+  target:
+    model:
+      name: ClaimNoteTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: ClaimNotes
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

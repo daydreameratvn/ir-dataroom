@@ -1,0 +1,163 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsuredPersonSettingsByInsuredPersonIdUpdateColumns
+  description: Update the columns of the 'insured_person_settings' collection
+  fields:
+    - name: ccHrBrokerInsurer
+      type: UpdateColumnInsuredPersonSettingsCcHrBrokerInsurer
+      description: Update the 'cc_hr_broker_insurer' column in the
+        'insured_person_settings' collection.
+    - name: createdAt
+      type: UpdateColumnInsuredPersonSettingsCreatedAt
+      description: Update the 'created_at' column in the 'insured_person_settings'
+        collection.
+    - name: createdBy
+      type: UpdateColumnInsuredPersonSettingsCreatedBy
+      description: Update the 'created_by' column in the 'insured_person_settings'
+        collection.
+    - name: id
+      type: UpdateColumnInsuredPersonSettingsId
+      description: Update the 'id' column in the 'insured_person_settings' collection.
+    - name: insuredPersonId
+      type: UpdateColumnInsuredPersonSettingsInsuredPersonId
+      description: Update the 'insured_person_id' column in the
+        'insured_person_settings' collection.
+    - name: updatedAt
+      type: UpdateColumnInsuredPersonSettingsUpdatedAt
+      description: Update the 'updated_at' column in the 'insured_person_settings'
+        collection.
+    - name: updatedBy
+      type: UpdateColumnInsuredPersonSettingsUpdatedBy
+      description: Update the 'updated_by' column in the 'insured_person_settings'
+        collection.
+  graphql:
+    typeName: UpdateInsuredPersonSettingsByInsuredPersonIdUpdateColumns
+    inputTypeName: UpdateInsuredPersonSettingsByInsuredPersonIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insured_person_settings_by_insured_person_id_update_columns
+      fieldMapping:
+        ccHrBrokerInsurer:
+          column:
+            name: cc_hr_broker_insurer
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        id:
+          column:
+            name: id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsuredPersonSettingsByInsuredPersonIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - ccHrBrokerInsurer
+          - createdAt
+          - createdBy
+          - id
+          - insuredPersonId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsuredPersonSettingsByInsuredPersonIdResponse
+  description: Responses from the
+    'update_insured_person_settings_by_insured_person_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredPersonSettings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateInsuredPersonSettingsByInsuredPersonIdResponse
+    inputTypeName: UpdateInsuredPersonSettingsByInsuredPersonIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insured_person_settings_by_insured_person_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsuredPersonSettingsByInsuredPersonIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateInsuredPersonSettingsByInsuredPersonId
+  outputType: UpdateInsuredPersonSettingsByInsuredPersonIdResponse!
+  arguments:
+    - name: keyInsuredPersonId
+      type: Uuid!
+    - name: postCheck
+      type: InsuredPersonSettingsBoolExp
+      description: Update permission post-condition predicate over the
+        'insured_person_settings' collection
+    - name: preCheck
+      type: InsuredPersonSettingsBoolExp
+      description: Update permission pre-condition predicate over the
+        'insured_person_settings' collection
+    - name: updateColumns
+      type: UpdateInsuredPersonSettingsByInsuredPersonIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_insured_person_settings_by_insured_person_id
+    argumentMapping:
+      keyInsuredPersonId: key_insured_person_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateInsuredPersonSettingsByInsuredPersonId
+    rootFieldKind: Mutation
+  description: Update any row on the 'insured_person_settings' collection using
+    the 'insured_person_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateInsuredPersonSettingsByInsuredPersonId
+  permissions:
+    - role: admin
+      allowExecution: true
+

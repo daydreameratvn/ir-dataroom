@@ -1,0 +1,225 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdPaymentMethodsCode
+  description: Update the 'code' column in the 'fwd_payment_methods' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdPaymentMethodsCode
+    inputTypeName: UpdateColumnFwdPaymentMethodsCodeInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_payment_methods_code
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdPaymentMethodsCode
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdPaymentMethodsName
+  description: Update the 'name' column in the 'fwd_payment_methods' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdPaymentMethodsName
+    inputTypeName: UpdateColumnFwdPaymentMethodsNameInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_payment_methods_name
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdPaymentMethodsName
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdPaymentMethodsPpyPaymentMethodCode
+  description: Update the 'ppy_payment_method_code' column in the
+    'fwd_payment_methods' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdPaymentMethodsPpyPaymentMethodCode
+    inputTypeName: UpdateColumnFwdPaymentMethodsPpyPaymentMethodCodeInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_payment_methods_ppy_payment_method_code
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdPaymentMethodsPpyPaymentMethodCode
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdPaymentMethodsByCodeUpdateColumns
+  description: Update the columns of the 'fwd_payment_methods' collection
+  fields:
+    - name: code
+      type: UpdateColumnFwdPaymentMethodsCode
+      description: Update the 'code' column in the 'fwd_payment_methods' collection.
+    - name: name
+      type: UpdateColumnFwdPaymentMethodsName
+      description: Update the 'name' column in the 'fwd_payment_methods' collection.
+    - name: ppyPaymentMethodCode
+      type: UpdateColumnFwdPaymentMethodsPpyPaymentMethodCode
+      description: Update the 'ppy_payment_method_code' column in the
+        'fwd_payment_methods' collection.
+  graphql:
+    typeName: UpdateFwdPaymentMethodsByCodeUpdateColumns
+    inputTypeName: UpdateFwdPaymentMethodsByCodeUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_payment_methods_by_code_update_columns
+      fieldMapping:
+        code:
+          column:
+            name: code
+        name:
+          column:
+            name: name
+        ppyPaymentMethodCode:
+          column:
+            name: ppy_payment_method_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdPaymentMethodsByCodeUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - name
+          - ppyPaymentMethodCode
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdPaymentMethodsByCodeResponse
+  description: Responses from the 'update_fwd_payment_methods_by_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdPaymentMethods!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateFwdPaymentMethodsByCodeResponse
+    inputTypeName: UpdateFwdPaymentMethodsByCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_payment_methods_by_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdPaymentMethodsByCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateFwdPaymentMethodsByCode
+  outputType: UpdateFwdPaymentMethodsByCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: postCheck
+      type: FwdPaymentMethodsBoolExp
+      description: Update permission post-condition predicate over the
+        'fwd_payment_methods' collection
+    - name: preCheck
+      type: FwdPaymentMethodsBoolExp
+      description: Update permission pre-condition predicate over the
+        'fwd_payment_methods' collection
+    - name: updateColumns
+      type: UpdateFwdPaymentMethodsByCodeUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_fwd_payment_methods_by_code
+    argumentMapping:
+      keyCode: key_code
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateFwdPaymentMethodsByCode
+    rootFieldKind: Mutation
+  description: Update any row on the 'fwd_payment_methods' collection using the 'code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateFwdPaymentMethodsByCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

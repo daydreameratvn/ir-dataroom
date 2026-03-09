@@ -1,0 +1,300 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HazelnutDocuments
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: fileId
+      type: Uuid!
+    - name: id
+      type: Uuid!
+    - name: mimeType
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: HazelnutDocuments
+    inputTypeName: HazelnutDocumentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hazelnut_documents
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        mimeType:
+          column:
+            name: mime_type
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HazelnutDocuments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - fileId
+          - id
+          - mimeType
+          - name
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HazelnutDocumentsBoolExp
+  operand:
+    object:
+      type: HazelnutDocuments
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: mimeType
+          booleanExpressionType: TextBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: file
+        - relationshipName: identityUserByUpdatedBy
+        - relationshipName: hazelnutInsuranceRequests
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HazelnutDocumentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HazelnutDocumentsAggExp
+  operand:
+    object:
+      aggregatedType: HazelnutDocuments
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fileId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: mimeType
+          aggregateExpression: TextAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HazelnutDocumentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HazelnutDocumentsOrderByExp
+  operand:
+    object:
+      orderedType: HazelnutDocuments
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: mimeType
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: file
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: HazelnutDocumentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HazelnutDocuments
+  objectType: HazelnutDocuments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hazelnut_documents
+  filterExpressionType: HazelnutDocumentsBoolExp
+  aggregateExpression: HazelnutDocumentsAggExp
+  orderByExpression: HazelnutDocumentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hazelnutDocuments
+      subscription:
+        rootField: hazelnutDocuments
+    selectUniques:
+      - queryRootField: hazelnutDocumentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hazelnutDocumentsById
+    filterInputTypeName: HazelnutDocumentsFilterInput
+    aggregate:
+      queryRootField: hazelnutDocumentsAggregate
+      subscription:
+        rootField: hazelnutDocumentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HazelnutDocuments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: HazelnutDocuments
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: file
+  sourceType: HazelnutDocuments
+  target:
+    model:
+      name: Files
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: HazelnutDocuments
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequests
+  sourceType: HazelnutDocuments
+  target:
+    model:
+      name: HazelnutInsuranceRequests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceRequestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: documentId
+  graphql:
+    aggregateFieldName: hazelnutInsuranceRequestsAggregate
+

@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCompaniesByCompanyCodeAndTenantIdResponse
+  description: Responses from the 'delete_companies_by_company_code_and_tenant_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Companies!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCompaniesByCompanyCodeAndTenantIdResponse
+    inputTypeName: DeleteCompaniesByCompanyCodeAndTenantIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_companies_by_company_code_and_tenant_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCompaniesByCompanyCodeAndTenantIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCompaniesByCompanyCodeAndTenantId
+  outputType: DeleteCompaniesByCompanyCodeAndTenantIdResponse!
+  arguments:
+    - name: keyCompanyCode
+      type: String_1!
+    - name: keyTenantId
+      type: Uuid
+    - name: preCheck
+      type: CompaniesBoolExp
+      description: Delete permission predicate over the 'companies' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_companies_by_company_code_and_tenant_id
+    argumentMapping:
+      keyCompanyCode: key_company_code
+      keyTenantId: key_tenant_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCompaniesByCompanyCodeAndTenantId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'companies' collection using the
+    'company_code' and 'tenant_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCompaniesByCompanyCodeAndTenantId
+  permissions:
+    - role: admin
+      allowExecution: true
+

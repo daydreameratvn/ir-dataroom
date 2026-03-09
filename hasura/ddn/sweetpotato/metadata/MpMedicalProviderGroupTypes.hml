@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProviderGroupTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MpMedicalProviderGroupTypes
+    inputTypeName: MpMedicalProviderGroupTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_provider_group_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProviderGroupTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProviderGroupTypesBoolExp
+  operand:
+    object:
+      type: MpMedicalProviderGroupTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProviderGroups
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProviderGroupTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProviderGroupTypesAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProviderGroupTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProviderGroupTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProviderGroupTypesOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProviderGroupTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MpMedicalProviderGroupTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProviderGroupTypes
+  objectType: MpMedicalProviderGroupTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_provider_group_types
+  filterExpressionType: MpMedicalProviderGroupTypesBoolExp
+  aggregateExpression: MpMedicalProviderGroupTypesAggExp
+  orderByExpression: MpMedicalProviderGroupTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProviderGroupTypes
+      subscription:
+        rootField: mpMedicalProviderGroupTypes
+    selectUniques:
+      - queryRootField: mpMedicalProviderGroupTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: mpMedicalProviderGroupTypesByValue
+    filterInputTypeName: MpMedicalProviderGroupTypesFilterInput
+    aggregate:
+      queryRootField: mpMedicalProviderGroupTypesAggregate
+      subscription:
+        rootField: mpMedicalProviderGroupTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProviderGroupTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderGroups
+  sourceType: MpMedicalProviderGroupTypes
+  target:
+    model:
+      name: MpMedicalProviderGroups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProviderGroupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: mpMedicalProviderGroupsAggregate
+

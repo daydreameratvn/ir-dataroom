@@ -1,0 +1,133 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrQcDischargePaperDiagnosesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: icdMetadataId
+      type: Uuid!
+    - name: order
+      type: Int32
+    - name: paperId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertOcrQcDischargePaperDiagnosesObject
+    inputTypeName: InsertOcrQcDischargePaperDiagnosesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_qc_discharge_paper_diagnoses_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        icdMetadataId:
+          column:
+            name: icd_metadata_id
+        order:
+          column:
+            name: order
+        paperId:
+          column:
+            name: paper_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrQcDischargePaperDiagnosesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - icdMetadataId
+          - order
+          - paperId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrQcDischargePaperDiagnosesResponse
+  description: Responses from the 'insert_ocr_qc_discharge_paper_diagnoses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrQcDischargePaperDiagnoses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOcrQcDischargePaperDiagnosesResponse
+    inputTypeName: InsertOcrQcDischargePaperDiagnosesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_qc_discharge_paper_diagnoses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrQcDischargePaperDiagnosesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOcrQcDischargePaperDiagnoses
+  outputType: InsertOcrQcDischargePaperDiagnosesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOcrQcDischargePaperDiagnosesObject!]!"
+    - name: postCheck
+      type: OcrQcDischargePaperDiagnosesBoolExp
+      description: Insert permission predicate over the
+        'ocr_qc_discharge_paper_diagnoses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_ocr_qc_discharge_paper_diagnoses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOcrQcDischargePaperDiagnoses
+    rootFieldKind: Mutation
+  description: Insert into the ocr_qc_discharge_paper_diagnoses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOcrQcDischargePaperDiagnoses
+  permissions:
+    - role: admin
+      allowExecution: true
+

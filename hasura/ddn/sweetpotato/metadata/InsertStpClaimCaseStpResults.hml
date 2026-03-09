@@ -1,0 +1,139 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertStpClaimCaseStpResultsObject
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: isStp
+      type: Boolean_1!
+    - name: stpExecutionId
+      type: Uuid
+    - name: stpResult
+      type: Json
+    - name: stpRuleSetId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertStpClaimCaseStpResultsObject
+    inputTypeName: InsertStpClaimCaseStpResultsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_stp_claim_case_stp_results_object
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        isStp:
+          column:
+            name: is_stp
+        stpExecutionId:
+          column:
+            name: stp_execution_id
+        stpResult:
+          column:
+            name: stp_result
+        stpRuleSetId:
+          column:
+            name: stp_rule_set_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertStpClaimCaseStpResultsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - isStp
+          - stpExecutionId
+          - stpResult
+          - stpRuleSetId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertStpClaimCaseStpResultsResponse
+  description: Responses from the 'insert_stp_claim_case_stp_results' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpClaimCaseStpResults!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertStpClaimCaseStpResultsResponse
+    inputTypeName: InsertStpClaimCaseStpResultsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_stp_claim_case_stp_results_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertStpClaimCaseStpResultsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertStpClaimCaseStpResults
+  outputType: InsertStpClaimCaseStpResultsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertStpClaimCaseStpResultsObject!]!"
+    - name: postCheck
+      type: StpClaimCaseStpResultsBoolExp
+      description: Insert permission predicate over the 'stp_claim_case_stp_results'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_stp_claim_case_stp_results
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertStpClaimCaseStpResults
+    rootFieldKind: Mutation
+  description: Insert into the stp_claim_case_stp_results table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertStpClaimCaseStpResults
+  permissions:
+    - role: admin
+      allowExecution: true
+

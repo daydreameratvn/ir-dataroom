@@ -1,0 +1,162 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDisplayedCopayObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: language
+      type: String_1
+    - name: name
+      type: String_1!
+    - name: planId
+      type: Uuid
+    - name: policyId
+      type: Uuid
+    - name: priority
+      type: Int32
+    - name: updatedAt
+      type: Timestamptz
+    - name: value
+      type: String_1
+  graphql:
+    typeName: InsertDisplayedCopayObject
+    inputTypeName: InsertDisplayedCopayObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_displayed_copay_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        language:
+          column:
+            name: language
+        name:
+          column:
+            name: name
+        planId:
+          column:
+            name: plan_id
+        policyId:
+          column:
+            name: policy_id
+        priority:
+          column:
+            name: priority
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDisplayedCopayObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - description
+          - id
+          - language
+          - name
+          - planId
+          - policyId
+          - priority
+          - updatedAt
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDisplayedCopayResponse
+  description: Responses from the 'insert_displayed_copay' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[DisplayedCopay!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertDisplayedCopayResponse
+    inputTypeName: InsertDisplayedCopayResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_displayed_copay_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDisplayedCopayResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertDisplayedCopay
+  outputType: InsertDisplayedCopayResponse!
+  arguments:
+    - name: objects
+      type: "[InsertDisplayedCopayObject!]!"
+    - name: postCheck
+      type: DisplayedCopayBoolExp
+      description: Insert permission predicate over the 'displayed_copay' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_displayed_copay
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertDisplayedCopay
+    rootFieldKind: Mutation
+  description: Insert into the displayed_copay table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertDisplayedCopay
+  permissions:
+    - role: admin
+      allowExecution: true
+

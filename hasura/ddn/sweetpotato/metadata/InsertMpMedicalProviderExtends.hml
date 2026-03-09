@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpMedicalProviderExtendsObject
+  fields:
+    - name: code
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: isExcluded
+      type: Boolean_1
+    - name: medicalProviderExtendId
+      type: Uuid
+    - name: medicalProviderId
+      type: Uuid!
+    - name: name
+      type: String_1
+    - name: province
+      type: String_1
+    - name: source
+      type: String_1!
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertMpMedicalProviderExtendsObject
+    inputTypeName: InsertMpMedicalProviderExtendsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_medical_provider_extends_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        isExcluded:
+          column:
+            name: is_excluded
+        medicalProviderExtendId:
+          column:
+            name: medical_provider_extend_id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        name:
+          column:
+            name: name
+        province:
+          column:
+            name: province
+        source:
+          column:
+            name: source
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpMedicalProviderExtendsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - deletedAt
+          - isExcluded
+          - medicalProviderExtendId
+          - medicalProviderId
+          - name
+          - province
+          - source
+          - status
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpMedicalProviderExtendsResponse
+  description: Responses from the 'insert_mp_medical_provider_extends' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderExtends!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMpMedicalProviderExtendsResponse
+    inputTypeName: InsertMpMedicalProviderExtendsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_medical_provider_extends_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpMedicalProviderExtendsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMpMedicalProviderExtends
+  outputType: InsertMpMedicalProviderExtendsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMpMedicalProviderExtendsObject!]!"
+    - name: postCheck
+      type: MpMedicalProviderExtendsBoolExp
+      description: Insert permission predicate over the 'mp_medical_provider_extends'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_mp_medical_provider_extends
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMpMedicalProviderExtends
+    rootFieldKind: Mutation
+  description: Insert into the mp_medical_provider_extends table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMpMedicalProviderExtends
+  permissions:
+    - role: admin
+      allowExecution: true
+

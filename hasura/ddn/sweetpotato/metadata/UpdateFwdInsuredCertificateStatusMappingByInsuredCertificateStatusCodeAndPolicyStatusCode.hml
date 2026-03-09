@@ -1,0 +1,195 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdInsuredCertificateStatusMappingInsuredCertificateStatusCode
+  description: Update the 'insured_certificate_status_code' column in the
+    'fwd_insured_certificate_status_mapping' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdInsuredCertificateStatusMappingInsuredCertificateStatusCode
+    inputTypeName: UpdateColumnFwdInsuredCertificateStatusMappingInsuredCertificateStatusCodeInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_insured_certificate_status_mapping_insured_certificate_status_code
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdInsuredCertificateStatusMappingInsuredCertificateStatusCode
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdInsuredCertificateStatusMappingPolicyStatusCode
+  description: Update the 'policy_status_code' column in the
+    'fwd_insured_certificate_status_mapping' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdInsuredCertificateStatusMappingPolicyStatusCode
+    inputTypeName: UpdateColumnFwdInsuredCertificateStatusMappingPolicyStatusCodeInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_insured_certificate_status_mapping_policy_status_code
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdInsuredCertificateStatusMappingPolicyStatusCode
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeUpdateColumns
+  description: Update the columns of the 'fwd_insured_certificate_status_mapping' collection
+  fields:
+    - name: insuredCertificateStatusCode
+      type: UpdateColumnFwdInsuredCertificateStatusMappingInsuredCertificateStatusCode
+      description: Update the 'insured_certificate_status_code' column in the
+        'fwd_insured_certificate_status_mapping' collection.
+    - name: policyStatusCode
+      type: UpdateColumnFwdInsuredCertificateStatusMappingPolicyStatusCode
+      description: Update the 'policy_status_code' column in the
+        'fwd_insured_certificate_status_mapping' collection.
+  graphql:
+    typeName: UpdateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeUpdateColumns
+    inputTypeName: UpdateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_insured_certificate_status_mapping_by_insured_certificate_status_code_and_policy_status_code_update_columns
+      fieldMapping:
+        insuredCertificateStatusCode:
+          column:
+            name: insured_certificate_status_code
+        policyStatusCode:
+          column:
+            name: policy_status_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - insuredCertificateStatusCode
+          - policyStatusCode
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeResponse
+  description: Responses from the
+    'update_fwd_insured_certificate_status_mapping_by_insured_certificate_status_code_and_policy_status_code'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdInsuredCertificateStatusMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeResponse
+    inputTypeName: UpdateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_insured_certificate_status_mapping_by_insured_certificate_status_code_and_policy_status_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCode
+  outputType: UpdateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeResponse!
+  arguments:
+    - name: keyInsuredCertificateStatusCode
+      type: String_1!
+    - name: keyPolicyStatusCode
+      type: String_1!
+    - name: postCheck
+      type: FwdInsuredCertificateStatusMappingBoolExp
+      description: Update permission post-condition predicate over the
+        'fwd_insured_certificate_status_mapping' collection
+    - name: preCheck
+      type: FwdInsuredCertificateStatusMappingBoolExp
+      description: Update permission pre-condition predicate over the
+        'fwd_insured_certificate_status_mapping' collection
+    - name: updateColumns
+      type: UpdateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_fwd_insured_certificate_status_mapping_by_insured_certificate_status_code_and_policy_status_code
+    argumentMapping:
+      keyInsuredCertificateStatusCode: key_insured_certificate_status_code
+      keyPolicyStatusCode: key_policy_status_code
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCode
+    rootFieldKind: Mutation
+  description: Update any row on the 'fwd_insured_certificate_status_mapping'
+    collection using the 'insured_certificate_status_code' and
+    'policy_status_code' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

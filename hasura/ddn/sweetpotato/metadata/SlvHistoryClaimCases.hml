@@ -1,0 +1,276 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SlvHistoryClaimCases
+  description: SLV history claim cases from multiple Products
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: decisionAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insuredPersonId
+      type: Uuid!
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: SlvHistoryClaimCases
+    inputTypeName: SlvHistoryClaimCasesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: slv_history_claim_cases
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        decisionAt:
+          column:
+            name: decision_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SlvHistoryClaimCases
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - decisionAt
+          - deletedAt
+          - id
+          - insuredPersonId
+          - status
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SlvHistoryClaimCasesBoolExp
+  operand:
+    object:
+      type: SlvHistoryClaimCases
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: decisionAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredPersonId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: insuredPerson
+        - relationshipName: slvClaimCaseSameEventGroupStatus
+        - relationshipName: slvHistoryClaimRecords
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SlvHistoryClaimCasesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SlvHistoryClaimCasesAggExp
+  operand:
+    object:
+      aggregatedType: SlvHistoryClaimCases
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: decisionAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredPersonId
+          aggregateExpression: UuidAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SlvHistoryClaimCasesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SlvHistoryClaimCasesOrderByExp
+  operand:
+    object:
+      orderedType: SlvHistoryClaimCases
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: decisionAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredPersonId
+          orderByExpression: UuidOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredPerson
+        - relationshipName: slvClaimCaseSameEventGroupStatus
+  graphql:
+    expressionTypeName: SlvHistoryClaimCasesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SlvHistoryClaimCases
+  objectType: SlvHistoryClaimCases
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: slv_history_claim_cases
+  filterExpressionType: SlvHistoryClaimCasesBoolExp
+  aggregateExpression: SlvHistoryClaimCasesAggExp
+  orderByExpression: SlvHistoryClaimCasesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: slvHistoryClaimCases
+      subscription:
+        rootField: slvHistoryClaimCases
+    selectUniques:
+      - queryRootField: slvHistoryClaimCasesByCodeDeletedAtKey
+        uniqueIdentifier:
+          - code
+          - deletedAt
+        subscription:
+          rootField: slvHistoryClaimCasesByCodeDeletedAtKey
+      - queryRootField: slvHistoryClaimCasesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: slvHistoryClaimCasesById
+    filterInputTypeName: SlvHistoryClaimCasesFilterInput
+    aggregate:
+      queryRootField: slvHistoryClaimCasesAggregate
+      subscription:
+        rootField: slvHistoryClaimCasesAggregate
+  description: SLV history claim cases from multiple Products
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SlvHistoryClaimCases
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPerson
+  sourceType: SlvHistoryClaimCases
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvClaimCaseSameEventGroupStatus
+  sourceType: SlvHistoryClaimCases
+  target:
+    model:
+      name: SlvClaimCaseSameEventGroupStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvHistoryClaimRecords
+  sourceType: SlvHistoryClaimCases
+  target:
+    model:
+      name: SlvHistoryClaimRecords
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvHistoryClaimRecordsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: historyClaimCaseId
+  graphql:
+    aggregateFieldName: slvHistoryClaimRecordsAggregate
+

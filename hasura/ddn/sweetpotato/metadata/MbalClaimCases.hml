@@ -1,0 +1,329 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MbalClaimCases
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: diseaseGroupId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: isFatcaUsCitizen
+      type: Boolean_1!
+    - name: isFatcaUsRelated
+      type: Boolean_1!
+    - name: isFatcaUsTaxPayer
+      type: Boolean_1!
+    - name: isInpatientCi
+      type: Boolean_1!
+    - name: isInpatientIcu
+      type: Boolean_1!
+    - name: isInpatientNormal
+      type: Boolean_1!
+    - name: isSurgery
+      type: Boolean_1!
+    - name: premiumPaymentFrequency
+      type: String_1
+    - name: sumAssured
+      type: Bigdecimal
+    - name: synchronizedAt
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: MbalClaimCases
+    inputTypeName: MbalClaimCasesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mbal_claim_cases
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        diseaseGroupId:
+          column:
+            name: disease_group_id
+        id:
+          column:
+            name: id
+        isFatcaUsCitizen:
+          column:
+            name: is_fatca_us_citizen
+        isFatcaUsRelated:
+          column:
+            name: is_fatca_us_related
+        isFatcaUsTaxPayer:
+          column:
+            name: is_fatca_us_tax_payer
+        isInpatientCi:
+          column:
+            name: is_inpatient_ci
+        isInpatientIcu:
+          column:
+            name: is_inpatient_icu
+        isInpatientNormal:
+          column:
+            name: is_inpatient_normal
+        isSurgery:
+          column:
+            name: is_surgery
+        premiumPaymentFrequency:
+          column:
+            name: premium_payment_frequency
+        sumAssured:
+          column:
+            name: sum_assured
+        synchronizedAt:
+          column:
+            name: synchronized_at
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MbalClaimCases
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - diseaseGroupId
+          - id
+          - isFatcaUsCitizen
+          - isFatcaUsRelated
+          - isFatcaUsTaxPayer
+          - isInpatientCi
+          - isInpatientIcu
+          - isInpatientNormal
+          - isSurgery
+          - premiumPaymentFrequency
+          - sumAssured
+          - synchronizedAt
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MbalClaimCasesBoolExp
+  operand:
+    object:
+      type: MbalClaimCases
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: diseaseGroupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isFatcaUsCitizen
+          booleanExpressionType: BoolBoolExp
+        - fieldName: isFatcaUsRelated
+          booleanExpressionType: BoolBoolExp
+        - fieldName: isFatcaUsTaxPayer
+          booleanExpressionType: BoolBoolExp
+        - fieldName: isInpatientCi
+          booleanExpressionType: BoolBoolExp
+        - fieldName: isInpatientIcu
+          booleanExpressionType: BoolBoolExp
+        - fieldName: isInpatientNormal
+          booleanExpressionType: BoolBoolExp
+        - fieldName: isSurgery
+          booleanExpressionType: BoolBoolExp
+        - fieldName: premiumPaymentFrequency
+          booleanExpressionType: TextBoolExp
+        - fieldName: sumAssured
+          booleanExpressionType: NumericBoolExp
+        - fieldName: synchronizedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: diseaseGroup
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MbalClaimCasesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MbalClaimCasesAggExp
+  operand:
+    object:
+      aggregatedType: MbalClaimCases
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: diseaseGroupId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isFatcaUsCitizen
+          aggregateExpression: BoolAggExp
+        - fieldName: isFatcaUsRelated
+          aggregateExpression: BoolAggExp
+        - fieldName: isFatcaUsTaxPayer
+          aggregateExpression: BoolAggExp
+        - fieldName: isInpatientCi
+          aggregateExpression: BoolAggExp
+        - fieldName: isInpatientIcu
+          aggregateExpression: BoolAggExp
+        - fieldName: isInpatientNormal
+          aggregateExpression: BoolAggExp
+        - fieldName: isSurgery
+          aggregateExpression: BoolAggExp
+        - fieldName: premiumPaymentFrequency
+          aggregateExpression: TextAggExp
+        - fieldName: sumAssured
+          aggregateExpression: NumericAggExp
+        - fieldName: synchronizedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MbalClaimCasesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MbalClaimCasesOrderByExp
+  operand:
+    object:
+      orderedType: MbalClaimCases
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: diseaseGroupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isFatcaUsCitizen
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: isFatcaUsRelated
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: isFatcaUsTaxPayer
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: isInpatientCi
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: isInpatientIcu
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: isInpatientNormal
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: isSurgery
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: premiumPaymentFrequency
+          orderByExpression: String1OrderByExp
+        - fieldName: sumAssured
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: synchronizedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: diseaseGroup
+  graphql:
+    expressionTypeName: MbalClaimCasesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MbalClaimCases
+  objectType: MbalClaimCases
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mbal_claim_cases
+  filterExpressionType: MbalClaimCasesBoolExp
+  aggregateExpression: MbalClaimCasesAggExp
+  orderByExpression: MbalClaimCasesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mbalClaimCases
+      subscription:
+        rootField: mbalClaimCases
+    selectUniques:
+      - queryRootField: mbalClaimCasesByClaimCaseId
+        uniqueIdentifier:
+          - claimCaseId
+        subscription:
+          rootField: mbalClaimCasesByClaimCaseId
+    filterInputTypeName: MbalClaimCasesFilterInput
+    aggregate:
+      queryRootField: mbalClaimCasesAggregate
+      subscription:
+        rootField: mbalClaimCasesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MbalClaimCases
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: MbalClaimCases
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: diseaseGroup
+  sourceType: MbalClaimCases
+  target:
+    model:
+      name: DiseaseGroups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: diseaseGroupId
+      target:
+        modelField:
+          - fieldName: id
+

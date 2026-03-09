@@ -1,0 +1,167 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateStpStpRulesByNameAndStpRuleSetIdUpdateColumns
+  description: Update the columns of the 'stp_stp_rules' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnStpStpRulesCreatedAt
+      description: Update the 'created_at' column in the 'stp_stp_rules' collection.
+    - name: description
+      type: UpdateColumnStpStpRulesDescription
+      description: Update the 'description' column in the 'stp_stp_rules' collection.
+    - name: enabled
+      type: UpdateColumnStpStpRulesEnabled
+      description: Update the 'enabled' column in the 'stp_stp_rules' collection.
+    - name: id
+      type: UpdateColumnStpStpRulesId
+      description: Update the 'id' column in the 'stp_stp_rules' collection.
+    - name: name
+      type: UpdateColumnStpStpRulesName
+      description: Update the 'name' column in the 'stp_stp_rules' collection.
+    - name: rule
+      type: UpdateColumnStpStpRulesRule
+      description: Update the 'rule' column in the 'stp_stp_rules' collection.
+    - name: stpRuleSetId
+      type: UpdateColumnStpStpRulesStpRuleSetId
+      description: Update the 'stp_rule_set_id' column in the 'stp_stp_rules' collection.
+    - name: updatedAt
+      type: UpdateColumnStpStpRulesUpdatedAt
+      description: Update the 'updated_at' column in the 'stp_stp_rules' collection.
+  graphql:
+    typeName: UpdateStpStpRulesByNameAndStpRuleSetIdUpdateColumns
+    inputTypeName: UpdateStpStpRulesByNameAndStpRuleSetIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_stp_stp_rules_by_name_and_stp_rule_set_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        description:
+          column:
+            name: description
+        enabled:
+          column:
+            name: enabled
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        rule:
+          column:
+            name: rule
+        stpRuleSetId:
+          column:
+            name: stp_rule_set_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateStpStpRulesByNameAndStpRuleSetIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - description
+          - enabled
+          - id
+          - name
+          - rule
+          - stpRuleSetId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateStpStpRulesByNameAndStpRuleSetIdResponse
+  description: Responses from the
+    'update_stp_stp_rules_by_name_and_stp_rule_set_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpStpRules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateStpStpRulesByNameAndStpRuleSetIdResponse
+    inputTypeName: UpdateStpStpRulesByNameAndStpRuleSetIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_stp_stp_rules_by_name_and_stp_rule_set_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateStpStpRulesByNameAndStpRuleSetIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateStpStpRulesByNameAndStpRuleSetId
+  outputType: UpdateStpStpRulesByNameAndStpRuleSetIdResponse!
+  arguments:
+    - name: keyName
+      type: String_1!
+    - name: keyStpRuleSetId
+      type: Uuid!
+    - name: postCheck
+      type: StpStpRulesBoolExp
+      description: Update permission post-condition predicate over the 'stp_stp_rules'
+        collection
+    - name: preCheck
+      type: StpStpRulesBoolExp
+      description: Update permission pre-condition predicate over the 'stp_stp_rules'
+        collection
+    - name: updateColumns
+      type: UpdateStpStpRulesByNameAndStpRuleSetIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_stp_stp_rules_by_name_and_stp_rule_set_id
+    argumentMapping:
+      keyName: key_name
+      keyStpRuleSetId: key_stp_rule_set_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateStpStpRulesByNameAndStpRuleSetId
+    rootFieldKind: Mutation
+  description: Update any row on the 'stp_stp_rules' collection using the 'name'
+    and 'stp_rule_set_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateStpStpRulesByNameAndStpRuleSetId
+  permissions:
+    - role: admin
+      allowExecution: true
+

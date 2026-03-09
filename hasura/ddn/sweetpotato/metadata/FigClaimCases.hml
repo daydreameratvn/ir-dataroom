@@ -1,0 +1,340 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FigClaimCases
+  fields:
+    - name: assigneeUserId
+      type: Uuid
+    - name: assignerUserId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: note
+      type: String_1
+    - name: originalAssigneeUserId
+      type: Uuid
+    - name: originalAssignerUserId
+      type: Uuid
+    - name: toDo
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: FigClaimCases
+    inputTypeName: FigClaimCasesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fig_claim_cases
+      fieldMapping:
+        assigneeUserId:
+          column:
+            name: assignee_user_id
+        assignerUserId:
+          column:
+            name: assigner_user_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        note:
+          column:
+            name: note
+        originalAssigneeUserId:
+          column:
+            name: original_assignee_user_id
+        originalAssignerUserId:
+          column:
+            name: original_assigner_user_id
+        toDo:
+          column:
+            name: to_do
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FigClaimCases
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - assigneeUserId
+          - assignerUserId
+          - createdAt
+          - id
+          - note
+          - originalAssigneeUserId
+          - originalAssignerUserId
+          - toDo
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FigClaimCasesBoolExp
+  operand:
+    object:
+      type: FigClaimCases
+      comparableFields:
+        - fieldName: assigneeUserId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: assignerUserId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: note
+          booleanExpressionType: TextBoolExp
+        - fieldName: originalAssigneeUserId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: originalAssignerUserId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: toDo
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: figClaimCaseAssignments
+        - relationshipName: figAssessor
+        - relationshipName: identityUser
+        - relationshipName: identityUserByOriginalAssigneeUserId
+        - relationshipName: identityUserByOriginalAssignerUserId
+        - relationshipName: figToDo
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FigClaimCasesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FigClaimCasesAggExp
+  operand:
+    object:
+      aggregatedType: FigClaimCases
+      aggregatableFields:
+        - fieldName: assigneeUserId
+          aggregateExpression: UuidAggExp
+        - fieldName: assignerUserId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: note
+          aggregateExpression: TextAggExp
+        - fieldName: originalAssigneeUserId
+          aggregateExpression: UuidAggExp
+        - fieldName: originalAssignerUserId
+          aggregateExpression: UuidAggExp
+        - fieldName: toDo
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FigClaimCasesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FigClaimCasesOrderByExp
+  operand:
+    object:
+      orderedType: FigClaimCases
+      orderableFields:
+        - fieldName: assigneeUserId
+          orderByExpression: UuidOrderByExp
+        - fieldName: assignerUserId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: note
+          orderByExpression: String1OrderByExp
+        - fieldName: originalAssigneeUserId
+          orderByExpression: UuidOrderByExp
+        - fieldName: originalAssignerUserId
+          orderByExpression: UuidOrderByExp
+        - fieldName: toDo
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: figAssessor
+        - relationshipName: identityUser
+        - relationshipName: identityUserByOriginalAssigneeUserId
+        - relationshipName: identityUserByOriginalAssignerUserId
+        - relationshipName: figToDo
+  graphql:
+    expressionTypeName: FigClaimCasesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FigClaimCases
+  objectType: FigClaimCases
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fig_claim_cases
+  filterExpressionType: FigClaimCasesBoolExp
+  aggregateExpression: FigClaimCasesAggExp
+  orderByExpression: FigClaimCasesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: figClaimCases
+      subscription:
+        rootField: figClaimCases
+    selectUniques:
+      - queryRootField: figClaimCasesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: figClaimCasesById
+    filterInputTypeName: FigClaimCasesFilterInput
+    aggregate:
+      queryRootField: figClaimCasesAggregate
+      subscription:
+        rootField: figClaimCasesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FigClaimCases
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: figClaimCaseAssignments
+  sourceType: FigClaimCases
+  target:
+    model:
+      name: FigClaimCaseAssignments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FigClaimCaseAssignmentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: claimCaseId
+  graphql:
+    aggregateFieldName: figClaimCaseAssignmentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: figAssessor
+  sourceType: FigClaimCases
+  target:
+    model:
+      name: FigAssessors
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: assigneeUserId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: FigClaimCases
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: assignerUserId
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByOriginalAssigneeUserId
+  sourceType: FigClaimCases
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: originalAssigneeUserId
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByOriginalAssignerUserId
+  sourceType: FigClaimCases
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: originalAssignerUserId
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: figToDo
+  sourceType: FigClaimCases
+  target:
+    model:
+      name: FigToDos
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: toDo
+      target:
+        modelField:
+          - fieldName: value
+

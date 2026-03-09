@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHazelnutDiscountCoverageTypesByValueResponse
+  description: Responses from the
+    'delete_hazelnut_discount_coverage_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutDiscountCoverageTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHazelnutDiscountCoverageTypesByValueResponse
+    inputTypeName: DeleteHazelnutDiscountCoverageTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hazelnut_discount_coverage_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHazelnutDiscountCoverageTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHazelnutDiscountCoverageTypesByValue
+  outputType: DeleteHazelnutDiscountCoverageTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: HazelnutDiscountCoverageTypesBoolExp
+      description: Delete permission predicate over the
+        'hazelnut_discount_coverage_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hazelnut_discount_coverage_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHazelnutDiscountCoverageTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hazelnut_discount_coverage_types' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHazelnutDiscountCoverageTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

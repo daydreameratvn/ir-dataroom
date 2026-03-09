@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredPersonSettingsByInsuredPersonIdResponse
+  description: Responses from the
+    'delete_insured_person_settings_by_insured_person_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredPersonSettings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredPersonSettingsByInsuredPersonIdResponse
+    inputTypeName: DeleteInsuredPersonSettingsByInsuredPersonIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_person_settings_by_insured_person_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredPersonSettingsByInsuredPersonIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredPersonSettingsByInsuredPersonId
+  outputType: DeleteInsuredPersonSettingsByInsuredPersonIdResponse!
+  arguments:
+    - name: keyInsuredPersonId
+      type: Uuid!
+    - name: preCheck
+      type: InsuredPersonSettingsBoolExp
+      description: Delete permission predicate over the 'insured_person_settings' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_person_settings_by_insured_person_id
+    argumentMapping:
+      keyInsuredPersonId: key_insured_person_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredPersonSettingsByInsuredPersonId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_person_settings' collection using
+    the 'insured_person_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredPersonSettingsByInsuredPersonId
+  permissions:
+    - role: admin
+      allowExecution: true
+

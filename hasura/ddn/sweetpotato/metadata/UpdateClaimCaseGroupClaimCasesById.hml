@@ -1,0 +1,170 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseGroupClaimCasesByIdUpdateColumns
+  description: Update the columns of the 'claim_case_group_claim_cases' collection
+  fields:
+    - name: claimCaseGroupId
+      type: UpdateColumnClaimCaseGroupClaimCasesClaimCaseGroupId
+      description: Update the 'claim_case_group_id' column in the
+        'claim_case_group_claim_cases' collection.
+    - name: claimCaseId
+      type: UpdateColumnClaimCaseGroupClaimCasesClaimCaseId
+      description: Update the 'claim_case_id' column in the
+        'claim_case_group_claim_cases' collection.
+    - name: createdAt
+      type: UpdateColumnClaimCaseGroupClaimCasesCreatedAt
+      description: Update the 'created_at' column in the
+        'claim_case_group_claim_cases' collection.
+    - name: createdBy
+      type: UpdateColumnClaimCaseGroupClaimCasesCreatedBy
+      description: Update the 'created_by' column in the
+        'claim_case_group_claim_cases' collection.
+    - name: deletedAt
+      type: UpdateColumnClaimCaseGroupClaimCasesDeletedAt
+      description: Update the 'deleted_at' column in the
+        'claim_case_group_claim_cases' collection.
+    - name: id
+      type: UpdateColumnClaimCaseGroupClaimCasesId
+      description: Update the 'id' column in the 'claim_case_group_claim_cases' collection.
+    - name: type
+      type: UpdateColumnClaimCaseGroupClaimCasesType
+      description: Update the 'type' column in the 'claim_case_group_claim_cases'
+        collection.
+    - name: updatedAt
+      type: UpdateColumnClaimCaseGroupClaimCasesUpdatedAt
+      description: Update the 'updated_at' column in the
+        'claim_case_group_claim_cases' collection.
+  graphql:
+    typeName: UpdateClaimCaseGroupClaimCasesByIdUpdateColumns
+    inputTypeName: UpdateClaimCaseGroupClaimCasesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_group_claim_cases_by_id_update_columns
+      fieldMapping:
+        claimCaseGroupId:
+          column:
+            name: claim_case_group_id
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseGroupClaimCasesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseGroupId
+          - claimCaseId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - type
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseGroupClaimCasesByIdResponse
+  description: Responses from the 'update_claim_case_group_claim_cases_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseGroupClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateClaimCaseGroupClaimCasesByIdResponse
+    inputTypeName: UpdateClaimCaseGroupClaimCasesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_group_claim_cases_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseGroupClaimCasesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateClaimCaseGroupClaimCasesById
+  outputType: UpdateClaimCaseGroupClaimCasesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: ClaimCaseGroupClaimCasesBoolExp
+      description: Update permission post-condition predicate over the
+        'claim_case_group_claim_cases' collection
+    - name: preCheck
+      type: ClaimCaseGroupClaimCasesBoolExp
+      description: Update permission pre-condition predicate over the
+        'claim_case_group_claim_cases' collection
+    - name: updateColumns
+      type: UpdateClaimCaseGroupClaimCasesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_claim_case_group_claim_cases_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateClaimCaseGroupClaimCasesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'claim_case_group_claim_cases' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateClaimCaseGroupClaimCasesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

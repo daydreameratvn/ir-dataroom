@@ -1,0 +1,82 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeResponse
+  description: Responses from the
+    'delete_payout_money_laundering_suspects_by_insurer_id_and_paper_id_and_policy_type'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutMoneyLaunderingSuspects!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeResponse
+    inputTypeName: DeletePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_money_laundering_suspects_by_insurer_id_and_paper_id_and_policy_type_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyType
+  outputType: DeletePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyTypeResponse!
+  arguments:
+    - name: keyInsurerId
+      type: Uuid!
+    - name: keyPaperId
+      type: String_1!
+    - name: keyPolicyType
+      type: String_1
+    - name: preCheck
+      type: PayoutMoneyLaunderingSuspectsBoolExp
+      description: Delete permission predicate over the
+        'payout_money_laundering_suspects' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_money_laundering_suspects_by_insurer_id_and_paper_id_and_policy_type
+    argumentMapping:
+      keyInsurerId: key_insurer_id
+      keyPaperId: key_paper_id
+      keyPolicyType: key_policy_type
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyType
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_money_laundering_suspects' collection
+    using the 'insurer_id', 'paper_id' and 'policy_type' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutMoneyLaunderingSuspectsByInsurerIdAndPaperIdAndPolicyType
+  permissions:
+    - role: admin
+      allowExecution: true
+

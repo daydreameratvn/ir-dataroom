@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StpExecutionErrorCodes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: StpExecutionErrorCodes
+    inputTypeName: StpExecutionErrorCodesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: stp_execution_error_codes
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StpExecutionErrorCodes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StpExecutionErrorCodesBoolExp
+  operand:
+    object:
+      type: StpExecutionErrorCodes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: stpExecutionErrorCode
+        - relationshipName: stpExecutionErrors
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StpExecutionErrorCodesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: StpExecutionErrorCodesAggExp
+  operand:
+    object:
+      aggregatedType: StpExecutionErrorCodes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: StpExecutionErrorCodesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: StpExecutionErrorCodesOrderByExp
+  operand:
+    object:
+      orderedType: StpExecutionErrorCodes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: stpExecutionErrorCode
+  graphql:
+    expressionTypeName: StpExecutionErrorCodesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: StpExecutionErrorCodes
+  objectType: StpExecutionErrorCodes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: stp_execution_error_codes
+  filterExpressionType: StpExecutionErrorCodesBoolExp
+  aggregateExpression: StpExecutionErrorCodesAggExp
+  orderByExpression: StpExecutionErrorCodesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: stpExecutionErrorCodes
+      subscription:
+        rootField: stpExecutionErrorCodes
+    selectUniques:
+      - queryRootField: stpExecutionErrorCodesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: stpExecutionErrorCodesByValue
+    filterInputTypeName: StpExecutionErrorCodesFilterInput
+    aggregate:
+      queryRootField: stpExecutionErrorCodesAggregate
+      subscription:
+        rootField: stpExecutionErrorCodesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: StpExecutionErrorCodes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpExecutionErrorCode
+  sourceType: StpExecutionErrorCodes
+  target:
+    model:
+      name: StpExecutionErrorCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpExecutionErrors
+  sourceType: StpExecutionErrorCodes
+  target:
+    model:
+      name: StpExecutionErrors
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: StpExecutionErrorsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: errorCode
+  graphql:
+    aggregateFieldName: stpExecutionErrorsAggregate
+

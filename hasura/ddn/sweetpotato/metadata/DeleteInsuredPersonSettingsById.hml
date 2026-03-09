@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredPersonSettingsByIdResponse
+  description: Responses from the 'delete_insured_person_settings_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredPersonSettings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredPersonSettingsByIdResponse
+    inputTypeName: DeleteInsuredPersonSettingsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_person_settings_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredPersonSettingsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredPersonSettingsById
+  outputType: DeleteInsuredPersonSettingsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: InsuredPersonSettingsBoolExp
+      description: Delete permission predicate over the 'insured_person_settings' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_person_settings_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredPersonSettingsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_person_settings' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredPersonSettingsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,78 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteDiseaseGroupIcdsByDiseaseGroupIdAndIcdMetadataIdResponse
+  description: Responses from the
+    'delete_disease_group_icds_by_disease_group_id_and_icd_metadata_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[DiseaseGroupIcds!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteDiseaseGroupIcdsByDiseaseGroupIdAndIcdMetadataIdResponse
+    inputTypeName: DeleteDiseaseGroupIcdsByDiseaseGroupIdAndIcdMetadataIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_disease_group_icds_by_disease_group_id_and_icd_metadata_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteDiseaseGroupIcdsByDiseaseGroupIdAndIcdMetadataIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteDiseaseGroupIcdsByDiseaseGroupIdAndIcdMetadataId
+  outputType: DeleteDiseaseGroupIcdsByDiseaseGroupIdAndIcdMetadataIdResponse!
+  arguments:
+    - name: keyDiseaseGroupId
+      type: Uuid!
+    - name: keyIcdMetadataId
+      type: Uuid!
+    - name: preCheck
+      type: DiseaseGroupIcdsBoolExp
+      description: Delete permission predicate over the 'disease_group_icds' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_disease_group_icds_by_disease_group_id_and_icd_metadata_id
+    argumentMapping:
+      keyDiseaseGroupId: key_disease_group_id
+      keyIcdMetadataId: key_icd_metadata_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteDiseaseGroupIcdsByDiseaseGroupIdAndIcdMetadataId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'disease_group_icds' collection using the
+    'disease_group_id' and 'icd_metadata_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteDiseaseGroupIcdsByDiseaseGroupIdAndIcdMetadataId
+  permissions:
+    - role: admin
+      allowExecution: true
+

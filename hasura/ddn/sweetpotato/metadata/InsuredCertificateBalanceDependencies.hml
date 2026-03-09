@@ -1,0 +1,252 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredCertificateBalanceDependencies
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: dependedInsuredCertificateId
+      type: Uuid!
+    - name: dependentInsuredCertificateId
+      type: Uuid!
+    - name: id
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsuredCertificateBalanceDependencies
+    inputTypeName: InsuredCertificateBalanceDependenciesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_certificate_balance_dependencies
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        dependedInsuredCertificateId:
+          column:
+            name: depended_insured_certificate_id
+        dependentInsuredCertificateId:
+          column:
+            name: dependent_insured_certificate_id
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredCertificateBalanceDependencies
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - dependedInsuredCertificateId
+          - dependentInsuredCertificateId
+          - id
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredCertificateBalanceDependenciesBoolExp
+  operand:
+    object:
+      type: InsuredCertificateBalanceDependencies
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: dependedInsuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: dependentInsuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: insuredCertificate
+        - relationshipName: insuredCertificateByDependentInsuredCertificateId
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredCertificateBalanceDependenciesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredCertificateBalanceDependenciesAggExp
+  operand:
+    object:
+      aggregatedType: InsuredCertificateBalanceDependencies
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: dependedInsuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: dependentInsuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredCertificateBalanceDependenciesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredCertificateBalanceDependenciesOrderByExp
+  operand:
+    object:
+      orderedType: InsuredCertificateBalanceDependencies
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: dependedInsuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: dependentInsuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredCertificate
+        - relationshipName: insuredCertificateByDependentInsuredCertificateId
+  graphql:
+    expressionTypeName: InsuredCertificateBalanceDependenciesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredCertificateBalanceDependencies
+  objectType: InsuredCertificateBalanceDependencies
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_certificate_balance_dependencies
+  filterExpressionType: InsuredCertificateBalanceDependenciesBoolExp
+  aggregateExpression: InsuredCertificateBalanceDependenciesAggExp
+  orderByExpression: InsuredCertificateBalanceDependenciesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredCertificateBalanceDependencies
+      subscription:
+        rootField: insuredCertificateBalanceDependencies
+    selectUniques:
+      - queryRootField: insuredCertificateBalanceDependenciesByDependentInsuredCertificateIdDependedInsuredCertificated
+        uniqueIdentifier:
+          - deletedAt
+          - dependedInsuredCertificateId
+          - dependentInsuredCertificateId
+        subscription:
+          rootField: insuredCertificateBalanceDependenciesByDependentInsuredCertificateIdDependedInsuredCertificated
+      - queryRootField: insuredCertificateBalanceDependenciesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: insuredCertificateBalanceDependenciesById
+    filterInputTypeName: InsuredCertificateBalanceDependenciesFilterInput
+    aggregate:
+      queryRootField: insuredCertificateBalanceDependenciesAggregate
+      subscription:
+        rootField: insuredCertificateBalanceDependenciesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredCertificateBalanceDependencies
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: InsuredCertificateBalanceDependencies
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: dependedInsuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateByDependentInsuredCertificateId
+  sourceType: InsuredCertificateBalanceDependencies
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: dependentInsuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+

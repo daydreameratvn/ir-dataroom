@@ -1,0 +1,162 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOverlordApiLogsObject
+  fields:
+    - name: bookingId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: endpoint
+      type: String_1!
+    - name: httpCode
+      type: Bigdecimal!
+    - name: id
+      type: Uuid
+    - name: medicalProviderId
+      type: Uuid!
+    - name: request
+      type: Json
+    - name: response
+      type: Json
+    - name: status
+      type: String_1!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertOverlordApiLogsObject
+    inputTypeName: InsertOverlordApiLogsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_overlord_api_logs_object
+      fieldMapping:
+        bookingId:
+          column:
+            name: booking_id
+        createdAt:
+          column:
+            name: created_at
+        endpoint:
+          column:
+            name: endpoint
+        httpCode:
+          column:
+            name: http_code
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        request:
+          column:
+            name: request
+        response:
+          column:
+            name: response
+        status:
+          column:
+            name: status
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOverlordApiLogsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bookingId
+          - createdAt
+          - endpoint
+          - httpCode
+          - id
+          - medicalProviderId
+          - request
+          - response
+          - status
+          - type
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOverlordApiLogsResponse
+  description: Responses from the 'insert_overlord_api_logs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OverlordApiLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOverlordApiLogsResponse
+    inputTypeName: InsertOverlordApiLogsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_overlord_api_logs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOverlordApiLogsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOverlordApiLogs
+  outputType: InsertOverlordApiLogsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOverlordApiLogsObject!]!"
+    - name: postCheck
+      type: OverlordApiLogsBoolExp
+      description: Insert permission predicate over the 'overlord_api_logs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_overlord_api_logs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOverlordApiLogs
+    rootFieldKind: Mutation
+  description: Insert into the overlord_api_logs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOverlordApiLogs
+  permissions:
+    - role: admin
+      allowExecution: true
+

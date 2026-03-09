@@ -1,0 +1,227 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ReportsPolicies
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: policyId
+      type: Uuid!
+    - name: reportId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: ReportsPolicies
+    inputTypeName: ReportsPoliciesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: reports_policies
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        reportId:
+          column:
+            name: report_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ReportsPolicies
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - policyId
+          - reportId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ReportsPoliciesBoolExp
+  operand:
+    object:
+      type: ReportsPolicies
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: reportId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: policy
+        - relationshipName: report
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ReportsPoliciesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ReportsPoliciesAggExp
+  operand:
+    object:
+      aggregatedType: ReportsPolicies
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: reportId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ReportsPoliciesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ReportsPoliciesOrderByExp
+  operand:
+    object:
+      orderedType: ReportsPolicies
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: reportId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: policy
+        - relationshipName: report
+  graphql:
+    expressionTypeName: ReportsPoliciesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ReportsPolicies
+  objectType: ReportsPolicies
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: reports_policies
+  filterExpressionType: ReportsPoliciesBoolExp
+  aggregateExpression: ReportsPoliciesAggExp
+  orderByExpression: ReportsPoliciesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: reportsPolicies
+      subscription:
+        rootField: reportsPolicies
+    selectUniques:
+      - queryRootField: reportsPoliciesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: reportsPoliciesById
+      - queryRootField: reportsPoliciesByReportsPoliciesReportIdPolicyIdKey
+        uniqueIdentifier:
+          - policyId
+          - reportId
+        subscription:
+          rootField: reportsPoliciesByReportsPoliciesReportIdPolicyIdKey
+    filterInputTypeName: ReportsPoliciesFilterInput
+    aggregate:
+      queryRootField: reportsPoliciesAggregate
+      subscription:
+        rootField: reportsPoliciesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ReportsPolicies
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: ReportsPolicies
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: report
+  sourceType: ReportsPolicies
+  target:
+    model:
+      name: Reports
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: reportId
+      target:
+        modelField:
+          - fieldName: id
+

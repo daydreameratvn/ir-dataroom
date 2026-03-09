@@ -1,0 +1,157 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCerebrateDocumentComplianceRulesObject
+  fields:
+    - name: benefitType
+      type: String_1!
+    - name: confidenceScore
+      type: Bigdecimal
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insurerId
+      type: Uuid
+    - name: optionalDocuments
+      type: Json
+    - name: requiredDocuments
+      type: Json!
+    - name: source
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: validationRules
+      type: Json
+  graphql:
+    typeName: InsertCerebrateDocumentComplianceRulesObject
+    inputTypeName: InsertCerebrateDocumentComplianceRulesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_cerebrate_document_compliance_rules_object
+      fieldMapping:
+        benefitType:
+          column:
+            name: benefit_type
+        confidenceScore:
+          column:
+            name: confidence_score
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        optionalDocuments:
+          column:
+            name: optional_documents
+        requiredDocuments:
+          column:
+            name: required_documents
+        source:
+          column:
+            name: source
+        updatedAt:
+          column:
+            name: updated_at
+        validationRules:
+          column:
+            name: validation_rules
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCerebrateDocumentComplianceRulesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - benefitType
+          - confidenceScore
+          - createdAt
+          - id
+          - insurerId
+          - optionalDocuments
+          - requiredDocuments
+          - source
+          - updatedAt
+          - validationRules
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCerebrateDocumentComplianceRulesResponse
+  description: Responses from the 'insert_cerebrate_document_compliance_rules' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CerebrateDocumentComplianceRules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCerebrateDocumentComplianceRulesResponse
+    inputTypeName: InsertCerebrateDocumentComplianceRulesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_cerebrate_document_compliance_rules_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCerebrateDocumentComplianceRulesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCerebrateDocumentComplianceRules
+  outputType: InsertCerebrateDocumentComplianceRulesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCerebrateDocumentComplianceRulesObject!]!"
+    - name: postCheck
+      type: CerebrateDocumentComplianceRulesBoolExp
+      description: Insert permission predicate over the
+        'cerebrate_document_compliance_rules' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_cerebrate_document_compliance_rules
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCerebrateDocumentComplianceRules
+    rootFieldKind: Mutation
+  description: Insert into the cerebrate_document_compliance_rules table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCerebrateDocumentComplianceRules
+  permissions:
+    - role: admin
+      allowExecution: true
+

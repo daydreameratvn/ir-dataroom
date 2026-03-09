@@ -1,0 +1,205 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProvidersCorporates
+  description: Công ty khách hàng nào sử dụng cơ sở y tế nào
+  fields:
+    - name: corporateId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: medicalProviderCorporateId
+      type: Uuid!
+    - name: medicalProviderId
+      type: Uuid!
+  graphql:
+    typeName: MpMedicalProvidersCorporates
+    inputTypeName: MpMedicalProvidersCorporatesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_providers_corporates
+      fieldMapping:
+        corporateId:
+          column:
+            name: corporate_id
+        createdAt:
+          column:
+            name: created_at
+        medicalProviderCorporateId:
+          column:
+            name: medical_provider_corporate_id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProvidersCorporates
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - corporateId
+          - createdAt
+          - medicalProviderCorporateId
+          - medicalProviderId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProvidersCorporatesBoolExp
+  operand:
+    object:
+      type: MpMedicalProvidersCorporates
+      comparableFields:
+        - fieldName: corporateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: medicalProviderCorporateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: corporate
+        - relationshipName: mpMedicalProvider
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProvidersCorporatesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProvidersCorporatesAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProvidersCorporates
+      aggregatableFields:
+        - fieldName: corporateId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: medicalProviderCorporateId
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProvidersCorporatesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProvidersCorporatesOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProvidersCorporates
+      orderableFields:
+        - fieldName: corporateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: medicalProviderCorporateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: corporate
+        - relationshipName: mpMedicalProvider
+  graphql:
+    expressionTypeName: MpMedicalProvidersCorporatesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProvidersCorporates
+  objectType: MpMedicalProvidersCorporates
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_providers_corporates
+  filterExpressionType: MpMedicalProvidersCorporatesBoolExp
+  aggregateExpression: MpMedicalProvidersCorporatesAggExp
+  orderByExpression: MpMedicalProvidersCorporatesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProvidersCorporates
+      subscription:
+        rootField: mpMedicalProvidersCorporates
+    selectUniques:
+      - queryRootField: mpMedicalProvidersCorporatesByMedicalProvidersCorporatesCorporateIdMedicalProviderKey
+        uniqueIdentifier:
+          - corporateId
+          - medicalProviderId
+        subscription:
+          rootField: mpMedicalProvidersCorporatesByMedicalProvidersCorporatesCorporateIdMedicalProviderKey
+      - queryRootField: mpMedicalProvidersCorporatesByMedicalProviderCorporateId
+        uniqueIdentifier:
+          - medicalProviderCorporateId
+        subscription:
+          rootField: mpMedicalProvidersCorporatesByMedicalProviderCorporateId
+    filterInputTypeName: MpMedicalProvidersCorporatesFilterInput
+    aggregate:
+      queryRootField: mpMedicalProvidersCorporatesAggregate
+      subscription:
+        rootField: mpMedicalProvidersCorporatesAggregate
+  description: Công ty khách hàng nào sử dụng cơ sở y tế nào
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProvidersCorporates
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: corporate
+  sourceType: MpMedicalProvidersCorporates
+  target:
+    model:
+      name: Corporates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: corporateId
+      target:
+        modelField:
+          - fieldName: corporateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: MpMedicalProvidersCorporates
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+

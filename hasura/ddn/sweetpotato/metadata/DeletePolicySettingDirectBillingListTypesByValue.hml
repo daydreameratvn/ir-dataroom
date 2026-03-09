@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicySettingDirectBillingListTypesByValueResponse
+  description: Responses from the
+    'delete_policy_setting_direct_billing_list_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicySettingDirectBillingListTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicySettingDirectBillingListTypesByValueResponse
+    inputTypeName: DeletePolicySettingDirectBillingListTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_setting_direct_billing_list_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicySettingDirectBillingListTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicySettingDirectBillingListTypesByValue
+  outputType: DeletePolicySettingDirectBillingListTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: PolicySettingDirectBillingListTypesBoolExp
+      description: Delete permission predicate over the
+        'policy_setting_direct_billing_list_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_setting_direct_billing_list_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicySettingDirectBillingListTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_setting_direct_billing_list_types'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicySettingDirectBillingListTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

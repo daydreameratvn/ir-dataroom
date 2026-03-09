@@ -1,0 +1,183 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnHazelnutInsuranceRequestTypesComment
+  description: Update the 'comment' column in the
+    'hazelnut_insurance_request_types' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnHazelnutInsuranceRequestTypesComment
+    inputTypeName: UpdateColumnHazelnutInsuranceRequestTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_hazelnut_insurance_request_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnHazelnutInsuranceRequestTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnHazelnutInsuranceRequestTypesValue
+  description: Update the 'value' column in the 'hazelnut_insurance_request_types'
+    collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnHazelnutInsuranceRequestTypesValue
+    inputTypeName: UpdateColumnHazelnutInsuranceRequestTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_hazelnut_insurance_request_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnHazelnutInsuranceRequestTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateHazelnutInsuranceRequestTypesByValueUpdateColumns
+  description: Update the columns of the 'hazelnut_insurance_request_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnHazelnutInsuranceRequestTypesComment
+      description: Update the 'comment' column in the
+        'hazelnut_insurance_request_types' collection.
+    - name: value
+      type: UpdateColumnHazelnutInsuranceRequestTypesValue
+      description: Update the 'value' column in the 'hazelnut_insurance_request_types'
+        collection.
+  graphql:
+    typeName: UpdateHazelnutInsuranceRequestTypesByValueUpdateColumns
+    inputTypeName: UpdateHazelnutInsuranceRequestTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_hazelnut_insurance_request_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateHazelnutInsuranceRequestTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateHazelnutInsuranceRequestTypesByValueResponse
+  description: Responses from the
+    'update_hazelnut_insurance_request_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutInsuranceRequestTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateHazelnutInsuranceRequestTypesByValueResponse
+    inputTypeName: UpdateHazelnutInsuranceRequestTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_hazelnut_insurance_request_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateHazelnutInsuranceRequestTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateHazelnutInsuranceRequestTypesByValue
+  outputType: UpdateHazelnutInsuranceRequestTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: HazelnutInsuranceRequestTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'hazelnut_insurance_request_types' collection
+    - name: preCheck
+      type: HazelnutInsuranceRequestTypesBoolExp
+      description: Update permission pre-condition predicate over the
+        'hazelnut_insurance_request_types' collection
+    - name: updateColumns
+      type: UpdateHazelnutInsuranceRequestTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_hazelnut_insurance_request_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateHazelnutInsuranceRequestTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'hazelnut_insurance_request_types' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateHazelnutInsuranceRequestTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

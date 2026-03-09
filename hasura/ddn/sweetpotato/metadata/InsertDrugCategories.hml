@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDrugCategoriesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertDrugCategoriesObject
+    inputTypeName: InsertDrugCategoriesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_drug_categories_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDrugCategoriesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDrugCategoriesResponse
+  description: Responses from the 'insert_drug_categories' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[DrugCategories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertDrugCategoriesResponse
+    inputTypeName: InsertDrugCategoriesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_drug_categories_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDrugCategoriesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertDrugCategories
+  outputType: InsertDrugCategoriesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertDrugCategoriesObject!]!"
+    - name: postCheck
+      type: DrugCategoriesBoolExp
+      description: Insert permission predicate over the 'drug_categories' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_drug_categories
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertDrugCategories
+    rootFieldKind: Mutation
+  description: Insert into the drug_categories table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertDrugCategories
+  permissions:
+    - role: admin
+      allowExecution: true
+

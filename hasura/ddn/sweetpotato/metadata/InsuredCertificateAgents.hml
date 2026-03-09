@@ -1,0 +1,292 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredCertificateAgents
+  fields:
+    - name: agentId
+      type: Uuid!
+    - name: channel
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: InsuredCertificateAgents
+    inputTypeName: InsuredCertificateAgentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_certificate_agents
+      fieldMapping:
+        agentId:
+          column:
+            name: agent_id
+        channel:
+          column:
+            name: channel
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredCertificateAgents
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - agentId
+          - channel
+          - createdAt
+          - deletedAt
+          - id
+          - insuredCertificateId
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredCertificateAgentsBoolExp
+  operand:
+    object:
+      type: InsuredCertificateAgents
+      comparableFields:
+        - fieldName: agentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: channel
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: agent
+        - relationshipName: insuredCertificateAgentChannel
+        - relationshipName: insuredCertificate
+        - relationshipName: insuredCertificateAgentType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredCertificateAgentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredCertificateAgentsAggExp
+  operand:
+    object:
+      aggregatedType: InsuredCertificateAgents
+      aggregatableFields:
+        - fieldName: agentId
+          aggregateExpression: UuidAggExp
+        - fieldName: channel
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredCertificateAgentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredCertificateAgentsOrderByExp
+  operand:
+    object:
+      orderedType: InsuredCertificateAgents
+      orderableFields:
+        - fieldName: agentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: channel
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: agent
+        - relationshipName: insuredCertificateAgentChannel
+        - relationshipName: insuredCertificate
+        - relationshipName: insuredCertificateAgentType
+  graphql:
+    expressionTypeName: InsuredCertificateAgentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredCertificateAgents
+  objectType: InsuredCertificateAgents
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_certificate_agents
+  filterExpressionType: InsuredCertificateAgentsBoolExp
+  aggregateExpression: InsuredCertificateAgentsAggExp
+  orderByExpression: InsuredCertificateAgentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredCertificateAgents
+      subscription:
+        rootField: insuredCertificateAgents
+    selectUniques:
+      - queryRootField: insuredCertificateAgentsByInsuredCertificateAgentsInsuredCertificateIdAgentIdType
+        uniqueIdentifier:
+          - agentId
+          - insuredCertificateId
+          - type
+        subscription:
+          rootField: insuredCertificateAgentsByInsuredCertificateAgentsInsuredCertificateIdAgentIdType
+      - queryRootField: insuredCertificateAgentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: insuredCertificateAgentsById
+    filterInputTypeName: InsuredCertificateAgentsFilterInput
+    aggregate:
+      queryRootField: insuredCertificateAgentsAggregate
+      subscription:
+        rootField: insuredCertificateAgentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredCertificateAgents
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: agent
+  sourceType: InsuredCertificateAgents
+  target:
+    model:
+      name: Agents
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: agentId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateAgentChannel
+  sourceType: InsuredCertificateAgents
+  target:
+    model:
+      name: InsuredCertificateAgentChannels
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: channel
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: InsuredCertificateAgents
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateAgentType
+  sourceType: InsuredCertificateAgents
+  target:
+    model:
+      name: InsuredCertificateAgentTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteSlvHistoryClaimRecordsByIdResponse
+  description: Responses from the 'delete_slv_history_claim_records_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvHistoryClaimRecords!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteSlvHistoryClaimRecordsByIdResponse
+    inputTypeName: DeleteSlvHistoryClaimRecordsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_slv_history_claim_records_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteSlvHistoryClaimRecordsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteSlvHistoryClaimRecordsById
+  outputType: DeleteSlvHistoryClaimRecordsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: SlvHistoryClaimRecordsBoolExp
+      description: Delete permission predicate over the 'slv_history_claim_records'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_slv_history_claim_records_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteSlvHistoryClaimRecordsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'slv_history_claim_records' collection using
+    the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteSlvHistoryClaimRecordsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

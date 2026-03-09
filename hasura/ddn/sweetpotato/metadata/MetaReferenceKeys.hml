@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MetaReferenceKeys
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MetaReferenceKeys
+    inputTypeName: MetaReferenceKeysInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: meta_reference_keys
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MetaReferenceKeys
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MetaReferenceKeysBoolExp
+  operand:
+    object:
+      type: MetaReferenceKeys
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: metaReferences
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MetaReferenceKeysBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MetaReferenceKeysAggExp
+  operand:
+    object:
+      aggregatedType: MetaReferenceKeys
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MetaReferenceKeysAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MetaReferenceKeysOrderByExp
+  operand:
+    object:
+      orderedType: MetaReferenceKeys
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MetaReferenceKeysOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MetaReferenceKeys
+  objectType: MetaReferenceKeys
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: meta_reference_keys
+  filterExpressionType: MetaReferenceKeysBoolExp
+  aggregateExpression: MetaReferenceKeysAggExp
+  orderByExpression: MetaReferenceKeysOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: metaReferenceKeys
+      subscription:
+        rootField: metaReferenceKeys
+    selectUniques:
+      - queryRootField: metaReferenceKeysByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: metaReferenceKeysByValue
+    filterInputTypeName: MetaReferenceKeysFilterInput
+    aggregate:
+      queryRootField: metaReferenceKeysAggregate
+      subscription:
+        rootField: metaReferenceKeysAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MetaReferenceKeys
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: metaReferences
+  sourceType: MetaReferenceKeys
+  target:
+    model:
+      name: MetaReferences
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MetaReferencesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: objectKey
+  graphql:
+    aggregateFieldName: metaReferencesAggregate
+

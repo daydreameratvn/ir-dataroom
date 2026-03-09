@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityUserStatuses
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: IdentityUserStatuses
+    inputTypeName: IdentityUserStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_user_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityUserStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityUserStatusesBoolExp
+  operand:
+    object:
+      type: IdentityUserStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: figAssessors
+        - relationshipName: identityUsers
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityUserStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityUserStatusesAggExp
+  operand:
+    object:
+      aggregatedType: IdentityUserStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityUserStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityUserStatusesOrderByExp
+  operand:
+    object:
+      orderedType: IdentityUserStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: IdentityUserStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityUserStatuses
+  objectType: IdentityUserStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_user_statuses
+  filterExpressionType: IdentityUserStatusesBoolExp
+  aggregateExpression: IdentityUserStatusesAggExp
+  orderByExpression: IdentityUserStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityUserStatuses
+      subscription:
+        rootField: identityUserStatuses
+    selectUniques:
+      - queryRootField: identityUserStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: identityUserStatusesByValue
+    filterInputTypeName: IdentityUserStatusesFilterInput
+    aggregate:
+      queryRootField: identityUserStatusesAggregate
+      subscription:
+        rootField: identityUserStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityUserStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: figAssessors
+  sourceType: IdentityUserStatuses
+  target:
+    model:
+      name: FigAssessors
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FigAssessorsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: figAssessorsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUsers
+  sourceType: IdentityUserStatuses
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityUsersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: identityUsersAggregate
+

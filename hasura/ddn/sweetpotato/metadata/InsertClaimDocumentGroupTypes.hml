@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimDocumentGroupTypesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertClaimDocumentGroupTypesObject
+    inputTypeName: InsertClaimDocumentGroupTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_document_group_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimDocumentGroupTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimDocumentGroupTypesResponse
+  description: Responses from the 'insert_claim_document_group_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimDocumentGroupTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimDocumentGroupTypesResponse
+    inputTypeName: InsertClaimDocumentGroupTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_document_group_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimDocumentGroupTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimDocumentGroupTypes
+  outputType: InsertClaimDocumentGroupTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimDocumentGroupTypesObject!]!"
+    - name: postCheck
+      type: ClaimDocumentGroupTypesBoolExp
+      description: Insert permission predicate over the 'claim_document_group_types'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_document_group_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimDocumentGroupTypes
+    rootFieldKind: Mutation
+  description: Insert into the claim_document_group_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimDocumentGroupTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

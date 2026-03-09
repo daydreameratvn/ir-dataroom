@@ -1,0 +1,232 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MbalInsuredCertificateBeneficiaries
+  fields:
+    - name: bankAccount
+      type: String_1!
+    - name: bankCode
+      type: String_1!
+    - name: bankName
+      type: String_1!
+    - name: beneficiaryName
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: MbalInsuredCertificateBeneficiaries
+    inputTypeName: MbalInsuredCertificateBeneficiariesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mbal_insured_certificate_beneficiaries
+      fieldMapping:
+        bankAccount:
+          column:
+            name: bank_account
+        bankCode:
+          column:
+            name: bank_code
+        bankName:
+          column:
+            name: bank_name
+        beneficiaryName:
+          column:
+            name: beneficiary_name
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MbalInsuredCertificateBeneficiaries
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankAccount
+          - bankCode
+          - bankName
+          - beneficiaryName
+          - createdAt
+          - id
+          - insuredCertificateId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MbalInsuredCertificateBeneficiariesBoolExp
+  operand:
+    object:
+      type: MbalInsuredCertificateBeneficiaries
+      comparableFields:
+        - fieldName: bankAccount
+          booleanExpressionType: TextBoolExp
+        - fieldName: bankCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: bankName
+          booleanExpressionType: TextBoolExp
+        - fieldName: beneficiaryName
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: insuredCertificate
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MbalInsuredCertificateBeneficiariesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MbalInsuredCertificateBeneficiariesAggExp
+  operand:
+    object:
+      aggregatedType: MbalInsuredCertificateBeneficiaries
+      aggregatableFields:
+        - fieldName: bankAccount
+          aggregateExpression: TextAggExp
+        - fieldName: bankCode
+          aggregateExpression: TextAggExp
+        - fieldName: bankName
+          aggregateExpression: TextAggExp
+        - fieldName: beneficiaryName
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MbalInsuredCertificateBeneficiariesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MbalInsuredCertificateBeneficiariesOrderByExp
+  operand:
+    object:
+      orderedType: MbalInsuredCertificateBeneficiaries
+      orderableFields:
+        - fieldName: bankAccount
+          orderByExpression: String1OrderByExp
+        - fieldName: bankCode
+          orderByExpression: String1OrderByExp
+        - fieldName: bankName
+          orderByExpression: String1OrderByExp
+        - fieldName: beneficiaryName
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredCertificate
+  graphql:
+    expressionTypeName: MbalInsuredCertificateBeneficiariesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MbalInsuredCertificateBeneficiaries
+  objectType: MbalInsuredCertificateBeneficiaries
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mbal_insured_certificate_beneficiaries
+  filterExpressionType: MbalInsuredCertificateBeneficiariesBoolExp
+  aggregateExpression: MbalInsuredCertificateBeneficiariesAggExp
+  orderByExpression: MbalInsuredCertificateBeneficiariesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mbalInsuredCertificateBeneficiaries
+      subscription:
+        rootField: mbalInsuredCertificateBeneficiaries
+    selectUniques:
+      - queryRootField: mbalInsuredCertificateBeneficiariesByInsuredCertificateBeneficiaInsuredCertificateIdBankCKey
+        uniqueIdentifier:
+          - bankAccount
+          - bankCode
+          - insuredCertificateId
+        subscription:
+          rootField: mbalInsuredCertificateBeneficiariesByInsuredCertificateBeneficiaInsuredCertificateIdBankCKey
+      - queryRootField: mbalInsuredCertificateBeneficiariesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: mbalInsuredCertificateBeneficiariesById
+    filterInputTypeName: MbalInsuredCertificateBeneficiariesFilterInput
+    aggregate:
+      queryRootField: mbalInsuredCertificateBeneficiariesAggregate
+      subscription:
+        rootField: mbalInsuredCertificateBeneficiariesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MbalInsuredCertificateBeneficiaries
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: MbalInsuredCertificateBeneficiaries
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+

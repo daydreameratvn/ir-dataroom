@@ -1,0 +1,213 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OpenapiWebhooks
+  fields:
+    - name: active
+      type: Boolean_1!
+    - name: companyId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamp
+    - name: endpoint
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: OpenapiWebhooks
+    inputTypeName: OpenapiWebhooksInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: openapi_webhooks
+      fieldMapping:
+        active:
+          column:
+            name: active
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        endpoint:
+          column:
+            name: endpoint
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OpenapiWebhooks
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - active
+          - companyId
+          - createdAt
+          - deletedAt
+          - endpoint
+          - id
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OpenapiWebhooksBoolExp
+  operand:
+    object:
+      type: OpenapiWebhooks
+      comparableFields:
+        - fieldName: active
+          booleanExpressionType: BoolBoolExp
+        - fieldName: companyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: endpoint
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: company
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OpenapiWebhooksBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OpenapiWebhooksAggExp
+  operand:
+    object:
+      aggregatedType: OpenapiWebhooks
+      aggregatableFields:
+        - fieldName: active
+          aggregateExpression: BoolAggExp
+        - fieldName: companyId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: endpoint
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OpenapiWebhooksAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OpenapiWebhooksOrderByExp
+  operand:
+    object:
+      orderedType: OpenapiWebhooks
+      orderableFields:
+        - fieldName: active
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: companyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestampOrderByExp
+        - fieldName: endpoint
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+  graphql:
+    expressionTypeName: OpenapiWebhooksOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OpenapiWebhooks
+  objectType: OpenapiWebhooks
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: openapi_webhooks
+  filterExpressionType: OpenapiWebhooksBoolExp
+  aggregateExpression: OpenapiWebhooksAggExp
+  orderByExpression: OpenapiWebhooksOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: openapiWebhooks
+      subscription:
+        rootField: openapiWebhooks
+    selectUniques:
+      - queryRootField: openapiWebhooksById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: openapiWebhooksById
+    filterInputTypeName: OpenapiWebhooksFilterInput
+    aggregate:
+      queryRootField: openapiWebhooksAggregate
+      subscription:
+        rootField: openapiWebhooksAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OpenapiWebhooks
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: OpenapiWebhooks
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyId
+      target:
+        modelField:
+          - fieldName: companyId
+

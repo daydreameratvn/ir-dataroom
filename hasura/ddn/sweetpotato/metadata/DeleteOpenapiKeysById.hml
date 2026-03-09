@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteOpenapiKeysByIdResponse
+  description: Responses from the 'delete_openapi_keys_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OpenapiKeys!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteOpenapiKeysByIdResponse
+    inputTypeName: DeleteOpenapiKeysByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_openapi_keys_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteOpenapiKeysByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteOpenapiKeysById
+  outputType: DeleteOpenapiKeysByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: OpenapiKeysBoolExp
+      description: Delete permission predicate over the 'openapi_keys' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_openapi_keys_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteOpenapiKeysById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'openapi_keys' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteOpenapiKeysById
+  permissions:
+    - role: admin
+      allowExecution: true
+

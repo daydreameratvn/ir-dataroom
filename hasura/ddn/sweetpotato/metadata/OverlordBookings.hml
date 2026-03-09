@@ -1,0 +1,474 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OverlordBookings
+  fields:
+    - name: bookedAt
+      type: Timestamptz
+    - name: claimCaseId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: medicalProviderId
+      type: Uuid!
+    - name: name
+      type: String_1
+    - name: note
+      type: String_1
+    - name: paymentAmount
+      type: Bigdecimal
+    - name: phone
+      type: String_1!
+    - name: refCode
+      type: String_1
+    - name: sharedHistoryClaimCaseIds
+      type: "[Uuid]!"
+    - name: status
+      type: String_1!
+    - name: syncedAt
+      type: Timestamptz
+    - name: treatmentAt
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: OverlordBookings
+    inputTypeName: OverlordBookingsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: overlord_bookings
+      fieldMapping:
+        bookedAt:
+          column:
+            name: booked_at
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        name:
+          column:
+            name: name
+        note:
+          column:
+            name: note
+        paymentAmount:
+          column:
+            name: payment_amount
+        phone:
+          column:
+            name: phone
+        refCode:
+          column:
+            name: ref_code
+        sharedHistoryClaimCaseIds:
+          column:
+            name: shared_history_claim_case_ids
+        status:
+          column:
+            name: status
+        syncedAt:
+          column:
+            name: synced_at
+        treatmentAt:
+          column:
+            name: treatment_at
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OverlordBookings
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bookedAt
+          - claimCaseId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - insuredCertificateId
+          - medicalProviderId
+          - name
+          - note
+          - paymentAmount
+          - phone
+          - refCode
+          - sharedHistoryClaimCaseIds
+          - status
+          - syncedAt
+          - treatmentAt
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OverlordBookingsBoolExp
+  operand:
+    object:
+      type: OverlordBookings
+      comparableFields:
+        - fieldName: bookedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: note
+          booleanExpressionType: TextBoolExp
+        - fieldName: paymentAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: phone
+          booleanExpressionType: TextBoolExp
+        - fieldName: refCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: syncedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: treatmentAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+        - relationshipName: insuredCertificate
+        - relationshipName: mpMedicalProvider
+        - relationshipName: overlordBookingStatus
+        - relationshipName: identityUserByUpdatedBy
+        - relationshipName: overlordDocuments
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OverlordBookingsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OverlordBookingsAggExp
+  operand:
+    object:
+      aggregatedType: OverlordBookings
+      aggregatableFields:
+        - fieldName: bookedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: note
+          aggregateExpression: TextAggExp
+        - fieldName: paymentAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: phone
+          aggregateExpression: TextAggExp
+        - fieldName: refCode
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: syncedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: treatmentAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OverlordBookingsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OverlordBookingsOrderByExp
+  operand:
+    object:
+      orderedType: OverlordBookings
+      orderableFields:
+        - fieldName: bookedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: note
+          orderByExpression: String1OrderByExp
+        - fieldName: paymentAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: phone
+          orderByExpression: String1OrderByExp
+        - fieldName: refCode
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: syncedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: treatmentAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+        - relationshipName: insuredCertificate
+        - relationshipName: mpMedicalProvider
+        - relationshipName: overlordBookingStatus
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: OverlordBookingsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OverlordBookings
+  objectType: OverlordBookings
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: overlord_bookings
+  filterExpressionType: OverlordBookingsBoolExp
+  aggregateExpression: OverlordBookingsAggExp
+  orderByExpression: OverlordBookingsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: overlordBookings
+      subscription:
+        rootField: overlordBookings
+    selectUniques:
+      - queryRootField: overlordBookingsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: overlordBookingsById
+    filterInputTypeName: OverlordBookingsFilterInput
+    aggregate:
+      queryRootField: overlordBookingsAggregate
+      subscription:
+        rootField: overlordBookingsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OverlordBookings
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: OverlordBookings
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: OverlordBookings
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: OverlordBookings
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: OverlordBookings
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: overlordBookingStatus
+  sourceType: OverlordBookings
+  target:
+    model:
+      name: OverlordBookingStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: OverlordBookings
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: overlordDocuments
+  sourceType: OverlordBookings
+  target:
+    model:
+      name: OverlordDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OverlordDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bookingId
+  graphql:
+    aggregateFieldName: overlordDocumentsAggregate
+

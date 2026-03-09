@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCustomSettingSettingNamesComment
+  description: Update the 'comment' column in the 'custom_setting_setting_names' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCustomSettingSettingNamesComment
+    inputTypeName: UpdateColumnCustomSettingSettingNamesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_custom_setting_setting_names_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCustomSettingSettingNamesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCustomSettingSettingNamesValue
+  description: Update the 'value' column in the 'custom_setting_setting_names' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCustomSettingSettingNamesValue
+    inputTypeName: UpdateColumnCustomSettingSettingNamesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_custom_setting_setting_names_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCustomSettingSettingNamesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCustomSettingSettingNamesByValueUpdateColumns
+  description: Update the columns of the 'custom_setting_setting_names' collection
+  fields:
+    - name: comment
+      type: UpdateColumnCustomSettingSettingNamesComment
+      description: Update the 'comment' column in the 'custom_setting_setting_names'
+        collection.
+    - name: value
+      type: UpdateColumnCustomSettingSettingNamesValue
+      description: Update the 'value' column in the 'custom_setting_setting_names'
+        collection.
+  graphql:
+    typeName: UpdateCustomSettingSettingNamesByValueUpdateColumns
+    inputTypeName: UpdateCustomSettingSettingNamesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_custom_setting_setting_names_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCustomSettingSettingNamesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCustomSettingSettingNamesByValueResponse
+  description: Responses from the 'update_custom_setting_setting_names_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingSettingNames!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCustomSettingSettingNamesByValueResponse
+    inputTypeName: UpdateCustomSettingSettingNamesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_custom_setting_setting_names_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCustomSettingSettingNamesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCustomSettingSettingNamesByValue
+  outputType: UpdateCustomSettingSettingNamesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: CustomSettingSettingNamesBoolExp
+      description: Update permission post-condition predicate over the
+        'custom_setting_setting_names' collection
+    - name: preCheck
+      type: CustomSettingSettingNamesBoolExp
+      description: Update permission pre-condition predicate over the
+        'custom_setting_setting_names' collection
+    - name: updateColumns
+      type: UpdateCustomSettingSettingNamesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_custom_setting_setting_names_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCustomSettingSettingNamesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'custom_setting_setting_names' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCustomSettingSettingNamesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

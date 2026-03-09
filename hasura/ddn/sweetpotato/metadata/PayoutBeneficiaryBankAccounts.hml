@@ -1,0 +1,328 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutBeneficiaryBankAccounts
+  description: Thông tin tài khoản ngân hàng người nhận
+  fields:
+    - name: accountName
+      type: String_1!
+    - name: accountNumber
+      type: String_1!
+    - name: bankBranchId
+      type: Uuid
+    - name: bankId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: paymentAmount
+      type: Bigdecimal
+    - name: paymentRequestId
+      type: Uuid
+    - name: paymentRequestItemId
+      type: Uuid
+    - name: remark
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PayoutBeneficiaryBankAccounts
+    inputTypeName: PayoutBeneficiaryBankAccountsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_beneficiary_bank_accounts
+      fieldMapping:
+        accountName:
+          column:
+            name: account_name
+        accountNumber:
+          column:
+            name: account_number
+        bankBranchId:
+          column:
+            name: bank_branch_id
+        bankId:
+          column:
+            name: bank_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        paymentAmount:
+          column:
+            name: payment_amount
+        paymentRequestId:
+          column:
+            name: payment_request_id
+        paymentRequestItemId:
+          column:
+            name: payment_request_item_id
+        remark:
+          column:
+            name: remark
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutBeneficiaryBankAccounts
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - accountName
+          - accountNumber
+          - bankBranchId
+          - bankId
+          - createdAt
+          - id
+          - paymentAmount
+          - paymentRequestId
+          - paymentRequestItemId
+          - remark
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutBeneficiaryBankAccountsBoolExp
+  operand:
+    object:
+      type: PayoutBeneficiaryBankAccounts
+      comparableFields:
+        - fieldName: accountName
+          booleanExpressionType: TextBoolExp
+        - fieldName: accountNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: bankBranchId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: bankId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paymentAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: paymentRequestId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paymentRequestItemId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: remark
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: bankBranch
+        - relationshipName: bank
+        - relationshipName: payoutPaymentRequest
+        - relationshipName: payoutPaymentRequestItem
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutBeneficiaryBankAccountsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutBeneficiaryBankAccountsAggExp
+  operand:
+    object:
+      aggregatedType: PayoutBeneficiaryBankAccounts
+      aggregatableFields:
+        - fieldName: accountName
+          aggregateExpression: TextAggExp
+        - fieldName: accountNumber
+          aggregateExpression: TextAggExp
+        - fieldName: bankBranchId
+          aggregateExpression: UuidAggExp
+        - fieldName: bankId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: paymentAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: paymentRequestId
+          aggregateExpression: UuidAggExp
+        - fieldName: paymentRequestItemId
+          aggregateExpression: UuidAggExp
+        - fieldName: remark
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutBeneficiaryBankAccountsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutBeneficiaryBankAccountsOrderByExp
+  operand:
+    object:
+      orderedType: PayoutBeneficiaryBankAccounts
+      orderableFields:
+        - fieldName: accountName
+          orderByExpression: String1OrderByExp
+        - fieldName: accountNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: bankBranchId
+          orderByExpression: UuidOrderByExp
+        - fieldName: bankId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: paymentAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: paymentRequestId
+          orderByExpression: UuidOrderByExp
+        - fieldName: paymentRequestItemId
+          orderByExpression: UuidOrderByExp
+        - fieldName: remark
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: bankBranch
+        - relationshipName: bank
+        - relationshipName: payoutPaymentRequest
+        - relationshipName: payoutPaymentRequestItem
+  graphql:
+    expressionTypeName: PayoutBeneficiaryBankAccountsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutBeneficiaryBankAccounts
+  objectType: PayoutBeneficiaryBankAccounts
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_beneficiary_bank_accounts
+  filterExpressionType: PayoutBeneficiaryBankAccountsBoolExp
+  aggregateExpression: PayoutBeneficiaryBankAccountsAggExp
+  orderByExpression: PayoutBeneficiaryBankAccountsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutBeneficiaryBankAccounts
+      subscription:
+        rootField: payoutBeneficiaryBankAccounts
+    selectUniques:
+      - queryRootField: payoutBeneficiaryBankAccountsByPaymentRequestItemId
+        uniqueIdentifier:
+          - paymentRequestItemId
+        subscription:
+          rootField: payoutBeneficiaryBankAccountsByPaymentRequestItemId
+      - queryRootField: payoutBeneficiaryBankAccountsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: payoutBeneficiaryBankAccountsById
+    filterInputTypeName: PayoutBeneficiaryBankAccountsFilterInput
+    aggregate:
+      queryRootField: payoutBeneficiaryBankAccountsAggregate
+      subscription:
+        rootField: payoutBeneficiaryBankAccountsAggregate
+  description: Thông tin tài khoản ngân hàng người nhận
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutBeneficiaryBankAccounts
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bankBranch
+  sourceType: PayoutBeneficiaryBankAccounts
+  target:
+    model:
+      name: BankBranchs
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bankBranchId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bank
+  sourceType: PayoutBeneficiaryBankAccounts
+  target:
+    model:
+      name: Banks
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bankId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequest
+  sourceType: PayoutBeneficiaryBankAccounts
+  target:
+    model:
+      name: PayoutPaymentRequests
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentRequestId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestItem
+  sourceType: PayoutBeneficiaryBankAccounts
+  target:
+    model:
+      name: PayoutPaymentRequestItems
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentRequestItemId
+      target:
+        modelField:
+          - fieldName: id
+

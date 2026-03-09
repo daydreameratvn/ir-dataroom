@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MedicalBookingBookingsSchedulesHistoriesActions
+  description: bookings_schedules_histories_actions
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MedicalBookingBookingsSchedulesHistoriesActions
+    inputTypeName: MedicalBookingBookingsSchedulesHistoriesActionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: medical_booking_bookings_schedules_histories_actions
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MedicalBookingBookingsSchedulesHistoriesActions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MedicalBookingBookingsSchedulesHistoriesActionsBoolExp
+  operand:
+    object:
+      type: MedicalBookingBookingsSchedulesHistoriesActions
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: medicalBookingBookingsSchedulesHistories
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MedicalBookingBookingsSchedulesHistoriesActionsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MedicalBookingBookingsSchedulesHistoriesActionsAggExp
+  operand:
+    object:
+      aggregatedType: MedicalBookingBookingsSchedulesHistoriesActions
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MedicalBookingBookingsSchedulesHistoriesActionsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MedicalBookingBookingsSchedulesHistoriesActionsOrderByExp
+  operand:
+    object:
+      orderedType: MedicalBookingBookingsSchedulesHistoriesActions
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MedicalBookingBookingsSchedulesHistoriesActionsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MedicalBookingBookingsSchedulesHistoriesActions
+  objectType: MedicalBookingBookingsSchedulesHistoriesActions
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: medical_booking_bookings_schedules_histories_actions
+  filterExpressionType: MedicalBookingBookingsSchedulesHistoriesActionsBoolExp
+  aggregateExpression: MedicalBookingBookingsSchedulesHistoriesActionsAggExp
+  orderByExpression: MedicalBookingBookingsSchedulesHistoriesActionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: medicalBookingBookingsSchedulesHistoriesActions
+      subscription:
+        rootField: medicalBookingBookingsSchedulesHistoriesActions
+    selectUniques:
+      - queryRootField: medicalBookingBookingsSchedulesHistoriesActionsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: medicalBookingBookingsSchedulesHistoriesActionsByValue
+    filterInputTypeName: MedicalBookingBookingsSchedulesHistoriesActionsFilterInput
+    aggregate:
+      queryRootField: medicalBookingBookingsSchedulesHistoriesActionsAggregate
+      subscription:
+        rootField: medicalBookingBookingsSchedulesHistoriesActionsAggregate
+  description: bookings_schedules_histories_actions
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MedicalBookingBookingsSchedulesHistoriesActions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingBookingsSchedulesHistories
+  sourceType: MedicalBookingBookingsSchedulesHistoriesActions
+  target:
+    model:
+      name: MedicalBookingBookingsSchedulesHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingBookingsSchedulesHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: action
+  graphql:
+    aggregateFieldName: medicalBookingBookingsSchedulesHistoriesAggregate
+

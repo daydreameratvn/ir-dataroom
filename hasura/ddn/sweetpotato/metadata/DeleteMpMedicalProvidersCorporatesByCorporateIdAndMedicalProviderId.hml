@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMpMedicalProvidersCorporatesByCorporateIdAndMedicalProviderIdResponse
+  description: Responses from the
+    'delete_mp_medical_providers_corporates_by_corporate_id_and_medical_provider_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProvidersCorporates!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMpMedicalProvidersCorporatesByCorporateIdAndMedicalProviderIdResponse
+    inputTypeName: DeleteMpMedicalProvidersCorporatesByCorporateIdAndMedicalProviderIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mp_medical_providers_corporates_by_corporate_id_and_medical_provider_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMpMedicalProvidersCorporatesByCorporateIdAndMedicalProviderIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMpMedicalProvidersCorporatesByCorporateIdAndMedicalProviderId
+  outputType: DeleteMpMedicalProvidersCorporatesByCorporateIdAndMedicalProviderIdResponse!
+  arguments:
+    - name: keyCorporateId
+      type: Uuid!
+    - name: keyMedicalProviderId
+      type: Uuid!
+    - name: preCheck
+      type: MpMedicalProvidersCorporatesBoolExp
+      description: Delete permission predicate over the
+        'mp_medical_providers_corporates' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mp_medical_providers_corporates_by_corporate_id_and_medical_provider_id
+    argumentMapping:
+      keyCorporateId: key_corporate_id
+      keyMedicalProviderId: key_medical_provider_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMpMedicalProvidersCorporatesByCorporateIdAndMedicalProviderId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mp_medical_providers_corporates' collection
+    using the 'corporate_id' and 'medical_provider_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMpMedicalProvidersCorporatesByCorporateIdAndMedicalProviderId
+  permissions:
+    - role: admin
+      allowExecution: true
+

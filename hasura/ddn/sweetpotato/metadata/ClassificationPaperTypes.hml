@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClassificationPaperTypes
+  description: Các loại giấy
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClassificationPaperTypes
+    inputTypeName: ClassificationPaperTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: classification_paper_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClassificationPaperTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClassificationPaperTypesBoolExp
+  operand:
+    object:
+      type: ClassificationPaperTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: classificationPapers
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClassificationPaperTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClassificationPaperTypesAggExp
+  operand:
+    object:
+      aggregatedType: ClassificationPaperTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClassificationPaperTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClassificationPaperTypesOrderByExp
+  operand:
+    object:
+      orderedType: ClassificationPaperTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClassificationPaperTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClassificationPaperTypes
+  objectType: ClassificationPaperTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: classification_paper_types
+  filterExpressionType: ClassificationPaperTypesBoolExp
+  aggregateExpression: ClassificationPaperTypesAggExp
+  orderByExpression: ClassificationPaperTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: classificationPaperTypes
+      subscription:
+        rootField: classificationPaperTypes
+    selectUniques:
+      - queryRootField: classificationPaperTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: classificationPaperTypesByValue
+    filterInputTypeName: ClassificationPaperTypesFilterInput
+    aggregate:
+      queryRootField: classificationPaperTypesAggregate
+      subscription:
+        rootField: classificationPaperTypesAggregate
+  description: Các loại giấy
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClassificationPaperTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: classificationPapers
+  sourceType: ClassificationPaperTypes
+  target:
+    model:
+      name: ClassificationPapers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClassificationPapersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: paperType
+  graphql:
+    aggregateFieldName: classificationPapersAggregate
+

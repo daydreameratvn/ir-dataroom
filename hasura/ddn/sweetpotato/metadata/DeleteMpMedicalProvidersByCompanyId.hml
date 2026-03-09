@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMpMedicalProvidersByCompanyIdResponse
+  description: Responses from the 'delete_mp_medical_providers_by_company_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviders!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMpMedicalProvidersByCompanyIdResponse
+    inputTypeName: DeleteMpMedicalProvidersByCompanyIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mp_medical_providers_by_company_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMpMedicalProvidersByCompanyIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMpMedicalProvidersByCompanyId
+  outputType: DeleteMpMedicalProvidersByCompanyIdResponse!
+  arguments:
+    - name: keyCompanyId
+      type: Uuid
+      description: Quan hệ 1-1 với companies
+    - name: preCheck
+      type: MpMedicalProvidersBoolExp
+      description: Delete permission predicate over the 'mp_medical_providers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mp_medical_providers_by_company_id
+    argumentMapping:
+      keyCompanyId: key_company_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMpMedicalProvidersByCompanyId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mp_medical_providers' collection using the
+    'company_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMpMedicalProvidersByCompanyId
+  permissions:
+    - role: admin
+      allowExecution: true
+

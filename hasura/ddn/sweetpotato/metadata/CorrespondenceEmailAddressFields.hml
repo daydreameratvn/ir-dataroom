@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceEmailAddressFields
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CorrespondenceEmailAddressFields
+    inputTypeName: CorrespondenceEmailAddressFieldsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_email_address_fields
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceEmailAddressFields
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceEmailAddressFieldsBoolExp
+  operand:
+    object:
+      type: CorrespondenceEmailAddressFields
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: correspondenceEmailAddressesMappings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceEmailAddressFieldsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceEmailAddressFieldsAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceEmailAddressFields
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceEmailAddressFieldsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceEmailAddressFieldsOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceEmailAddressFields
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CorrespondenceEmailAddressFieldsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceEmailAddressFields
+  objectType: CorrespondenceEmailAddressFields
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_email_address_fields
+  filterExpressionType: CorrespondenceEmailAddressFieldsBoolExp
+  aggregateExpression: CorrespondenceEmailAddressFieldsAggExp
+  orderByExpression: CorrespondenceEmailAddressFieldsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceEmailAddressFields
+      subscription:
+        rootField: correspondenceEmailAddressFields
+    selectUniques:
+      - queryRootField: correspondenceEmailAddressFieldsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: correspondenceEmailAddressFieldsByValue
+    filterInputTypeName: CorrespondenceEmailAddressFieldsFilterInput
+    aggregate:
+      queryRootField: correspondenceEmailAddressFieldsAggregate
+      subscription:
+        rootField: correspondenceEmailAddressFieldsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceEmailAddressFields
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmailAddressesMappings
+  sourceType: CorrespondenceEmailAddressFields
+  target:
+    model:
+      name: CorrespondenceEmailAddressesMapping
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceEmailAddressesMappingAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: addressField
+  graphql:
+    aggregateFieldName: correspondenceEmailAddressesMappingsAggregate
+

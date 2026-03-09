@@ -1,0 +1,157 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCustomSettingSettingValuesObject
+  fields:
+    - name: booleanValue
+      type: Boolean_1
+    - name: createdAt
+      type: Timestamptz
+    - name: fallbackSettingApplicationId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: jsonbValue
+      type: Json
+    - name: numericValue
+      type: Bigdecimal
+    - name: overrideSettingApplicationId
+      type: Uuid
+    - name: textValue
+      type: String_1
+    - name: timestamptzValue
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertCustomSettingSettingValuesObject
+    inputTypeName: InsertCustomSettingSettingValuesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_custom_setting_setting_values_object
+      fieldMapping:
+        booleanValue:
+          column:
+            name: boolean_value
+        createdAt:
+          column:
+            name: created_at
+        fallbackSettingApplicationId:
+          column:
+            name: fallback_setting_application_id
+        id:
+          column:
+            name: id
+        jsonbValue:
+          column:
+            name: jsonb_value
+        numericValue:
+          column:
+            name: numeric_value
+        overrideSettingApplicationId:
+          column:
+            name: override_setting_application_id
+        textValue:
+          column:
+            name: text_value
+        timestamptzValue:
+          column:
+            name: timestamptz_value
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCustomSettingSettingValuesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - booleanValue
+          - createdAt
+          - fallbackSettingApplicationId
+          - id
+          - jsonbValue
+          - numericValue
+          - overrideSettingApplicationId
+          - textValue
+          - timestamptzValue
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCustomSettingSettingValuesResponse
+  description: Responses from the 'insert_custom_setting_setting_values' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingSettingValues!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCustomSettingSettingValuesResponse
+    inputTypeName: InsertCustomSettingSettingValuesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_custom_setting_setting_values_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCustomSettingSettingValuesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCustomSettingSettingValues
+  outputType: InsertCustomSettingSettingValuesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCustomSettingSettingValuesObject!]!"
+    - name: postCheck
+      type: CustomSettingSettingValuesBoolExp
+      description: Insert permission predicate over the
+        'custom_setting_setting_values' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_custom_setting_setting_values
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCustomSettingSettingValues
+    rootFieldKind: Mutation
+  description: Insert into the custom_setting_setting_values table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCustomSettingSettingValues
+  permissions:
+    - role: admin
+      allowExecution: true
+

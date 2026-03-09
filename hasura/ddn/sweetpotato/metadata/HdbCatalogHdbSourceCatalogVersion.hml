@@ -1,0 +1,128 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HdbCatalogHdbSourceCatalogVersion
+  fields:
+    - name: upgradedOn
+      type: Timestamptz!
+    - name: version
+      type: String_1!
+  graphql:
+    typeName: HdbCatalogHdbSourceCatalogVersion
+    inputTypeName: HdbCatalogHdbSourceCatalogVersionInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hdb_catalog_hdb_source_catalog_version
+      fieldMapping:
+        upgradedOn:
+          column:
+            name: upgraded_on
+        version:
+          column:
+            name: version
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HdbCatalogHdbSourceCatalogVersion
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - upgradedOn
+          - version
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HdbCatalogHdbSourceCatalogVersionBoolExp
+  operand:
+    object:
+      type: HdbCatalogHdbSourceCatalogVersion
+      comparableFields:
+        - fieldName: upgradedOn
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: version
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HdbCatalogHdbSourceCatalogVersionBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HdbCatalogHdbSourceCatalogVersionAggExp
+  operand:
+    object:
+      aggregatedType: HdbCatalogHdbSourceCatalogVersion
+      aggregatableFields:
+        - fieldName: upgradedOn
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: version
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HdbCatalogHdbSourceCatalogVersionAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HdbCatalogHdbSourceCatalogVersionOrderByExp
+  operand:
+    object:
+      orderedType: HdbCatalogHdbSourceCatalogVersion
+      orderableFields:
+        - fieldName: upgradedOn
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: version
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HdbCatalogHdbSourceCatalogVersionOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HdbCatalogHdbSourceCatalogVersion
+  objectType: HdbCatalogHdbSourceCatalogVersion
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hdb_catalog_hdb_source_catalog_version
+  filterExpressionType: HdbCatalogHdbSourceCatalogVersionBoolExp
+  aggregateExpression: HdbCatalogHdbSourceCatalogVersionAggExp
+  orderByExpression: HdbCatalogHdbSourceCatalogVersionOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hdbCatalogHdbSourceCatalogVersion
+      subscription:
+        rootField: hdbCatalogHdbSourceCatalogVersion
+    selectUniques: []
+    filterInputTypeName: HdbCatalogHdbSourceCatalogVersionFilterInput
+    aggregate:
+      queryRootField: hdbCatalogHdbSourceCatalogVersionAggregate
+      subscription:
+        rootField: hdbCatalogHdbSourceCatalogVersionAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HdbCatalogHdbSourceCatalogVersion
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

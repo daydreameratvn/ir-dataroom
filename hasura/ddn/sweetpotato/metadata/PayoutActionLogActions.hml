@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutActionLogActions
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PayoutActionLogActions
+    inputTypeName: PayoutActionLogActionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_action_log_actions
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutActionLogActions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutActionLogActionsBoolExp
+  operand:
+    object:
+      type: PayoutActionLogActions
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: payoutActionLogs
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutActionLogActionsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutActionLogActionsAggExp
+  operand:
+    object:
+      aggregatedType: PayoutActionLogActions
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutActionLogActionsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutActionLogActionsOrderByExp
+  operand:
+    object:
+      orderedType: PayoutActionLogActions
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PayoutActionLogActionsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutActionLogActions
+  objectType: PayoutActionLogActions
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_action_log_actions
+  filterExpressionType: PayoutActionLogActionsBoolExp
+  aggregateExpression: PayoutActionLogActionsAggExp
+  orderByExpression: PayoutActionLogActionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutActionLogActions
+      subscription:
+        rootField: payoutActionLogActions
+    selectUniques:
+      - queryRootField: payoutActionLogActionsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: payoutActionLogActionsByValue
+    filterInputTypeName: PayoutActionLogActionsFilterInput
+    aggregate:
+      queryRootField: payoutActionLogActionsAggregate
+      subscription:
+        rootField: payoutActionLogActionsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutActionLogActions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutActionLogs
+  sourceType: PayoutActionLogActions
+  target:
+    model:
+      name: PayoutActionLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutActionLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: action
+  graphql:
+    aggregateFieldName: payoutActionLogsAggregate
+

@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateBhvInsuredPersonsByIdUpdateColumns
+  description: Update the columns of the 'bhv_insured_persons' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnBhvInsuredPersonsCreatedAt
+      description: Update the 'created_at' column in the 'bhv_insured_persons' collection.
+    - name: deletedAt
+      type: UpdateColumnBhvInsuredPersonsDeletedAt
+      description: Update the 'deleted_at' column in the 'bhv_insured_persons' collection.
+    - name: id
+      type: UpdateColumnBhvInsuredPersonsId
+      description: Update the 'id' column in the 'bhv_insured_persons' collection.
+    - name: insuredId
+      type: UpdateColumnBhvInsuredPersonsInsuredId
+      description: Update the 'insured_id' column in the 'bhv_insured_persons' collection.
+    - name: insuredPersonId
+      type: UpdateColumnBhvInsuredPersonsInsuredPersonId
+      description: Update the 'insured_person_id' column in the 'bhv_insured_persons'
+        collection.
+    - name: updatedAt
+      type: UpdateColumnBhvInsuredPersonsUpdatedAt
+      description: Update the 'updated_at' column in the 'bhv_insured_persons' collection.
+  graphql:
+    typeName: UpdateBhvInsuredPersonsByIdUpdateColumns
+    inputTypeName: UpdateBhvInsuredPersonsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_bhv_insured_persons_by_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredId:
+          column:
+            name: insured_id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateBhvInsuredPersonsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - insuredId
+          - insuredPersonId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateBhvInsuredPersonsByIdResponse
+  description: Responses from the 'update_bhv_insured_persons_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[BhvInsuredPersons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateBhvInsuredPersonsByIdResponse
+    inputTypeName: UpdateBhvInsuredPersonsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_bhv_insured_persons_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateBhvInsuredPersonsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateBhvInsuredPersonsById
+  outputType: UpdateBhvInsuredPersonsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: BhvInsuredPersonsBoolExp
+      description: Update permission post-condition predicate over the
+        'bhv_insured_persons' collection
+    - name: preCheck
+      type: BhvInsuredPersonsBoolExp
+      description: Update permission pre-condition predicate over the
+        'bhv_insured_persons' collection
+    - name: updateColumns
+      type: UpdateBhvInsuredPersonsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_bhv_insured_persons_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateBhvInsuredPersonsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'bhv_insured_persons' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateBhvInsuredPersonsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

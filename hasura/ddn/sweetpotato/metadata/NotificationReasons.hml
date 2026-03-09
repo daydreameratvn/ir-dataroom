@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: NotificationReasons
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: NotificationReasons
+    inputTypeName: NotificationReasonsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: notification_reasons
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: NotificationReasons
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NotificationReasonsBoolExp
+  operand:
+    object:
+      type: NotificationReasons
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: notificationNotifications
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NotificationReasonsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: NotificationReasonsAggExp
+  operand:
+    object:
+      aggregatedType: NotificationReasons
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: NotificationReasonsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: NotificationReasonsOrderByExp
+  operand:
+    object:
+      orderedType: NotificationReasons
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: NotificationReasonsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: NotificationReasons
+  objectType: NotificationReasons
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: notification_reasons
+  filterExpressionType: NotificationReasonsBoolExp
+  aggregateExpression: NotificationReasonsAggExp
+  orderByExpression: NotificationReasonsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: notificationReasons
+      subscription:
+        rootField: notificationReasons
+    selectUniques:
+      - queryRootField: notificationReasonsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: notificationReasonsByValue
+    filterInputTypeName: NotificationReasonsFilterInput
+    aggregate:
+      queryRootField: notificationReasonsAggregate
+      subscription:
+        rootField: notificationReasonsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: NotificationReasons
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: notificationNotifications
+  sourceType: NotificationReasons
+  target:
+    model:
+      name: NotificationNotifications
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: NotificationNotificationsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: reason
+  graphql:
+    aggregateFieldName: notificationNotificationsAggregate
+

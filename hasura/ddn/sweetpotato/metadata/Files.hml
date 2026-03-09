@@ -1,0 +1,1065 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Files
+  fields:
+    - name: authenticFileId
+      type: Uuid
+    - name: autoRotateResult
+      type: Json
+    - name: bucketName
+      type: String_1!
+      description: "deprecated: use bucket_name_v2 for correct data"
+    - name: bucketNameV2
+      type: String_1
+    - name: bucketObjectKey
+      type: String_1
+    - name: cardId
+      type: Uuid
+    - name: claimDocumentId
+      type: Uuid
+    - name: companyId
+      type: Uuid
+    - name: correspondenceHistoryId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: executionArn
+      type: String_1
+    - name: fileId
+      type: Uuid!
+    - name: hasOcrRawData
+      type: Boolean_1
+    - name: hash
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: isRotated
+      type: Boolean_1!
+    - name: medicalProviderId
+      type: Uuid
+    - name: mimeType
+      type: String_1!
+    - name: name
+      type: String_1!
+      description: "deprecated: use bucket_object_key"
+    - name: originalFileId
+      type: Uuid
+      description: could be pdf file before splitted or image before resized
+    - name: overlordDocumentId
+      type: Uuid
+    - name: pageNumber
+      type: Int32!
+    - name: payoutTransactionId
+      type: Uuid
+    - name: planDocumentId
+      type: Uuid
+    - name: policyDocumentId
+      type: Uuid
+    - name: processedV2
+      type: Boolean_1!
+    - name: rawOcrData
+      type: Json
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: url
+      type: String_1
+    - name: urlExpiredAt
+      type: Timestamptz
+    - name: userId
+      type: Uuid
+    - name: userName
+      type: String_1
+  graphql:
+    typeName: Files
+    inputTypeName: FilesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: files
+      fieldMapping:
+        authenticFileId:
+          column:
+            name: authentic_file_id
+        autoRotateResult:
+          column:
+            name: auto_rotate_result
+        bucketName:
+          column:
+            name: bucket_name
+        bucketNameV2:
+          column:
+            name: bucket_name_v2
+        bucketObjectKey:
+          column:
+            name: bucket_object_key
+        cardId:
+          column:
+            name: card_id
+        claimDocumentId:
+          column:
+            name: claim_document_id
+        companyId:
+          column:
+            name: company_id
+        correspondenceHistoryId:
+          column:
+            name: correspondence_history_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        executionArn:
+          column:
+            name: execution_arn
+        fileId:
+          column:
+            name: file_id
+        hasOcrRawData:
+          column:
+            name: has_ocr_raw_data
+        hash:
+          column:
+            name: hash
+        id:
+          column:
+            name: id
+        isRotated:
+          column:
+            name: is_rotated
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        mimeType:
+          column:
+            name: mime_type
+        name:
+          column:
+            name: name
+        originalFileId:
+          column:
+            name: original_file_id
+        overlordDocumentId:
+          column:
+            name: overlord_document_id
+        pageNumber:
+          column:
+            name: page_number
+        payoutTransactionId:
+          column:
+            name: payout_transaction_id
+        planDocumentId:
+          column:
+            name: plan_document_id
+        policyDocumentId:
+          column:
+            name: policy_document_id
+        processedV2:
+          column:
+            name: processed_v2
+        rawOcrData:
+          column:
+            name: raw_ocr_data
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        url:
+          column:
+            name: url
+        urlExpiredAt:
+          column:
+            name: url_expired_at
+        userId:
+          column:
+            name: user_id
+        userName:
+          column:
+            name: user_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Files
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - authenticFileId
+          - autoRotateResult
+          - bucketName
+          - bucketNameV2
+          - bucketObjectKey
+          - cardId
+          - claimDocumentId
+          - companyId
+          - correspondenceHistoryId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - executionArn
+          - fileId
+          - hasOcrRawData
+          - hash
+          - id
+          - isRotated
+          - medicalProviderId
+          - mimeType
+          - name
+          - originalFileId
+          - overlordDocumentId
+          - pageNumber
+          - payoutTransactionId
+          - planDocumentId
+          - policyDocumentId
+          - processedV2
+          - rawOcrData
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - url
+          - urlExpiredAt
+          - userId
+          - userName
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FilesBoolExp
+  operand:
+    object:
+      type: Files
+      comparableFields:
+        - fieldName: authenticFileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: autoRotateResult
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: bucketName
+          booleanExpressionType: TextBoolExp
+        - fieldName: bucketNameV2
+          booleanExpressionType: TextBoolExp
+        - fieldName: bucketObjectKey
+          booleanExpressionType: TextBoolExp
+        - fieldName: cardId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimDocumentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: companyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: correspondenceHistoryId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: executionArn
+          booleanExpressionType: TextBoolExp
+        - fieldName: fileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: hasOcrRawData
+          booleanExpressionType: BoolBoolExp
+        - fieldName: hash
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isRotated
+          booleanExpressionType: BoolBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: mimeType
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: name
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: originalFileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: overlordDocumentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: pageNumber
+          booleanExpressionType: Int4BoolExp
+        - fieldName: payoutTransactionId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planDocumentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyDocumentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: processedV2
+          booleanExpressionType: BoolBoolExp
+        - fieldName: rawOcrData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: url
+          booleanExpressionType: TextBoolExp
+        - fieldName: urlExpiredAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userName
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: correspondenceEmailAttachments
+        - relationshipName: file
+        - relationshipName: files
+        - relationshipName: card
+        - relationshipName: claimDocument
+        - relationshipName: correspondenceHistory
+        - relationshipName: identityUser
+        - relationshipName: overlordDocument
+        - relationshipName: fileByOriginalFileId
+        - relationshipName: filesByOriginalFileId
+        - relationshipName: payoutTransaction
+        - relationshipName: planDocument
+        - relationshipName: policyDocument
+        - relationshipName: tenant
+        - relationshipName: fwdClaimDocumentSyncHistories
+        - relationshipName: fwdSyncDocuments
+        - relationshipName: fwdSyncLogs
+        - relationshipName: hawthornDocuments
+        - relationshipName: hazelnutDocuments
+        - relationshipName: importedFiles
+        - relationshipName: insuredPersons
+        - relationshipName: mpMedicalProviderDocuments
+        - relationshipName: reports
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FilesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FilesAggExp
+  operand:
+    object:
+      aggregatedType: Files
+      aggregatableFields:
+        - fieldName: authenticFileId
+          aggregateExpression: UuidAggExp
+        - fieldName: autoRotateResult
+          aggregateExpression: JsonbAggExp
+        - fieldName: bucketName
+          aggregateExpression: TextAggExp
+        - fieldName: bucketNameV2
+          aggregateExpression: TextAggExp
+        - fieldName: bucketObjectKey
+          aggregateExpression: TextAggExp
+        - fieldName: cardId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimDocumentId
+          aggregateExpression: UuidAggExp
+        - fieldName: companyId
+          aggregateExpression: UuidAggExp
+        - fieldName: correspondenceHistoryId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: executionArn
+          aggregateExpression: TextAggExp
+        - fieldName: fileId
+          aggregateExpression: UuidAggExp
+        - fieldName: hasOcrRawData
+          aggregateExpression: BoolAggExp
+        - fieldName: hash
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isRotated
+          aggregateExpression: BoolAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: mimeType
+          aggregateExpression: VarcharAggExp
+        - fieldName: name
+          aggregateExpression: VarcharAggExp
+        - fieldName: originalFileId
+          aggregateExpression: UuidAggExp
+        - fieldName: overlordDocumentId
+          aggregateExpression: UuidAggExp
+        - fieldName: pageNumber
+          aggregateExpression: Int4AggExp
+        - fieldName: payoutTransactionId
+          aggregateExpression: UuidAggExp
+        - fieldName: planDocumentId
+          aggregateExpression: UuidAggExp
+        - fieldName: policyDocumentId
+          aggregateExpression: UuidAggExp
+        - fieldName: processedV2
+          aggregateExpression: BoolAggExp
+        - fieldName: rawOcrData
+          aggregateExpression: JsonbAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: url
+          aggregateExpression: TextAggExp
+        - fieldName: urlExpiredAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+        - fieldName: userName
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FilesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FilesOrderByExp
+  operand:
+    object:
+      orderedType: Files
+      orderableFields:
+        - fieldName: authenticFileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: autoRotateResult
+          orderByExpression: JsonOrderByExp
+        - fieldName: bucketName
+          orderByExpression: String1OrderByExp
+        - fieldName: bucketNameV2
+          orderByExpression: String1OrderByExp
+        - fieldName: bucketObjectKey
+          orderByExpression: String1OrderByExp
+        - fieldName: cardId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimDocumentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: companyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: correspondenceHistoryId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: executionArn
+          orderByExpression: String1OrderByExp
+        - fieldName: fileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: hasOcrRawData
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: hash
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isRotated
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: mimeType
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: originalFileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: overlordDocumentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: pageNumber
+          orderByExpression: Int32OrderByExp
+        - fieldName: payoutTransactionId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planDocumentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyDocumentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: processedV2
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: rawOcrData
+          orderByExpression: JsonOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: url
+          orderByExpression: String1OrderByExp
+        - fieldName: urlExpiredAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+        - fieldName: userName
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: file
+        - relationshipName: card
+        - relationshipName: claimDocument
+        - relationshipName: correspondenceHistory
+        - relationshipName: identityUser
+        - relationshipName: overlordDocument
+        - relationshipName: fileByOriginalFileId
+        - relationshipName: payoutTransaction
+        - relationshipName: planDocument
+        - relationshipName: policyDocument
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: FilesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Files
+  objectType: Files
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: files
+  filterExpressionType: FilesBoolExp
+  aggregateExpression: FilesAggExp
+  orderByExpression: FilesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: files
+      subscription:
+        rootField: files
+    selectUniques:
+      - queryRootField: filesByCardId
+        uniqueIdentifier:
+          - cardId
+        subscription:
+          rootField: filesByCardId
+      - queryRootField: filesByClaimDocumentId
+        uniqueIdentifier:
+          - claimDocumentId
+        subscription:
+          rootField: filesByClaimDocumentId
+      - queryRootField: filesByCompanyId
+        uniqueIdentifier:
+          - companyId
+        subscription:
+          rootField: filesByCompanyId
+      - queryRootField: filesByFileId
+        uniqueIdentifier:
+          - fileId
+        subscription:
+          rootField: filesByFileId
+      - queryRootField: filesByPlanDocumentId
+        uniqueIdentifier:
+          - planDocumentId
+        subscription:
+          rootField: filesByPlanDocumentId
+      - queryRootField: filesByPolicyDocumentId
+        uniqueIdentifier:
+          - policyDocumentId
+        subscription:
+          rootField: filesByPolicyDocumentId
+    filterInputTypeName: FilesFilterInput
+    aggregate:
+      queryRootField: filesAggregate
+      subscription:
+        rootField: filesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Files
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmailAttachments
+  sourceType: Files
+  target:
+    model:
+      name: CorrespondenceEmailAttachments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceEmailAttachmentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+  graphql:
+    aggregateFieldName: correspondenceEmailAttachmentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: file
+  sourceType: Files
+  target:
+    model:
+      name: Files
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: authenticFileId
+      target:
+        modelField:
+          - fieldName: fileId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: files
+  sourceType: Files
+  target:
+    model:
+      name: Files
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: authenticFileId
+  graphql:
+    aggregateFieldName: filesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: card
+  sourceType: Files
+  target:
+    model:
+      name: Cards
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: cardId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocument
+  sourceType: Files
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentId
+      target:
+        modelField:
+          - fieldName: claimDocumentId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceHistory
+  sourceType: Files
+  target:
+    model:
+      name: CorrespondenceHistories
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: correspondenceHistoryId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: Files
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: overlordDocument
+  sourceType: Files
+  target:
+    model:
+      name: OverlordDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: overlordDocumentId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fileByOriginalFileId
+  sourceType: Files
+  target:
+    model:
+      name: Files
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: originalFileId
+      target:
+        modelField:
+          - fieldName: fileId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: filesByOriginalFileId
+  sourceType: Files
+  target:
+    model:
+      name: Files
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: originalFileId
+  graphql:
+    aggregateFieldName: filesByOriginalFileIdAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutTransaction
+  sourceType: Files
+  target:
+    model:
+      name: PayoutTransactions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: payoutTransactionId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planDocument
+  sourceType: Files
+  target:
+    model:
+      name: PlanDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planDocumentId
+      target:
+        modelField:
+          - fieldName: planDocumentId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyDocument
+  sourceType: Files
+  target:
+    model:
+      name: PolicyDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyDocumentId
+      target:
+        modelField:
+          - fieldName: policyDocumentId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: Files
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdClaimDocumentSyncHistories
+  sourceType: Files
+  target:
+    model:
+      name: FwdClaimDocumentSyncHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdClaimDocumentSyncHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+  graphql:
+    aggregateFieldName: fwdClaimDocumentSyncHistoriesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdSyncDocuments
+  sourceType: Files
+  target:
+    model:
+      name: FwdSyncDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdSyncDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+  graphql:
+    aggregateFieldName: fwdSyncDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdSyncLogs
+  sourceType: Files
+  target:
+    model:
+      name: FwdSyncLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdSyncLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+  graphql:
+    aggregateFieldName: fwdSyncLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDocuments
+  sourceType: Files
+  target:
+    model:
+      name: HawthornDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+  graphql:
+    aggregateFieldName: hawthornDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutDocuments
+  sourceType: Files
+  target:
+    model:
+      name: HazelnutDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+  graphql:
+    aggregateFieldName: hazelnutDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: importedFiles
+  sourceType: Files
+  target:
+    model:
+      name: ImportedFiles
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ImportedFilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+  graphql:
+    aggregateFieldName: importedFilesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersons
+  sourceType: Files
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: paperIdFileId
+  graphql:
+    aggregateFieldName: insuredPersonsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderDocuments
+  sourceType: Files
+  target:
+    model:
+      name: MpMedicalProviderDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProviderDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+  graphql:
+    aggregateFieldName: mpMedicalProviderDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: reports
+  sourceType: Files
+  target:
+    model:
+      name: Reports
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ReportsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+  graphql:
+    aggregateFieldName: reportsAggregate
+

@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimCaseGroupsByIdResponse
+  description: Responses from the 'delete_claim_case_groups_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseGroups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimCaseGroupsByIdResponse
+    inputTypeName: DeleteClaimCaseGroupsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_case_groups_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimCaseGroupsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimCaseGroupsById
+  outputType: DeleteClaimCaseGroupsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimCaseGroupsBoolExp
+      description: Delete permission predicate over the 'claim_case_groups' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_case_groups_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimCaseGroupsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_case_groups' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimCaseGroupsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

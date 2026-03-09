@@ -1,0 +1,210 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyReportConfigsObject
+  fields:
+    - name: ccEmails
+      type: "[String_1]"
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: cron
+      type: String_1!
+    - name: dataFilter
+      type: Json
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: disabledAt
+      type: Timestamptz
+    - name: disabledBy
+      type: Uuid
+    - name: endAt
+      type: Timestamptz!
+    - name: frequency
+      type: String_1!
+    - name: groupPolicies
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: policyId
+      type: Uuid!
+    - name: startAt
+      type: Timestamptz!
+    - name: subjectTemplate
+      type: String_1!
+    - name: toEmails
+      type: "[String_1]"
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid!
+  graphql:
+    typeName: InsertPolicyReportConfigsObject
+    inputTypeName: InsertPolicyReportConfigsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_report_configs_object
+      fieldMapping:
+        ccEmails:
+          column:
+            name: cc_emails
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        cron:
+          column:
+            name: cron
+        dataFilter:
+          column:
+            name: data_filter
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        disabledAt:
+          column:
+            name: disabled_at
+        disabledBy:
+          column:
+            name: disabled_by
+        endAt:
+          column:
+            name: end_at
+        frequency:
+          column:
+            name: frequency
+        groupPolicies:
+          column:
+            name: group_policies
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        startAt:
+          column:
+            name: start_at
+        subjectTemplate:
+          column:
+            name: subject_template
+        toEmails:
+          column:
+            name: to_emails
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyReportConfigsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - ccEmails
+          - createdAt
+          - createdBy
+          - cron
+          - dataFilter
+          - deletedAt
+          - deletedBy
+          - disabledAt
+          - disabledBy
+          - endAt
+          - frequency
+          - groupPolicies
+          - id
+          - policyId
+          - startAt
+          - subjectTemplate
+          - toEmails
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyReportConfigsResponse
+  description: Responses from the 'insert_policy_report_configs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyReportConfigs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyReportConfigsResponse
+    inputTypeName: InsertPolicyReportConfigsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_report_configs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyReportConfigsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyReportConfigs
+  outputType: InsertPolicyReportConfigsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyReportConfigsObject!]!"
+    - name: postCheck
+      type: PolicyReportConfigsBoolExp
+      description: Insert permission predicate over the 'policy_report_configs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_report_configs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyReportConfigs
+    rootFieldKind: Mutation
+  description: Insert into the policy_report_configs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyReportConfigs
+  permissions:
+    - role: admin
+      allowExecution: true
+

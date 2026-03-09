@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteProvincesByIdResponse
+  description: Responses from the 'delete_provinces_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Provinces!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteProvincesByIdResponse
+    inputTypeName: DeleteProvincesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_provinces_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteProvincesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteProvincesById
+  outputType: DeleteProvincesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Bigdecimal!
+    - name: preCheck
+      type: ProvincesBoolExp
+      description: Delete permission predicate over the 'provinces' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_provinces_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteProvincesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'provinces' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteProvincesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

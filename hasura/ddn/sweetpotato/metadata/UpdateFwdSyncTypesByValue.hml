@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdSyncTypesComment
+  description: Update the 'comment' column in the 'fwd_sync_types' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdSyncTypesComment
+    inputTypeName: UpdateColumnFwdSyncTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_sync_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdSyncTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdSyncTypesValue
+  description: Update the 'value' column in the 'fwd_sync_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdSyncTypesValue
+    inputTypeName: UpdateColumnFwdSyncTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_sync_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdSyncTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdSyncTypesByValueUpdateColumns
+  description: Update the columns of the 'fwd_sync_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnFwdSyncTypesComment
+      description: Update the 'comment' column in the 'fwd_sync_types' collection.
+    - name: value
+      type: UpdateColumnFwdSyncTypesValue
+      description: Update the 'value' column in the 'fwd_sync_types' collection.
+  graphql:
+    typeName: UpdateFwdSyncTypesByValueUpdateColumns
+    inputTypeName: UpdateFwdSyncTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_sync_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdSyncTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdSyncTypesByValueResponse
+  description: Responses from the 'update_fwd_sync_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdSyncTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateFwdSyncTypesByValueResponse
+    inputTypeName: UpdateFwdSyncTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_sync_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdSyncTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateFwdSyncTypesByValue
+  outputType: UpdateFwdSyncTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: FwdSyncTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'fwd_sync_types' collection
+    - name: preCheck
+      type: FwdSyncTypesBoolExp
+      description: Update permission pre-condition predicate over the 'fwd_sync_types'
+        collection
+    - name: updateColumns
+      type: UpdateFwdSyncTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_fwd_sync_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateFwdSyncTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'fwd_sync_types' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateFwdSyncTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

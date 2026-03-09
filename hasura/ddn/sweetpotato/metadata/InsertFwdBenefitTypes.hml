@@ -1,0 +1,114 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdBenefitTypesObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: ppyBenefitTypeCode
+      type: String_1!
+  graphql:
+    typeName: InsertFwdBenefitTypesObject
+    inputTypeName: InsertFwdBenefitTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_benefit_types_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        name:
+          column:
+            name: name
+        ppyBenefitTypeCode:
+          column:
+            name: ppy_benefit_type_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdBenefitTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - name
+          - ppyBenefitTypeCode
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdBenefitTypesResponse
+  description: Responses from the 'insert_fwd_benefit_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdBenefitTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdBenefitTypesResponse
+    inputTypeName: InsertFwdBenefitTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_benefit_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdBenefitTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdBenefitTypes
+  outputType: InsertFwdBenefitTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdBenefitTypesObject!]!"
+    - name: postCheck
+      type: FwdBenefitTypesBoolExp
+      description: Insert permission predicate over the 'fwd_benefit_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_benefit_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdBenefitTypes
+    rootFieldKind: Mutation
+  description: Insert into the fwd_benefit_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdBenefitTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

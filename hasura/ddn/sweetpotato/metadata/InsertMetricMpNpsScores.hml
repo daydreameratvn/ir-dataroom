@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetricMpNpsScoresObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: medicalProviderName
+      type: String_1
+    - name: purpose
+      type: String_1
+    - name: score
+      type: Int32!
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: InsertMetricMpNpsScoresObject
+    inputTypeName: InsertMetricMpNpsScoresObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_metric_mp_nps_scores_object
+      fieldMapping:
+        comment:
+          column:
+            name: comment
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        purpose:
+          column:
+            name: purpose
+        score:
+          column:
+            name: score
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetricMpNpsScoresObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - createdAt
+          - id
+          - medicalProviderName
+          - purpose
+          - score
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetricMpNpsScoresResponse
+  description: Responses from the 'insert_metric_mp_nps_scores' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetricMpNpsScores!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMetricMpNpsScoresResponse
+    inputTypeName: InsertMetricMpNpsScoresResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_metric_mp_nps_scores_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetricMpNpsScoresResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMetricMpNpsScores
+  outputType: InsertMetricMpNpsScoresResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMetricMpNpsScoresObject!]!"
+    - name: postCheck
+      type: MetricMpNpsScoresBoolExp
+      description: Insert permission predicate over the 'metric_mp_nps_scores' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_metric_mp_nps_scores
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMetricMpNpsScores
+    rootFieldKind: Mutation
+  description: Insert into the metric_mp_nps_scores table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMetricMpNpsScores
+  permissions:
+    - role: admin
+      allowExecution: true
+

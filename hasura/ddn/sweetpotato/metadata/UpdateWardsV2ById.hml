@@ -1,0 +1,132 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateWardsV2ByIdUpdateColumns
+  description: Update the columns of the 'wards_v2' collection
+  fields:
+    - name: code
+      type: UpdateColumnWardsV2Code
+      description: Update the 'code' column in the 'wards_v2' collection.
+    - name: id
+      type: UpdateColumnWardsV2Id
+      description: Update the 'id' column in the 'wards_v2' collection.
+    - name: name
+      type: UpdateColumnWardsV2Name
+      description: Update the 'name' column in the 'wards_v2' collection.
+    - name: provinceId
+      type: UpdateColumnWardsV2ProvinceId
+      description: Update the 'province_id' column in the 'wards_v2' collection.
+  graphql:
+    typeName: UpdateWardsV2ByIdUpdateColumns
+    inputTypeName: UpdateWardsV2ByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_wards_v2_by_id_update_columns
+      fieldMapping:
+        code:
+          column:
+            name: code
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        provinceId:
+          column:
+            name: province_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateWardsV2ByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - id
+          - name
+          - provinceId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateWardsV2ByIdResponse
+  description: Responses from the 'update_wards_v2_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[WardsV2!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateWardsV2ByIdResponse
+    inputTypeName: UpdateWardsV2ByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_wards_v2_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateWardsV2ByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateWardsV2ById
+  outputType: UpdateWardsV2ByIdResponse!
+  arguments:
+    - name: keyId
+      type: Bigdecimal!
+    - name: postCheck
+      type: WardsV2BoolExp
+      description: Update permission post-condition predicate over the 'wards_v2' collection
+    - name: preCheck
+      type: WardsV2BoolExp
+      description: Update permission pre-condition predicate over the 'wards_v2' collection
+    - name: updateColumns
+      type: UpdateWardsV2ByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_wards_v2_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateWardsV2ById
+    rootFieldKind: Mutation
+  description: Update any row on the 'wards_v2' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateWardsV2ById
+  permissions:
+    - role: admin
+      allowExecution: true
+

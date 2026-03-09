@@ -1,0 +1,80 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteEnumLocalizationsByEnumTypeAndEnumValueAndLocaleResponse
+  description: Responses from the
+    'delete_enum_localizations_by_enum_type_and_enum_value_and_locale' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[EnumLocalizations!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteEnumLocalizationsByEnumTypeAndEnumValueAndLocaleResponse
+    inputTypeName: DeleteEnumLocalizationsByEnumTypeAndEnumValueAndLocaleResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_enum_localizations_by_enum_type_and_enum_value_and_locale_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteEnumLocalizationsByEnumTypeAndEnumValueAndLocaleResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteEnumLocalizationsByEnumTypeAndEnumValueAndLocale
+  outputType: DeleteEnumLocalizationsByEnumTypeAndEnumValueAndLocaleResponse!
+  arguments:
+    - name: keyEnumType
+      type: String_1!
+    - name: keyEnumValue
+      type: String_1!
+    - name: keyLocale
+      type: String_1!
+    - name: preCheck
+      type: EnumLocalizationsBoolExp
+      description: Delete permission predicate over the 'enum_localizations' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_enum_localizations_by_enum_type_and_enum_value_and_locale
+    argumentMapping:
+      keyEnumType: key_enum_type
+      keyEnumValue: key_enum_value
+      keyLocale: key_locale
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteEnumLocalizationsByEnumTypeAndEnumValueAndLocale
+    rootFieldKind: Mutation
+  description: Delete any row on the 'enum_localizations' collection using the
+    'enum_type', 'enum_value' and 'locale' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteEnumLocalizationsByEnumTypeAndEnumValueAndLocale
+  permissions:
+    - role: admin
+      allowExecution: true
+

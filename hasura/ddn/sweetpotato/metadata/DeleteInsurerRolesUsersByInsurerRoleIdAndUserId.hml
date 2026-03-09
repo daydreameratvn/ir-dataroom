@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsurerRolesUsersByInsurerRoleIdAndUserIdResponse
+  description: Responses from the
+    'delete_insurer_roles_users_by_insurer_role_id_and_user_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsurerRolesUsers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsurerRolesUsersByInsurerRoleIdAndUserIdResponse
+    inputTypeName: DeleteInsurerRolesUsersByInsurerRoleIdAndUserIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insurer_roles_users_by_insurer_role_id_and_user_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsurerRolesUsersByInsurerRoleIdAndUserIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsurerRolesUsersByInsurerRoleIdAndUserId
+  outputType: DeleteInsurerRolesUsersByInsurerRoleIdAndUserIdResponse!
+  arguments:
+    - name: keyInsurerRoleId
+      type: Uuid!
+    - name: keyUserId
+      type: Uuid!
+    - name: preCheck
+      type: InsurerRolesUsersBoolExp
+      description: Delete permission predicate over the 'insurer_roles_users' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insurer_roles_users_by_insurer_role_id_and_user_id
+    argumentMapping:
+      keyInsurerRoleId: key_insurer_role_id
+      keyUserId: key_user_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsurerRolesUsersByInsurerRoleIdAndUserId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insurer_roles_users' collection using the
+    'insurer_role_id' and 'user_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsurerRolesUsersByInsurerRoleIdAndUserId
+  permissions:
+    - role: admin
+      allowExecution: true
+

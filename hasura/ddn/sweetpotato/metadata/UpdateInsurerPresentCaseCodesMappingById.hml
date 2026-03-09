@@ -1,0 +1,204 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsurerPresentCaseCodesMappingByIdUpdateColumns
+  description: Update the columns of the 'insurer_present_case_codes_mapping' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnInsurerPresentCaseCodesMappingCreatedAt
+      description: Update the 'created_at' column in the
+        'insurer_present_case_codes_mapping' collection.
+    - name: createdBy
+      type: UpdateColumnInsurerPresentCaseCodesMappingCreatedBy
+      description: Update the 'created_by' column in the
+        'insurer_present_case_codes_mapping' collection.
+    - name: deletedAt
+      type: UpdateColumnInsurerPresentCaseCodesMappingDeletedAt
+      description: Update the 'deleted_at' column in the
+        'insurer_present_case_codes_mapping' collection.
+    - name: description
+      type: UpdateColumnInsurerPresentCaseCodesMappingDescription
+      description: Update the 'description' column in the
+        'insurer_present_case_codes_mapping' collection.
+    - name: id
+      type: UpdateColumnInsurerPresentCaseCodesMappingId
+      description: Update the 'id' column in the 'insurer_present_case_codes_mapping'
+        collection.
+    - name: insurerId
+      type: UpdateColumnInsurerPresentCaseCodesMappingInsurerId
+      description: Update the 'insurer_id' column in the
+        'insurer_present_case_codes_mapping' collection.
+    - name: insurerPresentCaseCode
+      type: UpdateColumnInsurerPresentCaseCodesMappingInsurerPresentCaseCode
+      description: Update the 'insurer_present_case_code' column in the
+        'insurer_present_case_codes_mapping' collection.
+    - name: ppyPresentCaseCode
+      type: UpdateColumnInsurerPresentCaseCodesMappingPpyPresentCaseCode
+      description: Update the 'ppy_present_case_code' column in the
+        'insurer_present_case_codes_mapping' collection.
+    - name: productCode
+      type: UpdateColumnInsurerPresentCaseCodesMappingProductCode
+      description: Update the 'product_code' column in the
+        'insurer_present_case_codes_mapping' collection.
+    - name: productId
+      type: UpdateColumnInsurerPresentCaseCodesMappingProductId
+      description: Update the 'product_id' column in the
+        'insurer_present_case_codes_mapping' collection.
+    - name: updatedAt
+      type: UpdateColumnInsurerPresentCaseCodesMappingUpdatedAt
+      description: Update the 'updated_at' column in the
+        'insurer_present_case_codes_mapping' collection.
+    - name: updatedBy
+      type: UpdateColumnInsurerPresentCaseCodesMappingUpdatedBy
+      description: Update the 'updated_by' column in the
+        'insurer_present_case_codes_mapping' collection.
+  graphql:
+    typeName: UpdateInsurerPresentCaseCodesMappingByIdUpdateColumns
+    inputTypeName: UpdateInsurerPresentCaseCodesMappingByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insurer_present_case_codes_mapping_by_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        insurerPresentCaseCode:
+          column:
+            name: insurer_present_case_code
+        ppyPresentCaseCode:
+          column:
+            name: ppy_present_case_code
+        productCode:
+          column:
+            name: product_code
+        productId:
+          column:
+            name: product_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsurerPresentCaseCodesMappingByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - id
+          - insurerId
+          - insurerPresentCaseCode
+          - ppyPresentCaseCode
+          - productCode
+          - productId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsurerPresentCaseCodesMappingByIdResponse
+  description: Responses from the
+    'update_insurer_present_case_codes_mapping_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsurerPresentCaseCodesMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateInsurerPresentCaseCodesMappingByIdResponse
+    inputTypeName: UpdateInsurerPresentCaseCodesMappingByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insurer_present_case_codes_mapping_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsurerPresentCaseCodesMappingByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateInsurerPresentCaseCodesMappingById
+  outputType: UpdateInsurerPresentCaseCodesMappingByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: InsurerPresentCaseCodesMappingBoolExp
+      description: Update permission post-condition predicate over the
+        'insurer_present_case_codes_mapping' collection
+    - name: preCheck
+      type: InsurerPresentCaseCodesMappingBoolExp
+      description: Update permission pre-condition predicate over the
+        'insurer_present_case_codes_mapping' collection
+    - name: updateColumns
+      type: UpdateInsurerPresentCaseCodesMappingByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_insurer_present_case_codes_mapping_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateInsurerPresentCaseCodesMappingById
+    rootFieldKind: Mutation
+  description: Update any row on the 'insurer_present_case_codes_mapping'
+    collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateInsurerPresentCaseCodesMappingById
+  permissions:
+    - role: admin
+      allowExecution: true
+

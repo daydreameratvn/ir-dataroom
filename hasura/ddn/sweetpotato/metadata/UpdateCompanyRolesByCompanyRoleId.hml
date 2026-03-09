@@ -1,0 +1,156 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCompanyRolesByCompanyRoleIdUpdateColumns
+  description: Update the columns of the 'company_roles' collection
+  fields:
+    - name: companyId
+      type: UpdateColumnCompanyRolesCompanyId
+      description: Update the 'company_id' column in the 'company_roles' collection.
+    - name: companyRoleId
+      type: UpdateColumnCompanyRolesCompanyRoleId
+      description: Update the 'company_role_id' column in the 'company_roles' collection.
+    - name: createdAt
+      type: UpdateColumnCompanyRolesCreatedAt
+      description: Update the 'created_at' column in the 'company_roles' collection.
+    - name: deletedAt
+      type: UpdateColumnCompanyRolesDeletedAt
+      description: Update the 'deleted_at' column in the 'company_roles' collection.
+    - name: role
+      type: UpdateColumnCompanyRolesRole
+      description: Update the 'role' column in the 'company_roles' collection.
+    - name: tenantId
+      type: UpdateColumnCompanyRolesTenantId
+      description: Update the 'tenant_id' column in the 'company_roles' collection.
+    - name: updatedAt
+      type: UpdateColumnCompanyRolesUpdatedAt
+      description: Update the 'updated_at' column in the 'company_roles' collection.
+  graphql:
+    typeName: UpdateCompanyRolesByCompanyRoleIdUpdateColumns
+    inputTypeName: UpdateCompanyRolesByCompanyRoleIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_company_roles_by_company_role_id_update_columns
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        companyRoleId:
+          column:
+            name: company_role_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        role:
+          column:
+            name: role
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCompanyRolesByCompanyRoleIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - companyRoleId
+          - createdAt
+          - deletedAt
+          - role
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCompanyRolesByCompanyRoleIdResponse
+  description: Responses from the 'update_company_roles_by_company_role_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanyRoles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCompanyRolesByCompanyRoleIdResponse
+    inputTypeName: UpdateCompanyRolesByCompanyRoleIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_company_roles_by_company_role_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCompanyRolesByCompanyRoleIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCompanyRolesByCompanyRoleId
+  outputType: UpdateCompanyRolesByCompanyRoleIdResponse!
+  arguments:
+    - name: keyCompanyRoleId
+      type: Uuid!
+    - name: postCheck
+      type: CompanyRolesBoolExp
+      description: Update permission post-condition predicate over the 'company_roles'
+        collection
+    - name: preCheck
+      type: CompanyRolesBoolExp
+      description: Update permission pre-condition predicate over the 'company_roles'
+        collection
+    - name: updateColumns
+      type: UpdateCompanyRolesByCompanyRoleIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_company_roles_by_company_role_id
+    argumentMapping:
+      keyCompanyRoleId: key_company_role_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCompanyRolesByCompanyRoleId
+    rootFieldKind: Mutation
+  description: Update any row on the 'company_roles' collection using the
+    'company_role_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCompanyRolesByCompanyRoleId
+  permissions:
+    - role: admin
+      allowExecution: true
+

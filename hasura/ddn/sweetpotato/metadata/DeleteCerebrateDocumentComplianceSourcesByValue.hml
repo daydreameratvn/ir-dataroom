@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCerebrateDocumentComplianceSourcesByValueResponse
+  description: Responses from the
+    'delete_cerebrate_document_compliance_sources_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CerebrateDocumentComplianceSources!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCerebrateDocumentComplianceSourcesByValueResponse
+    inputTypeName: DeleteCerebrateDocumentComplianceSourcesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_cerebrate_document_compliance_sources_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCerebrateDocumentComplianceSourcesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCerebrateDocumentComplianceSourcesByValue
+  outputType: DeleteCerebrateDocumentComplianceSourcesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: CerebrateDocumentComplianceSourcesBoolExp
+      description: Delete permission predicate over the
+        'cerebrate_document_compliance_sources' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_cerebrate_document_compliance_sources_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCerebrateDocumentComplianceSourcesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'cerebrate_document_compliance_sources'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCerebrateDocumentComplianceSourcesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicySettingDirectBillingListTypes
+  description: Loại danh sách BLVP của hợp đồng
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PolicySettingDirectBillingListTypes
+    inputTypeName: PolicySettingDirectBillingListTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_setting_direct_billing_list_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicySettingDirectBillingListTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicySettingDirectBillingListTypesBoolExp
+  operand:
+    object:
+      type: PolicySettingDirectBillingListTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policySettings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicySettingDirectBillingListTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicySettingDirectBillingListTypesAggExp
+  operand:
+    object:
+      aggregatedType: PolicySettingDirectBillingListTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicySettingDirectBillingListTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicySettingDirectBillingListTypesOrderByExp
+  operand:
+    object:
+      orderedType: PolicySettingDirectBillingListTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicySettingDirectBillingListTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicySettingDirectBillingListTypes
+  objectType: PolicySettingDirectBillingListTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_setting_direct_billing_list_types
+  filterExpressionType: PolicySettingDirectBillingListTypesBoolExp
+  aggregateExpression: PolicySettingDirectBillingListTypesAggExp
+  orderByExpression: PolicySettingDirectBillingListTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policySettingDirectBillingListTypes
+      subscription:
+        rootField: policySettingDirectBillingListTypes
+    selectUniques:
+      - queryRootField: policySettingDirectBillingListTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: policySettingDirectBillingListTypesByValue
+    filterInputTypeName: PolicySettingDirectBillingListTypesFilterInput
+    aggregate:
+      queryRootField: policySettingDirectBillingListTypesAggregate
+      subscription:
+        rootField: policySettingDirectBillingListTypesAggregate
+  description: Loại danh sách BLVP của hợp đồng
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicySettingDirectBillingListTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policySettings
+  sourceType: PolicySettingDirectBillingListTypes
+  target:
+    model:
+      name: PolicySettings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicySettingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: directBillingListType
+  graphql:
+    aggregateFieldName: policySettingsAggregate
+

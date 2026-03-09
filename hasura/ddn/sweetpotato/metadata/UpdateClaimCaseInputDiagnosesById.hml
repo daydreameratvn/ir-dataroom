@@ -1,0 +1,154 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseInputDiagnosesByIdUpdateColumns
+  description: Update the columns of the 'claim_case_input_diagnoses' collection
+  fields:
+    - name: claimCaseId
+      type: UpdateColumnClaimCaseInputDiagnosesClaimCaseId
+      description: Update the 'claim_case_id' column in the
+        'claim_case_input_diagnoses' collection.
+    - name: createdAt
+      type: UpdateColumnClaimCaseInputDiagnosesCreatedAt
+      description: Update the 'created_at' column in the 'claim_case_input_diagnoses'
+        collection.
+    - name: deletedAt
+      type: UpdateColumnClaimCaseInputDiagnosesDeletedAt
+      description: Update the 'deleted_at' column in the 'claim_case_input_diagnoses'
+        collection.
+    - name: icdMetadataId
+      type: UpdateColumnClaimCaseInputDiagnosesIcdMetadataId
+      description: Update the 'icd_metadata_id' column in the
+        'claim_case_input_diagnoses' collection.
+    - name: id
+      type: UpdateColumnClaimCaseInputDiagnosesId
+      description: Update the 'id' column in the 'claim_case_input_diagnoses' collection.
+    - name: updatedAt
+      type: UpdateColumnClaimCaseInputDiagnosesUpdatedAt
+      description: Update the 'updated_at' column in the 'claim_case_input_diagnoses'
+        collection.
+  graphql:
+    typeName: UpdateClaimCaseInputDiagnosesByIdUpdateColumns
+    inputTypeName: UpdateClaimCaseInputDiagnosesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_input_diagnoses_by_id_update_columns
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        icdMetadataId:
+          column:
+            name: icd_metadata_id
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseInputDiagnosesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - deletedAt
+          - icdMetadataId
+          - id
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseInputDiagnosesByIdResponse
+  description: Responses from the 'update_claim_case_input_diagnoses_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseInputDiagnoses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateClaimCaseInputDiagnosesByIdResponse
+    inputTypeName: UpdateClaimCaseInputDiagnosesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_input_diagnoses_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseInputDiagnosesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateClaimCaseInputDiagnosesById
+  outputType: UpdateClaimCaseInputDiagnosesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: ClaimCaseInputDiagnosesBoolExp
+      description: Update permission post-condition predicate over the
+        'claim_case_input_diagnoses' collection
+    - name: preCheck
+      type: ClaimCaseInputDiagnosesBoolExp
+      description: Update permission pre-condition predicate over the
+        'claim_case_input_diagnoses' collection
+    - name: updateColumns
+      type: UpdateClaimCaseInputDiagnosesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_claim_case_input_diagnoses_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateClaimCaseInputDiagnosesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'claim_case_input_diagnoses' collection using
+    the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateClaimCaseInputDiagnosesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimSourcesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertClaimSourcesObject
+    inputTypeName: InsertClaimSourcesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_sources_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimSourcesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimSourcesResponse
+  description: Responses from the 'insert_claim_sources' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimSources!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimSourcesResponse
+    inputTypeName: InsertClaimSourcesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_sources_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimSourcesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimSources
+  outputType: InsertClaimSourcesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimSourcesObject!]!"
+    - name: postCheck
+      type: ClaimSourcesBoolExp
+      description: Insert permission predicate over the 'claim_sources' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_sources
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimSources
+    rootFieldKind: Mutation
+  description: Insert into the claim_sources table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimSources
+  permissions:
+    - role: admin
+      allowExecution: true
+

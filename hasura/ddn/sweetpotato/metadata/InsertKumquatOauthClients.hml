@@ -1,0 +1,189 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertKumquatOauthClientsObject
+  fields:
+    - name: accessTokenTtl
+      type: Int32
+    - name: clientId
+      type: String_1!
+    - name: clientSecretHash
+      type: String_1!
+      description: Argon2id hash of client_secret
+    - name: companyId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: grantTypes
+      type: "[String_1]"
+    - name: id
+      type: Uuid
+    - name: isActive
+      type: Boolean_1
+    - name: name
+      type: String_1
+    - name: partnerCode
+      type: String_1!
+      description: "Code used for SSM key lookup: /kumquat/{env}/partners/{partner_code}/"
+    - name: redirectUris
+      type: "[String_1]"
+    - name: refreshTokenTtl
+      type: Int32
+    - name: scopes
+      type: "[String_1]"
+      description: Allowed OAuth scopes for this client
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertKumquatOauthClientsObject
+    inputTypeName: InsertKumquatOauthClientsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_kumquat_oauth_clients_object
+      fieldMapping:
+        accessTokenTtl:
+          column:
+            name: access_token_ttl
+        clientId:
+          column:
+            name: client_id
+        clientSecretHash:
+          column:
+            name: client_secret_hash
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        grantTypes:
+          column:
+            name: grant_types
+        id:
+          column:
+            name: id
+        isActive:
+          column:
+            name: is_active
+        name:
+          column:
+            name: name
+        partnerCode:
+          column:
+            name: partner_code
+        redirectUris:
+          column:
+            name: redirect_uris
+        refreshTokenTtl:
+          column:
+            name: refresh_token_ttl
+        scopes:
+          column:
+            name: scopes
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertKumquatOauthClientsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - accessTokenTtl
+          - clientId
+          - clientSecretHash
+          - companyId
+          - createdAt
+          - deletedAt
+          - grantTypes
+          - id
+          - isActive
+          - name
+          - partnerCode
+          - redirectUris
+          - refreshTokenTtl
+          - scopes
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertKumquatOauthClientsResponse
+  description: Responses from the 'insert_kumquat_oauth_clients' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[KumquatOauthClients!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertKumquatOauthClientsResponse
+    inputTypeName: InsertKumquatOauthClientsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_kumquat_oauth_clients_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertKumquatOauthClientsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertKumquatOauthClients
+  outputType: InsertKumquatOauthClientsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertKumquatOauthClientsObject!]!"
+    - name: postCheck
+      type: KumquatOauthClientsBoolExp
+      description: Insert permission predicate over the 'kumquat_oauth_clients' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_kumquat_oauth_clients
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertKumquatOauthClients
+    rootFieldKind: Mutation
+  description: Insert into the kumquat_oauth_clients table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertKumquatOauthClients
+  permissions:
+    - role: admin
+      allowExecution: true
+

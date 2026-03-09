@@ -1,0 +1,228 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SlvLivesAssured
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: laDob
+      type: Timestamptz!
+    - name: laGender
+      type: String_1!
+    - name: laIdNumber
+      type: String_1
+    - name: laName
+      type: String_1!
+    - name: laNum
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: SlvLivesAssured
+    inputTypeName: SlvLivesAssuredInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: slv_lives_assured
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        laDob:
+          column:
+            name: la_dob
+        laGender:
+          column:
+            name: la_gender
+        laIdNumber:
+          column:
+            name: la_id_number
+        laName:
+          column:
+            name: la_name
+        laNum:
+          column:
+            name: la_num
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SlvLivesAssured
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - laDob
+          - laGender
+          - laIdNumber
+          - laName
+          - laNum
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SlvLivesAssuredBoolExp
+  operand:
+    object:
+      type: SlvLivesAssured
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: laDob
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: laGender
+          booleanExpressionType: TextBoolExp
+        - fieldName: laIdNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: laName
+          booleanExpressionType: TextBoolExp
+        - fieldName: laNum
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: slvCoverages
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SlvLivesAssuredBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SlvLivesAssuredAggExp
+  operand:
+    object:
+      aggregatedType: SlvLivesAssured
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: laDob
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: laGender
+          aggregateExpression: TextAggExp
+        - fieldName: laIdNumber
+          aggregateExpression: TextAggExp
+        - fieldName: laName
+          aggregateExpression: TextAggExp
+        - fieldName: laNum
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SlvLivesAssuredAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SlvLivesAssuredOrderByExp
+  operand:
+    object:
+      orderedType: SlvLivesAssured
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: laDob
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: laGender
+          orderByExpression: String1OrderByExp
+        - fieldName: laIdNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: laName
+          orderByExpression: String1OrderByExp
+        - fieldName: laNum
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: SlvLivesAssuredOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SlvLivesAssured
+  objectType: SlvLivesAssured
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: slv_lives_assured
+  filterExpressionType: SlvLivesAssuredBoolExp
+  aggregateExpression: SlvLivesAssuredAggExp
+  orderByExpression: SlvLivesAssuredOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: slvLivesAssured
+      subscription:
+        rootField: slvLivesAssured
+    selectUniques:
+      - queryRootField: slvLivesAssuredById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: slvLivesAssuredById
+    filterInputTypeName: SlvLivesAssuredFilterInput
+    aggregate:
+      queryRootField: slvLivesAssuredAggregate
+      subscription:
+        rootField: slvLivesAssuredAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SlvLivesAssured
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvCoverages
+  sourceType: SlvLivesAssured
+  target:
+    model:
+      name: SlvCoverages
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvCoveragesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: lifeAssuredId
+  graphql:
+    aggregateFieldName: slvCoveragesAggregate
+

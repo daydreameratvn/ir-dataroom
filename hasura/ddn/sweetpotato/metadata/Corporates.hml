@@ -1,0 +1,207 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Corporates
+  description: Công ty khách hàng bảo hiểm
+  fields:
+    - name: companyId
+      type: Uuid
+      description: Quan hệ 1-1 với companies
+    - name: corporateId
+      type: Uuid!
+  graphql:
+    typeName: Corporates
+    inputTypeName: CorporatesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: corporates
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        corporateId:
+          column:
+            name: corporate_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Corporates
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - corporateId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorporatesBoolExp
+  operand:
+    object:
+      type: Corporates
+      comparableFields:
+        - fieldName: companyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: corporateId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: company
+        - relationshipName: medicalBookingMedicalBookings
+        - relationshipName: mpMedicalProvidersCorporates
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorporatesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorporatesAggExp
+  operand:
+    object:
+      aggregatedType: Corporates
+      aggregatableFields:
+        - fieldName: companyId
+          aggregateExpression: UuidAggExp
+        - fieldName: corporateId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorporatesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorporatesOrderByExp
+  operand:
+    object:
+      orderedType: Corporates
+      orderableFields:
+        - fieldName: companyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: corporateId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+  graphql:
+    expressionTypeName: CorporatesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Corporates
+  objectType: Corporates
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: corporates
+  filterExpressionType: CorporatesBoolExp
+  aggregateExpression: CorporatesAggExp
+  orderByExpression: CorporatesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: corporates
+      subscription:
+        rootField: corporates
+    selectUniques:
+      - queryRootField: corporatesByCompanyId
+        uniqueIdentifier:
+          - companyId
+        subscription:
+          rootField: corporatesByCompanyId
+      - queryRootField: corporatesByCorporateId
+        uniqueIdentifier:
+          - corporateId
+        subscription:
+          rootField: corporatesByCorporateId
+    filterInputTypeName: CorporatesFilterInput
+    aggregate:
+      queryRootField: corporatesAggregate
+      subscription:
+        rootField: corporatesAggregate
+  description: Công ty khách hàng bảo hiểm
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Corporates
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: Corporates
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingMedicalBookings
+  sourceType: Corporates
+  target:
+    model:
+      name: MedicalBookingMedicalBookings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingMedicalBookingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: corporateId
+      target:
+        modelField:
+          - fieldName: corporateId
+  graphql:
+    aggregateFieldName: medicalBookingMedicalBookingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvidersCorporates
+  sourceType: Corporates
+  target:
+    model:
+      name: MpMedicalProvidersCorporates
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProvidersCorporatesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: corporateId
+      target:
+        modelField:
+          - fieldName: corporateId
+  graphql:
+    aggregateFieldName: mpMedicalProvidersCorporatesAggregate
+

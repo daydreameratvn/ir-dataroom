@@ -1,0 +1,195 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceSendWhen
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CorrespondenceSendWhen
+    inputTypeName: CorrespondenceSendWhenInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_send_when
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceSendWhen
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceSendWhenBoolExp
+  operand:
+    object:
+      type: CorrespondenceSendWhen
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: companyCorrespondences
+        - relationshipName: correspondenceTemplates
+        - relationshipName: policyCorrespondences
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceSendWhenBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceSendWhenAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceSendWhen
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceSendWhenAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceSendWhenOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceSendWhen
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CorrespondenceSendWhenOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceSendWhen
+  objectType: CorrespondenceSendWhen
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_send_when
+  filterExpressionType: CorrespondenceSendWhenBoolExp
+  aggregateExpression: CorrespondenceSendWhenAggExp
+  orderByExpression: CorrespondenceSendWhenOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceSendWhen
+      subscription:
+        rootField: correspondenceSendWhen
+    selectUniques:
+      - queryRootField: correspondenceSendWhenByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: correspondenceSendWhenByValue
+    filterInputTypeName: CorrespondenceSendWhenFilterInput
+    aggregate:
+      queryRootField: correspondenceSendWhenAggregate
+      subscription:
+        rootField: correspondenceSendWhenAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceSendWhen
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: companyCorrespondences
+  sourceType: CorrespondenceSendWhen
+  target:
+    model:
+      name: CompanyCorrespondences
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CompanyCorrespondencesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: sendWhen
+  graphql:
+    aggregateFieldName: companyCorrespondencesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceTemplates
+  sourceType: CorrespondenceSendWhen
+  target:
+    model:
+      name: CorrespondenceTemplates
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceTemplatesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: sendWhen
+  graphql:
+    aggregateFieldName: correspondenceTemplatesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCorrespondences
+  sourceType: CorrespondenceSendWhen
+  target:
+    model:
+      name: PolicyCorrespondences
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyCorrespondencesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: sendWhen
+  graphql:
+    aggregateFieldName: policyCorrespondencesAggregate
+

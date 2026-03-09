@@ -1,0 +1,272 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityPermissionHierarchies
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: parentPermissionId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: IdentityPermissionHierarchies
+    inputTypeName: IdentityPermissionHierarchiesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_permission_hierarchies
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        parentPermissionId:
+          column:
+            name: parent_permission_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityPermissionHierarchies
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - description
+          - id
+          - name
+          - parentPermissionId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityPermissionHierarchiesBoolExp
+  operand:
+    object:
+      type: IdentityPermissionHierarchies
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: parentPermissionId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: identityAccessPermission
+        - relationshipName: identityPermissionHierarchy
+        - relationshipName: identityPermissionHierarchies
+        - relationshipName: identityRolePermissions
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityPermissionHierarchiesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityPermissionHierarchiesAggExp
+  operand:
+    object:
+      aggregatedType: IdentityPermissionHierarchies
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: parentPermissionId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityPermissionHierarchiesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityPermissionHierarchiesOrderByExp
+  operand:
+    object:
+      orderedType: IdentityPermissionHierarchies
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: parentPermissionId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: identityAccessPermission
+        - relationshipName: identityPermissionHierarchy
+  graphql:
+    expressionTypeName: IdentityPermissionHierarchiesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityPermissionHierarchies
+  objectType: IdentityPermissionHierarchies
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_permission_hierarchies
+  filterExpressionType: IdentityPermissionHierarchiesBoolExp
+  aggregateExpression: IdentityPermissionHierarchiesAggExp
+  orderByExpression: IdentityPermissionHierarchiesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityPermissionHierarchies
+      subscription:
+        rootField: identityPermissionHierarchies
+    selectUniques:
+      - queryRootField: identityPermissionHierarchiesByName
+        uniqueIdentifier:
+          - name
+        subscription:
+          rootField: identityPermissionHierarchiesByName
+      - queryRootField: identityPermissionHierarchiesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: identityPermissionHierarchiesById
+    filterInputTypeName: IdentityPermissionHierarchiesFilterInput
+    aggregate:
+      queryRootField: identityPermissionHierarchiesAggregate
+      subscription:
+        rootField: identityPermissionHierarchiesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityPermissionHierarchies
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityAccessPermission
+  sourceType: IdentityPermissionHierarchies
+  target:
+    model:
+      name: IdentityAccessPermissions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: name
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityPermissionHierarchy
+  sourceType: IdentityPermissionHierarchies
+  target:
+    model:
+      name: IdentityPermissionHierarchies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: parentPermissionId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityPermissionHierarchies
+  sourceType: IdentityPermissionHierarchies
+  target:
+    model:
+      name: IdentityPermissionHierarchies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityPermissionHierarchiesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: parentPermissionId
+  graphql:
+    aggregateFieldName: identityPermissionHierarchiesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityRolePermissions
+  sourceType: IdentityPermissionHierarchies
+  target:
+    model:
+      name: IdentityRolePermissions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityRolePermissionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: accessPermissionId
+  graphql:
+    aggregateFieldName: identityRolePermissionsAggregate
+

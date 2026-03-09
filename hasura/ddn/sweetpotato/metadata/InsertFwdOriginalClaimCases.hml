@@ -1,0 +1,139 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdOriginalClaimCasesObject
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: exclusionInfo
+      type: String_1
+    - name: icuAdmissionDate
+      type: Timestamptz
+    - name: icuDischargeDate
+      type: Timestamptz
+    - name: isSurgery
+      type: Boolean_1
+    - name: policyNote
+      type: String_1
+    - name: relatedToAccident
+      type: Boolean_1
+  graphql:
+    typeName: InsertFwdOriginalClaimCasesObject
+    inputTypeName: InsertFwdOriginalClaimCasesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_original_claim_cases_object
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        exclusionInfo:
+          column:
+            name: exclusion_info
+        icuAdmissionDate:
+          column:
+            name: icu_admission_date
+        icuDischargeDate:
+          column:
+            name: icu_discharge_date
+        isSurgery:
+          column:
+            name: is_surgery
+        policyNote:
+          column:
+            name: policy_note
+        relatedToAccident:
+          column:
+            name: related_to_accident
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdOriginalClaimCasesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - exclusionInfo
+          - icuAdmissionDate
+          - icuDischargeDate
+          - isSurgery
+          - policyNote
+          - relatedToAccident
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdOriginalClaimCasesResponse
+  description: Responses from the 'insert_fwd_original_claim_cases' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdOriginalClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdOriginalClaimCasesResponse
+    inputTypeName: InsertFwdOriginalClaimCasesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_original_claim_cases_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdOriginalClaimCasesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdOriginalClaimCases
+  outputType: InsertFwdOriginalClaimCasesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdOriginalClaimCasesObject!]!"
+    - name: postCheck
+      type: FwdOriginalClaimCasesBoolExp
+      description: Insert permission predicate over the 'fwd_original_claim_cases'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_original_claim_cases
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdOriginalClaimCases
+    rootFieldKind: Mutation
+  description: Insert into the fwd_original_claim_cases table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdOriginalClaimCases
+  permissions:
+    - role: admin
+      allowExecution: true
+

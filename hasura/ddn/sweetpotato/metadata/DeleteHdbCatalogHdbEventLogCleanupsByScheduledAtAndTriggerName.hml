@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameResponse
+  description: Responses from the
+    'delete_hdb_catalog_hdb_event_log_cleanups_by_scheduled_at_and_trigger_name'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HdbCatalogHdbEventLogCleanups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameResponse
+    inputTypeName: DeleteHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hdb_catalog_hdb_event_log_cleanups_by_scheduled_at_and_trigger_name_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerName
+  outputType: DeleteHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameResponse!
+  arguments:
+    - name: keyScheduledAt
+      type: Timestamp!
+    - name: keyTriggerName
+      type: String_1!
+    - name: preCheck
+      type: HdbCatalogHdbEventLogCleanupsBoolExp
+      description: Delete permission predicate over the
+        'hdb_catalog_hdb_event_log_cleanups' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hdb_catalog_hdb_event_log_cleanups_by_scheduled_at_and_trigger_name
+    argumentMapping:
+      keyScheduledAt: key_scheduled_at
+      keyTriggerName: key_trigger_name
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerName
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hdb_catalog_hdb_event_log_cleanups'
+    collection using the 'scheduled_at' and 'trigger_name' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerName
+  permissions:
+    - role: admin
+      allowExecution: true
+

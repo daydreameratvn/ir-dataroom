@@ -1,0 +1,270 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityPresences
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deviceId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: ip
+      type: String_1!
+    - name: lastPresentAt
+      type: Timestamptz!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: IdentityPresences
+    inputTypeName: IdentityPresencesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_presences
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deviceId:
+          column:
+            name: device_id
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        ip:
+          column:
+            name: ip
+        lastPresentAt:
+          column:
+            name: last_present_at
+        updatedAt:
+          column:
+            name: updated_at
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityPresences
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deviceId
+          - id
+          - insuredCertificateId
+          - ip
+          - lastPresentAt
+          - updatedAt
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityPresencesBoolExp
+  operand:
+    object:
+      type: IdentityPresences
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deviceId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: ip
+          booleanExpressionType: TextBoolExp
+        - fieldName: lastPresentAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityUserDevice
+        - relationshipName: insuredCertificate
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityPresencesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityPresencesAggExp
+  operand:
+    object:
+      aggregatedType: IdentityPresences
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deviceId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: ip
+          aggregateExpression: TextAggExp
+        - fieldName: lastPresentAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityPresencesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityPresencesOrderByExp
+  operand:
+    object:
+      orderedType: IdentityPresences
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deviceId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: ip
+          orderByExpression: String1OrderByExp
+        - fieldName: lastPresentAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUserDevice
+        - relationshipName: insuredCertificate
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: IdentityPresencesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityPresences
+  objectType: IdentityPresences
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_presences
+  filterExpressionType: IdentityPresencesBoolExp
+  aggregateExpression: IdentityPresencesAggExp
+  orderByExpression: IdentityPresencesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityPresences
+      subscription:
+        rootField: identityPresences
+    selectUniques:
+      - queryRootField: identityPresencesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: identityPresencesById
+      - queryRootField: identityPresencesByUserId
+        uniqueIdentifier:
+          - userId
+        subscription:
+          rootField: identityPresencesByUserId
+    filterInputTypeName: IdentityPresencesFilterInput
+    aggregate:
+      queryRootField: identityPresencesAggregate
+      subscription:
+        rootField: identityPresencesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityPresences
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserDevice
+  sourceType: IdentityPresences
+  target:
+    model:
+      name: IdentityUserDevices
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: deviceId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: IdentityPresences
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: IdentityPresences
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

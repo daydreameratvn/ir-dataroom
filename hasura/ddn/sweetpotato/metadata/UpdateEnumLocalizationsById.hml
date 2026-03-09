@@ -1,0 +1,142 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateEnumLocalizationsByIdUpdateColumns
+  description: Update the columns of the 'enum_localizations' collection
+  fields:
+    - name: enumTranslation
+      type: UpdateColumnEnumLocalizationsEnumTranslation
+      description: Update the 'enum_translation' column in the 'enum_localizations'
+        collection.
+    - name: enumType
+      type: UpdateColumnEnumLocalizationsEnumType
+      description: Update the 'enum_type' column in the 'enum_localizations' collection.
+    - name: enumValue
+      type: UpdateColumnEnumLocalizationsEnumValue
+      description: Update the 'enum_value' column in the 'enum_localizations' collection.
+    - name: id
+      type: UpdateColumnEnumLocalizationsId
+      description: Update the 'id' column in the 'enum_localizations' collection.
+    - name: locale
+      type: UpdateColumnEnumLocalizationsLocale
+      description: Update the 'locale' column in the 'enum_localizations' collection.
+  graphql:
+    typeName: UpdateEnumLocalizationsByIdUpdateColumns
+    inputTypeName: UpdateEnumLocalizationsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_enum_localizations_by_id_update_columns
+      fieldMapping:
+        enumTranslation:
+          column:
+            name: enum_translation
+        enumType:
+          column:
+            name: enum_type
+        enumValue:
+          column:
+            name: enum_value
+        id:
+          column:
+            name: id
+        locale:
+          column:
+            name: locale
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateEnumLocalizationsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - enumTranslation
+          - enumType
+          - enumValue
+          - id
+          - locale
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateEnumLocalizationsByIdResponse
+  description: Responses from the 'update_enum_localizations_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[EnumLocalizations!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateEnumLocalizationsByIdResponse
+    inputTypeName: UpdateEnumLocalizationsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_enum_localizations_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateEnumLocalizationsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateEnumLocalizationsById
+  outputType: UpdateEnumLocalizationsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: EnumLocalizationsBoolExp
+      description: Update permission post-condition predicate over the
+        'enum_localizations' collection
+    - name: preCheck
+      type: EnumLocalizationsBoolExp
+      description: Update permission pre-condition predicate over the
+        'enum_localizations' collection
+    - name: updateColumns
+      type: UpdateEnumLocalizationsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_enum_localizations_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateEnumLocalizationsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'enum_localizations' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateEnumLocalizationsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

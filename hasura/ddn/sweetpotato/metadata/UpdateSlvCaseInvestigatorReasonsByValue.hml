@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnSlvCaseInvestigatorReasonsComment
+  description: Update the 'comment' column in the 'slv_case_investigator_reasons' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnSlvCaseInvestigatorReasonsComment
+    inputTypeName: UpdateColumnSlvCaseInvestigatorReasonsCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_slv_case_investigator_reasons_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnSlvCaseInvestigatorReasonsComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnSlvCaseInvestigatorReasonsValue
+  description: Update the 'value' column in the 'slv_case_investigator_reasons' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnSlvCaseInvestigatorReasonsValue
+    inputTypeName: UpdateColumnSlvCaseInvestigatorReasonsValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_slv_case_investigator_reasons_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnSlvCaseInvestigatorReasonsValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateSlvCaseInvestigatorReasonsByValueUpdateColumns
+  description: Update the columns of the 'slv_case_investigator_reasons' collection
+  fields:
+    - name: comment
+      type: UpdateColumnSlvCaseInvestigatorReasonsComment
+      description: Update the 'comment' column in the 'slv_case_investigator_reasons'
+        collection.
+    - name: value
+      type: UpdateColumnSlvCaseInvestigatorReasonsValue
+      description: Update the 'value' column in the 'slv_case_investigator_reasons'
+        collection.
+  graphql:
+    typeName: UpdateSlvCaseInvestigatorReasonsByValueUpdateColumns
+    inputTypeName: UpdateSlvCaseInvestigatorReasonsByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_slv_case_investigator_reasons_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateSlvCaseInvestigatorReasonsByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateSlvCaseInvestigatorReasonsByValueResponse
+  description: Responses from the 'update_slv_case_investigator_reasons_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvCaseInvestigatorReasons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateSlvCaseInvestigatorReasonsByValueResponse
+    inputTypeName: UpdateSlvCaseInvestigatorReasonsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_slv_case_investigator_reasons_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateSlvCaseInvestigatorReasonsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateSlvCaseInvestigatorReasonsByValue
+  outputType: UpdateSlvCaseInvestigatorReasonsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: SlvCaseInvestigatorReasonsBoolExp
+      description: Update permission post-condition predicate over the
+        'slv_case_investigator_reasons' collection
+    - name: preCheck
+      type: SlvCaseInvestigatorReasonsBoolExp
+      description: Update permission pre-condition predicate over the
+        'slv_case_investigator_reasons' collection
+    - name: updateColumns
+      type: UpdateSlvCaseInvestigatorReasonsByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_slv_case_investigator_reasons_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateSlvCaseInvestigatorReasonsByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'slv_case_investigator_reasons' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateSlvCaseInvestigatorReasonsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

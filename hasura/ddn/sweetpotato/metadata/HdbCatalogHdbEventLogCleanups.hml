@@ -1,0 +1,187 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HdbCatalogHdbEventLogCleanups
+  fields:
+    - name: deletedEventInvocationLogs
+      type: Int32
+    - name: deletedEventLogs
+      type: Int32
+    - name: id
+      type: String_1!
+    - name: scheduledAt
+      type: Timestamp!
+    - name: status
+      type: String_1!
+    - name: triggerName
+      type: String_1!
+  graphql:
+    typeName: HdbCatalogHdbEventLogCleanups
+    inputTypeName: HdbCatalogHdbEventLogCleanupsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hdb_catalog_hdb_event_log_cleanups
+      fieldMapping:
+        deletedEventInvocationLogs:
+          column:
+            name: deleted_event_invocation_logs
+        deletedEventLogs:
+          column:
+            name: deleted_event_logs
+        id:
+          column:
+            name: id
+        scheduledAt:
+          column:
+            name: scheduled_at
+        status:
+          column:
+            name: status
+        triggerName:
+          column:
+            name: trigger_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HdbCatalogHdbEventLogCleanups
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - deletedEventInvocationLogs
+          - deletedEventLogs
+          - id
+          - scheduledAt
+          - status
+          - triggerName
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HdbCatalogHdbEventLogCleanupsBoolExp
+  operand:
+    object:
+      type: HdbCatalogHdbEventLogCleanups
+      comparableFields:
+        - fieldName: deletedEventInvocationLogs
+          booleanExpressionType: Int4BoolExp
+        - fieldName: deletedEventLogs
+          booleanExpressionType: Int4BoolExp
+        - fieldName: id
+          booleanExpressionType: TextBoolExp
+        - fieldName: scheduledAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: triggerName
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HdbCatalogHdbEventLogCleanupsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HdbCatalogHdbEventLogCleanupsAggExp
+  operand:
+    object:
+      aggregatedType: HdbCatalogHdbEventLogCleanups
+      aggregatableFields:
+        - fieldName: deletedEventInvocationLogs
+          aggregateExpression: Int4AggExp
+        - fieldName: deletedEventLogs
+          aggregateExpression: Int4AggExp
+        - fieldName: id
+          aggregateExpression: TextAggExp
+        - fieldName: scheduledAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: triggerName
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HdbCatalogHdbEventLogCleanupsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HdbCatalogHdbEventLogCleanupsOrderByExp
+  operand:
+    object:
+      orderedType: HdbCatalogHdbEventLogCleanups
+      orderableFields:
+        - fieldName: deletedEventInvocationLogs
+          orderByExpression: Int32OrderByExp
+        - fieldName: deletedEventLogs
+          orderByExpression: Int32OrderByExp
+        - fieldName: id
+          orderByExpression: String1OrderByExp
+        - fieldName: scheduledAt
+          orderByExpression: TimestampOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: triggerName
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HdbCatalogHdbEventLogCleanupsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HdbCatalogHdbEventLogCleanups
+  objectType: HdbCatalogHdbEventLogCleanups
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hdb_catalog_hdb_event_log_cleanups
+  filterExpressionType: HdbCatalogHdbEventLogCleanupsBoolExp
+  aggregateExpression: HdbCatalogHdbEventLogCleanupsAggExp
+  orderByExpression: HdbCatalogHdbEventLogCleanupsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hdbCatalogHdbEventLogCleanups
+      subscription:
+        rootField: hdbCatalogHdbEventLogCleanups
+    selectUniques:
+      - queryRootField: hdbCatalogHdbEventLogCleanupsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hdbCatalogHdbEventLogCleanupsById
+      - queryRootField: hdbCatalogHdbEventLogCleanupsByHdbEventLogCleanupsTriggerNameScheduledAtKey
+        uniqueIdentifier:
+          - scheduledAt
+          - triggerName
+        subscription:
+          rootField: hdbCatalogHdbEventLogCleanupsByHdbEventLogCleanupsTriggerNameScheduledAtKey
+    filterInputTypeName: HdbCatalogHdbEventLogCleanupsFilterInput
+    aggregate:
+      queryRootField: hdbCatalogHdbEventLogCleanupsAggregate
+      subscription:
+        rootField: hdbCatalogHdbEventLogCleanupsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HdbCatalogHdbEventLogCleanups
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

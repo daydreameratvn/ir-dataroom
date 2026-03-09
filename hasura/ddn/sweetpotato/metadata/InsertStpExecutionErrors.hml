@@ -1,0 +1,144 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertStpExecutionErrorsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: errorCode
+      type: String_1!
+    - name: extensions
+      type: Json
+    - name: id
+      type: Uuid
+    - name: message
+      type: String_1
+    - name: stpExecutionId
+      type: Uuid!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertStpExecutionErrorsObject
+    inputTypeName: InsertStpExecutionErrorsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_stp_execution_errors_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        errorCode:
+          column:
+            name: error_code
+        extensions:
+          column:
+            name: extensions
+        id:
+          column:
+            name: id
+        message:
+          column:
+            name: message
+        stpExecutionId:
+          column:
+            name: stp_execution_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertStpExecutionErrorsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - errorCode
+          - extensions
+          - id
+          - message
+          - stpExecutionId
+          - type
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertStpExecutionErrorsResponse
+  description: Responses from the 'insert_stp_execution_errors' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpExecutionErrors!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertStpExecutionErrorsResponse
+    inputTypeName: InsertStpExecutionErrorsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_stp_execution_errors_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertStpExecutionErrorsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertStpExecutionErrors
+  outputType: InsertStpExecutionErrorsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertStpExecutionErrorsObject!]!"
+    - name: postCheck
+      type: StpExecutionErrorsBoolExp
+      description: Insert permission predicate over the 'stp_execution_errors' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_stp_execution_errors
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertStpExecutionErrors
+    rootFieldKind: Mutation
+  description: Insert into the stp_execution_errors table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertStpExecutionErrors
+  permissions:
+    - role: admin
+      allowExecution: true
+

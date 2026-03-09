@@ -1,0 +1,144 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertNonJetReasonsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insurerId
+      type: Uuid!
+    - name: needExplanation
+      type: Boolean_1
+    - name: planId
+      type: Uuid
+    - name: reason
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertNonJetReasonsObject
+    inputTypeName: InsertNonJetReasonsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_non_jet_reasons_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        needExplanation:
+          column:
+            name: need_explanation
+        planId:
+          column:
+            name: plan_id
+        reason:
+          column:
+            name: reason
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertNonJetReasonsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - insurerId
+          - needExplanation
+          - planId
+          - reason
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertNonJetReasonsResponse
+  description: Responses from the 'insert_non_jet_reasons' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[NonJetReasons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertNonJetReasonsResponse
+    inputTypeName: InsertNonJetReasonsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_non_jet_reasons_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertNonJetReasonsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertNonJetReasons
+  outputType: InsertNonJetReasonsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertNonJetReasonsObject!]!"
+    - name: postCheck
+      type: NonJetReasonsBoolExp
+      description: Insert permission predicate over the 'non_jet_reasons' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_non_jet_reasons
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertNonJetReasons
+    rootFieldKind: Mutation
+  description: Insert into the non_jet_reasons table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertNonJetReasons
+  permissions:
+    - role: admin
+      allowExecution: true
+

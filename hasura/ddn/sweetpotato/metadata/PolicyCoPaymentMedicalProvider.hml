@@ -1,0 +1,244 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyCoPaymentMedicalProvider
+  description: Quan hệ giữa đồng chi trả và Cơ sở y tế
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: medicalProviderId
+      type: Uuid!
+    - name: policyCoPaymentId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PolicyCoPaymentMedicalProvider
+    inputTypeName: PolicyCoPaymentMedicalProviderInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_co_payment_medical_provider
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        policyCoPaymentId:
+          column:
+            name: policy_co_payment_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyCoPaymentMedicalProvider
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - medicalProviderId
+          - policyCoPaymentId
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyCoPaymentMedicalProviderBoolExp
+  operand:
+    object:
+      type: PolicyCoPaymentMedicalProvider
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyCoPaymentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProvider
+        - relationshipName: policyCoPayment
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyCoPaymentMedicalProviderBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyCoPaymentMedicalProviderAggExp
+  operand:
+    object:
+      aggregatedType: PolicyCoPaymentMedicalProvider
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: policyCoPaymentId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyCoPaymentMedicalProviderAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyCoPaymentMedicalProviderOrderByExp
+  operand:
+    object:
+      orderedType: PolicyCoPaymentMedicalProvider
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyCoPaymentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: mpMedicalProvider
+        - relationshipName: policyCoPayment
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: PolicyCoPaymentMedicalProviderOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyCoPaymentMedicalProvider
+  objectType: PolicyCoPaymentMedicalProvider
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_co_payment_medical_provider
+  filterExpressionType: PolicyCoPaymentMedicalProviderBoolExp
+  aggregateExpression: PolicyCoPaymentMedicalProviderAggExp
+  orderByExpression: PolicyCoPaymentMedicalProviderOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyCoPaymentMedicalProvider
+      subscription:
+        rootField: policyCoPaymentMedicalProvider
+    selectUniques:
+      - queryRootField: policyCoPaymentMedicalProviderByPolicyCoPaymentMedicalProviderPkey
+        uniqueIdentifier:
+          - medicalProviderId
+          - policyCoPaymentId
+        subscription:
+          rootField: policyCoPaymentMedicalProviderByPolicyCoPaymentMedicalProviderPkey
+    filterInputTypeName: PolicyCoPaymentMedicalProviderFilterInput
+    aggregate:
+      queryRootField: policyCoPaymentMedicalProviderAggregate
+      subscription:
+        rootField: policyCoPaymentMedicalProviderAggregate
+  description: Quan hệ giữa đồng chi trả và Cơ sở y tế
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyCoPaymentMedicalProvider
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: PolicyCoPaymentMedicalProvider
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPayment
+  sourceType: PolicyCoPaymentMedicalProvider
+  target:
+    model:
+      name: PolicyCoPayments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyCoPaymentId
+      target:
+        modelField:
+          - fieldName: policyCoPaymentId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: PolicyCoPaymentMedicalProvider
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

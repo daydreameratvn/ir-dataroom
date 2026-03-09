@@ -1,0 +1,175 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseDetailExpenseItemsObject
+  fields:
+    - name: amount
+      type: Bigdecimal
+    - name: claimCaseDetailId
+      type: Uuid
+    - name: claimDocumentGroupId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: isNonPaid
+      type: Boolean_1
+    - name: isSelected
+      type: Boolean_1
+    - name: parentId
+      type: Uuid
+    - name: refCode
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertClaimCaseDetailExpenseItemsObject
+    inputTypeName: InsertClaimCaseDetailExpenseItemsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_detail_expense_items_object
+      fieldMapping:
+        amount:
+          column:
+            name: amount
+        claimCaseDetailId:
+          column:
+            name: claim_case_detail_id
+        claimDocumentGroupId:
+          column:
+            name: claim_document_group_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        isNonPaid:
+          column:
+            name: is_non_paid
+        isSelected:
+          column:
+            name: is_selected
+        parentId:
+          column:
+            name: parent_id
+        refCode:
+          column:
+            name: ref_code
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseDetailExpenseItemsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - amount
+          - claimCaseDetailId
+          - claimDocumentGroupId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - isNonPaid
+          - isSelected
+          - parentId
+          - refCode
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseDetailExpenseItemsResponse
+  description: Responses from the 'insert_claim_case_detail_expense_items' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseDetailExpenseItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCaseDetailExpenseItemsResponse
+    inputTypeName: InsertClaimCaseDetailExpenseItemsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_detail_expense_items_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseDetailExpenseItemsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCaseDetailExpenseItems
+  outputType: InsertClaimCaseDetailExpenseItemsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCaseDetailExpenseItemsObject!]!"
+    - name: postCheck
+      type: ClaimCaseDetailExpenseItemsBoolExp
+      description: Insert permission predicate over the
+        'claim_case_detail_expense_items' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_case_detail_expense_items
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCaseDetailExpenseItems
+    rootFieldKind: Mutation
+  description: Insert into the claim_case_detail_expense_items table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCaseDetailExpenseItems
+  permissions:
+    - role: admin
+      allowExecution: true
+

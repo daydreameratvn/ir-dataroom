@@ -1,0 +1,226 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornBiomarkers
+  description: Chỉ số sinh học
+  fields:
+    - name: categoryCode
+      type: String_1!
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: name
+      type: String_1!
+    - name: reference
+      type: Json!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: HawthornBiomarkers
+    inputTypeName: HawthornBiomarkersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_biomarkers
+      fieldMapping:
+        categoryCode:
+          column:
+            name: category_code
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        name:
+          column:
+            name: name
+        reference:
+          column:
+            name: reference
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornBiomarkers
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - categoryCode
+          - code
+          - createdAt
+          - name
+          - reference
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornBiomarkersBoolExp
+  operand:
+    object:
+      type: HawthornBiomarkers
+      comparableFields:
+        - fieldName: categoryCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: reference
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornBiomarkerResults
+        - relationshipName: hawthornBiomarkerCategory
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornBiomarkersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornBiomarkersAggExp
+  operand:
+    object:
+      aggregatedType: HawthornBiomarkers
+      aggregatableFields:
+        - fieldName: categoryCode
+          aggregateExpression: TextAggExp
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: reference
+          aggregateExpression: JsonbAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornBiomarkersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornBiomarkersOrderByExp
+  operand:
+    object:
+      orderedType: HawthornBiomarkers
+      orderableFields:
+        - fieldName: categoryCode
+          orderByExpression: String1OrderByExp
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: reference
+          orderByExpression: JsonOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: hawthornBiomarkerCategory
+  graphql:
+    expressionTypeName: HawthornBiomarkersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornBiomarkers
+  objectType: HawthornBiomarkers
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_biomarkers
+  filterExpressionType: HawthornBiomarkersBoolExp
+  aggregateExpression: HawthornBiomarkersAggExp
+  orderByExpression: HawthornBiomarkersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornBiomarkers
+      subscription:
+        rootField: hawthornBiomarkers
+    selectUniques:
+      - queryRootField: hawthornBiomarkersByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: hawthornBiomarkersByCode
+    filterInputTypeName: HawthornBiomarkersFilterInput
+    aggregate:
+      queryRootField: hawthornBiomarkersAggregate
+      subscription:
+        rootField: hawthornBiomarkersAggregate
+  description: Chỉ số sinh học
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornBiomarkers
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornBiomarkerResults
+  sourceType: HawthornBiomarkers
+  target:
+    model:
+      name: HawthornBiomarkerResults
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornBiomarkerResultsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: code
+      target:
+        modelField:
+          - fieldName: biomarkerCode
+  graphql:
+    aggregateFieldName: hawthornBiomarkerResultsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornBiomarkerCategory
+  sourceType: HawthornBiomarkers
+  target:
+    model:
+      name: HawthornBiomarkerCategories
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: categoryCode
+      target:
+        modelField:
+          - fieldName: code
+

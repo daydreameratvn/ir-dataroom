@@ -1,0 +1,190 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePolicyCorrespondencesByIdUpdateColumns
+  description: Update the columns of the 'policy_correspondences' collection
+  fields:
+    - name: autoSend
+      type: UpdateColumnPolicyCorrespondencesAutoSend
+      description: Update the 'auto_send' column in the 'policy_correspondences' collection.
+    - name: conditions
+      type: UpdateColumnPolicyCorrespondencesConditions
+      description: Update the 'conditions' column in the 'policy_correspondences'
+        collection.
+    - name: correspondenceTemplateId
+      type: UpdateColumnPolicyCorrespondencesCorrespondenceTemplateId
+      description: Update the 'correspondence_template_id' column in the
+        'policy_correspondences' collection.
+    - name: createdAt
+      type: UpdateColumnPolicyCorrespondencesCreatedAt
+      description: Update the 'created_at' column in the 'policy_correspondences'
+        collection.
+    - name: createdBy
+      type: UpdateColumnPolicyCorrespondencesCreatedBy
+      description: Update the 'created_by' column in the 'policy_correspondences'
+        collection.
+    - name: deletedAt
+      type: UpdateColumnPolicyCorrespondencesDeletedAt
+      description: Update the 'deleted_at' column in the 'policy_correspondences'
+        collection.
+    - name: id
+      type: UpdateColumnPolicyCorrespondencesId
+      description: Update the 'id' column in the 'policy_correspondences' collection.
+    - name: policyId
+      type: UpdateColumnPolicyCorrespondencesPolicyId
+      description: Update the 'policy_id' column in the 'policy_correspondences' collection.
+    - name: sendWhen
+      type: UpdateColumnPolicyCorrespondencesSendWhen
+      description: Update the 'send_when' column in the 'policy_correspondences' collection.
+    - name: updatedAt
+      type: UpdateColumnPolicyCorrespondencesUpdatedAt
+      description: Update the 'updated_at' column in the 'policy_correspondences'
+        collection.
+    - name: updatedBy
+      type: UpdateColumnPolicyCorrespondencesUpdatedBy
+      description: Update the 'updated_by' column in the 'policy_correspondences'
+        collection.
+  graphql:
+    typeName: UpdatePolicyCorrespondencesByIdUpdateColumns
+    inputTypeName: UpdatePolicyCorrespondencesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_policy_correspondences_by_id_update_columns
+      fieldMapping:
+        autoSend:
+          column:
+            name: auto_send
+        conditions:
+          column:
+            name: conditions
+        correspondenceTemplateId:
+          column:
+            name: correspondence_template_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        sendWhen:
+          column:
+            name: send_when
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePolicyCorrespondencesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoSend
+          - conditions
+          - correspondenceTemplateId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - policyId
+          - sendWhen
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePolicyCorrespondencesByIdResponse
+  description: Responses from the 'update_policy_correspondences_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyCorrespondences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePolicyCorrespondencesByIdResponse
+    inputTypeName: UpdatePolicyCorrespondencesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_policy_correspondences_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePolicyCorrespondencesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePolicyCorrespondencesById
+  outputType: UpdatePolicyCorrespondencesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: PolicyCorrespondencesBoolExp
+      description: Update permission post-condition predicate over the
+        'policy_correspondences' collection
+    - name: preCheck
+      type: PolicyCorrespondencesBoolExp
+      description: Update permission pre-condition predicate over the
+        'policy_correspondences' collection
+    - name: updateColumns
+      type: UpdatePolicyCorrespondencesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_policy_correspondences_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePolicyCorrespondencesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'policy_correspondences' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePolicyCorrespondencesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

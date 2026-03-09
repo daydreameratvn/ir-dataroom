@@ -1,0 +1,595 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutPaymentRequests
+  fields:
+    - name: antiMoneyLaunderingStatus
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: paidAt
+      type: Timestamptz
+    - name: paidById
+      type: Uuid
+    - name: paymentAmount
+      type: Bigdecimal!
+    - name: paymentMethod
+      type: String_1
+    - name: payoutType
+      type: String_1
+    - name: refCode
+      type: String_1
+    - name: refData
+      type: Json!
+    - name: remark
+      type: String_1
+    - name: source
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: type
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PayoutPaymentRequests
+    inputTypeName: PayoutPaymentRequestsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_payment_requests
+      fieldMapping:
+        antiMoneyLaunderingStatus:
+          column:
+            name: anti_money_laundering_status
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        paidAt:
+          column:
+            name: paid_at
+        paidById:
+          column:
+            name: paid_by_id
+        paymentAmount:
+          column:
+            name: payment_amount
+        paymentMethod:
+          column:
+            name: payment_method
+        payoutType:
+          column:
+            name: payout_type
+        refCode:
+          column:
+            name: ref_code
+        refData:
+          column:
+            name: ref_data
+        remark:
+          column:
+            name: remark
+        source:
+          column:
+            name: source
+        status:
+          column:
+            name: status
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutPaymentRequests
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - antiMoneyLaunderingStatus
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - paidAt
+          - paidById
+          - paymentAmount
+          - paymentMethod
+          - payoutType
+          - refCode
+          - refData
+          - remark
+          - source
+          - status
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutPaymentRequestsBoolExp
+  operand:
+    object:
+      type: PayoutPaymentRequests
+      comparableFields:
+        - fieldName: antiMoneyLaunderingStatus
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paidAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: paidById
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paymentAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: paymentMethod
+          booleanExpressionType: TextBoolExp
+        - fieldName: payoutType
+          booleanExpressionType: TextBoolExp
+        - fieldName: refCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: refData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: remark
+          booleanExpressionType: TextBoolExp
+        - fieldName: source
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: payoutActionLogs
+        - relationshipName: payoutBeneficiaryBankAccounts
+        - relationshipName: payoutBeneficiaryPapers
+        - relationshipName: payoutPaymentRequestItems
+        - relationshipName: payoutAntiMoneyLaunderingStatus
+        - relationshipName: identityUser
+        - relationshipName: identityUserByPaidById
+        - relationshipName: payoutPaymentMethod
+        - relationshipName: payoutPayoutType
+        - relationshipName: payoutPaymentRequestSource
+        - relationshipName: payoutPaymentRequestStatus
+        - relationshipName: payoutPaymentRequestType
+        - relationshipName: payoutTransactions
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutPaymentRequestsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutPaymentRequestsAggExp
+  operand:
+    object:
+      aggregatedType: PayoutPaymentRequests
+      aggregatableFields:
+        - fieldName: antiMoneyLaunderingStatus
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: paidAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: paidById
+          aggregateExpression: UuidAggExp
+        - fieldName: paymentAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: paymentMethod
+          aggregateExpression: TextAggExp
+        - fieldName: payoutType
+          aggregateExpression: TextAggExp
+        - fieldName: refCode
+          aggregateExpression: TextAggExp
+        - fieldName: refData
+          aggregateExpression: JsonbAggExp
+        - fieldName: remark
+          aggregateExpression: TextAggExp
+        - fieldName: source
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutPaymentRequestsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutPaymentRequestsOrderByExp
+  operand:
+    object:
+      orderedType: PayoutPaymentRequests
+      orderableFields:
+        - fieldName: antiMoneyLaunderingStatus
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: paidAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: paidById
+          orderByExpression: UuidOrderByExp
+        - fieldName: paymentAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: paymentMethod
+          orderByExpression: String1OrderByExp
+        - fieldName: payoutType
+          orderByExpression: String1OrderByExp
+        - fieldName: refCode
+          orderByExpression: String1OrderByExp
+        - fieldName: refData
+          orderByExpression: JsonOrderByExp
+        - fieldName: remark
+          orderByExpression: String1OrderByExp
+        - fieldName: source
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: payoutAntiMoneyLaunderingStatus
+        - relationshipName: identityUser
+        - relationshipName: identityUserByPaidById
+        - relationshipName: payoutPaymentMethod
+        - relationshipName: payoutPayoutType
+        - relationshipName: payoutPaymentRequestSource
+        - relationshipName: payoutPaymentRequestStatus
+        - relationshipName: payoutPaymentRequestType
+  graphql:
+    expressionTypeName: PayoutPaymentRequestsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutPaymentRequests
+  objectType: PayoutPaymentRequests
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_payment_requests
+  filterExpressionType: PayoutPaymentRequestsBoolExp
+  aggregateExpression: PayoutPaymentRequestsAggExp
+  orderByExpression: PayoutPaymentRequestsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutPaymentRequests
+      subscription:
+        rootField: payoutPaymentRequests
+    selectUniques:
+      - queryRootField: payoutPaymentRequestsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: payoutPaymentRequestsById
+      - queryRootField: payoutPaymentRequestsByPaymentRequestsTypeSourceRefCodeKey
+        uniqueIdentifier:
+          - refCode
+          - source
+          - type
+        subscription:
+          rootField: payoutPaymentRequestsByPaymentRequestsTypeSourceRefCodeKey
+    filterInputTypeName: PayoutPaymentRequestsFilterInput
+    aggregate:
+      queryRootField: payoutPaymentRequestsAggregate
+      subscription:
+        rootField: payoutPaymentRequestsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutPaymentRequests
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutActionLogs
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: PayoutActionLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutActionLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paymentRequestId
+  graphql:
+    aggregateFieldName: payoutActionLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutBeneficiaryBankAccounts
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: PayoutBeneficiaryBankAccounts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutBeneficiaryBankAccountsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paymentRequestId
+  graphql:
+    aggregateFieldName: payoutBeneficiaryBankAccountsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutBeneficiaryPapers
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: PayoutBeneficiaryPapers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutBeneficiaryPapersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paymentRequestId
+  graphql:
+    aggregateFieldName: payoutBeneficiaryPapersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestItems
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: PayoutPaymentRequestItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPaymentRequestItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paymentRequestId
+  graphql:
+    aggregateFieldName: payoutPaymentRequestItemsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutAntiMoneyLaunderingStatus
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: PayoutAntiMoneyLaunderingStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: antiMoneyLaunderingStatus
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByPaidById
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paidById
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentMethod
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: PayoutPaymentMethods
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentMethod
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPayoutType
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: PayoutPayoutTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: payoutType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestSource
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: PayoutPaymentRequestSources
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: source
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestStatus
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: PayoutPaymentRequestStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestType
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: PayoutPaymentRequestTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutTransactions
+  sourceType: PayoutPaymentRequests
+  target:
+    model:
+      name: PayoutTransactions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutTransactionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: paymentRequestId
+  graphql:
+    aggregateFieldName: payoutTransactionsAggregate
+

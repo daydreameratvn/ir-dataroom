@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutPayoutTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PayoutPayoutTypes
+    inputTypeName: PayoutPayoutTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_payout_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutPayoutTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutPayoutTypesBoolExp
+  operand:
+    object:
+      type: PayoutPayoutTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: payoutPaymentRequestItems
+        - relationshipName: payoutPaymentRequests
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutPayoutTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutPayoutTypesAggExp
+  operand:
+    object:
+      aggregatedType: PayoutPayoutTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutPayoutTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutPayoutTypesOrderByExp
+  operand:
+    object:
+      orderedType: PayoutPayoutTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PayoutPayoutTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutPayoutTypes
+  objectType: PayoutPayoutTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_payout_types
+  filterExpressionType: PayoutPayoutTypesBoolExp
+  aggregateExpression: PayoutPayoutTypesAggExp
+  orderByExpression: PayoutPayoutTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutPayoutTypes
+      subscription:
+        rootField: payoutPayoutTypes
+    selectUniques:
+      - queryRootField: payoutPayoutTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: payoutPayoutTypesByValue
+    filterInputTypeName: PayoutPayoutTypesFilterInput
+    aggregate:
+      queryRootField: payoutPayoutTypesAggregate
+      subscription:
+        rootField: payoutPayoutTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutPayoutTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestItems
+  sourceType: PayoutPayoutTypes
+  target:
+    model:
+      name: PayoutPaymentRequestItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPaymentRequestItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: payoutType
+  graphql:
+    aggregateFieldName: payoutPaymentRequestItemsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequests
+  sourceType: PayoutPayoutTypes
+  target:
+    model:
+      name: PayoutPaymentRequests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPaymentRequestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: payoutType
+  graphql:
+    aggregateFieldName: payoutPaymentRequestsAggregate
+

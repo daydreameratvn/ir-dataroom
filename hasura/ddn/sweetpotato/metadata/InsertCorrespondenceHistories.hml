@@ -1,0 +1,229 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceHistoriesObject
+  fields:
+    - name: attachments
+      type: Json
+    - name: autoSend
+      type: Boolean_1
+    - name: claimCaseId
+      type: Uuid
+    - name: companyCorrespondenceId
+      type: Uuid
+    - name: content
+      type: Json
+    - name: createdAt
+      type: Timestamptz
+    - name: destination
+      type: Json
+    - name: failedReason
+      type: String_1
+    - name: fromEmailAddress
+      type: String_1
+    - name: fromEmailName
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: insuranceRequestId
+      type: Uuid
+    - name: insuredCertificateId
+      type: Uuid
+    - name: message
+      type: String_1
+    - name: messageId
+      type: String_1
+    - name: phone
+      type: String_1
+    - name: policyCorrespondenceId
+      type: Uuid
+    - name: presentCaseId
+      type: Uuid
+    - name: status
+      type: String_1
+    - name: subject
+      type: String_1
+    - name: templateId
+      type: Uuid
+    - name: userId
+      type: Uuid
+  graphql:
+    typeName: InsertCorrespondenceHistoriesObject
+    inputTypeName: InsertCorrespondenceHistoriesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_histories_object
+      fieldMapping:
+        attachments:
+          column:
+            name: attachments
+        autoSend:
+          column:
+            name: auto_send
+        claimCaseId:
+          column:
+            name: claim_case_id
+        companyCorrespondenceId:
+          column:
+            name: company_correspondence_id
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        destination:
+          column:
+            name: destination
+        failedReason:
+          column:
+            name: failed_reason
+        fromEmailAddress:
+          column:
+            name: from_email_address
+        fromEmailName:
+          column:
+            name: from_email_name
+        id:
+          column:
+            name: id
+        insuranceRequestId:
+          column:
+            name: insurance_request_id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        message:
+          column:
+            name: message
+        messageId:
+          column:
+            name: message_id
+        phone:
+          column:
+            name: phone
+        policyCorrespondenceId:
+          column:
+            name: policy_correspondence_id
+        presentCaseId:
+          column:
+            name: present_case_id
+        status:
+          column:
+            name: status
+        subject:
+          column:
+            name: subject
+        templateId:
+          column:
+            name: template_id
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceHistoriesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - attachments
+          - autoSend
+          - claimCaseId
+          - companyCorrespondenceId
+          - content
+          - createdAt
+          - destination
+          - failedReason
+          - fromEmailAddress
+          - fromEmailName
+          - id
+          - insuranceRequestId
+          - insuredCertificateId
+          - message
+          - messageId
+          - phone
+          - policyCorrespondenceId
+          - presentCaseId
+          - status
+          - subject
+          - templateId
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceHistoriesResponse
+  description: Responses from the 'insert_correspondence_histories' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCorrespondenceHistoriesResponse
+    inputTypeName: InsertCorrespondenceHistoriesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_histories_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceHistoriesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCorrespondenceHistories
+  outputType: InsertCorrespondenceHistoriesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCorrespondenceHistoriesObject!]!"
+    - name: postCheck
+      type: CorrespondenceHistoriesBoolExp
+      description: Insert permission predicate over the 'correspondence_histories'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_correspondence_histories
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCorrespondenceHistories
+    rootFieldKind: Mutation
+  description: Insert into the correspondence_histories table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCorrespondenceHistories
+  permissions:
+    - role: admin
+      allowExecution: true
+

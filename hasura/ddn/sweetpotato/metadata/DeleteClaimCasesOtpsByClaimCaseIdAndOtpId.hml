@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimCasesOtpsByClaimCaseIdAndOtpIdResponse
+  description: Responses from the
+    'delete_claim_cases_otps_by_claim_case_id_and_otp_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCasesOtps!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimCasesOtpsByClaimCaseIdAndOtpIdResponse
+    inputTypeName: DeleteClaimCasesOtpsByClaimCaseIdAndOtpIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_cases_otps_by_claim_case_id_and_otp_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimCasesOtpsByClaimCaseIdAndOtpIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimCasesOtpsByClaimCaseIdAndOtpId
+  outputType: DeleteClaimCasesOtpsByClaimCaseIdAndOtpIdResponse!
+  arguments:
+    - name: keyClaimCaseId
+      type: Uuid!
+    - name: keyOtpId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimCasesOtpsBoolExp
+      description: Delete permission predicate over the 'claim_cases_otps' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_cases_otps_by_claim_case_id_and_otp_id
+    argumentMapping:
+      keyClaimCaseId: key_claim_case_id
+      keyOtpId: key_otp_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimCasesOtpsByClaimCaseIdAndOtpId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_cases_otps' collection using the
+    'claim_case_id' and 'otp_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimCasesOtpsByClaimCaseIdAndOtpId
+  permissions:
+    - role: admin
+      allowExecution: true
+

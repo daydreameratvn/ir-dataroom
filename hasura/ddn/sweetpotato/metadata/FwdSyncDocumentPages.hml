@@ -1,0 +1,233 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdSyncDocumentPages
+  fields:
+    - name: claimDocumentId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: page
+      type: Int32!
+    - name: syncDocumentId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: FwdSyncDocumentPages
+    inputTypeName: FwdSyncDocumentPagesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_sync_document_pages
+      fieldMapping:
+        claimDocumentId:
+          column:
+            name: claim_document_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        page:
+          column:
+            name: page
+        syncDocumentId:
+          column:
+            name: sync_document_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdSyncDocumentPages
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimDocumentId
+          - createdAt
+          - deletedAt
+          - id
+          - page
+          - syncDocumentId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdSyncDocumentPagesBoolExp
+  operand:
+    object:
+      type: FwdSyncDocumentPages
+      comparableFields:
+        - fieldName: claimDocumentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: page
+          booleanExpressionType: Int4BoolExp
+        - fieldName: syncDocumentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimDocument
+        - relationshipName: fwdSyncDocument
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdSyncDocumentPagesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdSyncDocumentPagesAggExp
+  operand:
+    object:
+      aggregatedType: FwdSyncDocumentPages
+      aggregatableFields:
+        - fieldName: claimDocumentId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: page
+          aggregateExpression: Int4AggExp
+        - fieldName: syncDocumentId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdSyncDocumentPagesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdSyncDocumentPagesOrderByExp
+  operand:
+    object:
+      orderedType: FwdSyncDocumentPages
+      orderableFields:
+        - fieldName: claimDocumentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: page
+          orderByExpression: Int32OrderByExp
+        - fieldName: syncDocumentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimDocument
+        - relationshipName: fwdSyncDocument
+  graphql:
+    expressionTypeName: FwdSyncDocumentPagesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdSyncDocumentPages
+  objectType: FwdSyncDocumentPages
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_sync_document_pages
+  filterExpressionType: FwdSyncDocumentPagesBoolExp
+  aggregateExpression: FwdSyncDocumentPagesAggExp
+  orderByExpression: FwdSyncDocumentPagesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdSyncDocumentPages
+      subscription:
+        rootField: fwdSyncDocumentPages
+    selectUniques:
+      - queryRootField: fwdSyncDocumentPagesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: fwdSyncDocumentPagesById
+    filterInputTypeName: FwdSyncDocumentPagesFilterInput
+    aggregate:
+      queryRootField: fwdSyncDocumentPagesAggregate
+      subscription:
+        rootField: fwdSyncDocumentPagesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdSyncDocumentPages
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocument
+  sourceType: FwdSyncDocumentPages
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentId
+      target:
+        modelField:
+          - fieldName: claimDocumentId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdSyncDocument
+  sourceType: FwdSyncDocumentPages
+  target:
+    model:
+      name: FwdSyncDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: syncDocumentId
+      target:
+        modelField:
+          - fieldName: id
+

@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteDrugCategoriesByValueResponse
+  description: Responses from the 'delete_drug_categories_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[DrugCategories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteDrugCategoriesByValueResponse
+    inputTypeName: DeleteDrugCategoriesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_drug_categories_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteDrugCategoriesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteDrugCategoriesByValue
+  outputType: DeleteDrugCategoriesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: DrugCategoriesBoolExp
+      description: Delete permission predicate over the 'drug_categories' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_drug_categories_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteDrugCategoriesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'drug_categories' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteDrugCategoriesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

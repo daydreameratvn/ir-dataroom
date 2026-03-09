@@ -1,0 +1,261 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LabelsObjects
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: labelId
+      type: Uuid!
+    - name: labeledBy
+      type: Uuid!
+    - name: objectId
+      type: Uuid!
+    - name: unlabeledBy
+      type: Uuid
+  graphql:
+    typeName: LabelsObjects
+    inputTypeName: LabelsObjectsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: labels_objects
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        labelId:
+          column:
+            name: label_id
+        labeledBy:
+          column:
+            name: labeled_by
+        objectId:
+          column:
+            name: object_id
+        unlabeledBy:
+          column:
+            name: unlabeled_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LabelsObjects
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - labelId
+          - labeledBy
+          - objectId
+          - unlabeledBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: LabelsObjectsBoolExp
+  operand:
+    object:
+      type: LabelsObjects
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: labelId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: labeledBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: objectId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: unlabeledBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: label
+        - relationshipName: identityUser
+        - relationshipName: identityUserByUnlabeledBy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: LabelsObjectsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: LabelsObjectsAggExp
+  operand:
+    object:
+      aggregatedType: LabelsObjects
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: labelId
+          aggregateExpression: UuidAggExp
+        - fieldName: labeledBy
+          aggregateExpression: UuidAggExp
+        - fieldName: objectId
+          aggregateExpression: UuidAggExp
+        - fieldName: unlabeledBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: LabelsObjectsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: LabelsObjectsOrderByExp
+  operand:
+    object:
+      orderedType: LabelsObjects
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: labelId
+          orderByExpression: UuidOrderByExp
+        - fieldName: labeledBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: objectId
+          orderByExpression: UuidOrderByExp
+        - fieldName: unlabeledBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: label
+        - relationshipName: identityUser
+        - relationshipName: identityUserByUnlabeledBy
+  graphql:
+    expressionTypeName: LabelsObjectsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: LabelsObjects
+  objectType: LabelsObjects
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: labels_objects
+  filterExpressionType: LabelsObjectsBoolExp
+  aggregateExpression: LabelsObjectsAggExp
+  orderByExpression: LabelsObjectsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: labelsObjects
+      subscription:
+        rootField: labelsObjects
+    selectUniques:
+      - queryRootField: labelsObjectsByLabelIdObjectIdDeletedAtKey
+        uniqueIdentifier:
+          - deletedAt
+          - labelId
+          - objectId
+        subscription:
+          rootField: labelsObjectsByLabelIdObjectIdDeletedAtKey
+      - queryRootField: labelsObjectsByLabelsObjectsPkey
+        uniqueIdentifier:
+          - labelId
+          - objectId
+        subscription:
+          rootField: labelsObjectsByLabelsObjectsPkey
+    filterInputTypeName: LabelsObjectsFilterInput
+    aggregate:
+      queryRootField: labelsObjectsAggregate
+      subscription:
+        rootField: labelsObjectsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: LabelsObjects
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: label
+  sourceType: LabelsObjects
+  target:
+    model:
+      name: Labels
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: labelId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: LabelsObjects
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: labeledBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUnlabeledBy
+  sourceType: LabelsObjects
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: unlabeledBy
+      target:
+        modelField:
+          - fieldName: userId
+

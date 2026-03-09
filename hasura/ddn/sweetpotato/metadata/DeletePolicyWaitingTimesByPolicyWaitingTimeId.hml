@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicyWaitingTimesByPolicyWaitingTimeIdResponse
+  description: Responses from the
+    'delete_policy_waiting_times_by_policy_waiting_time_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyWaitingTimes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicyWaitingTimesByPolicyWaitingTimeIdResponse
+    inputTypeName: DeletePolicyWaitingTimesByPolicyWaitingTimeIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_waiting_times_by_policy_waiting_time_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicyWaitingTimesByPolicyWaitingTimeIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicyWaitingTimesByPolicyWaitingTimeId
+  outputType: DeletePolicyWaitingTimesByPolicyWaitingTimeIdResponse!
+  arguments:
+    - name: keyPolicyWaitingTimeId
+      type: Uuid!
+    - name: preCheck
+      type: PolicyWaitingTimesBoolExp
+      description: Delete permission predicate over the 'policy_waiting_times' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_waiting_times_by_policy_waiting_time_id
+    argumentMapping:
+      keyPolicyWaitingTimeId: key_policy_waiting_time_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicyWaitingTimesByPolicyWaitingTimeId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_waiting_times' collection using the
+    'policy_waiting_time_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicyWaitingTimesByPolicyWaitingTimeId
+  permissions:
+    - role: admin
+      allowExecution: true
+

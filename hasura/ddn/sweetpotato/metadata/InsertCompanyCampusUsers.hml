@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCompanyCampusUsersObject
+  fields:
+    - name: campus
+      type: String_1!
+    - name: companyId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: InsertCompanyCampusUsersObject
+    inputTypeName: InsertCompanyCampusUsersObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_company_campus_users_object
+      fieldMapping:
+        campus:
+          column:
+            name: campus
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCompanyCampusUsersObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - campus
+          - companyId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - updatedAt
+          - updatedBy
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCompanyCampusUsersResponse
+  description: Responses from the 'insert_company_campus_users' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanyCampusUsers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCompanyCampusUsersResponse
+    inputTypeName: InsertCompanyCampusUsersResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_company_campus_users_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCompanyCampusUsersResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCompanyCampusUsers
+  outputType: InsertCompanyCampusUsersResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCompanyCampusUsersObject!]!"
+    - name: postCheck
+      type: CompanyCampusUsersBoolExp
+      description: Insert permission predicate over the 'company_campus_users' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_company_campus_users
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCompanyCampusUsers
+    rootFieldKind: Mutation
+  description: Insert into the company_campus_users table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCompanyCampusUsers
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,252 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyFaqs
+  description: FAQ theo từng policy, khi có plan_id thì chỉ hiện faq cho plan_id đó
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: displayOrder
+      type: Int32!
+    - name: faqId
+      type: Int32!
+    - name: id
+      type: Uuid!
+    - name: planId
+      type: Uuid
+    - name: policyId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PolicyFaqs
+    inputTypeName: PolicyFaqsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_faqs
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        displayOrder:
+          column:
+            name: display_order
+        faqId:
+          column:
+            name: faq_id
+        id:
+          column:
+            name: id
+        planId:
+          column:
+            name: plan_id
+        policyId:
+          column:
+            name: policy_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyFaqs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - displayOrder
+          - faqId
+          - id
+          - planId
+          - policyId
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyFaqsBoolExp
+  operand:
+    object:
+      type: PolicyFaqs
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: displayOrder
+          booleanExpressionType: Int4BoolExp
+        - fieldName: faqId
+          booleanExpressionType: Int4BoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: policyPlan
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyFaqsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyFaqsAggExp
+  operand:
+    object:
+      aggregatedType: PolicyFaqs
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: displayOrder
+          aggregateExpression: Int4AggExp
+        - fieldName: faqId
+          aggregateExpression: Int4AggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyFaqsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyFaqsOrderByExp
+  operand:
+    object:
+      orderedType: PolicyFaqs
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: displayOrder
+          orderByExpression: Int32OrderByExp
+        - fieldName: faqId
+          orderByExpression: Int32OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: policyPlan
+  graphql:
+    expressionTypeName: PolicyFaqsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyFaqs
+  objectType: PolicyFaqs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_faqs
+  filterExpressionType: PolicyFaqsBoolExp
+  aggregateExpression: PolicyFaqsAggExp
+  orderByExpression: PolicyFaqsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyFaqs
+      subscription:
+        rootField: policyFaqs
+    selectUniques:
+      - queryRootField: policyFaqsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: policyFaqsById
+      - queryRootField: policyFaqsByPolicyFaqsPolicyIdFaqIdPlanIdKey
+        uniqueIdentifier:
+          - faqId
+          - planId
+          - policyId
+        subscription:
+          rootField: policyFaqsByPolicyFaqsPolicyIdFaqIdPlanIdKey
+    filterInputTypeName: PolicyFaqsFilterInput
+    aggregate:
+      queryRootField: policyFaqsAggregate
+      subscription:
+        rootField: policyFaqsAggregate
+  description: FAQ theo từng policy, khi có plan_id thì chỉ hiện faq cho plan_id đó
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyFaqs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyPlan
+  sourceType: PolicyFaqs
+  target:
+    model:
+      name: PolicyPlan
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+

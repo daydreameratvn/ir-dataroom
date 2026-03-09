@@ -1,0 +1,110 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: VArr
+  fields:
+    - name: arrayAgg
+      type: "[String_1]"
+  graphql:
+    typeName: VArr
+    inputTypeName: VArrInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: v_arr
+      fieldMapping:
+        arrayAgg:
+          column:
+            name: array_agg
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: VArr
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - arrayAgg
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: VArrBoolExp
+  operand:
+    object:
+      type: VArr
+      comparableFields: []
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: VArrBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: VArrAggExp
+  operand:
+    object:
+      aggregatedType: VArr
+      aggregatableFields: []
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: VArrAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: VArrOrderByExp
+  operand:
+    object:
+      orderedType: VArr
+      orderableFields: []
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: VArrOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: VArr
+  objectType: VArr
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: v_arr
+  filterExpressionType: VArrBoolExp
+  aggregateExpression: VArrAggExp
+  orderByExpression: VArrOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: vArr
+      subscription:
+        rootField: vArr
+    selectUniques: []
+    filterInputTypeName: VArrFilterInput
+    aggregate:
+      queryRootField: vArrAggregate
+      subscription:
+        rootField: vArrAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: VArr
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

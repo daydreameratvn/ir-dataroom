@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMetaReferencesByMetaReferenceIdResponse
+  description: Responses from the 'delete_meta_references_by_meta_reference_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetaReferences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMetaReferencesByMetaReferenceIdResponse
+    inputTypeName: DeleteMetaReferencesByMetaReferenceIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_meta_references_by_meta_reference_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMetaReferencesByMetaReferenceIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMetaReferencesByMetaReferenceId
+  outputType: DeleteMetaReferencesByMetaReferenceIdResponse!
+  arguments:
+    - name: keyMetaReferenceId
+      type: Uuid
+    - name: preCheck
+      type: MetaReferencesBoolExp
+      description: Delete permission predicate over the 'meta_references' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_meta_references_by_meta_reference_id
+    argumentMapping:
+      keyMetaReferenceId: key_meta_reference_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMetaReferencesByMetaReferenceId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'meta_references' collection using the
+    'meta_reference_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMetaReferencesByMetaReferenceId
+  permissions:
+    - role: admin
+      allowExecution: true
+

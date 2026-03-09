@@ -1,0 +1,241 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsurerRolesUsers
+  description: Bảng quan hệ giữa table users và insurer_roles
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: enablePpyNotifications
+      type: Boolean_1
+    - name: id
+      type: Uuid!
+    - name: insurerRoleId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: InsurerRolesUsers
+    inputTypeName: InsurerRolesUsersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insurer_roles_users
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        enablePpyNotifications:
+          column:
+            name: enable_ppy_notifications
+        id:
+          column:
+            name: id
+        insurerRoleId:
+          column:
+            name: insurer_role_id
+        updatedAt:
+          column:
+            name: updated_at
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsurerRolesUsers
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - enablePpyNotifications
+          - id
+          - insurerRoleId
+          - updatedAt
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsurerRolesUsersBoolExp
+  operand:
+    object:
+      type: InsurerRolesUsers
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: enablePpyNotifications
+          booleanExpressionType: BoolBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerRoleId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: insurerRole
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsurerRolesUsersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsurerRolesUsersAggExp
+  operand:
+    object:
+      aggregatedType: InsurerRolesUsers
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: enablePpyNotifications
+          aggregateExpression: BoolAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerRoleId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsurerRolesUsersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsurerRolesUsersOrderByExp
+  operand:
+    object:
+      orderedType: InsurerRolesUsers
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: enablePpyNotifications
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerRoleId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: insurerRole
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: InsurerRolesUsersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsurerRolesUsers
+  objectType: InsurerRolesUsers
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insurer_roles_users
+  filterExpressionType: InsurerRolesUsersBoolExp
+  aggregateExpression: InsurerRolesUsersAggExp
+  orderByExpression: InsurerRolesUsersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insurerRolesUsers
+      subscription:
+        rootField: insurerRolesUsers
+    selectUniques:
+      - queryRootField: insurerRolesUsersByInsurerRolesUsersInsurerRoleIdUserIdKey
+        uniqueIdentifier:
+          - insurerRoleId
+          - userId
+        subscription:
+          rootField: insurerRolesUsersByInsurerRolesUsersInsurerRoleIdUserIdKey
+      - queryRootField: insurerRolesUsersById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: insurerRolesUsersById
+    filterInputTypeName: InsurerRolesUsersFilterInput
+    aggregate:
+      queryRootField: insurerRolesUsersAggregate
+      subscription:
+        rootField: insurerRolesUsersAggregate
+  description: Bảng quan hệ giữa table users và insurer_roles
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsurerRolesUsers
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insurerRole
+  sourceType: InsurerRolesUsers
+  target:
+    model:
+      name: InsurerRoles
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insurerRoleId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: InsurerRolesUsers
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

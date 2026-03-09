@@ -1,0 +1,291 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornPhysicalExaminationResults
+  description: Kết quả khám lâm sàng
+  fields:
+    - name: biomarkerResultId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: documentResultId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1
+    - name: ocrResult
+      type: Json
+    - name: physicalExaminationId
+      type: Uuid!
+    - name: textResult
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: HawthornPhysicalExaminationResults
+    inputTypeName: HawthornPhysicalExaminationResultsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_physical_examination_results
+      fieldMapping:
+        biomarkerResultId:
+          column:
+            name: biomarker_result_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        documentResultId:
+          column:
+            name: document_result_id
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        ocrResult:
+          column:
+            name: ocr_result
+        physicalExaminationId:
+          column:
+            name: physical_examination_id
+        textResult:
+          column:
+            name: text_result
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornPhysicalExaminationResults
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - biomarkerResultId
+          - createdAt
+          - deletedAt
+          - documentResultId
+          - id
+          - name
+          - ocrResult
+          - physicalExaminationId
+          - textResult
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornPhysicalExaminationResultsBoolExp
+  operand:
+    object:
+      type: HawthornPhysicalExaminationResults
+      comparableFields:
+        - fieldName: biomarkerResultId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: documentResultId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: ocrResult
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: physicalExaminationId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: textResult
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornBiomarkerResult
+        - relationshipName: hawthornDocument
+        - relationshipName: hawthornPhysicalExamination
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornPhysicalExaminationResultsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornPhysicalExaminationResultsAggExp
+  operand:
+    object:
+      aggregatedType: HawthornPhysicalExaminationResults
+      aggregatableFields:
+        - fieldName: biomarkerResultId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: documentResultId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: ocrResult
+          aggregateExpression: JsonbAggExp
+        - fieldName: physicalExaminationId
+          aggregateExpression: UuidAggExp
+        - fieldName: textResult
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornPhysicalExaminationResultsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornPhysicalExaminationResultsOrderByExp
+  operand:
+    object:
+      orderedType: HawthornPhysicalExaminationResults
+      orderableFields:
+        - fieldName: biomarkerResultId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: documentResultId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: ocrResult
+          orderByExpression: JsonOrderByExp
+        - fieldName: physicalExaminationId
+          orderByExpression: UuidOrderByExp
+        - fieldName: textResult
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: hawthornBiomarkerResult
+        - relationshipName: hawthornDocument
+        - relationshipName: hawthornPhysicalExamination
+  graphql:
+    expressionTypeName: HawthornPhysicalExaminationResultsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornPhysicalExaminationResults
+  objectType: HawthornPhysicalExaminationResults
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_physical_examination_results
+  filterExpressionType: HawthornPhysicalExaminationResultsBoolExp
+  aggregateExpression: HawthornPhysicalExaminationResultsAggExp
+  orderByExpression: HawthornPhysicalExaminationResultsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornPhysicalExaminationResults
+      subscription:
+        rootField: hawthornPhysicalExaminationResults
+    selectUniques:
+      - queryRootField: hawthornPhysicalExaminationResultsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hawthornPhysicalExaminationResultsById
+    filterInputTypeName: HawthornPhysicalExaminationResultsFilterInput
+    aggregate:
+      queryRootField: hawthornPhysicalExaminationResultsAggregate
+      subscription:
+        rootField: hawthornPhysicalExaminationResultsAggregate
+  description: Kết quả khám lâm sàng
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornPhysicalExaminationResults
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornBiomarkerResult
+  sourceType: HawthornPhysicalExaminationResults
+  target:
+    model:
+      name: HawthornBiomarkerResults
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: biomarkerResultId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDocument
+  sourceType: HawthornPhysicalExaminationResults
+  target:
+    model:
+      name: HawthornDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: documentResultId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPhysicalExamination
+  sourceType: HawthornPhysicalExaminationResults
+  target:
+    model:
+      name: HawthornPhysicalExaminations
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: physicalExaminationId
+      target:
+        modelField:
+          - fieldName: id
+

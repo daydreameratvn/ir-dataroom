@@ -1,0 +1,222 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OcrQcDischargePaperDiagnoses
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: icdMetadataId
+      type: Uuid!
+    - name: order
+      type: Int32
+    - name: paperId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: OcrQcDischargePaperDiagnoses
+    inputTypeName: OcrQcDischargePaperDiagnosesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: ocr_qc_discharge_paper_diagnoses
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        icdMetadataId:
+          column:
+            name: icd_metadata_id
+        order:
+          column:
+            name: order
+        paperId:
+          column:
+            name: paper_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OcrQcDischargePaperDiagnoses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - icdMetadataId
+          - order
+          - paperId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OcrQcDischargePaperDiagnosesBoolExp
+  operand:
+    object:
+      type: OcrQcDischargePaperDiagnoses
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: icdMetadataId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: order
+          booleanExpressionType: Int4BoolExp
+        - fieldName: paperId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: metadatum
+        - relationshipName: ocrQcDischargePaper
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OcrQcDischargePaperDiagnosesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OcrQcDischargePaperDiagnosesAggExp
+  operand:
+    object:
+      aggregatedType: OcrQcDischargePaperDiagnoses
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: icdMetadataId
+          aggregateExpression: UuidAggExp
+        - fieldName: order
+          aggregateExpression: Int4AggExp
+        - fieldName: paperId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OcrQcDischargePaperDiagnosesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OcrQcDischargePaperDiagnosesOrderByExp
+  operand:
+    object:
+      orderedType: OcrQcDischargePaperDiagnoses
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: icdMetadataId
+          orderByExpression: UuidOrderByExp
+        - fieldName: order
+          orderByExpression: Int32OrderByExp
+        - fieldName: paperId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: metadatum
+        - relationshipName: ocrQcDischargePaper
+  graphql:
+    expressionTypeName: OcrQcDischargePaperDiagnosesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OcrQcDischargePaperDiagnoses
+  objectType: OcrQcDischargePaperDiagnoses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: ocr_qc_discharge_paper_diagnoses
+  filterExpressionType: OcrQcDischargePaperDiagnosesBoolExp
+  aggregateExpression: OcrQcDischargePaperDiagnosesAggExp
+  orderByExpression: OcrQcDischargePaperDiagnosesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: ocrQcDischargePaperDiagnoses
+      subscription:
+        rootField: ocrQcDischargePaperDiagnoses
+    selectUniques:
+      - queryRootField: ocrQcDischargePaperDiagnosesByQcDischargePaperDiagnosesPkey
+        uniqueIdentifier:
+          - icdMetadataId
+          - paperId
+        subscription:
+          rootField: ocrQcDischargePaperDiagnosesByQcDischargePaperDiagnosesPkey
+    filterInputTypeName: OcrQcDischargePaperDiagnosesFilterInput
+    aggregate:
+      queryRootField: ocrQcDischargePaperDiagnosesAggregate
+      subscription:
+        rootField: ocrQcDischargePaperDiagnosesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OcrQcDischargePaperDiagnoses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: metadatum
+  sourceType: OcrQcDischargePaperDiagnoses
+  target:
+    model:
+      name: Metadata
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: icdMetadataId
+      target:
+        modelField:
+          - fieldName: metadataId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrQcDischargePaper
+  sourceType: OcrQcDischargePaperDiagnoses
+  target:
+    model:
+      name: OcrQcDischargePapers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paperId
+      target:
+        modelField:
+          - fieldName: paperId
+

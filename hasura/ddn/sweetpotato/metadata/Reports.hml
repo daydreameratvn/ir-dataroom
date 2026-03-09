@@ -1,0 +1,275 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Reports
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: fileId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: Reports
+    inputTypeName: ReportsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: reports
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Reports
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - fileId
+          - id
+          - name
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ReportsBoolExp
+  operand:
+    object:
+      type: Reports
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: reportItems
+        - relationshipName: file
+        - relationshipName: reportsPolicies
+        - relationshipName: reportsUserRoles
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ReportsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ReportsAggExp
+  operand:
+    object:
+      aggregatedType: Reports
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fileId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ReportsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ReportsOrderByExp
+  operand:
+    object:
+      orderedType: Reports
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: file
+  graphql:
+    expressionTypeName: ReportsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Reports
+  objectType: Reports
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: reports
+  filterExpressionType: ReportsBoolExp
+  aggregateExpression: ReportsAggExp
+  orderByExpression: ReportsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: reports
+      subscription:
+        rootField: reports
+    selectUniques:
+      - queryRootField: reportsByName
+        uniqueIdentifier:
+          - name
+        subscription:
+          rootField: reportsByName
+      - queryRootField: reportsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: reportsById
+    filterInputTypeName: ReportsFilterInput
+    aggregate:
+      queryRootField: reportsAggregate
+      subscription:
+        rootField: reportsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Reports
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: reportItems
+  sourceType: Reports
+  target:
+    model:
+      name: ReportItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ReportItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: reportId
+  graphql:
+    aggregateFieldName: reportItemsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: file
+  sourceType: Reports
+  target:
+    model:
+      name: Files
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: reportsPolicies
+  sourceType: Reports
+  target:
+    model:
+      name: ReportsPolicies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ReportsPoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: reportId
+  graphql:
+    aggregateFieldName: reportsPoliciesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: reportsUserRoles
+  sourceType: Reports
+  target:
+    model:
+      name: ReportsUserRoles
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ReportsUserRolesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: reportId
+  graphql:
+    aggregateFieldName: reportsUserRolesAggregate
+

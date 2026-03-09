@@ -1,0 +1,186 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnMedicalBookingBookingsSchedulesHistoriesActionsComment
+  description: Update the 'comment' column in the
+    'medical_booking_bookings_schedules_histories_actions' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnMedicalBookingBookingsSchedulesHistoriesActionsComment
+    inputTypeName: UpdateColumnMedicalBookingBookingsSchedulesHistoriesActionsCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_medical_booking_bookings_schedules_histories_actions_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnMedicalBookingBookingsSchedulesHistoriesActionsComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnMedicalBookingBookingsSchedulesHistoriesActionsValue
+  description: Update the 'value' column in the
+    'medical_booking_bookings_schedules_histories_actions' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnMedicalBookingBookingsSchedulesHistoriesActionsValue
+    inputTypeName: UpdateColumnMedicalBookingBookingsSchedulesHistoriesActionsValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_medical_booking_bookings_schedules_histories_actions_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnMedicalBookingBookingsSchedulesHistoriesActionsValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMedicalBookingBookingsSchedulesHistoriesActionsByValueUpdateColumns
+  description: Update the columns of the
+    'medical_booking_bookings_schedules_histories_actions' collection
+  fields:
+    - name: comment
+      type: UpdateColumnMedicalBookingBookingsSchedulesHistoriesActionsComment
+      description: Update the 'comment' column in the
+        'medical_booking_bookings_schedules_histories_actions' collection.
+    - name: value
+      type: UpdateColumnMedicalBookingBookingsSchedulesHistoriesActionsValue
+      description: Update the 'value' column in the
+        'medical_booking_bookings_schedules_histories_actions' collection.
+  graphql:
+    typeName: UpdateMedicalBookingBookingsSchedulesHistoriesActionsByValueUpdateColumns
+    inputTypeName: UpdateMedicalBookingBookingsSchedulesHistoriesActionsByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_medical_booking_bookings_schedules_histories_actions_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMedicalBookingBookingsSchedulesHistoriesActionsByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMedicalBookingBookingsSchedulesHistoriesActionsByValueResponse
+  description: Responses from the
+    'update_medical_booking_bookings_schedules_histories_actions_by_value'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingBookingsSchedulesHistoriesActions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateMedicalBookingBookingsSchedulesHistoriesActionsByValueResponse
+    inputTypeName: UpdateMedicalBookingBookingsSchedulesHistoriesActionsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_medical_booking_bookings_schedules_histories_actions_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMedicalBookingBookingsSchedulesHistoriesActionsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateMedicalBookingBookingsSchedulesHistoriesActionsByValue
+  outputType: UpdateMedicalBookingBookingsSchedulesHistoriesActionsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: MedicalBookingBookingsSchedulesHistoriesActionsBoolExp
+      description: Update permission post-condition predicate over the
+        'medical_booking_bookings_schedules_histories_actions' collection
+    - name: preCheck
+      type: MedicalBookingBookingsSchedulesHistoriesActionsBoolExp
+      description: Update permission pre-condition predicate over the
+        'medical_booking_bookings_schedules_histories_actions' collection
+    - name: updateColumns
+      type: UpdateMedicalBookingBookingsSchedulesHistoriesActionsByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_medical_booking_bookings_schedules_histories_actions_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateMedicalBookingBookingsSchedulesHistoriesActionsByValue
+    rootFieldKind: Mutation
+  description: Update any row on the
+    'medical_booking_bookings_schedules_histories_actions' collection using the
+    'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateMedicalBookingBookingsSchedulesHistoriesActionsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

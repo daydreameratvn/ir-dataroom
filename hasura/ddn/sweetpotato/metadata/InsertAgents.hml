@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAgentsObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: email
+      type: String_1
+    - name: groupCode
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: insurerId
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: phone
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertAgentsObject
+    inputTypeName: InsertAgentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_agents_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        email:
+          column:
+            name: email
+        groupCode:
+          column:
+            name: group_code
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        name:
+          column:
+            name: name
+        phone:
+          column:
+            name: phone
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAgentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - email
+          - groupCode
+          - id
+          - insurerId
+          - name
+          - phone
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAgentsResponse
+  description: Responses from the 'insert_agents' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Agents!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertAgentsResponse
+    inputTypeName: InsertAgentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_agents_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAgentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertAgents
+  outputType: InsertAgentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertAgentsObject!]!"
+    - name: postCheck
+      type: AgentsBoolExp
+      description: Insert permission predicate over the 'agents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_agents
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertAgents
+    rootFieldKind: Mutation
+  description: Insert into the agents table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertAgents
+  permissions:
+    - role: admin
+      allowExecution: true
+

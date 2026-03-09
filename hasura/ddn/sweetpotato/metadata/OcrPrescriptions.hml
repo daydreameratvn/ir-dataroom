@@ -1,0 +1,370 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OcrPrescriptions
+  fields:
+    - name: advice
+      type: String_1
+    - name: age
+      type: Bigdecimal
+    - name: createdAt
+      type: Timestamptz!
+    - name: diagnoses
+      type: "[String_1]"
+    - name: diagnosis
+      type: String_1
+    - name: dob
+      type: Timestamptz
+    - name: followUpAt
+      type: Timestamptz
+    - name: gender
+      type: String_1
+    - name: hasSignature
+      type: Boolean_1!
+    - name: icdCodes
+      type: Json
+    - name: id
+      type: Uuid!
+    - name: medicalProviderName
+      type: String_1
+    - name: paperId
+      type: Uuid!
+    - name: patientName
+      type: String_1
+    - name: prescribedAt
+      type: Timestamptz
+    - name: rawData
+      type: Json
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: OcrPrescriptions
+    inputTypeName: OcrPrescriptionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: ocr_prescriptions
+      fieldMapping:
+        advice:
+          column:
+            name: advice
+        age:
+          column:
+            name: age
+        createdAt:
+          column:
+            name: created_at
+        diagnoses:
+          column:
+            name: diagnoses
+        diagnosis:
+          column:
+            name: diagnosis
+        dob:
+          column:
+            name: dob
+        followUpAt:
+          column:
+            name: follow_up_at
+        gender:
+          column:
+            name: gender
+        hasSignature:
+          column:
+            name: has_signature
+        icdCodes:
+          column:
+            name: icd_codes
+        id:
+          column:
+            name: id
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        paperId:
+          column:
+            name: paper_id
+        patientName:
+          column:
+            name: patient_name
+        prescribedAt:
+          column:
+            name: prescribed_at
+        rawData:
+          column:
+            name: raw_data
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OcrPrescriptions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - advice
+          - age
+          - createdAt
+          - diagnoses
+          - diagnosis
+          - dob
+          - followUpAt
+          - gender
+          - hasSignature
+          - icdCodes
+          - id
+          - medicalProviderName
+          - paperId
+          - patientName
+          - prescribedAt
+          - rawData
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OcrPrescriptionsBoolExp
+  operand:
+    object:
+      type: OcrPrescriptions
+      comparableFields:
+        - fieldName: advice
+          booleanExpressionType: TextBoolExp
+        - fieldName: age
+          booleanExpressionType: NumericBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: diagnosis
+          booleanExpressionType: TextBoolExp
+        - fieldName: dob
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: followUpAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: gender
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: hasSignature
+          booleanExpressionType: BoolBoolExp
+        - fieldName: icdCodes
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderName
+          booleanExpressionType: TextBoolExp
+        - fieldName: paperId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: patientName
+          booleanExpressionType: TextBoolExp
+        - fieldName: prescribedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: rawData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: ocrPrescriptionItems
+        - relationshipName: genderByGender
+        - relationshipName: ocrPaper
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OcrPrescriptionsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OcrPrescriptionsAggExp
+  operand:
+    object:
+      aggregatedType: OcrPrescriptions
+      aggregatableFields:
+        - fieldName: advice
+          aggregateExpression: TextAggExp
+        - fieldName: age
+          aggregateExpression: NumericAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: diagnosis
+          aggregateExpression: TextAggExp
+        - fieldName: dob
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: followUpAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: gender
+          aggregateExpression: VarcharAggExp
+        - fieldName: hasSignature
+          aggregateExpression: BoolAggExp
+        - fieldName: icdCodes
+          aggregateExpression: JsonbAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderName
+          aggregateExpression: TextAggExp
+        - fieldName: paperId
+          aggregateExpression: UuidAggExp
+        - fieldName: patientName
+          aggregateExpression: TextAggExp
+        - fieldName: prescribedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: rawData
+          aggregateExpression: JsonbAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OcrPrescriptionsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OcrPrescriptionsOrderByExp
+  operand:
+    object:
+      orderedType: OcrPrescriptions
+      orderableFields:
+        - fieldName: advice
+          orderByExpression: String1OrderByExp
+        - fieldName: age
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: diagnosis
+          orderByExpression: String1OrderByExp
+        - fieldName: dob
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: followUpAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: gender
+          orderByExpression: String1OrderByExp
+        - fieldName: hasSignature
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: icdCodes
+          orderByExpression: JsonOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderName
+          orderByExpression: String1OrderByExp
+        - fieldName: paperId
+          orderByExpression: UuidOrderByExp
+        - fieldName: patientName
+          orderByExpression: String1OrderByExp
+        - fieldName: prescribedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: rawData
+          orderByExpression: JsonOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: genderByGender
+        - relationshipName: ocrPaper
+  graphql:
+    expressionTypeName: OcrPrescriptionsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OcrPrescriptions
+  objectType: OcrPrescriptions
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: ocr_prescriptions
+  filterExpressionType: OcrPrescriptionsBoolExp
+  aggregateExpression: OcrPrescriptionsAggExp
+  orderByExpression: OcrPrescriptionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: ocrPrescriptions
+      subscription:
+        rootField: ocrPrescriptions
+    selectUniques:
+      - queryRootField: ocrPrescriptionsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: ocrPrescriptionsById
+    filterInputTypeName: OcrPrescriptionsFilterInput
+    aggregate:
+      queryRootField: ocrPrescriptionsAggregate
+      subscription:
+        rootField: ocrPrescriptionsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OcrPrescriptions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPrescriptionItems
+  sourceType: OcrPrescriptions
+  target:
+    model:
+      name: OcrPrescriptionItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrPrescriptionItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: prescriptionId
+  graphql:
+    aggregateFieldName: ocrPrescriptionItemsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: genderByGender
+  sourceType: OcrPrescriptions
+  target:
+    model:
+      name: Genders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: gender
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPaper
+  sourceType: OcrPrescriptions
+  target:
+    model:
+      name: OcrPapers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paperId
+      target:
+        modelField:
+          - fieldName: id
+

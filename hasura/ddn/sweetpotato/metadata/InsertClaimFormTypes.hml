@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimFormTypesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertClaimFormTypesObject
+    inputTypeName: InsertClaimFormTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_form_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimFormTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimFormTypesResponse
+  description: Responses from the 'insert_claim_form_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimFormTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimFormTypesResponse
+    inputTypeName: InsertClaimFormTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_form_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimFormTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimFormTypes
+  outputType: InsertClaimFormTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimFormTypesObject!]!"
+    - name: postCheck
+      type: ClaimFormTypesBoolExp
+      description: Insert permission predicate over the 'claim_form_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_form_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimFormTypes
+    rootFieldKind: Mutation
+  description: Insert into the claim_form_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimFormTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCorrespondenceEmailStatusesComment
+  description: Update the 'comment' column in the 'correspondence_email_statuses' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCorrespondenceEmailStatusesComment
+    inputTypeName: UpdateColumnCorrespondenceEmailStatusesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_correspondence_email_statuses_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCorrespondenceEmailStatusesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCorrespondenceEmailStatusesValue
+  description: Update the 'value' column in the 'correspondence_email_statuses' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCorrespondenceEmailStatusesValue
+    inputTypeName: UpdateColumnCorrespondenceEmailStatusesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_correspondence_email_statuses_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCorrespondenceEmailStatusesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorrespondenceEmailStatusesByValueUpdateColumns
+  description: Update the columns of the 'correspondence_email_statuses' collection
+  fields:
+    - name: comment
+      type: UpdateColumnCorrespondenceEmailStatusesComment
+      description: Update the 'comment' column in the 'correspondence_email_statuses'
+        collection.
+    - name: value
+      type: UpdateColumnCorrespondenceEmailStatusesValue
+      description: Update the 'value' column in the 'correspondence_email_statuses'
+        collection.
+  graphql:
+    typeName: UpdateCorrespondenceEmailStatusesByValueUpdateColumns
+    inputTypeName: UpdateCorrespondenceEmailStatusesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_correspondence_email_statuses_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorrespondenceEmailStatusesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorrespondenceEmailStatusesByValueResponse
+  description: Responses from the 'update_correspondence_email_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmailStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCorrespondenceEmailStatusesByValueResponse
+    inputTypeName: UpdateCorrespondenceEmailStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_correspondence_email_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorrespondenceEmailStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCorrespondenceEmailStatusesByValue
+  outputType: UpdateCorrespondenceEmailStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: CorrespondenceEmailStatusesBoolExp
+      description: Update permission post-condition predicate over the
+        'correspondence_email_statuses' collection
+    - name: preCheck
+      type: CorrespondenceEmailStatusesBoolExp
+      description: Update permission pre-condition predicate over the
+        'correspondence_email_statuses' collection
+    - name: updateColumns
+      type: UpdateCorrespondenceEmailStatusesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_correspondence_email_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCorrespondenceEmailStatusesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'correspondence_email_statuses' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCorrespondenceEmailStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

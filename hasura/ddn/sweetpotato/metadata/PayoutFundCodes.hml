@@ -1,0 +1,195 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutFundCodes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PayoutFundCodes
+    inputTypeName: PayoutFundCodesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_fund_codes
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutFundCodes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutFundCodesBoolExp
+  operand:
+    object:
+      type: PayoutFundCodes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: companySettings
+        - relationshipName: payoutPaymentRequestItems
+        - relationshipName: payoutPayoutBankAccounts
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutFundCodesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutFundCodesAggExp
+  operand:
+    object:
+      aggregatedType: PayoutFundCodes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutFundCodesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutFundCodesOrderByExp
+  operand:
+    object:
+      orderedType: PayoutFundCodes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PayoutFundCodesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutFundCodes
+  objectType: PayoutFundCodes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_fund_codes
+  filterExpressionType: PayoutFundCodesBoolExp
+  aggregateExpression: PayoutFundCodesAggExp
+  orderByExpression: PayoutFundCodesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutFundCodes
+      subscription:
+        rootField: payoutFundCodes
+    selectUniques:
+      - queryRootField: payoutFundCodesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: payoutFundCodesByValue
+    filterInputTypeName: PayoutFundCodesFilterInput
+    aggregate:
+      queryRootField: payoutFundCodesAggregate
+      subscription:
+        rootField: payoutFundCodesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutFundCodes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: companySettings
+  sourceType: PayoutFundCodes
+  target:
+    model:
+      name: CompanySettings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CompanySettingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: reimbursementFundCode
+  graphql:
+    aggregateFieldName: companySettingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestItems
+  sourceType: PayoutFundCodes
+  target:
+    model:
+      name: PayoutPaymentRequestItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPaymentRequestItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: fundCode
+  graphql:
+    aggregateFieldName: payoutPaymentRequestItemsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPayoutBankAccounts
+  sourceType: PayoutFundCodes
+  target:
+    model:
+      name: PayoutPayoutBankAccounts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPayoutBankAccountsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: fundCode
+  graphql:
+    aggregateFieldName: payoutPayoutBankAccountsAggregate
+

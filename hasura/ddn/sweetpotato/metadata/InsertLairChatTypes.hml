@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertLairChatTypesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertLairChatTypesObject
+    inputTypeName: InsertLairChatTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_lair_chat_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertLairChatTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertLairChatTypesResponse
+  description: Responses from the 'insert_lair_chat_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[LairChatTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertLairChatTypesResponse
+    inputTypeName: InsertLairChatTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_lair_chat_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertLairChatTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertLairChatTypes
+  outputType: InsertLairChatTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertLairChatTypesObject!]!"
+    - name: postCheck
+      type: LairChatTypesBoolExp
+      description: Insert permission predicate over the 'lair_chat_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_lair_chat_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertLairChatTypes
+    rootFieldKind: Mutation
+  description: Insert into the lair_chat_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertLairChatTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdMedicalProviders
+  fields:
+    - name: code
+      type: String_1!
+    - name: deletedAt
+      type: Timestamptz
+    - name: name
+      type: String_1!
+    - name: ppyMedicalProviderId
+      type: Uuid
+  graphql:
+    typeName: FwdMedicalProviders
+    inputTypeName: FwdMedicalProvidersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_medical_providers
+      fieldMapping:
+        code:
+          column:
+            name: code
+        deletedAt:
+          column:
+            name: deleted_at
+        name:
+          column:
+            name: name
+        ppyMedicalProviderId:
+          column:
+            name: ppy_medical_provider_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdMedicalProviders
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - deletedAt
+          - name
+          - ppyMedicalProviderId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdMedicalProvidersBoolExp
+  operand:
+    object:
+      type: FwdMedicalProviders
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: ppyMedicalProviderId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProvider
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdMedicalProvidersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdMedicalProvidersAggExp
+  operand:
+    object:
+      aggregatedType: FwdMedicalProviders
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: ppyMedicalProviderId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdMedicalProvidersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdMedicalProvidersOrderByExp
+  operand:
+    object:
+      orderedType: FwdMedicalProviders
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: ppyMedicalProviderId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: mpMedicalProvider
+  graphql:
+    expressionTypeName: FwdMedicalProvidersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdMedicalProviders
+  objectType: FwdMedicalProviders
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_medical_providers
+  filterExpressionType: FwdMedicalProvidersBoolExp
+  aggregateExpression: FwdMedicalProvidersAggExp
+  orderByExpression: FwdMedicalProvidersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdMedicalProviders
+      subscription:
+        rootField: fwdMedicalProviders
+    selectUniques:
+      - queryRootField: fwdMedicalProvidersByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: fwdMedicalProvidersByCode
+    filterInputTypeName: FwdMedicalProvidersFilterInput
+    aggregate:
+      queryRootField: fwdMedicalProvidersAggregate
+      subscription:
+        rootField: fwdMedicalProvidersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdMedicalProviders
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: FwdMedicalProviders
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ppyMedicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+

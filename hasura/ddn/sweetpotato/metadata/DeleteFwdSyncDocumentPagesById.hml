@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdSyncDocumentPagesByIdResponse
+  description: Responses from the 'delete_fwd_sync_document_pages_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdSyncDocumentPages!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdSyncDocumentPagesByIdResponse
+    inputTypeName: DeleteFwdSyncDocumentPagesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_sync_document_pages_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdSyncDocumentPagesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdSyncDocumentPagesById
+  outputType: DeleteFwdSyncDocumentPagesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: FwdSyncDocumentPagesBoolExp
+      description: Delete permission predicate over the 'fwd_sync_document_pages' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_sync_document_pages_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdSyncDocumentPagesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_sync_document_pages' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdSyncDocumentPagesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

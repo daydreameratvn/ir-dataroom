@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdSyncLogsObject
+  fields:
+    - name: actorId
+      type: Uuid
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: data
+      type: Json!
+    - name: deletedAt
+      type: Timestamptz
+    - name: direction
+      type: String_1!
+    - name: fileId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: isSuccess
+      type: Boolean_1
+    - name: requestId
+      type: Uuid
+    - name: responseData
+      type: Json
+    - name: type
+      type: String_1!
+    - name: willAutoDecision
+      type: Boolean_1
+  graphql:
+    typeName: InsertFwdSyncLogsObject
+    inputTypeName: InsertFwdSyncLogsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_sync_logs_object
+      fieldMapping:
+        actorId:
+          column:
+            name: actor_id
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        data:
+          column:
+            name: data
+        deletedAt:
+          column:
+            name: deleted_at
+        direction:
+          column:
+            name: direction
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        isSuccess:
+          column:
+            name: is_success
+        requestId:
+          column:
+            name: request_id
+        responseData:
+          column:
+            name: response_data
+        type:
+          column:
+            name: type
+        willAutoDecision:
+          column:
+            name: will_auto_decision
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdSyncLogsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actorId
+          - claimCaseId
+          - createdAt
+          - data
+          - deletedAt
+          - direction
+          - fileId
+          - id
+          - isSuccess
+          - requestId
+          - responseData
+          - type
+          - willAutoDecision
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdSyncLogsResponse
+  description: Responses from the 'insert_fwd_sync_logs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdSyncLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdSyncLogsResponse
+    inputTypeName: InsertFwdSyncLogsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_sync_logs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdSyncLogsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdSyncLogs
+  outputType: InsertFwdSyncLogsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdSyncLogsObject!]!"
+    - name: postCheck
+      type: FwdSyncLogsBoolExp
+      description: Insert permission predicate over the 'fwd_sync_logs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_sync_logs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdSyncLogs
+    rootFieldKind: Mutation
+  description: Insert into the fwd_sync_logs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdSyncLogs
+  permissions:
+    - role: admin
+      allowExecution: true
+

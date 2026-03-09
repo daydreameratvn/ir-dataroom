@@ -1,0 +1,253 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HdbCatalogEventLog
+  fields:
+    - name: archived
+      type: Boolean_1!
+    - name: createdAt
+      type: Timestamp
+    - name: delivered
+      type: Boolean_1!
+    - name: error
+      type: Boolean_1!
+    - name: id
+      type: String_1!
+    - name: locked
+      type: Timestamptz
+    - name: nextRetryAt
+      type: Timestamp
+    - name: payload
+      type: Json!
+    - name: schemaName
+      type: String_1!
+    - name: tableName
+      type: String_1!
+    - name: tries
+      type: Int32!
+    - name: triggerName
+      type: String_1!
+  graphql:
+    typeName: HdbCatalogEventLog
+    inputTypeName: HdbCatalogEventLogInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hdb_catalog_event_log
+      fieldMapping:
+        archived:
+          column:
+            name: archived
+        createdAt:
+          column:
+            name: created_at
+        delivered:
+          column:
+            name: delivered
+        error:
+          column:
+            name: error
+        id:
+          column:
+            name: id
+        locked:
+          column:
+            name: locked
+        nextRetryAt:
+          column:
+            name: next_retry_at
+        payload:
+          column:
+            name: payload
+        schemaName:
+          column:
+            name: schema_name
+        tableName:
+          column:
+            name: table_name
+        tries:
+          column:
+            name: tries
+        triggerName:
+          column:
+            name: trigger_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HdbCatalogEventLog
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - archived
+          - createdAt
+          - delivered
+          - error
+          - id
+          - locked
+          - nextRetryAt
+          - payload
+          - schemaName
+          - tableName
+          - tries
+          - triggerName
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HdbCatalogEventLogBoolExp
+  operand:
+    object:
+      type: HdbCatalogEventLog
+      comparableFields:
+        - fieldName: archived
+          booleanExpressionType: BoolBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: delivered
+          booleanExpressionType: BoolBoolExp
+        - fieldName: error
+          booleanExpressionType: BoolBoolExp
+        - fieldName: id
+          booleanExpressionType: TextBoolExp
+        - fieldName: locked
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: nextRetryAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: payload
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: schemaName
+          booleanExpressionType: TextBoolExp
+        - fieldName: tableName
+          booleanExpressionType: TextBoolExp
+        - fieldName: tries
+          booleanExpressionType: Int4BoolExp
+        - fieldName: triggerName
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HdbCatalogEventLogBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HdbCatalogEventLogAggExp
+  operand:
+    object:
+      aggregatedType: HdbCatalogEventLog
+      aggregatableFields:
+        - fieldName: archived
+          aggregateExpression: BoolAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: delivered
+          aggregateExpression: BoolAggExp
+        - fieldName: error
+          aggregateExpression: BoolAggExp
+        - fieldName: id
+          aggregateExpression: TextAggExp
+        - fieldName: locked
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: nextRetryAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: payload
+          aggregateExpression: JsonbAggExp
+        - fieldName: schemaName
+          aggregateExpression: TextAggExp
+        - fieldName: tableName
+          aggregateExpression: TextAggExp
+        - fieldName: tries
+          aggregateExpression: Int4AggExp
+        - fieldName: triggerName
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HdbCatalogEventLogAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HdbCatalogEventLogOrderByExp
+  operand:
+    object:
+      orderedType: HdbCatalogEventLog
+      orderableFields:
+        - fieldName: archived
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestampOrderByExp
+        - fieldName: delivered
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: error
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: id
+          orderByExpression: String1OrderByExp
+        - fieldName: locked
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: nextRetryAt
+          orderByExpression: TimestampOrderByExp
+        - fieldName: payload
+          orderByExpression: JsonOrderByExp
+        - fieldName: schemaName
+          orderByExpression: String1OrderByExp
+        - fieldName: tableName
+          orderByExpression: String1OrderByExp
+        - fieldName: tries
+          orderByExpression: Int32OrderByExp
+        - fieldName: triggerName
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HdbCatalogEventLogOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HdbCatalogEventLog
+  objectType: HdbCatalogEventLog
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hdb_catalog_event_log
+  filterExpressionType: HdbCatalogEventLogBoolExp
+  aggregateExpression: HdbCatalogEventLogAggExp
+  orderByExpression: HdbCatalogEventLogOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hdbCatalogEventLog
+      subscription:
+        rootField: hdbCatalogEventLog
+    selectUniques:
+      - queryRootField: hdbCatalogEventLogById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hdbCatalogEventLogById
+    filterInputTypeName: HdbCatalogEventLogFilterInput
+    aggregate:
+      queryRootField: hdbCatalogEventLogAggregate
+      subscription:
+        rootField: hdbCatalogEventLogAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HdbCatalogEventLog
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

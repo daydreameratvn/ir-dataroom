@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMpMedicalProviderGroupsByIdResponse
+  description: Responses from the 'delete_mp_medical_provider_groups_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderGroups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMpMedicalProviderGroupsByIdResponse
+    inputTypeName: DeleteMpMedicalProviderGroupsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mp_medical_provider_groups_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMpMedicalProviderGroupsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMpMedicalProviderGroupsById
+  outputType: DeleteMpMedicalProviderGroupsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: MpMedicalProviderGroupsBoolExp
+      description: Delete permission predicate over the 'mp_medical_provider_groups'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mp_medical_provider_groups_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMpMedicalProviderGroupsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mp_medical_provider_groups' collection using
+    the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMpMedicalProviderGroupsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

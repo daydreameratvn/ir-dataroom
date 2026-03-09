@@ -1,0 +1,162 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanDisplayedBalancesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: displayOrder
+      type: Int32
+    - name: id
+      type: Uuid
+    - name: language
+      type: String_1
+    - name: name
+      type: String_1!
+    - name: parentId
+      type: Uuid
+    - name: planBalanceId
+      type: Uuid
+    - name: planId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPlanDisplayedBalancesObject
+    inputTypeName: InsertPlanDisplayedBalancesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_displayed_balances_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        language:
+          column:
+            name: language
+        name:
+          column:
+            name: name
+        parentId:
+          column:
+            name: parent_id
+        planBalanceId:
+          column:
+            name: plan_balance_id
+        planId:
+          column:
+            name: plan_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanDisplayedBalancesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - displayOrder
+          - id
+          - language
+          - name
+          - parentId
+          - planBalanceId
+          - planId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanDisplayedBalancesResponse
+  description: Responses from the 'insert_plan_displayed_balances' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanDisplayedBalances!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPlanDisplayedBalancesResponse
+    inputTypeName: InsertPlanDisplayedBalancesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_displayed_balances_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanDisplayedBalancesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPlanDisplayedBalances
+  outputType: InsertPlanDisplayedBalancesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPlanDisplayedBalancesObject!]!"
+    - name: postCheck
+      type: PlanDisplayedBalancesBoolExp
+      description: Insert permission predicate over the 'plan_displayed_balances' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_plan_displayed_balances
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPlanDisplayedBalances
+    rootFieldKind: Mutation
+  description: Insert into the plan_displayed_balances table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPlanDisplayedBalances
+  permissions:
+    - role: admin
+      allowExecution: true
+

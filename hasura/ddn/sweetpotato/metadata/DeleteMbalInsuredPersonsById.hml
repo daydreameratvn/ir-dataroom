@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMbalInsuredPersonsByIdResponse
+  description: Responses from the 'delete_mbal_insured_persons_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MbalInsuredPersons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMbalInsuredPersonsByIdResponse
+    inputTypeName: DeleteMbalInsuredPersonsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mbal_insured_persons_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMbalInsuredPersonsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMbalInsuredPersonsById
+  outputType: DeleteMbalInsuredPersonsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: MbalInsuredPersonsBoolExp
+      description: Delete permission predicate over the 'mbal_insured_persons' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mbal_insured_persons_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMbalInsuredPersonsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mbal_insured_persons' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMbalInsuredPersonsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

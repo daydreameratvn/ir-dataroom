@@ -1,0 +1,132 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertImportedFilesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: fileId
+      type: Uuid!
+    - name: id
+      type: Uuid
+    - name: policyId
+      type: Uuid
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertImportedFilesObject
+    inputTypeName: InsertImportedFilesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_imported_files_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertImportedFilesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - fileId
+          - id
+          - policyId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertImportedFilesResponse
+  description: Responses from the 'insert_imported_files' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ImportedFiles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertImportedFilesResponse
+    inputTypeName: InsertImportedFilesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_imported_files_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertImportedFilesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertImportedFiles
+  outputType: InsertImportedFilesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertImportedFilesObject!]!"
+    - name: postCheck
+      type: ImportedFilesBoolExp
+      description: Insert permission predicate over the 'imported_files' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_imported_files
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertImportedFiles
+    rootFieldKind: Mutation
+  description: Insert into the imported_files table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertImportedFiles
+  permissions:
+    - role: admin
+      allowExecution: true
+

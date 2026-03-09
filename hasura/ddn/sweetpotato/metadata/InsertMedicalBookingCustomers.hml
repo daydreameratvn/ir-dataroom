@@ -1,0 +1,193 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingCustomersObject
+  fields:
+    - name: companyId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: dependedId
+      type: Uuid
+    - name: dependentType
+      type: String_1
+    - name: dob
+      type: Timestamptz!
+    - name: email
+      type: Json
+    - name: gender
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: name
+      type: String_1!
+    - name: packageName
+      type: String_1
+    - name: phone
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid
+  graphql:
+    typeName: InsertMedicalBookingCustomersObject
+    inputTypeName: InsertMedicalBookingCustomersObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_customers_object
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        dependedId:
+          column:
+            name: depended_id
+        dependentType:
+          column:
+            name: dependent_type
+        dob:
+          column:
+            name: dob
+        email:
+          column:
+            name: email
+        gender:
+          column:
+            name: gender
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        packageName:
+          column:
+            name: package_name
+        phone:
+          column:
+            name: phone
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingCustomersObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - dependedId
+          - dependentType
+          - dob
+          - email
+          - gender
+          - id
+          - name
+          - packageName
+          - phone
+          - updatedAt
+          - updatedBy
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingCustomersResponse
+  description: Responses from the 'insert_medical_booking_customers' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingCustomers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMedicalBookingCustomersResponse
+    inputTypeName: InsertMedicalBookingCustomersResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_customers_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingCustomersResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMedicalBookingCustomers
+  outputType: InsertMedicalBookingCustomersResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMedicalBookingCustomersObject!]!"
+    - name: postCheck
+      type: MedicalBookingCustomersBoolExp
+      description: Insert permission predicate over the 'medical_booking_customers'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_medical_booking_customers
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMedicalBookingCustomers
+    rootFieldKind: Mutation
+  description: Insert into the medical_booking_customers table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMedicalBookingCustomers
+  permissions:
+    - role: admin
+      allowExecution: true
+

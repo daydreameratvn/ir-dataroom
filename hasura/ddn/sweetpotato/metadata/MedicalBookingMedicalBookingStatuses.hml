@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MedicalBookingMedicalBookingStatuses
+  description: Trạng thái lịch hẹn
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MedicalBookingMedicalBookingStatuses
+    inputTypeName: MedicalBookingMedicalBookingStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: medical_booking_medical_booking_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MedicalBookingMedicalBookingStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MedicalBookingMedicalBookingStatusesBoolExp
+  operand:
+    object:
+      type: MedicalBookingMedicalBookingStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: medicalBookingMedicalBookingTimes
+        - relationshipName: medicalBookingMedicalBookings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MedicalBookingMedicalBookingStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MedicalBookingMedicalBookingStatusesAggExp
+  operand:
+    object:
+      aggregatedType: MedicalBookingMedicalBookingStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MedicalBookingMedicalBookingStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MedicalBookingMedicalBookingStatusesOrderByExp
+  operand:
+    object:
+      orderedType: MedicalBookingMedicalBookingStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MedicalBookingMedicalBookingStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MedicalBookingMedicalBookingStatuses
+  objectType: MedicalBookingMedicalBookingStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: medical_booking_medical_booking_statuses
+  filterExpressionType: MedicalBookingMedicalBookingStatusesBoolExp
+  aggregateExpression: MedicalBookingMedicalBookingStatusesAggExp
+  orderByExpression: MedicalBookingMedicalBookingStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: medicalBookingMedicalBookingStatuses
+      subscription:
+        rootField: medicalBookingMedicalBookingStatuses
+    selectUniques:
+      - queryRootField: medicalBookingMedicalBookingStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: medicalBookingMedicalBookingStatusesByValue
+    filterInputTypeName: MedicalBookingMedicalBookingStatusesFilterInput
+    aggregate:
+      queryRootField: medicalBookingMedicalBookingStatusesAggregate
+      subscription:
+        rootField: medicalBookingMedicalBookingStatusesAggregate
+  description: Trạng thái lịch hẹn
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MedicalBookingMedicalBookingStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingMedicalBookingTimes
+  sourceType: MedicalBookingMedicalBookingStatuses
+  target:
+    model:
+      name: MedicalBookingMedicalBookingTimes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingMedicalBookingTimesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: medicalBookingMedicalBookingTimesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingMedicalBookings
+  sourceType: MedicalBookingMedicalBookingStatuses
+  target:
+    model:
+      name: MedicalBookingMedicalBookings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingMedicalBookingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: medicalBookingMedicalBookingsAggregate
+

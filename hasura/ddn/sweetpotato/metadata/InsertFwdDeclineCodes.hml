@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdDeclineCodesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertFwdDeclineCodesObject
+    inputTypeName: InsertFwdDeclineCodesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_decline_codes_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdDeclineCodesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdDeclineCodesResponse
+  description: Responses from the 'insert_fwd_decline_codes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdDeclineCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdDeclineCodesResponse
+    inputTypeName: InsertFwdDeclineCodesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_decline_codes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdDeclineCodesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdDeclineCodes
+  outputType: InsertFwdDeclineCodesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdDeclineCodesObject!]!"
+    - name: postCheck
+      type: FwdDeclineCodesBoolExp
+      description: Insert permission predicate over the 'fwd_decline_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_decline_codes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdDeclineCodes
+    rootFieldKind: Mutation
+  description: Insert into the fwd_decline_codes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdDeclineCodes
+  permissions:
+    - role: admin
+      allowExecution: true
+

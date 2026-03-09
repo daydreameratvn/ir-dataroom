@@ -1,0 +1,146 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpMedicalProviderBenefitsByIdUpdateColumns
+  description: Update the columns of the 'mp_medical_provider_benefits' collection
+  fields:
+    - name: benefitType
+      type: UpdateColumnMpMedicalProviderBenefitsBenefitType
+      description: Update the 'benefit_type' column in the
+        'mp_medical_provider_benefits' collection.
+    - name: deletedAt
+      type: UpdateColumnMpMedicalProviderBenefitsDeletedAt
+      description: Update the 'deleted_at' column in the
+        'mp_medical_provider_benefits' collection.
+    - name: id
+      type: UpdateColumnMpMedicalProviderBenefitsId
+      description: Update the 'id' column in the 'mp_medical_provider_benefits' collection.
+    - name: medicalProviderId
+      type: UpdateColumnMpMedicalProviderBenefitsMedicalProviderId
+      description: Update the 'medical_provider_id' column in the
+        'mp_medical_provider_benefits' collection.
+    - name: tenantId
+      type: UpdateColumnMpMedicalProviderBenefitsTenantId
+      description: Update the 'tenant_id' column in the 'mp_medical_provider_benefits'
+        collection.
+  graphql:
+    typeName: UpdateMpMedicalProviderBenefitsByIdUpdateColumns
+    inputTypeName: UpdateMpMedicalProviderBenefitsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_medical_provider_benefits_by_id_update_columns
+      fieldMapping:
+        benefitType:
+          column:
+            name: benefit_type
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        tenantId:
+          column:
+            name: tenant_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpMedicalProviderBenefitsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - benefitType
+          - deletedAt
+          - id
+          - medicalProviderId
+          - tenantId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpMedicalProviderBenefitsByIdResponse
+  description: Responses from the 'update_mp_medical_provider_benefits_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateMpMedicalProviderBenefitsByIdResponse
+    inputTypeName: UpdateMpMedicalProviderBenefitsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_medical_provider_benefits_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpMedicalProviderBenefitsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateMpMedicalProviderBenefitsById
+  outputType: UpdateMpMedicalProviderBenefitsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: MpMedicalProviderBenefitsBoolExp
+      description: Update permission post-condition predicate over the
+        'mp_medical_provider_benefits' collection
+    - name: preCheck
+      type: MpMedicalProviderBenefitsBoolExp
+      description: Update permission pre-condition predicate over the
+        'mp_medical_provider_benefits' collection
+    - name: updateColumns
+      type: UpdateMpMedicalProviderBenefitsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_mp_medical_provider_benefits_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateMpMedicalProviderBenefitsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'mp_medical_provider_benefits' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateMpMedicalProviderBenefitsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

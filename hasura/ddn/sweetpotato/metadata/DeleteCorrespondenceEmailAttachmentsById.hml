@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCorrespondenceEmailAttachmentsByIdResponse
+  description: Responses from the 'delete_correspondence_email_attachments_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmailAttachments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCorrespondenceEmailAttachmentsByIdResponse
+    inputTypeName: DeleteCorrespondenceEmailAttachmentsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_correspondence_email_attachments_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCorrespondenceEmailAttachmentsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCorrespondenceEmailAttachmentsById
+  outputType: DeleteCorrespondenceEmailAttachmentsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: CorrespondenceEmailAttachmentsBoolExp
+      description: Delete permission predicate over the
+        'correspondence_email_attachments' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_correspondence_email_attachments_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCorrespondenceEmailAttachmentsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'correspondence_email_attachments' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCorrespondenceEmailAttachmentsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

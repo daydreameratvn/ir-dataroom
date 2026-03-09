@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCompanyRolesByCompanyIdAndRoleResponse
+  description: Responses from the 'delete_company_roles_by_company_id_and_role' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanyRoles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCompanyRolesByCompanyIdAndRoleResponse
+    inputTypeName: DeleteCompanyRolesByCompanyIdAndRoleResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_company_roles_by_company_id_and_role_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCompanyRolesByCompanyIdAndRoleResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCompanyRolesByCompanyIdAndRole
+  outputType: DeleteCompanyRolesByCompanyIdAndRoleResponse!
+  arguments:
+    - name: keyCompanyId
+      type: Uuid!
+    - name: keyRole
+      type: String_1
+    - name: preCheck
+      type: CompanyRolesBoolExp
+      description: Delete permission predicate over the 'company_roles' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_company_roles_by_company_id_and_role
+    argumentMapping:
+      keyCompanyId: key_company_id
+      keyRole: key_role
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCompanyRolesByCompanyIdAndRole
+    rootFieldKind: Mutation
+  description: Delete any row on the 'company_roles' collection using the
+    'company_id' and 'role' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCompanyRolesByCompanyIdAndRole
+  permissions:
+    - role: admin
+      allowExecution: true
+

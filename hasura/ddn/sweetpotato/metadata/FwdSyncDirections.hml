@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdSyncDirections
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: FwdSyncDirections
+    inputTypeName: FwdSyncDirectionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_sync_directions
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdSyncDirections
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdSyncDirectionsBoolExp
+  operand:
+    object:
+      type: FwdSyncDirections
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: fwdSyncLogs
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdSyncDirectionsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdSyncDirectionsAggExp
+  operand:
+    object:
+      aggregatedType: FwdSyncDirections
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdSyncDirectionsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdSyncDirectionsOrderByExp
+  operand:
+    object:
+      orderedType: FwdSyncDirections
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: FwdSyncDirectionsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdSyncDirections
+  objectType: FwdSyncDirections
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_sync_directions
+  filterExpressionType: FwdSyncDirectionsBoolExp
+  aggregateExpression: FwdSyncDirectionsAggExp
+  orderByExpression: FwdSyncDirectionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdSyncDirections
+      subscription:
+        rootField: fwdSyncDirections
+    selectUniques:
+      - queryRootField: fwdSyncDirectionsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: fwdSyncDirectionsByValue
+    filterInputTypeName: FwdSyncDirectionsFilterInput
+    aggregate:
+      queryRootField: fwdSyncDirectionsAggregate
+      subscription:
+        rootField: fwdSyncDirectionsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdSyncDirections
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdSyncLogs
+  sourceType: FwdSyncDirections
+  target:
+    model:
+      name: FwdSyncLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdSyncLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: direction
+  graphql:
+    aggregateFieldName: fwdSyncLogsAggregate
+

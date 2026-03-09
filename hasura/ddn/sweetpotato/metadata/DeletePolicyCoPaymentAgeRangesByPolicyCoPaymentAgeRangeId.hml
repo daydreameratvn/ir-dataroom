@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicyCoPaymentAgeRangesByPolicyCoPaymentAgeRangeIdResponse
+  description: Responses from the
+    'delete_policy_co_payment_age_ranges_by_policy_co_payment_age_range_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyCoPaymentAgeRanges!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicyCoPaymentAgeRangesByPolicyCoPaymentAgeRangeIdResponse
+    inputTypeName: DeletePolicyCoPaymentAgeRangesByPolicyCoPaymentAgeRangeIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_co_payment_age_ranges_by_policy_co_payment_age_range_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicyCoPaymentAgeRangesByPolicyCoPaymentAgeRangeIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicyCoPaymentAgeRangesByPolicyCoPaymentAgeRangeId
+  outputType: DeletePolicyCoPaymentAgeRangesByPolicyCoPaymentAgeRangeIdResponse!
+  arguments:
+    - name: keyPolicyCoPaymentAgeRangeId
+      type: Uuid!
+    - name: preCheck
+      type: PolicyCoPaymentAgeRangesBoolExp
+      description: Delete permission predicate over the 'policy_co_payment_age_ranges'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_co_payment_age_ranges_by_policy_co_payment_age_range_id
+    argumentMapping:
+      keyPolicyCoPaymentAgeRangeId: key_policy_co_payment_age_range_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicyCoPaymentAgeRangesByPolicyCoPaymentAgeRangeId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_co_payment_age_ranges' collection
+    using the 'policy_co_payment_age_range_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicyCoPaymentAgeRangesByPolicyCoPaymentAgeRangeId
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: NotificationOriginTypes
+  description: Origin type enum
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: NotificationOriginTypes
+    inputTypeName: NotificationOriginTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: notification_origin_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: NotificationOriginTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NotificationOriginTypesBoolExp
+  operand:
+    object:
+      type: NotificationOriginTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: notificationNotifications
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NotificationOriginTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: NotificationOriginTypesAggExp
+  operand:
+    object:
+      aggregatedType: NotificationOriginTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: NotificationOriginTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: NotificationOriginTypesOrderByExp
+  operand:
+    object:
+      orderedType: NotificationOriginTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: NotificationOriginTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: NotificationOriginTypes
+  objectType: NotificationOriginTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: notification_origin_types
+  filterExpressionType: NotificationOriginTypesBoolExp
+  aggregateExpression: NotificationOriginTypesAggExp
+  orderByExpression: NotificationOriginTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: notificationOriginTypes
+      subscription:
+        rootField: notificationOriginTypes
+    selectUniques:
+      - queryRootField: notificationOriginTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: notificationOriginTypesByValue
+    filterInputTypeName: NotificationOriginTypesFilterInput
+    aggregate:
+      queryRootField: notificationOriginTypesAggregate
+      subscription:
+        rootField: notificationOriginTypesAggregate
+  description: Origin type enum
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: NotificationOriginTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: notificationNotifications
+  sourceType: NotificationOriginTypes
+  target:
+    model:
+      name: NotificationNotifications
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: NotificationNotificationsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: originType
+  graphql:
+    aggregateFieldName: notificationNotificationsAggregate
+

@@ -1,0 +1,445 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OcrQcInvoiceItems
+  fields:
+    - name: allowedToPay
+      type: Boolean_1!
+    - name: amount
+      type: Bigdecimal
+    - name: amountAfterVat
+      type: Bigdecimal
+    - name: amountBeforeVat
+      type: Bigdecimal
+    - name: batchNumber
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: discountAmount
+      type: Bigdecimal
+    - name: expriedAt
+      type: Timestamptz
+    - name: extraAmount
+      type: Bigdecimal
+    - name: id
+      type: Uuid!
+    - name: itemName
+      type: String_1
+    - name: lineNumber
+      type: Bigdecimal
+    - name: paymentAmount
+      type: Bigdecimal
+    - name: qcInvoiceId
+      type: Uuid!
+    - name: quantity
+      type: Bigdecimal
+    - name: unit
+      type: String_1
+    - name: unitPrice
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: vatAmount
+      type: Bigdecimal
+    - name: vatPercentage
+      type: Bigdecimal
+  graphql:
+    typeName: OcrQcInvoiceItems
+    inputTypeName: OcrQcInvoiceItemsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: ocr_qc_invoice_items
+      fieldMapping:
+        allowedToPay:
+          column:
+            name: allowed_to_pay
+        amount:
+          column:
+            name: amount
+        amountAfterVat:
+          column:
+            name: amount_after_vat
+        amountBeforeVat:
+          column:
+            name: amount_before_vat
+        batchNumber:
+          column:
+            name: batch_number
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        discountAmount:
+          column:
+            name: discount_amount
+        expriedAt:
+          column:
+            name: expried_at
+        extraAmount:
+          column:
+            name: extra_amount
+        id:
+          column:
+            name: id
+        itemName:
+          column:
+            name: item_name
+        lineNumber:
+          column:
+            name: line_number
+        paymentAmount:
+          column:
+            name: payment_amount
+        qcInvoiceId:
+          column:
+            name: qc_invoice_id
+        quantity:
+          column:
+            name: quantity
+        unit:
+          column:
+            name: unit
+        unitPrice:
+          column:
+            name: unit_price
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        vatAmount:
+          column:
+            name: vat_amount
+        vatPercentage:
+          column:
+            name: vat_percentage
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OcrQcInvoiceItems
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - allowedToPay
+          - amount
+          - amountAfterVat
+          - amountBeforeVat
+          - batchNumber
+          - createdAt
+          - createdBy
+          - deletedAt
+          - discountAmount
+          - expriedAt
+          - extraAmount
+          - id
+          - itemName
+          - lineNumber
+          - paymentAmount
+          - qcInvoiceId
+          - quantity
+          - unit
+          - unitPrice
+          - updatedAt
+          - updatedBy
+          - vatAmount
+          - vatPercentage
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OcrQcInvoiceItemsBoolExp
+  operand:
+    object:
+      type: OcrQcInvoiceItems
+      comparableFields:
+        - fieldName: allowedToPay
+          booleanExpressionType: BoolBoolExp
+        - fieldName: amount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: amountAfterVat
+          booleanExpressionType: NumericBoolExp
+        - fieldName: amountBeforeVat
+          booleanExpressionType: NumericBoolExp
+        - fieldName: batchNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: discountAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: expriedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: extraAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: itemName
+          booleanExpressionType: TextBoolExp
+        - fieldName: lineNumber
+          booleanExpressionType: NumericBoolExp
+        - fieldName: paymentAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: qcInvoiceId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: quantity
+          booleanExpressionType: NumericBoolExp
+        - fieldName: unit
+          booleanExpressionType: TextBoolExp
+        - fieldName: unitPrice
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: vatAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: vatPercentage
+          booleanExpressionType: NumericBoolExp
+      comparableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: ocrQcInvoice
+        - relationshipName: identityUserByUpdatedBy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OcrQcInvoiceItemsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OcrQcInvoiceItemsAggExp
+  operand:
+    object:
+      aggregatedType: OcrQcInvoiceItems
+      aggregatableFields:
+        - fieldName: allowedToPay
+          aggregateExpression: BoolAggExp
+        - fieldName: amount
+          aggregateExpression: NumericAggExp
+        - fieldName: amountAfterVat
+          aggregateExpression: NumericAggExp
+        - fieldName: amountBeforeVat
+          aggregateExpression: NumericAggExp
+        - fieldName: batchNumber
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: discountAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: expriedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: extraAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: itemName
+          aggregateExpression: TextAggExp
+        - fieldName: lineNumber
+          aggregateExpression: NumericAggExp
+        - fieldName: paymentAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: qcInvoiceId
+          aggregateExpression: UuidAggExp
+        - fieldName: quantity
+          aggregateExpression: NumericAggExp
+        - fieldName: unit
+          aggregateExpression: TextAggExp
+        - fieldName: unitPrice
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: vatAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: vatPercentage
+          aggregateExpression: NumericAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OcrQcInvoiceItemsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OcrQcInvoiceItemsOrderByExp
+  operand:
+    object:
+      orderedType: OcrQcInvoiceItems
+      orderableFields:
+        - fieldName: allowedToPay
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: amount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: amountAfterVat
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: amountBeforeVat
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: batchNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: discountAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: expriedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: extraAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: itemName
+          orderByExpression: String1OrderByExp
+        - fieldName: lineNumber
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: paymentAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: qcInvoiceId
+          orderByExpression: UuidOrderByExp
+        - fieldName: quantity
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: unit
+          orderByExpression: String1OrderByExp
+        - fieldName: unitPrice
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: vatAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: vatPercentage
+          orderByExpression: BigdecimalOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: ocrQcInvoice
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: OcrQcInvoiceItemsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OcrQcInvoiceItems
+  objectType: OcrQcInvoiceItems
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: ocr_qc_invoice_items
+  filterExpressionType: OcrQcInvoiceItemsBoolExp
+  aggregateExpression: OcrQcInvoiceItemsAggExp
+  orderByExpression: OcrQcInvoiceItemsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: ocrQcInvoiceItems
+      subscription:
+        rootField: ocrQcInvoiceItems
+    selectUniques:
+      - queryRootField: ocrQcInvoiceItemsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: ocrQcInvoiceItemsById
+    filterInputTypeName: OcrQcInvoiceItemsFilterInput
+    aggregate:
+      queryRootField: ocrQcInvoiceItemsAggregate
+      subscription:
+        rootField: ocrQcInvoiceItemsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OcrQcInvoiceItems
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: OcrQcInvoiceItems
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrQcInvoice
+  sourceType: OcrQcInvoiceItems
+  target:
+    model:
+      name: OcrQcInvoices
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: qcInvoiceId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: OcrQcInvoiceItems
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+

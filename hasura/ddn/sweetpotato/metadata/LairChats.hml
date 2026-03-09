@@ -1,0 +1,259 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LairChats
+  description: Store conversational data for the Vercel AI SDK
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: objectId
+      type: Uuid
+    - name: title
+      type: String_1
+    - name: type
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: LairChats
+    inputTypeName: LairChatsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: lair_chats
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        objectId:
+          column:
+            name: object_id
+        title:
+          column:
+            name: title
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LairChats
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - objectId
+          - title
+          - type
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: LairChatsBoolExp
+  operand:
+    object:
+      type: LairChats
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: objectId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: title
+          booleanExpressionType: TextBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: lairChatType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: LairChatsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: LairChatsAggExp
+  operand:
+    object:
+      aggregatedType: LairChats
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: objectId
+          aggregateExpression: UuidAggExp
+        - fieldName: title
+          aggregateExpression: TextAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: LairChatsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: LairChatsOrderByExp
+  operand:
+    object:
+      orderedType: LairChats
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: objectId
+          orderByExpression: UuidOrderByExp
+        - fieldName: title
+          orderByExpression: String1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: lairChatType
+  graphql:
+    expressionTypeName: LairChatsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: LairChats
+  objectType: LairChats
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: lair_chats
+  filterExpressionType: LairChatsBoolExp
+  aggregateExpression: LairChatsAggExp
+  orderByExpression: LairChatsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: lairChats
+      subscription:
+        rootField: lairChats
+    selectUniques:
+      - queryRootField: lairChatsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: lairChatsById
+    filterInputTypeName: LairChatsFilterInput
+    aggregate:
+      queryRootField: lairChatsAggregate
+      subscription:
+        rootField: lairChatsAggregate
+  description: Store conversational data for the Vercel AI SDK
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: LairChats
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: LairChats
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: objectId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: lairChatType
+  sourceType: LairChats
+  target:
+    model:
+      name: LairChatTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

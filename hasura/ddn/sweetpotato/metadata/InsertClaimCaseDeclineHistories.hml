@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseDeclineHistoriesObject
+  fields:
+    - name: claimCaseId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: declineCode
+      type: String_1
+    - name: declineDescription
+      type: String_1
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: deletedReason
+      type: String_1
+    - name: id
+      type: Uuid
+  graphql:
+    typeName: InsertClaimCaseDeclineHistoriesObject
+    inputTypeName: InsertClaimCaseDeclineHistoriesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_decline_histories_object
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        declineCode:
+          column:
+            name: decline_code
+        declineDescription:
+          column:
+            name: decline_description
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        deletedReason:
+          column:
+            name: deleted_reason
+        id:
+          column:
+            name: id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseDeclineHistoriesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - createdBy
+          - declineCode
+          - declineDescription
+          - deletedAt
+          - deletedBy
+          - deletedReason
+          - id
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseDeclineHistoriesResponse
+  description: Responses from the 'insert_claim_case_decline_histories' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseDeclineHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCaseDeclineHistoriesResponse
+    inputTypeName: InsertClaimCaseDeclineHistoriesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_decline_histories_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseDeclineHistoriesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCaseDeclineHistories
+  outputType: InsertClaimCaseDeclineHistoriesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCaseDeclineHistoriesObject!]!"
+    - name: postCheck
+      type: ClaimCaseDeclineHistoriesBoolExp
+      description: Insert permission predicate over the 'claim_case_decline_histories'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_case_decline_histories
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCaseDeclineHistories
+    rootFieldKind: Mutation
+  description: Insert into the claim_case_decline_histories table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCaseDeclineHistories
+  permissions:
+    - role: admin
+      allowExecution: true
+

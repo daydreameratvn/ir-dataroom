@@ -1,0 +1,133 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseInputDiagnosesObject
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: icdMetadataId
+      type: Uuid!
+    - name: id
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertClaimCaseInputDiagnosesObject
+    inputTypeName: InsertClaimCaseInputDiagnosesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_input_diagnoses_object
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        icdMetadataId:
+          column:
+            name: icd_metadata_id
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseInputDiagnosesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - deletedAt
+          - icdMetadataId
+          - id
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseInputDiagnosesResponse
+  description: Responses from the 'insert_claim_case_input_diagnoses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseInputDiagnoses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCaseInputDiagnosesResponse
+    inputTypeName: InsertClaimCaseInputDiagnosesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_input_diagnoses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseInputDiagnosesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCaseInputDiagnoses
+  outputType: InsertClaimCaseInputDiagnosesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCaseInputDiagnosesObject!]!"
+    - name: postCheck
+      type: ClaimCaseInputDiagnosesBoolExp
+      description: Insert permission predicate over the 'claim_case_input_diagnoses'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_case_input_diagnoses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCaseInputDiagnoses
+    rootFieldKind: Mutation
+  description: Insert into the claim_case_input_diagnoses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCaseInputDiagnoses
+  permissions:
+    - role: admin
+      allowExecution: true
+

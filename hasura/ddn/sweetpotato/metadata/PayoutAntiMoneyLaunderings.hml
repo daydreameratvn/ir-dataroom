@@ -1,0 +1,329 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutAntiMoneyLaunderings
+  fields:
+    - name: checkedAt
+      type: Timestamptz
+    - name: checkedBy
+      type: Uuid
+    - name: checkerRemark
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: histories
+      type: Json
+    - name: id
+      type: Uuid!
+    - name: moneyLaunderingSuspectId
+      type: Uuid
+    - name: paymentRequestItemId
+      type: Uuid
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PayoutAntiMoneyLaunderings
+    inputTypeName: PayoutAntiMoneyLaunderingsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_anti_money_launderings
+      fieldMapping:
+        checkedAt:
+          column:
+            name: checked_at
+        checkedBy:
+          column:
+            name: checked_by
+        checkerRemark:
+          column:
+            name: checker_remark
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        histories:
+          column:
+            name: histories
+        id:
+          column:
+            name: id
+        moneyLaunderingSuspectId:
+          column:
+            name: money_laundering_suspect_id
+        paymentRequestItemId:
+          column:
+            name: payment_request_item_id
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutAntiMoneyLaunderings
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - checkedAt
+          - checkedBy
+          - checkerRemark
+          - createdAt
+          - deletedAt
+          - histories
+          - id
+          - moneyLaunderingSuspectId
+          - paymentRequestItemId
+          - status
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutAntiMoneyLaunderingsBoolExp
+  operand:
+    object:
+      type: PayoutAntiMoneyLaunderings
+      comparableFields:
+        - fieldName: checkedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: checkedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: checkerRemark
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: histories
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: moneyLaunderingSuspectId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paymentRequestItemId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: payoutActionLogs
+        - relationshipName: payoutMoneyLaunderingSuspect
+        - relationshipName: payoutPaymentRequestItem
+        - relationshipName: payoutAntiMoneyLaunderingStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutAntiMoneyLaunderingsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutAntiMoneyLaunderingsAggExp
+  operand:
+    object:
+      aggregatedType: PayoutAntiMoneyLaunderings
+      aggregatableFields:
+        - fieldName: checkedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: checkedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: checkerRemark
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: histories
+          aggregateExpression: JsonbAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: moneyLaunderingSuspectId
+          aggregateExpression: UuidAggExp
+        - fieldName: paymentRequestItemId
+          aggregateExpression: UuidAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutAntiMoneyLaunderingsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutAntiMoneyLaunderingsOrderByExp
+  operand:
+    object:
+      orderedType: PayoutAntiMoneyLaunderings
+      orderableFields:
+        - fieldName: checkedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: checkedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: checkerRemark
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: histories
+          orderByExpression: JsonOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: moneyLaunderingSuspectId
+          orderByExpression: UuidOrderByExp
+        - fieldName: paymentRequestItemId
+          orderByExpression: UuidOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: payoutMoneyLaunderingSuspect
+        - relationshipName: payoutPaymentRequestItem
+        - relationshipName: payoutAntiMoneyLaunderingStatus
+  graphql:
+    expressionTypeName: PayoutAntiMoneyLaunderingsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutAntiMoneyLaunderings
+  objectType: PayoutAntiMoneyLaunderings
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_anti_money_launderings
+  filterExpressionType: PayoutAntiMoneyLaunderingsBoolExp
+  aggregateExpression: PayoutAntiMoneyLaunderingsAggExp
+  orderByExpression: PayoutAntiMoneyLaunderingsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutAntiMoneyLaunderings
+      subscription:
+        rootField: payoutAntiMoneyLaunderings
+    selectUniques:
+      - queryRootField: payoutAntiMoneyLaunderingsByPaymentRequestItemId
+        uniqueIdentifier:
+          - paymentRequestItemId
+        subscription:
+          rootField: payoutAntiMoneyLaunderingsByPaymentRequestItemId
+      - queryRootField: payoutAntiMoneyLaunderingsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: payoutAntiMoneyLaunderingsById
+    filterInputTypeName: PayoutAntiMoneyLaunderingsFilterInput
+    aggregate:
+      queryRootField: payoutAntiMoneyLaunderingsAggregate
+      subscription:
+        rootField: payoutAntiMoneyLaunderingsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutAntiMoneyLaunderings
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutActionLogs
+  sourceType: PayoutAntiMoneyLaunderings
+  target:
+    model:
+      name: PayoutActionLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutActionLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: antiMoneyLaunderingId
+  graphql:
+    aggregateFieldName: payoutActionLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutMoneyLaunderingSuspect
+  sourceType: PayoutAntiMoneyLaunderings
+  target:
+    model:
+      name: PayoutMoneyLaunderingSuspects
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: moneyLaunderingSuspectId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestItem
+  sourceType: PayoutAntiMoneyLaunderings
+  target:
+    model:
+      name: PayoutPaymentRequestItems
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentRequestItemId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutAntiMoneyLaunderingStatus
+  sourceType: PayoutAntiMoneyLaunderings
+  target:
+    model:
+      name: PayoutAntiMoneyLaunderingStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+

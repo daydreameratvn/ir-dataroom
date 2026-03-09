@@ -1,0 +1,259 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StpClaimCaseStpResults
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: isStp
+      type: Boolean_1!
+    - name: stpExecutionId
+      type: Uuid
+    - name: stpResult
+      type: Json
+    - name: stpRuleSetId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: StpClaimCaseStpResults
+    inputTypeName: StpClaimCaseStpResultsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: stp_claim_case_stp_results
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        isStp:
+          column:
+            name: is_stp
+        stpExecutionId:
+          column:
+            name: stp_execution_id
+        stpResult:
+          column:
+            name: stp_result
+        stpRuleSetId:
+          column:
+            name: stp_rule_set_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StpClaimCaseStpResults
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - isStp
+          - stpExecutionId
+          - stpResult
+          - stpRuleSetId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StpClaimCaseStpResultsBoolExp
+  operand:
+    object:
+      type: StpClaimCaseStpResults
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: isStp
+          booleanExpressionType: BoolBoolExp
+        - fieldName: stpExecutionId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: stpResult
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: stpRuleSetId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: stpClaimCaseStpExecution
+        - relationshipName: stpStpRuleSet
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StpClaimCaseStpResultsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: StpClaimCaseStpResultsAggExp
+  operand:
+    object:
+      aggregatedType: StpClaimCaseStpResults
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: isStp
+          aggregateExpression: BoolAggExp
+        - fieldName: stpExecutionId
+          aggregateExpression: UuidAggExp
+        - fieldName: stpResult
+          aggregateExpression: JsonbAggExp
+        - fieldName: stpRuleSetId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: StpClaimCaseStpResultsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: StpClaimCaseStpResultsOrderByExp
+  operand:
+    object:
+      orderedType: StpClaimCaseStpResults
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: isStp
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: stpExecutionId
+          orderByExpression: UuidOrderByExp
+        - fieldName: stpResult
+          orderByExpression: JsonOrderByExp
+        - fieldName: stpRuleSetId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: stpClaimCaseStpExecution
+        - relationshipName: stpStpRuleSet
+  graphql:
+    expressionTypeName: StpClaimCaseStpResultsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: StpClaimCaseStpResults
+  objectType: StpClaimCaseStpResults
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: stp_claim_case_stp_results
+  filterExpressionType: StpClaimCaseStpResultsBoolExp
+  aggregateExpression: StpClaimCaseStpResultsAggExp
+  orderByExpression: StpClaimCaseStpResultsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: stpClaimCaseStpResults
+      subscription:
+        rootField: stpClaimCaseStpResults
+    selectUniques:
+      - queryRootField: stpClaimCaseStpResultsByClaimCaseStpResultsPkey
+        uniqueIdentifier:
+          - claimCaseId
+          - stpRuleSetId
+        subscription:
+          rootField: stpClaimCaseStpResultsByClaimCaseStpResultsPkey
+      - queryRootField: stpClaimCaseStpResultsByStpExecutionId
+        uniqueIdentifier:
+          - stpExecutionId
+        subscription:
+          rootField: stpClaimCaseStpResultsByStpExecutionId
+    filterInputTypeName: StpClaimCaseStpResultsFilterInput
+    aggregate:
+      queryRootField: stpClaimCaseStpResultsAggregate
+      subscription:
+        rootField: stpClaimCaseStpResultsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: StpClaimCaseStpResults
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: StpClaimCaseStpResults
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpClaimCaseStpExecution
+  sourceType: StpClaimCaseStpResults
+  target:
+    model:
+      name: StpClaimCaseStpExecutions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: stpExecutionId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpStpRuleSet
+  sourceType: StpClaimCaseStpResults
+  target:
+    model:
+      name: StpStpRuleSets
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: stpRuleSetId
+      target:
+        modelField:
+          - fieldName: id
+

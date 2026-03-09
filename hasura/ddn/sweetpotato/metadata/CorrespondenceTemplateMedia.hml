@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceTemplateMedia
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CorrespondenceTemplateMedia
+    inputTypeName: CorrespondenceTemplateMediaInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_template_media
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceTemplateMedia
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceTemplateMediaBoolExp
+  operand:
+    object:
+      type: CorrespondenceTemplateMedia
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: correspondenceTemplates
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceTemplateMediaBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceTemplateMediaAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceTemplateMedia
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceTemplateMediaAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceTemplateMediaOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceTemplateMedia
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CorrespondenceTemplateMediaOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceTemplateMedia
+  objectType: CorrespondenceTemplateMedia
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_template_media
+  filterExpressionType: CorrespondenceTemplateMediaBoolExp
+  aggregateExpression: CorrespondenceTemplateMediaAggExp
+  orderByExpression: CorrespondenceTemplateMediaOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceTemplateMedia
+      subscription:
+        rootField: correspondenceTemplateMedia
+    selectUniques:
+      - queryRootField: correspondenceTemplateMediaByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: correspondenceTemplateMediaByValue
+    filterInputTypeName: CorrespondenceTemplateMediaFilterInput
+    aggregate:
+      queryRootField: correspondenceTemplateMediaAggregate
+      subscription:
+        rootField: correspondenceTemplateMediaAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceTemplateMedia
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceTemplates
+  sourceType: CorrespondenceTemplateMedia
+  target:
+    model:
+      name: CorrespondenceTemplates
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceTemplatesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: medium
+  graphql:
+    aggregateFieldName: correspondenceTemplatesAggregate
+

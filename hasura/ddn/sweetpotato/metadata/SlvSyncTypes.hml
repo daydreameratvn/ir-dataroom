@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SlvSyncTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: SlvSyncTypes
+    inputTypeName: SlvSyncTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: slv_sync_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SlvSyncTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SlvSyncTypesBoolExp
+  operand:
+    object:
+      type: SlvSyncTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: slvSyncLogs
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SlvSyncTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SlvSyncTypesAggExp
+  operand:
+    object:
+      aggregatedType: SlvSyncTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SlvSyncTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SlvSyncTypesOrderByExp
+  operand:
+    object:
+      orderedType: SlvSyncTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: SlvSyncTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SlvSyncTypes
+  objectType: SlvSyncTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: slv_sync_types
+  filterExpressionType: SlvSyncTypesBoolExp
+  aggregateExpression: SlvSyncTypesAggExp
+  orderByExpression: SlvSyncTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: slvSyncTypes
+      subscription:
+        rootField: slvSyncTypes
+    selectUniques:
+      - queryRootField: slvSyncTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: slvSyncTypesByValue
+    filterInputTypeName: SlvSyncTypesFilterInput
+    aggregate:
+      queryRootField: slvSyncTypesAggregate
+      subscription:
+        rootField: slvSyncTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SlvSyncTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvSyncLogs
+  sourceType: SlvSyncTypes
+  target:
+    model:
+      name: SlvSyncLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvSyncLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: slvSyncLogsAggregate
+

@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdClaimCaseStatusMappingByFwdStatusCodeAndPpyStatusCodeResponse
+  description: Responses from the
+    'delete_fwd_claim_case_status_mapping_by_fwd_status_code_and_ppy_status_code'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdClaimCaseStatusMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdClaimCaseStatusMappingByFwdStatusCodeAndPpyStatusCodeResponse
+    inputTypeName: DeleteFwdClaimCaseStatusMappingByFwdStatusCodeAndPpyStatusCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_claim_case_status_mapping_by_fwd_status_code_and_ppy_status_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdClaimCaseStatusMappingByFwdStatusCodeAndPpyStatusCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdClaimCaseStatusMappingByFwdStatusCodeAndPpyStatusCode
+  outputType: DeleteFwdClaimCaseStatusMappingByFwdStatusCodeAndPpyStatusCodeResponse!
+  arguments:
+    - name: keyFwdStatusCode
+      type: String_1!
+    - name: keyPpyStatusCode
+      type: String_1!
+    - name: preCheck
+      type: FwdClaimCaseStatusMappingBoolExp
+      description: Delete permission predicate over the
+        'fwd_claim_case_status_mapping' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_claim_case_status_mapping_by_fwd_status_code_and_ppy_status_code
+    argumentMapping:
+      keyFwdStatusCode: key_fwd_status_code
+      keyPpyStatusCode: key_ppy_status_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdClaimCaseStatusMappingByFwdStatusCodeAndPpyStatusCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_claim_case_status_mapping' collection
+    using the 'fwd_status_code' and 'ppy_status_code' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdClaimCaseStatusMappingByFwdStatusCodeAndPpyStatusCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

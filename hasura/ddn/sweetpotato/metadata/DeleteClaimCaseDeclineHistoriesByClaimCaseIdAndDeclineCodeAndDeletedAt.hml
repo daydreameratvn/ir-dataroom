@@ -1,0 +1,82 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimCaseDeclineHistoriesByClaimCaseIdAndDeclineCodeAndDeletedAtResponse
+  description: Responses from the
+    'delete_claim_case_decline_histories_by_claim_case_id_and_decline_code_and_deleted_at'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseDeclineHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimCaseDeclineHistoriesByClaimCaseIdAndDeclineCodeAndDeletedAtResponse
+    inputTypeName: DeleteClaimCaseDeclineHistoriesByClaimCaseIdAndDeclineCodeAndDeletedAtResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_case_decline_histories_by_claim_case_id_and_decline_code_and_deleted_at_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimCaseDeclineHistoriesByClaimCaseIdAndDeclineCodeAndDeletedAtResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimCaseDeclineHistoriesByClaimCaseIdAndDeclineCodeAndDeletedAt
+  outputType: DeleteClaimCaseDeclineHistoriesByClaimCaseIdAndDeclineCodeAndDeletedAtResponse!
+  arguments:
+    - name: keyClaimCaseId
+      type: Uuid
+    - name: keyDeclineCode
+      type: String_1
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: preCheck
+      type: ClaimCaseDeclineHistoriesBoolExp
+      description: Delete permission predicate over the 'claim_case_decline_histories'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_case_decline_histories_by_claim_case_id_and_decline_code_and_deleted_at
+    argumentMapping:
+      keyClaimCaseId: key_claim_case_id
+      keyDeclineCode: key_decline_code
+      keyDeletedAt: key_deleted_at
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimCaseDeclineHistoriesByClaimCaseIdAndDeclineCodeAndDeletedAt
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_case_decline_histories' collection
+    using the 'claim_case_id', 'decline_code' and 'deleted_at' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimCaseDeclineHistoriesByClaimCaseIdAndDeclineCodeAndDeletedAt
+  permissions:
+    - role: admin
+      allowExecution: true
+

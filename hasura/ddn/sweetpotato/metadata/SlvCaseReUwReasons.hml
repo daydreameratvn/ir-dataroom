@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SlvCaseReUwReasons
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: SlvCaseReUwReasons
+    inputTypeName: SlvCaseReUwReasonsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: slv_case_re_uw_reasons
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SlvCaseReUwReasons
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SlvCaseReUwReasonsBoolExp
+  operand:
+    object:
+      type: SlvCaseReUwReasons
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: slvClaimCaseSameEventGroups
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SlvCaseReUwReasonsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SlvCaseReUwReasonsAggExp
+  operand:
+    object:
+      aggregatedType: SlvCaseReUwReasons
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SlvCaseReUwReasonsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SlvCaseReUwReasonsOrderByExp
+  operand:
+    object:
+      orderedType: SlvCaseReUwReasons
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: SlvCaseReUwReasonsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SlvCaseReUwReasons
+  objectType: SlvCaseReUwReasons
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: slv_case_re_uw_reasons
+  filterExpressionType: SlvCaseReUwReasonsBoolExp
+  aggregateExpression: SlvCaseReUwReasonsAggExp
+  orderByExpression: SlvCaseReUwReasonsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: slvCaseReUwReasons
+      subscription:
+        rootField: slvCaseReUwReasons
+    selectUniques:
+      - queryRootField: slvCaseReUwReasonsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: slvCaseReUwReasonsByValue
+    filterInputTypeName: SlvCaseReUwReasonsFilterInput
+    aggregate:
+      queryRootField: slvCaseReUwReasonsAggregate
+      subscription:
+        rootField: slvCaseReUwReasonsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SlvCaseReUwReasons
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvClaimCaseSameEventGroups
+  sourceType: SlvCaseReUwReasons
+  target:
+    model:
+      name: SlvClaimCaseSameEventGroups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvClaimCaseSameEventGroupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: caseReasonReRw
+  graphql:
+    aggregateFieldName: slvClaimCaseSameEventGroupsAggregate
+

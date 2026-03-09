@@ -1,0 +1,176 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdPackageCodeMapping
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: packageCode
+      type: String_1!
+    - name: planCode
+      type: String_1!
+    - name: ppyPackageCode
+      type: String_1!
+  graphql:
+    typeName: FwdPackageCodeMapping
+    inputTypeName: FwdPackageCodeMappingInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_package_code_mapping
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        packageCode:
+          column:
+            name: package_code
+        planCode:
+          column:
+            name: plan_code
+        ppyPackageCode:
+          column:
+            name: ppy_package_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdPackageCodeMapping
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - packageCode
+          - planCode
+          - ppyPackageCode
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdPackageCodeMappingBoolExp
+  operand:
+    object:
+      type: FwdPackageCodeMapping
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: packageCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: planCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: ppyPackageCode
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdPackageCodeMappingBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdPackageCodeMappingAggExp
+  operand:
+    object:
+      aggregatedType: FwdPackageCodeMapping
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: packageCode
+          aggregateExpression: TextAggExp
+        - fieldName: planCode
+          aggregateExpression: TextAggExp
+        - fieldName: ppyPackageCode
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdPackageCodeMappingAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdPackageCodeMappingOrderByExp
+  operand:
+    object:
+      orderedType: FwdPackageCodeMapping
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: packageCode
+          orderByExpression: String1OrderByExp
+        - fieldName: planCode
+          orderByExpression: String1OrderByExp
+        - fieldName: ppyPackageCode
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: FwdPackageCodeMappingOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdPackageCodeMapping
+  objectType: FwdPackageCodeMapping
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_package_code_mapping
+  filterExpressionType: FwdPackageCodeMappingBoolExp
+  aggregateExpression: FwdPackageCodeMappingAggExp
+  orderByExpression: FwdPackageCodeMappingOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdPackageCodeMapping
+      subscription:
+        rootField: fwdPackageCodeMapping
+    selectUniques:
+      - queryRootField: fwdPackageCodeMappingById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: fwdPackageCodeMappingById
+      - queryRootField: fwdPackageCodeMappingByPackageCodeMappingPlanCodePackageCodePpyPackageCodeKe
+        uniqueIdentifier:
+          - packageCode
+          - planCode
+          - ppyPackageCode
+        subscription:
+          rootField: fwdPackageCodeMappingByPackageCodeMappingPlanCodePackageCodePpyPackageCodeKe
+    filterInputTypeName: FwdPackageCodeMappingFilterInput
+    aggregate:
+      queryRootField: fwdPackageCodeMappingAggregate
+      subscription:
+        rootField: fwdPackageCodeMappingAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdPackageCodeMapping
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

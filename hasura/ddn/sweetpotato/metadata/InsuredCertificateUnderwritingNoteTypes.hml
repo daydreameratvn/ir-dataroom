@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredCertificateUnderwritingNoteTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsuredCertificateUnderwritingNoteTypes
+    inputTypeName: InsuredCertificateUnderwritingNoteTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_certificate_underwriting_note_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredCertificateUnderwritingNoteTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredCertificateUnderwritingNoteTypesBoolExp
+  operand:
+    object:
+      type: InsuredCertificateUnderwritingNoteTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: insuredCertificateUnderwritingNotes
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredCertificateUnderwritingNoteTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredCertificateUnderwritingNoteTypesAggExp
+  operand:
+    object:
+      aggregatedType: InsuredCertificateUnderwritingNoteTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredCertificateUnderwritingNoteTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredCertificateUnderwritingNoteTypesOrderByExp
+  operand:
+    object:
+      orderedType: InsuredCertificateUnderwritingNoteTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: InsuredCertificateUnderwritingNoteTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredCertificateUnderwritingNoteTypes
+  objectType: InsuredCertificateUnderwritingNoteTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_certificate_underwriting_note_types
+  filterExpressionType: InsuredCertificateUnderwritingNoteTypesBoolExp
+  aggregateExpression: InsuredCertificateUnderwritingNoteTypesAggExp
+  orderByExpression: InsuredCertificateUnderwritingNoteTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredCertificateUnderwritingNoteTypes
+      subscription:
+        rootField: insuredCertificateUnderwritingNoteTypes
+    selectUniques:
+      - queryRootField: insuredCertificateUnderwritingNoteTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: insuredCertificateUnderwritingNoteTypesByValue
+    filterInputTypeName: InsuredCertificateUnderwritingNoteTypesFilterInput
+    aggregate:
+      queryRootField: insuredCertificateUnderwritingNoteTypesAggregate
+      subscription:
+        rootField: insuredCertificateUnderwritingNoteTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredCertificateUnderwritingNoteTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateUnderwritingNotes
+  sourceType: InsuredCertificateUnderwritingNoteTypes
+  target:
+    model:
+      name: InsuredCertificateUnderwritingNotes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredCertificateUnderwritingNotesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: insuredCertificateUnderwritingNotesAggregate
+

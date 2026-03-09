@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMetricSurveysByIdResponse
+  description: Responses from the 'delete_metric_surveys_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetricSurveys!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMetricSurveysByIdResponse
+    inputTypeName: DeleteMetricSurveysByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_metric_surveys_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMetricSurveysByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMetricSurveysById
+  outputType: DeleteMetricSurveysByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: MetricSurveysBoolExp
+      description: Delete permission predicate over the 'metric_surveys' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_metric_surveys_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMetricSurveysById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'metric_surveys' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMetricSurveysById
+  permissions:
+    - role: admin
+      allowExecution: true
+

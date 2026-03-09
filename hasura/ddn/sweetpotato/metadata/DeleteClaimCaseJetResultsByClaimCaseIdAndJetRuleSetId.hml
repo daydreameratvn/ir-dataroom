@@ -1,0 +1,78 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimCaseJetResultsByClaimCaseIdAndJetRuleSetIdResponse
+  description: Responses from the
+    'delete_claim_case_jet_results_by_claim_case_id_and_jet_rule_set_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseJetResults!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimCaseJetResultsByClaimCaseIdAndJetRuleSetIdResponse
+    inputTypeName: DeleteClaimCaseJetResultsByClaimCaseIdAndJetRuleSetIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_case_jet_results_by_claim_case_id_and_jet_rule_set_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimCaseJetResultsByClaimCaseIdAndJetRuleSetIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimCaseJetResultsByClaimCaseIdAndJetRuleSetId
+  outputType: DeleteClaimCaseJetResultsByClaimCaseIdAndJetRuleSetIdResponse!
+  arguments:
+    - name: keyClaimCaseId
+      type: Uuid!
+    - name: keyJetRuleSetId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimCaseJetResultsBoolExp
+      description: Delete permission predicate over the 'claim_case_jet_results' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_case_jet_results_by_claim_case_id_and_jet_rule_set_id
+    argumentMapping:
+      keyClaimCaseId: key_claim_case_id
+      keyJetRuleSetId: key_jet_rule_set_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimCaseJetResultsByClaimCaseIdAndJetRuleSetId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_case_jet_results' collection using the
+    'claim_case_id' and 'jet_rule_set_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimCaseJetResultsByClaimCaseIdAndJetRuleSetId
+  permissions:
+    - role: admin
+      allowExecution: true
+

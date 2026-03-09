@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsuredCertificateAgentsByIdUpdateColumns
+  description: Update the columns of the 'insured_certificate_agents' collection
+  fields:
+    - name: agentId
+      type: UpdateColumnInsuredCertificateAgentsAgentId
+      description: Update the 'agent_id' column in the 'insured_certificate_agents'
+        collection.
+    - name: channel
+      type: UpdateColumnInsuredCertificateAgentsChannel
+      description: Update the 'channel' column in the 'insured_certificate_agents'
+        collection.
+    - name: createdAt
+      type: UpdateColumnInsuredCertificateAgentsCreatedAt
+      description: Update the 'created_at' column in the 'insured_certificate_agents'
+        collection.
+    - name: deletedAt
+      type: UpdateColumnInsuredCertificateAgentsDeletedAt
+      description: Update the 'deleted_at' column in the 'insured_certificate_agents'
+        collection.
+    - name: id
+      type: UpdateColumnInsuredCertificateAgentsId
+      description: Update the 'id' column in the 'insured_certificate_agents' collection.
+    - name: insuredCertificateId
+      type: UpdateColumnInsuredCertificateAgentsInsuredCertificateId
+      description: Update the 'insured_certificate_id' column in the
+        'insured_certificate_agents' collection.
+    - name: type
+      type: UpdateColumnInsuredCertificateAgentsType
+      description: Update the 'type' column in the 'insured_certificate_agents' collection.
+    - name: updatedAt
+      type: UpdateColumnInsuredCertificateAgentsUpdatedAt
+      description: Update the 'updated_at' column in the 'insured_certificate_agents'
+        collection.
+  graphql:
+    typeName: UpdateInsuredCertificateAgentsByIdUpdateColumns
+    inputTypeName: UpdateInsuredCertificateAgentsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insured_certificate_agents_by_id_update_columns
+      fieldMapping:
+        agentId:
+          column:
+            name: agent_id
+        channel:
+          column:
+            name: channel
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsuredCertificateAgentsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - agentId
+          - channel
+          - createdAt
+          - deletedAt
+          - id
+          - insuredCertificateId
+          - type
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsuredCertificateAgentsByIdResponse
+  description: Responses from the 'update_insured_certificate_agents_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateAgents!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateInsuredCertificateAgentsByIdResponse
+    inputTypeName: UpdateInsuredCertificateAgentsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insured_certificate_agents_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsuredCertificateAgentsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateInsuredCertificateAgentsById
+  outputType: UpdateInsuredCertificateAgentsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: InsuredCertificateAgentsBoolExp
+      description: Update permission post-condition predicate over the
+        'insured_certificate_agents' collection
+    - name: preCheck
+      type: InsuredCertificateAgentsBoolExp
+      description: Update permission pre-condition predicate over the
+        'insured_certificate_agents' collection
+    - name: updateColumns
+      type: UpdateInsuredCertificateAgentsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_insured_certificate_agents_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateInsuredCertificateAgentsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'insured_certificate_agents' collection using
+    the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateInsuredCertificateAgentsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

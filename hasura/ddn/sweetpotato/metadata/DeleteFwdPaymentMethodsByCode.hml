@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdPaymentMethodsByCodeResponse
+  description: Responses from the 'delete_fwd_payment_methods_by_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdPaymentMethods!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdPaymentMethodsByCodeResponse
+    inputTypeName: DeleteFwdPaymentMethodsByCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_payment_methods_by_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdPaymentMethodsByCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdPaymentMethodsByCode
+  outputType: DeleteFwdPaymentMethodsByCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: preCheck
+      type: FwdPaymentMethodsBoolExp
+      description: Delete permission predicate over the 'fwd_payment_methods' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_payment_methods_by_code
+    argumentMapping:
+      keyCode: key_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdPaymentMethodsByCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_payment_methods' collection using the 'code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdPaymentMethodsByCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

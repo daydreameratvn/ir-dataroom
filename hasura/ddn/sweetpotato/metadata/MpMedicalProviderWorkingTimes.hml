@@ -1,0 +1,353 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProviderWorkingTimes
+  description: Lịch làm việc của cơ sở y tế theo ngày trong tuần và các ngày đặc
+    biệt lễ tết trong năm
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: date
+      type: Date
+    - name: dayOfMonth
+      type: Int32
+    - name: dayOfWeek
+      type: Int32
+    - name: deletedAt
+      type: Timestamptz
+    - name: fromTime
+      type: String_1!
+    - name: medicalProviderId
+      type: Uuid!
+    - name: medicalProviderWorkingTimeId
+      type: Uuid!
+    - name: monthOfYear
+      type: Int32
+    - name: status
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: timePeriod
+      type: String_1!
+    - name: toTime
+      type: String_1!
+    - name: type
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: MpMedicalProviderWorkingTimes
+    inputTypeName: MpMedicalProviderWorkingTimesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_provider_working_times
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        date:
+          column:
+            name: date
+        dayOfMonth:
+          column:
+            name: day_of_month
+        dayOfWeek:
+          column:
+            name: day_of_week
+        deletedAt:
+          column:
+            name: deleted_at
+        fromTime:
+          column:
+            name: from_time
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        medicalProviderWorkingTimeId:
+          column:
+            name: medical_provider_working_time_id
+        monthOfYear:
+          column:
+            name: month_of_year
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        timePeriod:
+          column:
+            name: time_period
+        toTime:
+          column:
+            name: to_time
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProviderWorkingTimes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - date
+          - dayOfMonth
+          - dayOfWeek
+          - deletedAt
+          - fromTime
+          - medicalProviderId
+          - medicalProviderWorkingTimeId
+          - monthOfYear
+          - status
+          - tenantId
+          - timePeriod
+          - toTime
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProviderWorkingTimesBoolExp
+  operand:
+    object:
+      type: MpMedicalProviderWorkingTimes
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: date
+          booleanExpressionType: DateBoolExp
+        - fieldName: dayOfMonth
+          booleanExpressionType: Int4BoolExp
+        - fieldName: dayOfWeek
+          booleanExpressionType: Int4BoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fromTime
+          booleanExpressionType: TimeBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderWorkingTimeId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: monthOfYear
+          booleanExpressionType: Int4BoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: timePeriod
+          booleanExpressionType: TextBoolExp
+        - fieldName: toTime
+          booleanExpressionType: TimeBoolExp
+        - fieldName: type
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProviderWorkingTimeStatus
+        - relationshipName: mpMedicalProviderWorkingTimePeriod
+        - relationshipName: mpMedicalProviderWorkingTimeType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProviderWorkingTimesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProviderWorkingTimesAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProviderWorkingTimes
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: date
+          aggregateExpression: DateAggExp
+        - fieldName: dayOfMonth
+          aggregateExpression: Int4AggExp
+        - fieldName: dayOfWeek
+          aggregateExpression: Int4AggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fromTime
+          aggregateExpression: TimeAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderWorkingTimeId
+          aggregateExpression: UuidAggExp
+        - fieldName: monthOfYear
+          aggregateExpression: Int4AggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: timePeriod
+          aggregateExpression: TextAggExp
+        - fieldName: toTime
+          aggregateExpression: TimeAggExp
+        - fieldName: type
+          aggregateExpression: VarcharAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProviderWorkingTimesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProviderWorkingTimesOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProviderWorkingTimes
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: date
+          orderByExpression: DateOrderByExp
+        - fieldName: dayOfMonth
+          orderByExpression: Int32OrderByExp
+        - fieldName: dayOfWeek
+          orderByExpression: Int32OrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fromTime
+          orderByExpression: String1OrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderWorkingTimeId
+          orderByExpression: UuidOrderByExp
+        - fieldName: monthOfYear
+          orderByExpression: Int32OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: timePeriod
+          orderByExpression: String1OrderByExp
+        - fieldName: toTime
+          orderByExpression: String1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: mpMedicalProviderWorkingTimeStatus
+        - relationshipName: mpMedicalProviderWorkingTimePeriod
+        - relationshipName: mpMedicalProviderWorkingTimeType
+  graphql:
+    expressionTypeName: MpMedicalProviderWorkingTimesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProviderWorkingTimes
+  objectType: MpMedicalProviderWorkingTimes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_provider_working_times
+  filterExpressionType: MpMedicalProviderWorkingTimesBoolExp
+  aggregateExpression: MpMedicalProviderWorkingTimesAggExp
+  orderByExpression: MpMedicalProviderWorkingTimesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProviderWorkingTimes
+      subscription:
+        rootField: mpMedicalProviderWorkingTimes
+    selectUniques:
+      - queryRootField: mpMedicalProviderWorkingTimesByMedicalProviderWorkingTimeId
+        uniqueIdentifier:
+          - medicalProviderWorkingTimeId
+        subscription:
+          rootField: mpMedicalProviderWorkingTimesByMedicalProviderWorkingTimeId
+    filterInputTypeName: MpMedicalProviderWorkingTimesFilterInput
+    aggregate:
+      queryRootField: mpMedicalProviderWorkingTimesAggregate
+      subscription:
+        rootField: mpMedicalProviderWorkingTimesAggregate
+  description: Lịch làm việc của cơ sở y tế theo ngày trong tuần và các ngày đặc
+    biệt lễ tết trong năm
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProviderWorkingTimes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderWorkingTimeStatus
+  sourceType: MpMedicalProviderWorkingTimes
+  target:
+    model:
+      name: MpMedicalProviderWorkingTimeStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderWorkingTimePeriod
+  sourceType: MpMedicalProviderWorkingTimes
+  target:
+    model:
+      name: MpMedicalProviderWorkingTimePeriods
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: timePeriod
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderWorkingTimeType
+  sourceType: MpMedicalProviderWorkingTimes
+  target:
+    model:
+      name: MpMedicalProviderWorkingTimeTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

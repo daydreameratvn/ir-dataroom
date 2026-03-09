@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteLifeInsuranceEventsByValueResponse
+  description: Responses from the 'delete_life_insurance_events_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[LifeInsuranceEvents!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteLifeInsuranceEventsByValueResponse
+    inputTypeName: DeleteLifeInsuranceEventsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_life_insurance_events_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteLifeInsuranceEventsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteLifeInsuranceEventsByValue
+  outputType: DeleteLifeInsuranceEventsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: LifeInsuranceEventsBoolExp
+      description: Delete permission predicate over the 'life_insurance_events' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_life_insurance_events_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteLifeInsuranceEventsByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'life_insurance_events' collection using the
+    'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteLifeInsuranceEventsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,217 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PtiClaimCases
+  fields:
+    - name: benefitType
+      type: String_1
+    - name: claimCaseId
+      type: Uuid!
+    - name: diseaseGroup
+      type: String_1
+    - name: id
+      type: Uuid
+  graphql:
+    typeName: PtiClaimCases
+    inputTypeName: PtiClaimCasesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: pti_claim_cases
+      fieldMapping:
+        benefitType:
+          column:
+            name: benefit_type
+        claimCaseId:
+          column:
+            name: claim_case_id
+        diseaseGroup:
+          column:
+            name: disease_group
+        id:
+          column:
+            name: id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PtiClaimCases
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - benefitType
+          - claimCaseId
+          - diseaseGroup
+          - id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PtiClaimCasesBoolExp
+  operand:
+    object:
+      type: PtiClaimCases
+      comparableFields:
+        - fieldName: benefitType
+          booleanExpressionType: TextBoolExp
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: diseaseGroup
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: ptiInsuredBenefitType
+        - relationshipName: claimCase
+        - relationshipName: ptiDiseaseGroup
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PtiClaimCasesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PtiClaimCasesAggExp
+  operand:
+    object:
+      aggregatedType: PtiClaimCases
+      aggregatableFields:
+        - fieldName: benefitType
+          aggregateExpression: TextAggExp
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: diseaseGroup
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PtiClaimCasesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PtiClaimCasesOrderByExp
+  operand:
+    object:
+      orderedType: PtiClaimCases
+      orderableFields:
+        - fieldName: benefitType
+          orderByExpression: String1OrderByExp
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: diseaseGroup
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: ptiInsuredBenefitType
+        - relationshipName: claimCase
+        - relationshipName: ptiDiseaseGroup
+  graphql:
+    expressionTypeName: PtiClaimCasesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PtiClaimCases
+  objectType: PtiClaimCases
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: pti_claim_cases
+  filterExpressionType: PtiClaimCasesBoolExp
+  aggregateExpression: PtiClaimCasesAggExp
+  orderByExpression: PtiClaimCasesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: ptiClaimCases
+      subscription:
+        rootField: ptiClaimCases
+    selectUniques:
+      - queryRootField: ptiClaimCasesByClaimCaseId
+        uniqueIdentifier:
+          - claimCaseId
+        subscription:
+          rootField: ptiClaimCasesByClaimCaseId
+    filterInputTypeName: PtiClaimCasesFilterInput
+    aggregate:
+      queryRootField: ptiClaimCasesAggregate
+      subscription:
+        rootField: ptiClaimCasesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PtiClaimCases
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ptiInsuredBenefitType
+  sourceType: PtiClaimCases
+  target:
+    model:
+      name: PtiInsuredBenefitTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: benefitType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: PtiClaimCases
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ptiDiseaseGroup
+  sourceType: PtiClaimCases
+  target:
+    model:
+      name: PtiDiseaseGroups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: diseaseGroup
+      target:
+        modelField:
+          - fieldName: value
+

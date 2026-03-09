@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteIdentityOtpsByOtpIdResponse
+  description: Responses from the 'delete_identity_otps_by_otp_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityOtps!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteIdentityOtpsByOtpIdResponse
+    inputTypeName: DeleteIdentityOtpsByOtpIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_identity_otps_by_otp_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteIdentityOtpsByOtpIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteIdentityOtpsByOtpId
+  outputType: DeleteIdentityOtpsByOtpIdResponse!
+  arguments:
+    - name: keyOtpId
+      type: Uuid!
+    - name: preCheck
+      type: IdentityOtpsBoolExp
+      description: Delete permission predicate over the 'identity_otps' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_identity_otps_by_otp_id
+    argumentMapping:
+      keyOtpId: key_otp_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteIdentityOtpsByOtpId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'identity_otps' collection using the 'otp_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteIdentityOtpsByOtpId
+  permissions:
+    - role: admin
+      allowExecution: true
+

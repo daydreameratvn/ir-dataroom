@@ -1,0 +1,198 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutPaymentRequestsObject
+  fields:
+    - name: antiMoneyLaunderingStatus
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: paidAt
+      type: Timestamptz
+    - name: paidById
+      type: Uuid
+    - name: paymentAmount
+      type: Bigdecimal!
+    - name: paymentMethod
+      type: String_1
+    - name: payoutType
+      type: String_1
+    - name: refCode
+      type: String_1
+    - name: refData
+      type: Json
+    - name: remark
+      type: String_1
+    - name: source
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: type
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPayoutPaymentRequestsObject
+    inputTypeName: InsertPayoutPaymentRequestsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_payment_requests_object
+      fieldMapping:
+        antiMoneyLaunderingStatus:
+          column:
+            name: anti_money_laundering_status
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        paidAt:
+          column:
+            name: paid_at
+        paidById:
+          column:
+            name: paid_by_id
+        paymentAmount:
+          column:
+            name: payment_amount
+        paymentMethod:
+          column:
+            name: payment_method
+        payoutType:
+          column:
+            name: payout_type
+        refCode:
+          column:
+            name: ref_code
+        refData:
+          column:
+            name: ref_data
+        remark:
+          column:
+            name: remark
+        source:
+          column:
+            name: source
+        status:
+          column:
+            name: status
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutPaymentRequestsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - antiMoneyLaunderingStatus
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - paidAt
+          - paidById
+          - paymentAmount
+          - paymentMethod
+          - payoutType
+          - refCode
+          - refData
+          - remark
+          - source
+          - status
+          - type
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutPaymentRequestsResponse
+  description: Responses from the 'insert_payout_payment_requests' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPaymentRequests!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPayoutPaymentRequestsResponse
+    inputTypeName: InsertPayoutPaymentRequestsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_payment_requests_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutPaymentRequestsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPayoutPaymentRequests
+  outputType: InsertPayoutPaymentRequestsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPayoutPaymentRequestsObject!]!"
+    - name: postCheck
+      type: PayoutPaymentRequestsBoolExp
+      description: Insert permission predicate over the 'payout_payment_requests' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_payout_payment_requests
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPayoutPaymentRequests
+    rootFieldKind: Mutation
+  description: Insert into the payout_payment_requests table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPayoutPaymentRequests
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornHealthCheckupStatuses
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: HawthornHealthCheckupStatuses
+    inputTypeName: HawthornHealthCheckupStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_health_checkup_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornHealthCheckupStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornHealthCheckupStatusesBoolExp
+  operand:
+    object:
+      type: HawthornHealthCheckupStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornHealthCheckups
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornHealthCheckupStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornHealthCheckupStatusesAggExp
+  operand:
+    object:
+      aggregatedType: HawthornHealthCheckupStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornHealthCheckupStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornHealthCheckupStatusesOrderByExp
+  operand:
+    object:
+      orderedType: HawthornHealthCheckupStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HawthornHealthCheckupStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornHealthCheckupStatuses
+  objectType: HawthornHealthCheckupStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_health_checkup_statuses
+  filterExpressionType: HawthornHealthCheckupStatusesBoolExp
+  aggregateExpression: HawthornHealthCheckupStatusesAggExp
+  orderByExpression: HawthornHealthCheckupStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornHealthCheckupStatuses
+      subscription:
+        rootField: hawthornHealthCheckupStatuses
+    selectUniques:
+      - queryRootField: hawthornHealthCheckupStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: hawthornHealthCheckupStatusesByValue
+    filterInputTypeName: HawthornHealthCheckupStatusesFilterInput
+    aggregate:
+      queryRootField: hawthornHealthCheckupStatusesAggregate
+      subscription:
+        rootField: hawthornHealthCheckupStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornHealthCheckupStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornHealthCheckups
+  sourceType: HawthornHealthCheckupStatuses
+  target:
+    model:
+      name: HawthornHealthCheckups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornHealthCheckupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: hawthornHealthCheckupsAggregate
+

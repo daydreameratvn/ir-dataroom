@@ -1,0 +1,193 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingBookingsObject
+  fields:
+    - name: approvedAt
+      type: Timestamptz
+    - name: approverId
+      type: Uuid
+    - name: bookingModifiedAt
+      type: Timestamptz
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: customerId
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamp
+    - name: dob
+      type: Timestamptz!
+    - name: gender
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: medicalProviderId
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: note
+      type: String_1
+    - name: rejectedAt
+      type: Timestamptz
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertMedicalBookingBookingsObject
+    inputTypeName: InsertMedicalBookingBookingsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_bookings_object
+      fieldMapping:
+        approvedAt:
+          column:
+            name: approved_at
+        approverId:
+          column:
+            name: approver_id
+        bookingModifiedAt:
+          column:
+            name: booking_modified_at
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        customerId:
+          column:
+            name: customer_id
+        deletedAt:
+          column:
+            name: deleted_at
+        dob:
+          column:
+            name: dob
+        gender:
+          column:
+            name: gender
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        name:
+          column:
+            name: name
+        note:
+          column:
+            name: note
+        rejectedAt:
+          column:
+            name: rejected_at
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingBookingsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - approvedAt
+          - approverId
+          - bookingModifiedAt
+          - code
+          - createdAt
+          - customerId
+          - deletedAt
+          - dob
+          - gender
+          - id
+          - medicalProviderId
+          - name
+          - note
+          - rejectedAt
+          - status
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingBookingsResponse
+  description: Responses from the 'insert_medical_booking_bookings' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingBookings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMedicalBookingBookingsResponse
+    inputTypeName: InsertMedicalBookingBookingsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_bookings_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingBookingsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMedicalBookingBookings
+  outputType: InsertMedicalBookingBookingsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMedicalBookingBookingsObject!]!"
+    - name: postCheck
+      type: MedicalBookingBookingsBoolExp
+      description: Insert permission predicate over the 'medical_booking_bookings'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_medical_booking_bookings
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMedicalBookingBookings
+    rootFieldKind: Mutation
+  description: Insert into the medical_booking_bookings table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMedicalBookingBookings
+  permissions:
+    - role: admin
+      allowExecution: true
+

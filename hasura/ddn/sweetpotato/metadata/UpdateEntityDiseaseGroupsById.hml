@@ -1,0 +1,181 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateEntityDiseaseGroupsByIdUpdateColumns
+  description: Update the columns of the 'entity_disease_groups' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnEntityDiseaseGroupsCreatedAt
+      description: Update the 'created_at' column in the 'entity_disease_groups' collection.
+    - name: deletedAt
+      type: UpdateColumnEntityDiseaseGroupsDeletedAt
+      description: Update the 'deleted_at' column in the 'entity_disease_groups' collection.
+    - name: diseaseGroupId
+      type: UpdateColumnEntityDiseaseGroupsDiseaseGroupId
+      description: Update the 'disease_group_id' column in the 'entity_disease_groups'
+        collection.
+    - name: diseaseGroupTypeValue
+      type: UpdateColumnEntityDiseaseGroupsDiseaseGroupTypeValue
+      description: Update the 'disease_group_type_value' column in the
+        'entity_disease_groups' collection.
+    - name: entityId
+      type: UpdateColumnEntityDiseaseGroupsEntityId
+      description: Update the 'entity_id' column in the 'entity_disease_groups' collection.
+    - name: entityTypeValue
+      type: UpdateColumnEntityDiseaseGroupsEntityTypeValue
+      description: Update the 'entity_type_value' column in the
+        'entity_disease_groups' collection.
+    - name: id
+      type: UpdateColumnEntityDiseaseGroupsId
+      description: Update the 'id' column in the 'entity_disease_groups' collection.
+    - name: timeInDays
+      type: UpdateColumnEntityDiseaseGroupsTimeInDays
+      description: Update the 'time_in_days' column in the 'entity_disease_groups'
+        collection.
+    - name: updatedAt
+      type: UpdateColumnEntityDiseaseGroupsUpdatedAt
+      description: Update the 'updated_at' column in the 'entity_disease_groups' collection.
+    - name: waitingTimeInDays
+      type: UpdateColumnEntityDiseaseGroupsWaitingTimeInDays
+      description: Update the 'waiting_time_in_days' column in the
+        'entity_disease_groups' collection.
+  graphql:
+    typeName: UpdateEntityDiseaseGroupsByIdUpdateColumns
+    inputTypeName: UpdateEntityDiseaseGroupsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_entity_disease_groups_by_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        diseaseGroupId:
+          column:
+            name: disease_group_id
+        diseaseGroupTypeValue:
+          column:
+            name: disease_group_type_value
+        entityId:
+          column:
+            name: entity_id
+        entityTypeValue:
+          column:
+            name: entity_type_value
+        id:
+          column:
+            name: id
+        timeInDays:
+          column:
+            name: time_in_days
+        updatedAt:
+          column:
+            name: updated_at
+        waitingTimeInDays:
+          column:
+            name: waiting_time_in_days
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateEntityDiseaseGroupsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - diseaseGroupId
+          - diseaseGroupTypeValue
+          - entityId
+          - entityTypeValue
+          - id
+          - timeInDays
+          - updatedAt
+          - waitingTimeInDays
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateEntityDiseaseGroupsByIdResponse
+  description: Responses from the 'update_entity_disease_groups_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[EntityDiseaseGroups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateEntityDiseaseGroupsByIdResponse
+    inputTypeName: UpdateEntityDiseaseGroupsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_entity_disease_groups_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateEntityDiseaseGroupsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateEntityDiseaseGroupsById
+  outputType: UpdateEntityDiseaseGroupsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: EntityDiseaseGroupsBoolExp
+      description: Update permission post-condition predicate over the
+        'entity_disease_groups' collection
+    - name: preCheck
+      type: EntityDiseaseGroupsBoolExp
+      description: Update permission pre-condition predicate over the
+        'entity_disease_groups' collection
+    - name: updateColumns
+      type: UpdateEntityDiseaseGroupsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_entity_disease_groups_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateEntityDiseaseGroupsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'entity_disease_groups' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateEntityDiseaseGroupsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

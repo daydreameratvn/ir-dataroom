@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredCertificateEndorsementReasons
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsuredCertificateEndorsementReasons
+    inputTypeName: InsuredCertificateEndorsementReasonsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_certificate_endorsement_reasons
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredCertificateEndorsementReasons
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredCertificateEndorsementReasonsBoolExp
+  operand:
+    object:
+      type: InsuredCertificateEndorsementReasons
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: insuredCertificates
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredCertificateEndorsementReasonsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredCertificateEndorsementReasonsAggExp
+  operand:
+    object:
+      aggregatedType: InsuredCertificateEndorsementReasons
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredCertificateEndorsementReasonsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredCertificateEndorsementReasonsOrderByExp
+  operand:
+    object:
+      orderedType: InsuredCertificateEndorsementReasons
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: InsuredCertificateEndorsementReasonsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredCertificateEndorsementReasons
+  objectType: InsuredCertificateEndorsementReasons
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_certificate_endorsement_reasons
+  filterExpressionType: InsuredCertificateEndorsementReasonsBoolExp
+  aggregateExpression: InsuredCertificateEndorsementReasonsAggExp
+  orderByExpression: InsuredCertificateEndorsementReasonsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredCertificateEndorsementReasons
+      subscription:
+        rootField: insuredCertificateEndorsementReasons
+    selectUniques:
+      - queryRootField: insuredCertificateEndorsementReasonsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: insuredCertificateEndorsementReasonsByValue
+    filterInputTypeName: InsuredCertificateEndorsementReasonsFilterInput
+    aggregate:
+      queryRootField: insuredCertificateEndorsementReasonsAggregate
+      subscription:
+        rootField: insuredCertificateEndorsementReasonsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredCertificateEndorsementReasons
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificates
+  sourceType: InsuredCertificateEndorsementReasons
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredCertificatesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: endorsementReason
+  graphql:
+    aggregateFieldName: insuredCertificatesAggregate
+

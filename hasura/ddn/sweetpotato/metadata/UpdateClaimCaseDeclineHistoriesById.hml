@@ -1,0 +1,178 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseDeclineHistoriesByIdUpdateColumns
+  description: Update the columns of the 'claim_case_decline_histories' collection
+  fields:
+    - name: claimCaseId
+      type: UpdateColumnClaimCaseDeclineHistoriesClaimCaseId
+      description: Update the 'claim_case_id' column in the
+        'claim_case_decline_histories' collection.
+    - name: createdAt
+      type: UpdateColumnClaimCaseDeclineHistoriesCreatedAt
+      description: Update the 'created_at' column in the
+        'claim_case_decline_histories' collection.
+    - name: createdBy
+      type: UpdateColumnClaimCaseDeclineHistoriesCreatedBy
+      description: Update the 'created_by' column in the
+        'claim_case_decline_histories' collection.
+    - name: declineCode
+      type: UpdateColumnClaimCaseDeclineHistoriesDeclineCode
+      description: Update the 'decline_code' column in the
+        'claim_case_decline_histories' collection.
+    - name: declineDescription
+      type: UpdateColumnClaimCaseDeclineHistoriesDeclineDescription
+      description: Update the 'decline_description' column in the
+        'claim_case_decline_histories' collection.
+    - name: deletedAt
+      type: UpdateColumnClaimCaseDeclineHistoriesDeletedAt
+      description: Update the 'deleted_at' column in the
+        'claim_case_decline_histories' collection.
+    - name: deletedBy
+      type: UpdateColumnClaimCaseDeclineHistoriesDeletedBy
+      description: Update the 'deleted_by' column in the
+        'claim_case_decline_histories' collection.
+    - name: deletedReason
+      type: UpdateColumnClaimCaseDeclineHistoriesDeletedReason
+      description: Update the 'deleted_reason' column in the
+        'claim_case_decline_histories' collection.
+    - name: id
+      type: UpdateColumnClaimCaseDeclineHistoriesId
+      description: Update the 'id' column in the 'claim_case_decline_histories' collection.
+  graphql:
+    typeName: UpdateClaimCaseDeclineHistoriesByIdUpdateColumns
+    inputTypeName: UpdateClaimCaseDeclineHistoriesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_decline_histories_by_id_update_columns
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        declineCode:
+          column:
+            name: decline_code
+        declineDescription:
+          column:
+            name: decline_description
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        deletedReason:
+          column:
+            name: deleted_reason
+        id:
+          column:
+            name: id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseDeclineHistoriesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - createdBy
+          - declineCode
+          - declineDescription
+          - deletedAt
+          - deletedBy
+          - deletedReason
+          - id
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseDeclineHistoriesByIdResponse
+  description: Responses from the 'update_claim_case_decline_histories_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseDeclineHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateClaimCaseDeclineHistoriesByIdResponse
+    inputTypeName: UpdateClaimCaseDeclineHistoriesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_decline_histories_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseDeclineHistoriesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateClaimCaseDeclineHistoriesById
+  outputType: UpdateClaimCaseDeclineHistoriesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: ClaimCaseDeclineHistoriesBoolExp
+      description: Update permission post-condition predicate over the
+        'claim_case_decline_histories' collection
+    - name: preCheck
+      type: ClaimCaseDeclineHistoriesBoolExp
+      description: Update permission pre-condition predicate over the
+        'claim_case_decline_histories' collection
+    - name: updateColumns
+      type: UpdateClaimCaseDeclineHistoriesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_claim_case_decline_histories_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateClaimCaseDeclineHistoriesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'claim_case_decline_histories' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateClaimCaseDeclineHistoriesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateOcrPolstsByPaperIdUpdateColumns
+  description: Update the columns of the 'ocr_polsts' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnOcrPolstsCreatedAt
+      description: Update the 'created_at' column in the 'ocr_polsts' collection.
+    - name: id
+      type: UpdateColumnOcrPolstsId
+      description: Update the 'id' column in the 'ocr_polsts' collection.
+    - name: issuedAt
+      type: UpdateColumnOcrPolstsIssuedAt
+      description: Update the 'issued_at' column in the 'ocr_polsts' collection.
+    - name: medicalProviderName
+      type: UpdateColumnOcrPolstsMedicalProviderName
+      description: Update the 'medical_provider_name' column in the 'ocr_polsts' collection.
+    - name: paperId
+      type: UpdateColumnOcrPolstsPaperId
+      description: Update the 'paper_id' column in the 'ocr_polsts' collection.
+    - name: patientName
+      type: UpdateColumnOcrPolstsPatientName
+      description: Update the 'patient_name' column in the 'ocr_polsts' collection.
+    - name: rawData
+      type: UpdateColumnOcrPolstsRawData
+      description: Update the 'raw_data' column in the 'ocr_polsts' collection.
+    - name: totalPaymentAmount
+      type: UpdateColumnOcrPolstsTotalPaymentAmount
+      description: Update the 'total_payment_amount' column in the 'ocr_polsts' collection.
+    - name: updatedAt
+      type: UpdateColumnOcrPolstsUpdatedAt
+      description: Update the 'updated_at' column in the 'ocr_polsts' collection.
+  graphql:
+    typeName: UpdateOcrPolstsByPaperIdUpdateColumns
+    inputTypeName: UpdateOcrPolstsByPaperIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_ocr_polsts_by_paper_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        issuedAt:
+          column:
+            name: issued_at
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        paperId:
+          column:
+            name: paper_id
+        patientName:
+          column:
+            name: patient_name
+        rawData:
+          column:
+            name: raw_data
+        totalPaymentAmount:
+          column:
+            name: total_payment_amount
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateOcrPolstsByPaperIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - issuedAt
+          - medicalProviderName
+          - paperId
+          - patientName
+          - rawData
+          - totalPaymentAmount
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateOcrPolstsByPaperIdResponse
+  description: Responses from the 'update_ocr_polsts_by_paper_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrPolsts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateOcrPolstsByPaperIdResponse
+    inputTypeName: UpdateOcrPolstsByPaperIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_ocr_polsts_by_paper_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateOcrPolstsByPaperIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateOcrPolstsByPaperId
+  outputType: UpdateOcrPolstsByPaperIdResponse!
+  arguments:
+    - name: keyPaperId
+      type: Uuid!
+    - name: postCheck
+      type: OcrPolstsBoolExp
+      description: Update permission post-condition predicate over the 'ocr_polsts'
+        collection
+    - name: preCheck
+      type: OcrPolstsBoolExp
+      description: Update permission pre-condition predicate over the 'ocr_polsts'
+        collection
+    - name: updateColumns
+      type: UpdateOcrPolstsByPaperIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_ocr_polsts_by_paper_id
+    argumentMapping:
+      keyPaperId: key_paper_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateOcrPolstsByPaperId
+    rootFieldKind: Mutation
+  description: Update any row on the 'ocr_polsts' collection using the 'paper_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateOcrPolstsByPaperId
+  permissions:
+    - role: admin
+      allowExecution: true
+

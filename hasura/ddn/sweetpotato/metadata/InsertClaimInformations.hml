@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimInformationsObject
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: claimInformationId
+      type: Uuid
+    - name: name
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: value
+      type: Bigdecimal!
+  graphql:
+    typeName: InsertClaimInformationsObject
+    inputTypeName: InsertClaimInformationsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_informations_object
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        claimInformationId:
+          column:
+            name: claim_information_id
+        name:
+          column:
+            name: name
+        tenantId:
+          column:
+            name: tenant_id
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimInformationsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - claimInformationId
+          - name
+          - tenantId
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimInformationsResponse
+  description: Responses from the 'insert_claim_informations' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimInformations!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimInformationsResponse
+    inputTypeName: InsertClaimInformationsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_informations_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimInformationsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimInformations
+  outputType: InsertClaimInformationsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimInformationsObject!]!"
+    - name: postCheck
+      type: ClaimInformationsBoolExp
+      description: Insert permission predicate over the 'claim_informations' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_informations
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimInformations
+    rootFieldKind: Mutation
+  description: Insert into the claim_informations table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimInformations
+  permissions:
+    - role: admin
+      allowExecution: true
+

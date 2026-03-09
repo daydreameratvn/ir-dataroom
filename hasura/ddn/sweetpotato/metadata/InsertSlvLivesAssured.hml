@@ -1,0 +1,144 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvLivesAssuredObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: laDob
+      type: Timestamptz!
+    - name: laGender
+      type: String_1!
+    - name: laIdNumber
+      type: String_1
+    - name: laName
+      type: String_1!
+    - name: laNum
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertSlvLivesAssuredObject
+    inputTypeName: InsertSlvLivesAssuredObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_lives_assured_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        laDob:
+          column:
+            name: la_dob
+        laGender:
+          column:
+            name: la_gender
+        laIdNumber:
+          column:
+            name: la_id_number
+        laName:
+          column:
+            name: la_name
+        laNum:
+          column:
+            name: la_num
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvLivesAssuredObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - laDob
+          - laGender
+          - laIdNumber
+          - laName
+          - laNum
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvLivesAssuredResponse
+  description: Responses from the 'insert_slv_lives_assured' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvLivesAssured!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertSlvLivesAssuredResponse
+    inputTypeName: InsertSlvLivesAssuredResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_lives_assured_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvLivesAssuredResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertSlvLivesAssured
+  outputType: InsertSlvLivesAssuredResponse!
+  arguments:
+    - name: objects
+      type: "[InsertSlvLivesAssuredObject!]!"
+    - name: postCheck
+      type: SlvLivesAssuredBoolExp
+      description: Insert permission predicate over the 'slv_lives_assured' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_slv_lives_assured
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertSlvLivesAssured
+    rootFieldKind: Mutation
+  description: Insert into the slv_lives_assured table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertSlvLivesAssured
+  permissions:
+    - role: admin
+      allowExecution: true
+

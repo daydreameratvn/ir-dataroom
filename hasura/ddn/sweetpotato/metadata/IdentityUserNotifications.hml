@@ -1,0 +1,395 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityUserNotifications
+  description: https://docs.expo.dev/push-notifications/sending-notifications/#message-request-format
+  fields:
+    - name: badge
+      type: Int32
+    - name: body
+      type: String_1!
+    - name: channelId
+      type: String_1
+    - name: claimCaseId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: expiration
+      type: Bigdecimal
+    - name: id
+      type: Uuid!
+    - name: objectType
+      type: String_1!
+    - name: payload
+      type: Json
+    - name: priority
+      type: String_1
+    - name: sound
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: subtitle
+      type: String_1
+    - name: title
+      type: String_1!
+    - name: ttl
+      type: Int32
+    - name: updatedAt
+      type: Timestamptz
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: IdentityUserNotifications
+    inputTypeName: IdentityUserNotificationsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_user_notifications
+      fieldMapping:
+        badge:
+          column:
+            name: badge
+        body:
+          column:
+            name: body
+        channelId:
+          column:
+            name: channel_id
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        expiration:
+          column:
+            name: expiration
+        id:
+          column:
+            name: id
+        objectType:
+          column:
+            name: object_type
+        payload:
+          column:
+            name: payload
+        priority:
+          column:
+            name: priority
+        sound:
+          column:
+            name: sound
+        status:
+          column:
+            name: status
+        subtitle:
+          column:
+            name: subtitle
+        title:
+          column:
+            name: title
+        ttl:
+          column:
+            name: ttl
+        updatedAt:
+          column:
+            name: updated_at
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityUserNotifications
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - badge
+          - body
+          - channelId
+          - claimCaseId
+          - createdAt
+          - expiration
+          - id
+          - objectType
+          - payload
+          - priority
+          - sound
+          - status
+          - subtitle
+          - title
+          - ttl
+          - updatedAt
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityUserNotificationsBoolExp
+  operand:
+    object:
+      type: IdentityUserNotifications
+      comparableFields:
+        - fieldName: badge
+          booleanExpressionType: Int4BoolExp
+        - fieldName: body
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: channelId
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: expiration
+          booleanExpressionType: NumericBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: objectType
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: payload
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: priority
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: sound
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: subtitle
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: title
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: ttl
+          booleanExpressionType: Int4BoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUserNotificationObjectType
+        - relationshipName: identityUserNotificationStatus
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityUserNotificationsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityUserNotificationsAggExp
+  operand:
+    object:
+      aggregatedType: IdentityUserNotifications
+      aggregatableFields:
+        - fieldName: badge
+          aggregateExpression: Int4AggExp
+        - fieldName: body
+          aggregateExpression: VarcharAggExp
+        - fieldName: channelId
+          aggregateExpression: VarcharAggExp
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: expiration
+          aggregateExpression: NumericAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: objectType
+          aggregateExpression: VarcharAggExp
+        - fieldName: payload
+          aggregateExpression: JsonbAggExp
+        - fieldName: priority
+          aggregateExpression: VarcharAggExp
+        - fieldName: sound
+          aggregateExpression: VarcharAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: subtitle
+          aggregateExpression: VarcharAggExp
+        - fieldName: title
+          aggregateExpression: VarcharAggExp
+        - fieldName: ttl
+          aggregateExpression: Int4AggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityUserNotificationsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityUserNotificationsOrderByExp
+  operand:
+    object:
+      orderedType: IdentityUserNotifications
+      orderableFields:
+        - fieldName: badge
+          orderByExpression: Int32OrderByExp
+        - fieldName: body
+          orderByExpression: String1OrderByExp
+        - fieldName: channelId
+          orderByExpression: String1OrderByExp
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: expiration
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: objectType
+          orderByExpression: String1OrderByExp
+        - fieldName: payload
+          orderByExpression: JsonOrderByExp
+        - fieldName: priority
+          orderByExpression: String1OrderByExp
+        - fieldName: sound
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: subtitle
+          orderByExpression: String1OrderByExp
+        - fieldName: title
+          orderByExpression: String1OrderByExp
+        - fieldName: ttl
+          orderByExpression: Int32OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUserNotificationObjectType
+        - relationshipName: identityUserNotificationStatus
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: IdentityUserNotificationsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityUserNotifications
+  objectType: IdentityUserNotifications
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_user_notifications
+  filterExpressionType: IdentityUserNotificationsBoolExp
+  aggregateExpression: IdentityUserNotificationsAggExp
+  orderByExpression: IdentityUserNotificationsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityUserNotifications
+      subscription:
+        rootField: identityUserNotifications
+    selectUniques:
+      - queryRootField: identityUserNotificationsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: identityUserNotificationsById
+    filterInputTypeName: IdentityUserNotificationsFilterInput
+    aggregate:
+      queryRootField: identityUserNotificationsAggregate
+      subscription:
+        rootField: identityUserNotificationsAggregate
+  description: https://docs.expo.dev/push-notifications/sending-notifications/#message-request-format
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityUserNotifications
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: IdentityUserNotifications
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserNotificationObjectType
+  sourceType: IdentityUserNotifications
+  target:
+    model:
+      name: IdentityUserNotificationObjectTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: objectType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserNotificationStatus
+  sourceType: IdentityUserNotifications
+  target:
+    model:
+      name: IdentityUserNotificationStatus
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: IdentityUserNotifications
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

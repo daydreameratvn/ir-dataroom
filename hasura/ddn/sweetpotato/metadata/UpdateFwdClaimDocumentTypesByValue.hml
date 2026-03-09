@@ -1,0 +1,178 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdClaimDocumentTypesComment
+  description: Update the 'comment' column in the 'fwd_claim_document_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdClaimDocumentTypesComment
+    inputTypeName: UpdateColumnFwdClaimDocumentTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_claim_document_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdClaimDocumentTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdClaimDocumentTypesValue
+  description: Update the 'value' column in the 'fwd_claim_document_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdClaimDocumentTypesValue
+    inputTypeName: UpdateColumnFwdClaimDocumentTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_claim_document_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdClaimDocumentTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdClaimDocumentTypesByValueUpdateColumns
+  description: Update the columns of the 'fwd_claim_document_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnFwdClaimDocumentTypesComment
+      description: Update the 'comment' column in the 'fwd_claim_document_types' collection.
+    - name: value
+      type: UpdateColumnFwdClaimDocumentTypesValue
+      description: Update the 'value' column in the 'fwd_claim_document_types' collection.
+  graphql:
+    typeName: UpdateFwdClaimDocumentTypesByValueUpdateColumns
+    inputTypeName: UpdateFwdClaimDocumentTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_claim_document_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdClaimDocumentTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdClaimDocumentTypesByValueResponse
+  description: Responses from the 'update_fwd_claim_document_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdClaimDocumentTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateFwdClaimDocumentTypesByValueResponse
+    inputTypeName: UpdateFwdClaimDocumentTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_claim_document_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdClaimDocumentTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateFwdClaimDocumentTypesByValue
+  outputType: UpdateFwdClaimDocumentTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: FwdClaimDocumentTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'fwd_claim_document_types' collection
+    - name: preCheck
+      type: FwdClaimDocumentTypesBoolExp
+      description: Update permission pre-condition predicate over the
+        'fwd_claim_document_types' collection
+    - name: updateColumns
+      type: UpdateFwdClaimDocumentTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_fwd_claim_document_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateFwdClaimDocumentTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'fwd_claim_document_types' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateFwdClaimDocumentTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

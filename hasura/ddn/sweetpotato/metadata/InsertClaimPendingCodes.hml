@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimPendingCodesObject
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: claimPendingCodeId
+      type: Uuid
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: extendedText
+      type: String_1
+    - name: remark
+      type: String_1
+    - name: removedAt
+      type: Timestamptz
+    - name: startedAt
+      type: Timestamptz
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertClaimPendingCodesObject
+    inputTypeName: InsertClaimPendingCodesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_pending_codes_object
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        claimPendingCodeId:
+          column:
+            name: claim_pending_code_id
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        extendedText:
+          column:
+            name: extended_text
+        remark:
+          column:
+            name: remark
+        removedAt:
+          column:
+            name: removed_at
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimPendingCodesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - claimPendingCodeId
+          - code
+          - createdAt
+          - createdBy
+          - deletedAt
+          - extendedText
+          - remark
+          - removedAt
+          - startedAt
+          - status
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimPendingCodesResponse
+  description: Responses from the 'insert_claim_pending_codes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimPendingCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimPendingCodesResponse
+    inputTypeName: InsertClaimPendingCodesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_pending_codes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimPendingCodesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimPendingCodes
+  outputType: InsertClaimPendingCodesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimPendingCodesObject!]!"
+    - name: postCheck
+      type: ClaimPendingCodesBoolExp
+      description: Insert permission predicate over the 'claim_pending_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_pending_codes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimPendingCodes
+    rootFieldKind: Mutation
+  description: Insert into the claim_pending_codes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimPendingCodes
+  permissions:
+    - role: admin
+      allowExecution: true
+

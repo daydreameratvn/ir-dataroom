@@ -1,0 +1,211 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseDetailExpenseItemsByIdUpdateColumns
+  description: Update the columns of the 'claim_case_detail_expense_items' collection
+  fields:
+    - name: amount
+      type: UpdateColumnClaimCaseDetailExpenseItemsAmount
+      description: Update the 'amount' column in the 'claim_case_detail_expense_items'
+        collection.
+    - name: claimCaseDetailId
+      type: UpdateColumnClaimCaseDetailExpenseItemsClaimCaseDetailId
+      description: Update the 'claim_case_detail_id' column in the
+        'claim_case_detail_expense_items' collection.
+    - name: claimDocumentGroupId
+      type: UpdateColumnClaimCaseDetailExpenseItemsClaimDocumentGroupId
+      description: Update the 'claim_document_group_id' column in the
+        'claim_case_detail_expense_items' collection.
+    - name: createdAt
+      type: UpdateColumnClaimCaseDetailExpenseItemsCreatedAt
+      description: Update the 'created_at' column in the
+        'claim_case_detail_expense_items' collection.
+    - name: createdBy
+      type: UpdateColumnClaimCaseDetailExpenseItemsCreatedBy
+      description: Update the 'created_by' column in the
+        'claim_case_detail_expense_items' collection.
+    - name: deletedAt
+      type: UpdateColumnClaimCaseDetailExpenseItemsDeletedAt
+      description: Update the 'deleted_at' column in the
+        'claim_case_detail_expense_items' collection.
+    - name: id
+      type: UpdateColumnClaimCaseDetailExpenseItemsId
+      description: Update the 'id' column in the 'claim_case_detail_expense_items'
+        collection.
+    - name: isNonPaid
+      type: UpdateColumnClaimCaseDetailExpenseItemsIsNonPaid
+      description: Update the 'is_non_paid' column in the
+        'claim_case_detail_expense_items' collection.
+    - name: isSelected
+      type: UpdateColumnClaimCaseDetailExpenseItemsIsSelected
+      description: Update the 'is_selected' column in the
+        'claim_case_detail_expense_items' collection.
+    - name: parentId
+      type: UpdateColumnClaimCaseDetailExpenseItemsParentId
+      description: Update the 'parent_id' column in the
+        'claim_case_detail_expense_items' collection.
+    - name: refCode
+      type: UpdateColumnClaimCaseDetailExpenseItemsRefCode
+      description: Update the 'ref_code' column in the
+        'claim_case_detail_expense_items' collection.
+    - name: updatedAt
+      type: UpdateColumnClaimCaseDetailExpenseItemsUpdatedAt
+      description: Update the 'updated_at' column in the
+        'claim_case_detail_expense_items' collection.
+    - name: updatedBy
+      type: UpdateColumnClaimCaseDetailExpenseItemsUpdatedBy
+      description: Update the 'updated_by' column in the
+        'claim_case_detail_expense_items' collection.
+  graphql:
+    typeName: UpdateClaimCaseDetailExpenseItemsByIdUpdateColumns
+    inputTypeName: UpdateClaimCaseDetailExpenseItemsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_detail_expense_items_by_id_update_columns
+      fieldMapping:
+        amount:
+          column:
+            name: amount
+        claimCaseDetailId:
+          column:
+            name: claim_case_detail_id
+        claimDocumentGroupId:
+          column:
+            name: claim_document_group_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        isNonPaid:
+          column:
+            name: is_non_paid
+        isSelected:
+          column:
+            name: is_selected
+        parentId:
+          column:
+            name: parent_id
+        refCode:
+          column:
+            name: ref_code
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseDetailExpenseItemsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - amount
+          - claimCaseDetailId
+          - claimDocumentGroupId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - isNonPaid
+          - isSelected
+          - parentId
+          - refCode
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseDetailExpenseItemsByIdResponse
+  description: Responses from the 'update_claim_case_detail_expense_items_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseDetailExpenseItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateClaimCaseDetailExpenseItemsByIdResponse
+    inputTypeName: UpdateClaimCaseDetailExpenseItemsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_detail_expense_items_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseDetailExpenseItemsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateClaimCaseDetailExpenseItemsById
+  outputType: UpdateClaimCaseDetailExpenseItemsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: ClaimCaseDetailExpenseItemsBoolExp
+      description: Update permission post-condition predicate over the
+        'claim_case_detail_expense_items' collection
+    - name: preCheck
+      type: ClaimCaseDetailExpenseItemsBoolExp
+      description: Update permission pre-condition predicate over the
+        'claim_case_detail_expense_items' collection
+    - name: updateColumns
+      type: UpdateClaimCaseDetailExpenseItemsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_claim_case_detail_expense_items_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateClaimCaseDetailExpenseItemsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'claim_case_detail_expense_items' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateClaimCaseDetailExpenseItemsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

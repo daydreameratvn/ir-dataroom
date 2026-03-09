@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePlanCoPaymentPlanInsuredBenefitByPlanCoPaymentIdAndPlanInsuredBenefitIdResponse
+  description: Responses from the
+    'delete_plan_co_payment_plan_insured_benefit_by_plan_co_payment_id_and_plan_insured_benefit_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanCoPaymentPlanInsuredBenefit!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePlanCoPaymentPlanInsuredBenefitByPlanCoPaymentIdAndPlanInsuredBenefitIdResponse
+    inputTypeName: DeletePlanCoPaymentPlanInsuredBenefitByPlanCoPaymentIdAndPlanInsuredBenefitIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_plan_co_payment_plan_insured_benefit_by_plan_co_payment_id_and_plan_insured_benefit_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePlanCoPaymentPlanInsuredBenefitByPlanCoPaymentIdAndPlanInsuredBenefitIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePlanCoPaymentPlanInsuredBenefitByPlanCoPaymentIdAndPlanInsuredBenefitId
+  outputType: DeletePlanCoPaymentPlanInsuredBenefitByPlanCoPaymentIdAndPlanInsuredBenefitIdResponse!
+  arguments:
+    - name: keyPlanCoPaymentId
+      type: Uuid!
+    - name: keyPlanInsuredBenefitId
+      type: Uuid!
+    - name: preCheck
+      type: PlanCoPaymentPlanInsuredBenefitBoolExp
+      description: Delete permission predicate over the
+        'plan_co_payment_plan_insured_benefit' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_plan_co_payment_plan_insured_benefit_by_plan_co_payment_id_and_plan_insured_benefit_id
+    argumentMapping:
+      keyPlanCoPaymentId: key_plan_co_payment_id
+      keyPlanInsuredBenefitId: key_plan_insured_benefit_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePlanCoPaymentPlanInsuredBenefitByPlanCoPaymentIdAndPlanInsuredBenefitId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'plan_co_payment_plan_insured_benefit'
+    collection using the 'plan_co_payment_id' and 'plan_insured_benefit_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePlanCoPaymentPlanInsuredBenefitByPlanCoPaymentIdAndPlanInsuredBenefitId
+  permissions:
+    - role: admin
+      allowExecution: true
+

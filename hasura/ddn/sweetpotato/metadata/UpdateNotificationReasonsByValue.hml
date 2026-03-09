@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnNotificationReasonsComment
+  description: Update the 'comment' column in the 'notification_reasons' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnNotificationReasonsComment
+    inputTypeName: UpdateColumnNotificationReasonsCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_notification_reasons_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnNotificationReasonsComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnNotificationReasonsValue
+  description: Update the 'value' column in the 'notification_reasons' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnNotificationReasonsValue
+    inputTypeName: UpdateColumnNotificationReasonsValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_notification_reasons_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnNotificationReasonsValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateNotificationReasonsByValueUpdateColumns
+  description: Update the columns of the 'notification_reasons' collection
+  fields:
+    - name: comment
+      type: UpdateColumnNotificationReasonsComment
+      description: Update the 'comment' column in the 'notification_reasons' collection.
+    - name: value
+      type: UpdateColumnNotificationReasonsValue
+      description: Update the 'value' column in the 'notification_reasons' collection.
+  graphql:
+    typeName: UpdateNotificationReasonsByValueUpdateColumns
+    inputTypeName: UpdateNotificationReasonsByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_notification_reasons_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateNotificationReasonsByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateNotificationReasonsByValueResponse
+  description: Responses from the 'update_notification_reasons_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[NotificationReasons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateNotificationReasonsByValueResponse
+    inputTypeName: UpdateNotificationReasonsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_notification_reasons_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateNotificationReasonsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateNotificationReasonsByValue
+  outputType: UpdateNotificationReasonsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: NotificationReasonsBoolExp
+      description: Update permission post-condition predicate over the
+        'notification_reasons' collection
+    - name: preCheck
+      type: NotificationReasonsBoolExp
+      description: Update permission pre-condition predicate over the
+        'notification_reasons' collection
+    - name: updateColumns
+      type: UpdateNotificationReasonsByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_notification_reasons_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateNotificationReasonsByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'notification_reasons' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateNotificationReasonsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

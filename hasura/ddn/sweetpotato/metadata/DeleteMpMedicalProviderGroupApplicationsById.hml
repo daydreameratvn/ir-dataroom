@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMpMedicalProviderGroupApplicationsByIdResponse
+  description: Responses from the
+    'delete_mp_medical_provider_group_applications_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderGroupApplications!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMpMedicalProviderGroupApplicationsByIdResponse
+    inputTypeName: DeleteMpMedicalProviderGroupApplicationsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mp_medical_provider_group_applications_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMpMedicalProviderGroupApplicationsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMpMedicalProviderGroupApplicationsById
+  outputType: DeleteMpMedicalProviderGroupApplicationsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: MpMedicalProviderGroupApplicationsBoolExp
+      description: Delete permission predicate over the
+        'mp_medical_provider_group_applications' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mp_medical_provider_group_applications_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMpMedicalProviderGroupApplicationsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mp_medical_provider_group_applications'
+    collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMpMedicalProviderGroupApplicationsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCustomSettingSettingValuesByIdResponse
+  description: Responses from the 'delete_custom_setting_setting_values_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingSettingValues!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCustomSettingSettingValuesByIdResponse
+    inputTypeName: DeleteCustomSettingSettingValuesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_custom_setting_setting_values_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCustomSettingSettingValuesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCustomSettingSettingValuesById
+  outputType: DeleteCustomSettingSettingValuesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: CustomSettingSettingValuesBoolExp
+      description: Delete permission predicate over the
+        'custom_setting_setting_values' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_custom_setting_setting_values_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCustomSettingSettingValuesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'custom_setting_setting_values' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCustomSettingSettingValuesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

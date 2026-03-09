@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCompaniesByEmailDomainResponse
+  description: Responses from the 'delete_companies_by_email_domain' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Companies!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCompaniesByEmailDomainResponse
+    inputTypeName: DeleteCompaniesByEmailDomainResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_companies_by_email_domain_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCompaniesByEmailDomainResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCompaniesByEmailDomain
+  outputType: DeleteCompaniesByEmailDomainResponse!
+  arguments:
+    - name: keyEmailDomain
+      type: String_1
+    - name: preCheck
+      type: CompaniesBoolExp
+      description: Delete permission predicate over the 'companies' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_companies_by_email_domain
+    argumentMapping:
+      keyEmailDomain: key_email_domain
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCompaniesByEmailDomain
+    rootFieldKind: Mutation
+  description: Delete any row on the 'companies' collection using the 'email_domain' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCompaniesByEmailDomain
+  permissions:
+    - role: admin
+      allowExecution: true
+

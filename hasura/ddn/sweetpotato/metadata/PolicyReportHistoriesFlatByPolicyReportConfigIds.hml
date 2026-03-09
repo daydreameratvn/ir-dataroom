@@ -1,0 +1,236 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyReportHistoriesFlatByPolicyReportConfigIds
+  fields:
+    - name: ccEmails
+      type: "[String_1]"
+    - name: createdAt
+      type: Timestamptz
+    - name: dataFilter
+      type: Json
+    - name: groupPolicies
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: policyReportConfigId
+      type: Uuid
+    - name: runAt
+      type: Timestamptz
+    - name: status
+      type: String_1
+    - name: subject
+      type: String_1
+    - name: toEmails
+      type: "[String_1]"
+    - name: updatedAt
+      type: Timestamptz
+    - name: url
+      type: String_1
+  graphql:
+    typeName: PolicyReportHistoriesFlatByPolicyReportConfigIds
+    inputTypeName: PolicyReportHistoriesFlatByPolicyReportConfigIdsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_report_histories_flat_by_policy_report_config_ids
+      fieldMapping:
+        ccEmails:
+          column:
+            name: cc_emails
+        createdAt:
+          column:
+            name: created_at
+        dataFilter:
+          column:
+            name: data_filter
+        groupPolicies:
+          column:
+            name: group_policies
+        id:
+          column:
+            name: id
+        policyReportConfigId:
+          column:
+            name: policy_report_config_id
+        runAt:
+          column:
+            name: run_at
+        status:
+          column:
+            name: status
+        subject:
+          column:
+            name: subject
+        toEmails:
+          column:
+            name: to_emails
+        updatedAt:
+          column:
+            name: updated_at
+        url:
+          column:
+            name: url
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyReportHistoriesFlatByPolicyReportConfigIds
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - ccEmails
+          - createdAt
+          - dataFilter
+          - groupPolicies
+          - id
+          - policyReportConfigId
+          - runAt
+          - status
+          - subject
+          - toEmails
+          - updatedAt
+          - url
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyReportHistoriesFlatByPolicyReportConfigIdsBoolExp
+  operand:
+    object:
+      type: PolicyReportHistoriesFlatByPolicyReportConfigIds
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: dataFilter
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: groupPolicies
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyReportConfigId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: runAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: subject
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: url
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyReportHistoriesFlatByPolicyReportConfigIdsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyReportHistoriesFlatByPolicyReportConfigIdsAggExp
+  operand:
+    object:
+      aggregatedType: PolicyReportHistoriesFlatByPolicyReportConfigIds
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: dataFilter
+          aggregateExpression: JsonbAggExp
+        - fieldName: groupPolicies
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: policyReportConfigId
+          aggregateExpression: UuidAggExp
+        - fieldName: runAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: subject
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: url
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyReportHistoriesFlatByPolicyReportConfigIdsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyReportHistoriesFlatByPolicyReportConfigIdsOrderByExp
+  operand:
+    object:
+      orderedType: PolicyReportHistoriesFlatByPolicyReportConfigIds
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: dataFilter
+          orderByExpression: JsonOrderByExp
+        - fieldName: groupPolicies
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyReportConfigId
+          orderByExpression: UuidOrderByExp
+        - fieldName: runAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: subject
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: url
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicyReportHistoriesFlatByPolicyReportConfigIdsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyReportHistoriesFlatByPolicyReportConfigIds
+  objectType: PolicyReportHistoriesFlatByPolicyReportConfigIds
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_report_histories_flat_by_policy_report_config_ids
+  filterExpressionType: PolicyReportHistoriesFlatByPolicyReportConfigIdsBoolExp
+  aggregateExpression: PolicyReportHistoriesFlatByPolicyReportConfigIdsAggExp
+  orderByExpression: PolicyReportHistoriesFlatByPolicyReportConfigIdsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyReportHistoriesFlatByPolicyReportConfigIds
+      subscription:
+        rootField: policyReportHistoriesFlatByPolicyReportConfigIds
+    selectUniques: []
+    filterInputTypeName: PolicyReportHistoriesFlatByPolicyReportConfigIdsFilterInput
+    aggregate:
+      queryRootField: policyReportHistoriesFlatByPolicyReportConfigIdsAggregate
+      subscription:
+        rootField: policyReportHistoriesFlatByPolicyReportConfigIdsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyReportHistoriesFlatByPolicyReportConfigIds
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

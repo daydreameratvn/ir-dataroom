@@ -1,0 +1,133 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyCoPaymentInsuredCertificateObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: policyCoPaymentId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPolicyCoPaymentInsuredCertificateObject
+    inputTypeName: InsertPolicyCoPaymentInsuredCertificateObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_co_payment_insured_certificate_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        policyCoPaymentId:
+          column:
+            name: policy_co_payment_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyCoPaymentInsuredCertificateObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - insuredCertificateId
+          - policyCoPaymentId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyCoPaymentInsuredCertificateResponse
+  description: Responses from the 'insert_policy_co_payment_insured_certificate' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyCoPaymentInsuredCertificate!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyCoPaymentInsuredCertificateResponse
+    inputTypeName: InsertPolicyCoPaymentInsuredCertificateResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_co_payment_insured_certificate_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyCoPaymentInsuredCertificateResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyCoPaymentInsuredCertificate
+  outputType: InsertPolicyCoPaymentInsuredCertificateResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyCoPaymentInsuredCertificateObject!]!"
+    - name: postCheck
+      type: PolicyCoPaymentInsuredCertificateBoolExp
+      description: Insert permission predicate over the
+        'policy_co_payment_insured_certificate' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_co_payment_insured_certificate
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyCoPaymentInsuredCertificate
+    rootFieldKind: Mutation
+  description: Insert into the policy_co_payment_insured_certificate table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyCoPaymentInsuredCertificate
+  permissions:
+    - role: admin
+      allowExecution: true
+

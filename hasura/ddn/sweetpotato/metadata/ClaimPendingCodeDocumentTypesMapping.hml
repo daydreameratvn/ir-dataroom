@@ -1,0 +1,165 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimPendingCodeDocumentTypesMapping
+  fields:
+    - name: documentType
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: pendingCode
+      type: String_1!
+  graphql:
+    typeName: ClaimPendingCodeDocumentTypesMapping
+    inputTypeName: ClaimPendingCodeDocumentTypesMappingInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_pending_code_document_types_mapping
+      fieldMapping:
+        documentType:
+          column:
+            name: document_type
+        id:
+          column:
+            name: id
+        pendingCode:
+          column:
+            name: pending_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimPendingCodeDocumentTypesMapping
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - documentType
+          - id
+          - pendingCode
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimPendingCodeDocumentTypesMappingBoolExp
+  operand:
+    object:
+      type: ClaimPendingCodeDocumentTypesMapping
+      comparableFields:
+        - fieldName: documentType
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: pendingCode
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimDocumentType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimPendingCodeDocumentTypesMappingBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimPendingCodeDocumentTypesMappingAggExp
+  operand:
+    object:
+      aggregatedType: ClaimPendingCodeDocumentTypesMapping
+      aggregatableFields:
+        - fieldName: documentType
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: pendingCode
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimPendingCodeDocumentTypesMappingAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimPendingCodeDocumentTypesMappingOrderByExp
+  operand:
+    object:
+      orderedType: ClaimPendingCodeDocumentTypesMapping
+      orderableFields:
+        - fieldName: documentType
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: pendingCode
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: claimDocumentType
+  graphql:
+    expressionTypeName: ClaimPendingCodeDocumentTypesMappingOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimPendingCodeDocumentTypesMapping
+  objectType: ClaimPendingCodeDocumentTypesMapping
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_pending_code_document_types_mapping
+  filterExpressionType: ClaimPendingCodeDocumentTypesMappingBoolExp
+  aggregateExpression: ClaimPendingCodeDocumentTypesMappingAggExp
+  orderByExpression: ClaimPendingCodeDocumentTypesMappingOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimPendingCodeDocumentTypesMapping
+      subscription:
+        rootField: claimPendingCodeDocumentTypesMapping
+    selectUniques:
+      - queryRootField: claimPendingCodeDocumentTypesMappingById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimPendingCodeDocumentTypesMappingById
+    filterInputTypeName: ClaimPendingCodeDocumentTypesMappingFilterInput
+    aggregate:
+      queryRootField: claimPendingCodeDocumentTypesMappingAggregate
+      subscription:
+        rootField: claimPendingCodeDocumentTypesMappingAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimPendingCodeDocumentTypesMapping
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocumentType
+  sourceType: ClaimPendingCodeDocumentTypesMapping
+  target:
+    model:
+      name: ClaimDocumentTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: documentType
+      target:
+        modelField:
+          - fieldName: value
+

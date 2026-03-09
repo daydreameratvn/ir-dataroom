@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimDocumentsByClaimDocumentIdResponse
+  description: Responses from the 'delete_claim_documents_by_claim_document_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimDocuments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimDocumentsByClaimDocumentIdResponse
+    inputTypeName: DeleteClaimDocumentsByClaimDocumentIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_documents_by_claim_document_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimDocumentsByClaimDocumentIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimDocumentsByClaimDocumentId
+  outputType: DeleteClaimDocumentsByClaimDocumentIdResponse!
+  arguments:
+    - name: keyClaimDocumentId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimDocumentsBoolExp
+      description: Delete permission predicate over the 'claim_documents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_documents_by_claim_document_id
+    argumentMapping:
+      keyClaimDocumentId: key_claim_document_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimDocumentsByClaimDocumentId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_documents' collection using the
+    'claim_document_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimDocumentsByClaimDocumentId
+  permissions:
+    - role: admin
+      allowExecution: true
+

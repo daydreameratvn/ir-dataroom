@@ -1,0 +1,422 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutPayoutBankAccounts
+  fields:
+    - name: accountName
+      type: String_1!
+    - name: accountNumber
+      type: String_1!
+    - name: balance
+      type: Bigdecimal
+    - name: balanceCheckedAt
+      type: Timestamptz
+    - name: bankId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: enableAutoRepayWhenTopup
+      type: Boolean_1
+    - name: fundCode
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: paymentProvider
+      type: String_1!
+    - name: refCode
+      type: String_1!
+    - name: refName
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PayoutPayoutBankAccounts
+    inputTypeName: PayoutPayoutBankAccountsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_payout_bank_accounts
+      fieldMapping:
+        accountName:
+          column:
+            name: account_name
+        accountNumber:
+          column:
+            name: account_number
+        balance:
+          column:
+            name: balance
+        balanceCheckedAt:
+          column:
+            name: balance_checked_at
+        bankId:
+          column:
+            name: bank_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        enableAutoRepayWhenTopup:
+          column:
+            name: enable_auto_repay_when_topup
+        fundCode:
+          column:
+            name: fund_code
+        id:
+          column:
+            name: id
+        paymentProvider:
+          column:
+            name: payment_provider
+        refCode:
+          column:
+            name: ref_code
+        refName:
+          column:
+            name: ref_name
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutPayoutBankAccounts
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - accountName
+          - accountNumber
+          - balance
+          - balanceCheckedAt
+          - bankId
+          - createdAt
+          - deletedAt
+          - enableAutoRepayWhenTopup
+          - fundCode
+          - id
+          - paymentProvider
+          - refCode
+          - refName
+          - status
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutPayoutBankAccountsBoolExp
+  operand:
+    object:
+      type: PayoutPayoutBankAccounts
+      comparableFields:
+        - fieldName: accountName
+          booleanExpressionType: TextBoolExp
+        - fieldName: accountNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: balance
+          booleanExpressionType: NumericBoolExp
+        - fieldName: balanceCheckedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: bankId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: enableAutoRepayWhenTopup
+          booleanExpressionType: BoolBoolExp
+        - fieldName: fundCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paymentProvider
+          booleanExpressionType: TextBoolExp
+        - fieldName: refCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: refName
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: payoutPayoutBankAccountActionLogs
+        - relationshipName: bank
+        - relationshipName: payoutFundCode
+        - relationshipName: payoutPaymentProvider
+        - relationshipName: payoutPayoutBankAccountStatus
+        - relationshipName: payoutTransactions
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutPayoutBankAccountsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutPayoutBankAccountsAggExp
+  operand:
+    object:
+      aggregatedType: PayoutPayoutBankAccounts
+      aggregatableFields:
+        - fieldName: accountName
+          aggregateExpression: TextAggExp
+        - fieldName: accountNumber
+          aggregateExpression: TextAggExp
+        - fieldName: balance
+          aggregateExpression: NumericAggExp
+        - fieldName: balanceCheckedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: bankId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: enableAutoRepayWhenTopup
+          aggregateExpression: BoolAggExp
+        - fieldName: fundCode
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: paymentProvider
+          aggregateExpression: TextAggExp
+        - fieldName: refCode
+          aggregateExpression: TextAggExp
+        - fieldName: refName
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutPayoutBankAccountsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutPayoutBankAccountsOrderByExp
+  operand:
+    object:
+      orderedType: PayoutPayoutBankAccounts
+      orderableFields:
+        - fieldName: accountName
+          orderByExpression: String1OrderByExp
+        - fieldName: accountNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: balance
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: balanceCheckedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: bankId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: enableAutoRepayWhenTopup
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: fundCode
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: paymentProvider
+          orderByExpression: String1OrderByExp
+        - fieldName: refCode
+          orderByExpression: String1OrderByExp
+        - fieldName: refName
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: bank
+        - relationshipName: payoutFundCode
+        - relationshipName: payoutPaymentProvider
+        - relationshipName: payoutPayoutBankAccountStatus
+  graphql:
+    expressionTypeName: PayoutPayoutBankAccountsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutPayoutBankAccounts
+  objectType: PayoutPayoutBankAccounts
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_payout_bank_accounts
+  filterExpressionType: PayoutPayoutBankAccountsBoolExp
+  aggregateExpression: PayoutPayoutBankAccountsAggExp
+  orderByExpression: PayoutPayoutBankAccountsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutPayoutBankAccounts
+      subscription:
+        rootField: payoutPayoutBankAccounts
+    selectUniques:
+      - queryRootField: payoutPayoutBankAccountsByPayoutBankAccountsPaymentProviderAccountNumberDeleteKey
+        uniqueIdentifier:
+          - accountNumber
+          - deletedAt
+          - paymentProvider
+        subscription:
+          rootField: payoutPayoutBankAccountsByPayoutBankAccountsPaymentProviderAccountNumberDeleteKey
+      - queryRootField: payoutPayoutBankAccountsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: payoutPayoutBankAccountsById
+    filterInputTypeName: PayoutPayoutBankAccountsFilterInput
+    aggregate:
+      queryRootField: payoutPayoutBankAccountsAggregate
+      subscription:
+        rootField: payoutPayoutBankAccountsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutPayoutBankAccounts
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPayoutBankAccountActionLogs
+  sourceType: PayoutPayoutBankAccounts
+  target:
+    model:
+      name: PayoutPayoutBankAccountActionLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPayoutBankAccountActionLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: payoutBankAccountId
+  graphql:
+    aggregateFieldName: payoutPayoutBankAccountActionLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bank
+  sourceType: PayoutPayoutBankAccounts
+  target:
+    model:
+      name: Banks
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bankId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutFundCode
+  sourceType: PayoutPayoutBankAccounts
+  target:
+    model:
+      name: PayoutFundCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fundCode
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentProvider
+  sourceType: PayoutPayoutBankAccounts
+  target:
+    model:
+      name: PayoutPaymentProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentProvider
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPayoutBankAccountStatus
+  sourceType: PayoutPayoutBankAccounts
+  target:
+    model:
+      name: PayoutPayoutBankAccountStatus
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutTransactions
+  sourceType: PayoutPayoutBankAccounts
+  target:
+    model:
+      name: PayoutTransactions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutTransactionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: payoutBankAccountId
+  graphql:
+    aggregateFieldName: payoutTransactionsAggregate
+

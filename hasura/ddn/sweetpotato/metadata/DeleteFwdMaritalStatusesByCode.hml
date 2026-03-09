@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdMaritalStatusesByCodeResponse
+  description: Responses from the 'delete_fwd_marital_statuses_by_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdMaritalStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdMaritalStatusesByCodeResponse
+    inputTypeName: DeleteFwdMaritalStatusesByCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_marital_statuses_by_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdMaritalStatusesByCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdMaritalStatusesByCode
+  outputType: DeleteFwdMaritalStatusesByCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: preCheck
+      type: FwdMaritalStatusesBoolExp
+      description: Delete permission predicate over the 'fwd_marital_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_marital_statuses_by_code
+    argumentMapping:
+      keyCode: key_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdMaritalStatusesByCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_marital_statuses' collection using the 'code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdMaritalStatusesByCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

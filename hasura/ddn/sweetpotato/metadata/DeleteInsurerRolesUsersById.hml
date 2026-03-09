@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsurerRolesUsersByIdResponse
+  description: Responses from the 'delete_insurer_roles_users_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsurerRolesUsers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsurerRolesUsersByIdResponse
+    inputTypeName: DeleteInsurerRolesUsersByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insurer_roles_users_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsurerRolesUsersByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsurerRolesUsersById
+  outputType: DeleteInsurerRolesUsersByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: InsurerRolesUsersBoolExp
+      description: Delete permission predicate over the 'insurer_roles_users' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insurer_roles_users_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsurerRolesUsersById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insurer_roles_users' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsurerRolesUsersById
+  permissions:
+    - role: admin
+      allowExecution: true
+

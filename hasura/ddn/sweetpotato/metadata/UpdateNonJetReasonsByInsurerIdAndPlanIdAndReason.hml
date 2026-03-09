@@ -1,0 +1,170 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateNonJetReasonsByInsurerIdAndPlanIdAndReasonUpdateColumns
+  description: Update the columns of the 'non_jet_reasons' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnNonJetReasonsCreatedAt
+      description: Update the 'created_at' column in the 'non_jet_reasons' collection.
+    - name: deletedAt
+      type: UpdateColumnNonJetReasonsDeletedAt
+      description: Update the 'deleted_at' column in the 'non_jet_reasons' collection.
+    - name: id
+      type: UpdateColumnNonJetReasonsId
+      description: Update the 'id' column in the 'non_jet_reasons' collection.
+    - name: insurerId
+      type: UpdateColumnNonJetReasonsInsurerId
+      description: Update the 'insurer_id' column in the 'non_jet_reasons' collection.
+    - name: needExplanation
+      type: UpdateColumnNonJetReasonsNeedExplanation
+      description: Update the 'need_explanation' column in the 'non_jet_reasons' collection.
+    - name: planId
+      type: UpdateColumnNonJetReasonsPlanId
+      description: Update the 'plan_id' column in the 'non_jet_reasons' collection.
+    - name: reason
+      type: UpdateColumnNonJetReasonsReason
+      description: Update the 'reason' column in the 'non_jet_reasons' collection.
+    - name: updatedAt
+      type: UpdateColumnNonJetReasonsUpdatedAt
+      description: Update the 'updated_at' column in the 'non_jet_reasons' collection.
+  graphql:
+    typeName: UpdateNonJetReasonsByInsurerIdAndPlanIdAndReasonUpdateColumns
+    inputTypeName: UpdateNonJetReasonsByInsurerIdAndPlanIdAndReasonUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_non_jet_reasons_by_insurer_id_and_plan_id_and_reason_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        needExplanation:
+          column:
+            name: need_explanation
+        planId:
+          column:
+            name: plan_id
+        reason:
+          column:
+            name: reason
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateNonJetReasonsByInsurerIdAndPlanIdAndReasonUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - insurerId
+          - needExplanation
+          - planId
+          - reason
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateNonJetReasonsByInsurerIdAndPlanIdAndReasonResponse
+  description: Responses from the
+    'update_non_jet_reasons_by_insurer_id_and_plan_id_and_reason' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[NonJetReasons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateNonJetReasonsByInsurerIdAndPlanIdAndReasonResponse
+    inputTypeName: UpdateNonJetReasonsByInsurerIdAndPlanIdAndReasonResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_non_jet_reasons_by_insurer_id_and_plan_id_and_reason_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateNonJetReasonsByInsurerIdAndPlanIdAndReasonResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateNonJetReasonsByInsurerIdAndPlanIdAndReason
+  outputType: UpdateNonJetReasonsByInsurerIdAndPlanIdAndReasonResponse!
+  arguments:
+    - name: keyInsurerId
+      type: Uuid!
+    - name: keyPlanId
+      type: Uuid
+    - name: keyReason
+      type: String_1!
+    - name: postCheck
+      type: NonJetReasonsBoolExp
+      description: Update permission post-condition predicate over the
+        'non_jet_reasons' collection
+    - name: preCheck
+      type: NonJetReasonsBoolExp
+      description: Update permission pre-condition predicate over the
+        'non_jet_reasons' collection
+    - name: updateColumns
+      type: UpdateNonJetReasonsByInsurerIdAndPlanIdAndReasonUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_non_jet_reasons_by_insurer_id_and_plan_id_and_reason
+    argumentMapping:
+      keyInsurerId: key_insurer_id
+      keyPlanId: key_plan_id
+      keyReason: key_reason
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateNonJetReasonsByInsurerIdAndPlanIdAndReason
+    rootFieldKind: Mutation
+  description: Update any row on the 'non_jet_reasons' collection using the
+    'insurer_id', 'plan_id' and 'reason' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateNonJetReasonsByInsurerIdAndPlanIdAndReason
+  permissions:
+    - role: admin
+      allowExecution: true
+

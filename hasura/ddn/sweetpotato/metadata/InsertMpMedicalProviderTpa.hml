@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpMedicalProviderTpaObject
+  fields:
+    - name: companyId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: medicalProviderId
+      type: Uuid
+    - name: tenantId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertMpMedicalProviderTpaObject
+    inputTypeName: InsertMpMedicalProviderTpaObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_medical_provider_tpa_object
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpMedicalProviderTpaObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - createdAt
+          - deletedAt
+          - id
+          - medicalProviderId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpMedicalProviderTpaResponse
+  description: Responses from the 'insert_mp_medical_provider_tpa' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderTpa!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMpMedicalProviderTpaResponse
+    inputTypeName: InsertMpMedicalProviderTpaResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_medical_provider_tpa_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpMedicalProviderTpaResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMpMedicalProviderTpa
+  outputType: InsertMpMedicalProviderTpaResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMpMedicalProviderTpaObject!]!"
+    - name: postCheck
+      type: MpMedicalProviderTpaBoolExp
+      description: Insert permission predicate over the 'mp_medical_provider_tpa' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_mp_medical_provider_tpa
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMpMedicalProviderTpa
+    rootFieldKind: Mutation
+  description: Insert into the mp_medical_provider_tpa table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMpMedicalProviderTpa
+  permissions:
+    - role: admin
+      allowExecution: true
+

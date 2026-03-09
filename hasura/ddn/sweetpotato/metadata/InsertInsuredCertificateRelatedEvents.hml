@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsuredCertificateRelatedEventsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: effectiveDate
+      type: Timestamptz!
+    - name: eventType
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: insuredCertificateId
+      type: Uuid
+    - name: medicalProviderId
+      type: Uuid
+    - name: newValue
+      type: String_1
+    - name: oldValue
+      type: String_1
+  graphql:
+    typeName: InsertInsuredCertificateRelatedEventsObject
+    inputTypeName: InsertInsuredCertificateRelatedEventsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insured_certificate_related_events_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        effectiveDate:
+          column:
+            name: effective_date
+        eventType:
+          column:
+            name: event_type
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        newValue:
+          column:
+            name: new_value
+        oldValue:
+          column:
+            name: old_value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsuredCertificateRelatedEventsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - effectiveDate
+          - eventType
+          - id
+          - insuredCertificateId
+          - medicalProviderId
+          - newValue
+          - oldValue
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsuredCertificateRelatedEventsResponse
+  description: Responses from the 'insert_insured_certificate_related_events' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateRelatedEvents!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertInsuredCertificateRelatedEventsResponse
+    inputTypeName: InsertInsuredCertificateRelatedEventsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insured_certificate_related_events_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsuredCertificateRelatedEventsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertInsuredCertificateRelatedEvents
+  outputType: InsertInsuredCertificateRelatedEventsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertInsuredCertificateRelatedEventsObject!]!"
+    - name: postCheck
+      type: InsuredCertificateRelatedEventsBoolExp
+      description: Insert permission predicate over the
+        'insured_certificate_related_events' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_insured_certificate_related_events
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertInsuredCertificateRelatedEvents
+    rootFieldKind: Mutation
+  description: Insert into the insured_certificate_related_events table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertInsuredCertificateRelatedEvents
+  permissions:
+    - role: admin
+      allowExecution: true
+

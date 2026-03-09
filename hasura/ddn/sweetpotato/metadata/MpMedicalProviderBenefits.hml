@@ -1,0 +1,235 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProviderBenefits
+  fields:
+    - name: benefitType
+      type: String_1!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: medicalProviderId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+  graphql:
+    typeName: MpMedicalProviderBenefits
+    inputTypeName: MpMedicalProviderBenefitsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_provider_benefits
+      fieldMapping:
+        benefitType:
+          column:
+            name: benefit_type
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        tenantId:
+          column:
+            name: tenant_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProviderBenefits
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - benefitType
+          - deletedAt
+          - id
+          - medicalProviderId
+          - tenantId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProviderBenefitsBoolExp
+  operand:
+    object:
+      type: MpMedicalProviderBenefits
+      comparableFields:
+        - fieldName: benefitType
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: insuredBenefitType
+        - relationshipName: mpMedicalProvider
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProviderBenefitsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProviderBenefitsAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProviderBenefits
+      aggregatableFields:
+        - fieldName: benefitType
+          aggregateExpression: VarcharAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProviderBenefitsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProviderBenefitsOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProviderBenefits
+      orderableFields:
+        - fieldName: benefitType
+          orderByExpression: String1OrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredBenefitType
+        - relationshipName: mpMedicalProvider
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: MpMedicalProviderBenefitsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProviderBenefits
+  objectType: MpMedicalProviderBenefits
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_provider_benefits
+  filterExpressionType: MpMedicalProviderBenefitsBoolExp
+  aggregateExpression: MpMedicalProviderBenefitsAggExp
+  orderByExpression: MpMedicalProviderBenefitsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProviderBenefits
+      subscription:
+        rootField: mpMedicalProviderBenefits
+    selectUniques:
+      - queryRootField: mpMedicalProviderBenefitsByMedicalProviderBenefitsMedicalProviderIdBenefitTypeKey
+        uniqueIdentifier:
+          - benefitType
+          - medicalProviderId
+        subscription:
+          rootField: mpMedicalProviderBenefitsByMedicalProviderBenefitsMedicalProviderIdBenefitTypeKey
+      - queryRootField: mpMedicalProviderBenefitsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: mpMedicalProviderBenefitsById
+    filterInputTypeName: MpMedicalProviderBenefitsFilterInput
+    aggregate:
+      queryRootField: mpMedicalProviderBenefitsAggregate
+      subscription:
+        rootField: mpMedicalProviderBenefitsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProviderBenefits
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredBenefitType
+  sourceType: MpMedicalProviderBenefits
+  target:
+    model:
+      name: InsuredBenefitTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: benefitType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: MpMedicalProviderBenefits
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: MpMedicalProviderBenefits
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

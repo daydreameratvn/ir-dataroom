@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdApiLogsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: requestContent
+      type: Json!
+    - name: requestedAt
+      type: Timestamptz!
+    - name: respondedAt
+      type: Timestamptz!
+    - name: responseContent
+      type: Json
+    - name: responseStatus
+      type: Int32
+    - name: responseTime
+      type: Int32!
+    - name: url
+      type: String_1!
+  graphql:
+    typeName: InsertFwdApiLogsObject
+    inputTypeName: InsertFwdApiLogsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_api_logs_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        requestContent:
+          column:
+            name: request_content
+        requestedAt:
+          column:
+            name: requested_at
+        respondedAt:
+          column:
+            name: responded_at
+        responseContent:
+          column:
+            name: response_content
+        responseStatus:
+          column:
+            name: response_status
+        responseTime:
+          column:
+            name: response_time
+        url:
+          column:
+            name: url
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdApiLogsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - requestContent
+          - requestedAt
+          - respondedAt
+          - responseContent
+          - responseStatus
+          - responseTime
+          - url
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdApiLogsResponse
+  description: Responses from the 'insert_fwd_api_logs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdApiLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdApiLogsResponse
+    inputTypeName: InsertFwdApiLogsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_api_logs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdApiLogsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdApiLogs
+  outputType: InsertFwdApiLogsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdApiLogsObject!]!"
+    - name: postCheck
+      type: FwdApiLogsBoolExp
+      description: Insert permission predicate over the 'fwd_api_logs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_api_logs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdApiLogs
+    rootFieldKind: Mutation
+  description: Insert into the fwd_api_logs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdApiLogs
+  permissions:
+    - role: admin
+      allowExecution: true
+

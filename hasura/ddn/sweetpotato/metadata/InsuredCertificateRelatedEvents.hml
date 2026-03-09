@@ -1,0 +1,333 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredCertificateRelatedEvents
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: effectiveDate
+      type: Timestamptz!
+    - name: eventType
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: insuredCertificateId
+      type: Uuid
+    - name: medicalProviderId
+      type: Uuid
+    - name: newValue
+      type: String_1
+    - name: oldValue
+      type: String_1
+  graphql:
+    typeName: InsuredCertificateRelatedEvents
+    inputTypeName: InsuredCertificateRelatedEventsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_certificate_related_events
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        effectiveDate:
+          column:
+            name: effective_date
+        eventType:
+          column:
+            name: event_type
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        newValue:
+          column:
+            name: new_value
+        oldValue:
+          column:
+            name: old_value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredCertificateRelatedEvents
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - effectiveDate
+          - eventType
+          - id
+          - insuredCertificateId
+          - medicalProviderId
+          - newValue
+          - oldValue
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredCertificateRelatedEventsBoolExp
+  operand:
+    object:
+      type: InsuredCertificateRelatedEvents
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: effectiveDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: eventType
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: newValue
+          booleanExpressionType: TextBoolExp
+        - fieldName: oldValue
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: insuredCertificateRelatedEventType
+        - relationshipName: insuredCertificate
+        - relationshipName: mpMedicalProvider
+        - relationshipName: insuredCertificateStatus
+        - relationshipName: insuredCertificateStatusByOldValue
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredCertificateRelatedEventsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredCertificateRelatedEventsAggExp
+  operand:
+    object:
+      aggregatedType: InsuredCertificateRelatedEvents
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: effectiveDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: eventType
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: newValue
+          aggregateExpression: TextAggExp
+        - fieldName: oldValue
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredCertificateRelatedEventsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredCertificateRelatedEventsOrderByExp
+  operand:
+    object:
+      orderedType: InsuredCertificateRelatedEvents
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: effectiveDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: eventType
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: newValue
+          orderByExpression: String1OrderByExp
+        - fieldName: oldValue
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: insuredCertificateRelatedEventType
+        - relationshipName: insuredCertificate
+        - relationshipName: mpMedicalProvider
+        - relationshipName: insuredCertificateStatus
+        - relationshipName: insuredCertificateStatusByOldValue
+  graphql:
+    expressionTypeName: InsuredCertificateRelatedEventsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredCertificateRelatedEvents
+  objectType: InsuredCertificateRelatedEvents
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_certificate_related_events
+  filterExpressionType: InsuredCertificateRelatedEventsBoolExp
+  aggregateExpression: InsuredCertificateRelatedEventsAggExp
+  orderByExpression: InsuredCertificateRelatedEventsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredCertificateRelatedEvents
+      subscription:
+        rootField: insuredCertificateRelatedEvents
+    selectUniques:
+      - queryRootField: insuredCertificateRelatedEventsByInsuredCertificateRelatedEEventTypeInsuredCertificatKey
+        uniqueIdentifier:
+          - effectiveDate
+          - eventType
+          - insuredCertificateId
+          - newValue
+        subscription:
+          rootField: insuredCertificateRelatedEventsByInsuredCertificateRelatedEEventTypeInsuredCertificatKey
+      - queryRootField: insuredCertificateRelatedEventsByInsuredCertificateRelatedEEventTypeMedicalProviderIKey
+        uniqueIdentifier:
+          - effectiveDate
+          - eventType
+          - medicalProviderId
+          - newValue
+        subscription:
+          rootField: insuredCertificateRelatedEventsByInsuredCertificateRelatedEEventTypeMedicalProviderIKey
+      - queryRootField: insuredCertificateRelatedEventsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: insuredCertificateRelatedEventsById
+    filterInputTypeName: InsuredCertificateRelatedEventsFilterInput
+    aggregate:
+      queryRootField: insuredCertificateRelatedEventsAggregate
+      subscription:
+        rootField: insuredCertificateRelatedEventsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredCertificateRelatedEvents
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateRelatedEventType
+  sourceType: InsuredCertificateRelatedEvents
+  target:
+    model:
+      name: InsuredCertificateRelatedEventTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: eventType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: InsuredCertificateRelatedEvents
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: InsuredCertificateRelatedEvents
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateStatus
+  sourceType: InsuredCertificateRelatedEvents
+  target:
+    model:
+      name: InsuredCertificateStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: newValue
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateStatusByOldValue
+  sourceType: InsuredCertificateRelatedEvents
+  target:
+    model:
+      name: InsuredCertificateStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: oldValue
+      target:
+        modelField:
+          - fieldName: value
+

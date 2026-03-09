@@ -1,0 +1,132 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdHealthLogsObject
+  fields:
+    - name: checkedAt
+      type: Timestamptz!
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: isRunning
+      type: Boolean_1!
+    - name: responseContent
+      type: Json
+    - name: responseStatus
+      type: Bigdecimal
+  graphql:
+    typeName: InsertFwdHealthLogsObject
+    inputTypeName: InsertFwdHealthLogsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_health_logs_object
+      fieldMapping:
+        checkedAt:
+          column:
+            name: checked_at
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        isRunning:
+          column:
+            name: is_running
+        responseContent:
+          column:
+            name: response_content
+        responseStatus:
+          column:
+            name: response_status
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdHealthLogsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - checkedAt
+          - createdAt
+          - id
+          - isRunning
+          - responseContent
+          - responseStatus
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdHealthLogsResponse
+  description: Responses from the 'insert_fwd_health_logs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdHealthLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdHealthLogsResponse
+    inputTypeName: InsertFwdHealthLogsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_health_logs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdHealthLogsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdHealthLogs
+  outputType: InsertFwdHealthLogsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdHealthLogsObject!]!"
+    - name: postCheck
+      type: FwdHealthLogsBoolExp
+      description: Insert permission predicate over the 'fwd_health_logs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_health_logs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdHealthLogs
+    rootFieldKind: Mutation
+  description: Insert into the fwd_health_logs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdHealthLogs
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimQualityCodesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertClaimQualityCodesObject
+    inputTypeName: InsertClaimQualityCodesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_quality_codes_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimQualityCodesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimQualityCodesResponse
+  description: Responses from the 'insert_claim_quality_codes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimQualityCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimQualityCodesResponse
+    inputTypeName: InsertClaimQualityCodesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_quality_codes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimQualityCodesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimQualityCodes
+  outputType: InsertClaimQualityCodesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimQualityCodesObject!]!"
+    - name: postCheck
+      type: ClaimQualityCodesBoolExp
+      description: Insert permission predicate over the 'claim_quality_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_quality_codes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimQualityCodes
+    rootFieldKind: Mutation
+  description: Insert into the claim_quality_codes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimQualityCodes
+  permissions:
+    - role: admin
+      allowExecution: true
+

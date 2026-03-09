@@ -1,0 +1,303 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: JetRuleSets
+  description: Rule set cho JET
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: rules
+      type: Json!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: JetRuleSets
+    inputTypeName: JetRuleSetsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: jet_rule_sets
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        rules:
+          column:
+            name: rules
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: JetRuleSets
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - description
+          - id
+          - name
+          - rules
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: JetRuleSetsBoolExp
+  operand:
+    object:
+      type: JetRuleSets
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: rules
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCaseJetResults
+        - relationshipName: jetRules
+        - relationshipName: planJetRuleSets
+        - relationshipName: plans
+        - relationshipName: plansByOcrJetRuleSetId
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: JetRuleSetsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: JetRuleSetsAggExp
+  operand:
+    object:
+      aggregatedType: JetRuleSets
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: rules
+          aggregateExpression: JsonbAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: JetRuleSetsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: JetRuleSetsOrderByExp
+  operand:
+    object:
+      orderedType: JetRuleSets
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: rules
+          orderByExpression: JsonOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: JetRuleSetsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: JetRuleSets
+  objectType: JetRuleSets
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: jet_rule_sets
+  filterExpressionType: JetRuleSetsBoolExp
+  aggregateExpression: JetRuleSetsAggExp
+  orderByExpression: JetRuleSetsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: jetRuleSets
+      subscription:
+        rootField: jetRuleSets
+    selectUniques:
+      - queryRootField: jetRuleSetsByName
+        uniqueIdentifier:
+          - name
+        subscription:
+          rootField: jetRuleSetsByName
+      - queryRootField: jetRuleSetsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: jetRuleSetsById
+    filterInputTypeName: JetRuleSetsFilterInput
+    aggregate:
+      queryRootField: jetRuleSetsAggregate
+      subscription:
+        rootField: jetRuleSetsAggregate
+  description: Rule set cho JET
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: JetRuleSets
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseJetResults
+  sourceType: JetRuleSets
+  target:
+    model:
+      name: ClaimCaseJetResults
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseJetResultsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: jetRuleSetId
+  graphql:
+    aggregateFieldName: claimCaseJetResultsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: jetRules
+  sourceType: JetRuleSets
+  target:
+    model:
+      name: JetRules
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: JetRulesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: jetRuleSetId
+  graphql:
+    aggregateFieldName: jetRulesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planJetRuleSets
+  sourceType: JetRuleSets
+  target:
+    model:
+      name: PlanJetRuleSet
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanJetRuleSetAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: jetRuleSetId
+  graphql:
+    aggregateFieldName: planJetRuleSetsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plans
+  sourceType: JetRuleSets
+  target:
+    model:
+      name: Plans
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlansAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: jetRuleSetId
+  graphql:
+    aggregateFieldName: plansAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plansByOcrJetRuleSetId
+  sourceType: JetRuleSets
+  target:
+    model:
+      name: Plans
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlansAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: ocrJetRuleSetId
+  graphql:
+    aggregateFieldName: plansByOcrJetRuleSetIdAggregate
+

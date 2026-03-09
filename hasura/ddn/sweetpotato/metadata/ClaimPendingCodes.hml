@@ -1,0 +1,412 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimPendingCodes
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: claimPendingCodeId
+      type: Uuid!
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: extendedText
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: remark
+      type: String_1
+    - name: removedAt
+      type: Timestamptz
+    - name: startedAt
+      type: Timestamptz!
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: ClaimPendingCodes
+    inputTypeName: ClaimPendingCodesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_pending_codes
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        claimPendingCodeId:
+          column:
+            name: claim_pending_code_id
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        extendedText:
+          column:
+            name: extended_text
+        id:
+          column:
+            name: id
+        remark:
+          column:
+            name: remark
+        removedAt:
+          column:
+            name: removed_at
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimPendingCodes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - claimPendingCodeId
+          - code
+          - createdAt
+          - createdBy
+          - deletedAt
+          - extendedText
+          - id
+          - remark
+          - removedAt
+          - startedAt
+          - status
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimPendingCodesBoolExp
+  operand:
+    object:
+      type: ClaimPendingCodes
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimPendingCodeId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: code
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: extendedText
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: remark
+          booleanExpressionType: TextBoolExp
+        - fieldName: removedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: startedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: status
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimDocuments
+        - relationshipName: claimCase
+        - relationshipName: pendingCode
+        - relationshipName: identityUser
+        - relationshipName: claimPendingCodeStatus
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimPendingCodesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimPendingCodesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimPendingCodes
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimPendingCodeId
+          aggregateExpression: UuidAggExp
+        - fieldName: code
+          aggregateExpression: VarcharAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: extendedText
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: remark
+          aggregateExpression: TextAggExp
+        - fieldName: removedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: startedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: status
+          aggregateExpression: VarcharAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimPendingCodesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimPendingCodesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimPendingCodes
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimPendingCodeId
+          orderByExpression: UuidOrderByExp
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: extendedText
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: remark
+          orderByExpression: String1OrderByExp
+        - fieldName: removedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: startedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: pendingCode
+        - relationshipName: identityUser
+        - relationshipName: claimPendingCodeStatus
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: ClaimPendingCodesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimPendingCodes
+  objectType: ClaimPendingCodes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_pending_codes
+  filterExpressionType: ClaimPendingCodesBoolExp
+  aggregateExpression: ClaimPendingCodesAggExp
+  orderByExpression: ClaimPendingCodesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimPendingCodes
+      subscription:
+        rootField: claimPendingCodes
+    selectUniques:
+      - queryRootField: claimPendingCodesByClaimPendingCodeId
+        uniqueIdentifier:
+          - claimPendingCodeId
+        subscription:
+          rootField: claimPendingCodesByClaimPendingCodeId
+    filterInputTypeName: ClaimPendingCodesFilterInput
+    aggregate:
+      queryRootField: claimPendingCodesAggregate
+      subscription:
+        rootField: claimPendingCodesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimPendingCodes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocuments
+  sourceType: ClaimPendingCodes
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimPendingCodeId
+      target:
+        modelField:
+          - fieldName: claimPendingCodeId
+  graphql:
+    aggregateFieldName: claimDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: ClaimPendingCodes
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: pendingCode
+  sourceType: ClaimPendingCodes
+  target:
+    model:
+      name: PendingCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: code
+      target:
+        modelField:
+          - fieldName: code
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: ClaimPendingCodes
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimPendingCodeStatus
+  sourceType: ClaimPendingCodes
+  target:
+    model:
+      name: ClaimPendingCodeStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: ClaimPendingCodes
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

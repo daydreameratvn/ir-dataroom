@@ -1,0 +1,234 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrDischargePapersObject
+  fields:
+    - name: admissionDate
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz
+    - name: diagnosis
+      type: String_1
+    - name: dischargeDate
+      type: Timestamptz
+    - name: dob
+      type: Timestamptz
+    - name: doctorName
+      type: String_1
+    - name: gender
+      type: String_1
+    - name: icdCodes
+      type: String_1
+    - name: isDischargePaper
+      type: Boolean_1
+    - name: isFacultyOfTraditionalMedicineOrPhysiotherapy
+      type: Boolean_1
+    - name: isHaveRubberStamp
+      type: Boolean_1
+    - name: isSignatureOverlapRubberStamp
+      type: Boolean_1
+    - name: medicalProviderId
+      type: Uuid
+    - name: medicalProviderName
+      type: String_1
+    - name: monthsOld
+      type: Int32
+    - name: paperId
+      type: Uuid!
+    - name: patientName
+      type: String_1
+    - name: rawData
+      type: Json
+    - name: socialInsuranceNumber
+      type: String_1
+    - name: treatmentMethod
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: yearsOld
+      type: Int32
+    - name: yob
+      type: Int32
+  graphql:
+    typeName: InsertOcrDischargePapersObject
+    inputTypeName: InsertOcrDischargePapersObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_discharge_papers_object
+      fieldMapping:
+        admissionDate:
+          column:
+            name: admission_date
+        createdAt:
+          column:
+            name: created_at
+        diagnosis:
+          column:
+            name: diagnosis
+        dischargeDate:
+          column:
+            name: discharge_date
+        dob:
+          column:
+            name: dob
+        doctorName:
+          column:
+            name: doctor_name
+        gender:
+          column:
+            name: gender
+        icdCodes:
+          column:
+            name: icd_codes
+        isDischargePaper:
+          column:
+            name: is_discharge_paper
+        isFacultyOfTraditionalMedicineOrPhysiotherapy:
+          column:
+            name: is_faculty_of_traditional_medicine_or_physiotherapy
+        isHaveRubberStamp:
+          column:
+            name: is_have_rubber_stamp
+        isSignatureOverlapRubberStamp:
+          column:
+            name: is_signature_overlap_rubber_stamp
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        monthsOld:
+          column:
+            name: months_old
+        paperId:
+          column:
+            name: paper_id
+        patientName:
+          column:
+            name: patient_name
+        rawData:
+          column:
+            name: raw_data
+        socialInsuranceNumber:
+          column:
+            name: social_insurance_number
+        treatmentMethod:
+          column:
+            name: treatment_method
+        updatedAt:
+          column:
+            name: updated_at
+        yearsOld:
+          column:
+            name: years_old
+        yob:
+          column:
+            name: yob
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrDischargePapersObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - admissionDate
+          - createdAt
+          - diagnosis
+          - dischargeDate
+          - dob
+          - doctorName
+          - gender
+          - icdCodes
+          - isDischargePaper
+          - isFacultyOfTraditionalMedicineOrPhysiotherapy
+          - isHaveRubberStamp
+          - isSignatureOverlapRubberStamp
+          - medicalProviderId
+          - medicalProviderName
+          - monthsOld
+          - paperId
+          - patientName
+          - rawData
+          - socialInsuranceNumber
+          - treatmentMethod
+          - updatedAt
+          - yearsOld
+          - yob
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrDischargePapersResponse
+  description: Responses from the 'insert_ocr_discharge_papers' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrDischargePapers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOcrDischargePapersResponse
+    inputTypeName: InsertOcrDischargePapersResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_discharge_papers_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrDischargePapersResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOcrDischargePapers
+  outputType: InsertOcrDischargePapersResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOcrDischargePapersObject!]!"
+    - name: postCheck
+      type: OcrDischargePapersBoolExp
+      description: Insert permission predicate over the 'ocr_discharge_papers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_ocr_discharge_papers
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOcrDischargePapers
+    rootFieldKind: Mutation
+  description: Insert into the ocr_discharge_papers table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOcrDischargePapers
+  permissions:
+    - role: admin
+      allowExecution: true
+

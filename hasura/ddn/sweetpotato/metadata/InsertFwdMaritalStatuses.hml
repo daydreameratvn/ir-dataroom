@@ -1,0 +1,114 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdMaritalStatusesObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: ppyMaritalStatusCode
+      type: String_1!
+  graphql:
+    typeName: InsertFwdMaritalStatusesObject
+    inputTypeName: InsertFwdMaritalStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_marital_statuses_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        name:
+          column:
+            name: name
+        ppyMaritalStatusCode:
+          column:
+            name: ppy_marital_status_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdMaritalStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - name
+          - ppyMaritalStatusCode
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdMaritalStatusesResponse
+  description: Responses from the 'insert_fwd_marital_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdMaritalStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdMaritalStatusesResponse
+    inputTypeName: InsertFwdMaritalStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_marital_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdMaritalStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdMaritalStatuses
+  outputType: InsertFwdMaritalStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdMaritalStatusesObject!]!"
+    - name: postCheck
+      type: FwdMaritalStatusesBoolExp
+      description: Insert permission predicate over the 'fwd_marital_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_marital_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdMaritalStatuses
+    rootFieldKind: Mutation
+  description: Insert into the fwd_marital_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdMaritalStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,176 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateJetResultDetailsByJetResultIdAndJetRuleIdUpdateColumns
+  description: Update the columns of the 'jet_result_details' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnJetResultDetailsCreatedAt
+      description: Update the 'created_at' column in the 'jet_result_details' collection.
+    - name: explanation
+      type: UpdateColumnJetResultDetailsExplanation
+      description: Update the 'explanation' column in the 'jet_result_details' collection.
+    - name: id
+      type: UpdateColumnJetResultDetailsId
+      description: Update the 'id' column in the 'jet_result_details' collection.
+    - name: isPassed
+      type: UpdateColumnJetResultDetailsIsPassed
+      description: Update the 'is_passed' column in the 'jet_result_details' collection.
+    - name: jetResultId
+      type: UpdateColumnJetResultDetailsJetResultId
+      description: Update the 'jet_result_id' column in the 'jet_result_details' collection.
+    - name: jetRuleId
+      type: UpdateColumnJetResultDetailsJetRuleId
+      description: Update the 'jet_rule_id' column in the 'jet_result_details' collection.
+    - name: jetRuleResult
+      type: UpdateColumnJetResultDetailsJetRuleResult
+      description: Update the 'jet_rule_result' column in the 'jet_result_details'
+        collection.
+    - name: nonJetReasonId
+      type: UpdateColumnJetResultDetailsNonJetReasonId
+      description: Update the 'non_jet_reason_id' column in the 'jet_result_details'
+        collection.
+    - name: updatedAt
+      type: UpdateColumnJetResultDetailsUpdatedAt
+      description: Update the 'updated_at' column in the 'jet_result_details' collection.
+  graphql:
+    typeName: UpdateJetResultDetailsByJetResultIdAndJetRuleIdUpdateColumns
+    inputTypeName: UpdateJetResultDetailsByJetResultIdAndJetRuleIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_jet_result_details_by_jet_result_id_and_jet_rule_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        explanation:
+          column:
+            name: explanation
+        id:
+          column:
+            name: id
+        isPassed:
+          column:
+            name: is_passed
+        jetResultId:
+          column:
+            name: jet_result_id
+        jetRuleId:
+          column:
+            name: jet_rule_id
+        jetRuleResult:
+          column:
+            name: jet_rule_result
+        nonJetReasonId:
+          column:
+            name: non_jet_reason_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateJetResultDetailsByJetResultIdAndJetRuleIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - explanation
+          - id
+          - isPassed
+          - jetResultId
+          - jetRuleId
+          - jetRuleResult
+          - nonJetReasonId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateJetResultDetailsByJetResultIdAndJetRuleIdResponse
+  description: Responses from the
+    'update_jet_result_details_by_jet_result_id_and_jet_rule_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[JetResultDetails!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateJetResultDetailsByJetResultIdAndJetRuleIdResponse
+    inputTypeName: UpdateJetResultDetailsByJetResultIdAndJetRuleIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_jet_result_details_by_jet_result_id_and_jet_rule_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateJetResultDetailsByJetResultIdAndJetRuleIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateJetResultDetailsByJetResultIdAndJetRuleId
+  outputType: UpdateJetResultDetailsByJetResultIdAndJetRuleIdResponse!
+  arguments:
+    - name: keyJetResultId
+      type: Uuid!
+    - name: keyJetRuleId
+      type: Uuid
+    - name: postCheck
+      type: JetResultDetailsBoolExp
+      description: Update permission post-condition predicate over the
+        'jet_result_details' collection
+    - name: preCheck
+      type: JetResultDetailsBoolExp
+      description: Update permission pre-condition predicate over the
+        'jet_result_details' collection
+    - name: updateColumns
+      type: UpdateJetResultDetailsByJetResultIdAndJetRuleIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_jet_result_details_by_jet_result_id_and_jet_rule_id
+    argumentMapping:
+      keyJetResultId: key_jet_result_id
+      keyJetRuleId: key_jet_rule_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateJetResultDetailsByJetResultIdAndJetRuleId
+    rootFieldKind: Mutation
+  description: Update any row on the 'jet_result_details' collection using the
+    'jet_result_id' and 'jet_rule_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateJetResultDetailsByJetResultIdAndJetRuleId
+  permissions:
+    - role: admin
+      allowExecution: true
+

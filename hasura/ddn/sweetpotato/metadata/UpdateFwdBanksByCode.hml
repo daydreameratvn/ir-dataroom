@@ -1,0 +1,222 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdBanksCode
+  description: Update the 'code' column in the 'fwd_banks' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdBanksCode
+    inputTypeName: UpdateColumnFwdBanksCodeInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_banks_code
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdBanksCode
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdBanksName
+  description: Update the 'name' column in the 'fwd_banks' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdBanksName
+    inputTypeName: UpdateColumnFwdBanksNameInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_banks_name
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdBanksName
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdBanksPpyBankId
+  description: Update the 'ppy_bank_id' column in the 'fwd_banks' collection
+  fields:
+    - name: set
+      type: Uuid
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdBanksPpyBankId
+    inputTypeName: UpdateColumnFwdBanksPpyBankIdInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_banks_ppy_bank_id
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdBanksPpyBankId
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdBanksByCodeUpdateColumns
+  description: Update the columns of the 'fwd_banks' collection
+  fields:
+    - name: code
+      type: UpdateColumnFwdBanksCode
+      description: Update the 'code' column in the 'fwd_banks' collection.
+    - name: name
+      type: UpdateColumnFwdBanksName
+      description: Update the 'name' column in the 'fwd_banks' collection.
+    - name: ppyBankId
+      type: UpdateColumnFwdBanksPpyBankId
+      description: Update the 'ppy_bank_id' column in the 'fwd_banks' collection.
+  graphql:
+    typeName: UpdateFwdBanksByCodeUpdateColumns
+    inputTypeName: UpdateFwdBanksByCodeUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_banks_by_code_update_columns
+      fieldMapping:
+        code:
+          column:
+            name: code
+        name:
+          column:
+            name: name
+        ppyBankId:
+          column:
+            name: ppy_bank_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdBanksByCodeUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - name
+          - ppyBankId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdBanksByCodeResponse
+  description: Responses from the 'update_fwd_banks_by_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdBanks!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateFwdBanksByCodeResponse
+    inputTypeName: UpdateFwdBanksByCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_banks_by_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdBanksByCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateFwdBanksByCode
+  outputType: UpdateFwdBanksByCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: postCheck
+      type: FwdBanksBoolExp
+      description: Update permission post-condition predicate over the 'fwd_banks'
+        collection
+    - name: preCheck
+      type: FwdBanksBoolExp
+      description: Update permission pre-condition predicate over the 'fwd_banks' collection
+    - name: updateColumns
+      type: UpdateFwdBanksByCodeUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_fwd_banks_by_code
+    argumentMapping:
+      keyCode: key_code
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateFwdBanksByCode
+    rootFieldKind: Mutation
+  description: Update any row on the 'fwd_banks' collection using the 'code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateFwdBanksByCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

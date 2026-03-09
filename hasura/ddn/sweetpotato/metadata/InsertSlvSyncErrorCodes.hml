@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvSyncErrorCodesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertSlvSyncErrorCodesObject
+    inputTypeName: InsertSlvSyncErrorCodesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_sync_error_codes_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvSyncErrorCodesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvSyncErrorCodesResponse
+  description: Responses from the 'insert_slv_sync_error_codes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvSyncErrorCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertSlvSyncErrorCodesResponse
+    inputTypeName: InsertSlvSyncErrorCodesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_sync_error_codes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvSyncErrorCodesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertSlvSyncErrorCodes
+  outputType: InsertSlvSyncErrorCodesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertSlvSyncErrorCodesObject!]!"
+    - name: postCheck
+      type: SlvSyncErrorCodesBoolExp
+      description: Insert permission predicate over the 'slv_sync_error_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_slv_sync_error_codes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertSlvSyncErrorCodes
+    rootFieldKind: Mutation
+  description: Insert into the slv_sync_error_codes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertSlvSyncErrorCodes
+  permissions:
+    - role: admin
+      allowExecution: true
+

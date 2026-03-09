@@ -1,0 +1,257 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuditLogsDataHistories
+  fields:
+    - name: browserAgent
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: ip
+      type: String_1
+    - name: recordId
+      type: Uuid!
+    - name: table
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: token
+      type: String_1!
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: AuditLogsDataHistories
+    inputTypeName: AuditLogsDataHistoriesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: audit_logs_data_histories
+      fieldMapping:
+        browserAgent:
+          column:
+            name: browser_agent
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        ip:
+          column:
+            name: ip
+        recordId:
+          column:
+            name: record_id
+        table:
+          column:
+            name: table
+        tenantId:
+          column:
+            name: tenant_id
+        token:
+          column:
+            name: token
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuditLogsDataHistories
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - browserAgent
+          - createdAt
+          - id
+          - ip
+          - recordId
+          - table
+          - tenantId
+          - token
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AuditLogsDataHistoriesBoolExp
+  operand:
+    object:
+      type: AuditLogsDataHistories
+      comparableFields:
+        - fieldName: browserAgent
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: ip
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: recordId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: table
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: token
+          booleanExpressionType: TextBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: auditLogsRecordStatusChangeTableName
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AuditLogsDataHistoriesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AuditLogsDataHistoriesAggExp
+  operand:
+    object:
+      aggregatedType: AuditLogsDataHistories
+      aggregatableFields:
+        - fieldName: browserAgent
+          aggregateExpression: VarcharAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: ip
+          aggregateExpression: VarcharAggExp
+        - fieldName: recordId
+          aggregateExpression: UuidAggExp
+        - fieldName: table
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: token
+          aggregateExpression: TextAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AuditLogsDataHistoriesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AuditLogsDataHistoriesOrderByExp
+  operand:
+    object:
+      orderedType: AuditLogsDataHistories
+      orderableFields:
+        - fieldName: browserAgent
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: ip
+          orderByExpression: String1OrderByExp
+        - fieldName: recordId
+          orderByExpression: UuidOrderByExp
+        - fieldName: table
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: token
+          orderByExpression: String1OrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: auditLogsRecordStatusChangeTableName
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: AuditLogsDataHistoriesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AuditLogsDataHistories
+  objectType: AuditLogsDataHistories
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: audit_logs_data_histories
+  filterExpressionType: AuditLogsDataHistoriesBoolExp
+  aggregateExpression: AuditLogsDataHistoriesAggExp
+  orderByExpression: AuditLogsDataHistoriesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: auditLogsDataHistories
+      subscription:
+        rootField: auditLogsDataHistories
+    selectUniques:
+      - queryRootField: auditLogsDataHistoriesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: auditLogsDataHistoriesById
+    filterInputTypeName: AuditLogsDataHistoriesFilterInput
+    aggregate:
+      queryRootField: auditLogsDataHistoriesAggregate
+      subscription:
+        rootField: auditLogsDataHistoriesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuditLogsDataHistories
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogsRecordStatusChangeTableName
+  sourceType: AuditLogsDataHistories
+  target:
+    model:
+      name: AuditLogsRecordStatusChangeTableNames
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: table
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: AuditLogsDataHistories
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

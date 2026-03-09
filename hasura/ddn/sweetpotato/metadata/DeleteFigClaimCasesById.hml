@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFigClaimCasesByIdResponse
+  description: Responses from the 'delete_fig_claim_cases_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FigClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFigClaimCasesByIdResponse
+    inputTypeName: DeleteFigClaimCasesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fig_claim_cases_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFigClaimCasesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFigClaimCasesById
+  outputType: DeleteFigClaimCasesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: FigClaimCasesBoolExp
+      description: Delete permission predicate over the 'fig_claim_cases' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fig_claim_cases_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFigClaimCasesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fig_claim_cases' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFigClaimCasesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

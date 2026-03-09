@@ -1,0 +1,257 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimDocumentGroupClaimDocuments
+  fields:
+    - name: claimDocumentGroupId
+      type: Uuid!
+    - name: claimDocumentId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: displayOrder
+      type: Int32
+    - name: id
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid!
+  graphql:
+    typeName: ClaimDocumentGroupClaimDocuments
+    inputTypeName: ClaimDocumentGroupClaimDocumentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_document_group_claim_documents
+      fieldMapping:
+        claimDocumentGroupId:
+          column:
+            name: claim_document_group_id
+        claimDocumentId:
+          column:
+            name: claim_document_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimDocumentGroupClaimDocuments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimDocumentGroupId
+          - claimDocumentId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - displayOrder
+          - id
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimDocumentGroupClaimDocumentsBoolExp
+  operand:
+    object:
+      type: ClaimDocumentGroupClaimDocuments
+      comparableFields:
+        - fieldName: claimDocumentGroupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimDocumentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: displayOrder
+          booleanExpressionType: Int4BoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimDocumentGroup
+        - relationshipName: claimDocument
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimDocumentGroupClaimDocumentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimDocumentGroupClaimDocumentsAggExp
+  operand:
+    object:
+      aggregatedType: ClaimDocumentGroupClaimDocuments
+      aggregatableFields:
+        - fieldName: claimDocumentGroupId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimDocumentId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: displayOrder
+          aggregateExpression: Int4AggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimDocumentGroupClaimDocumentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimDocumentGroupClaimDocumentsOrderByExp
+  operand:
+    object:
+      orderedType: ClaimDocumentGroupClaimDocuments
+      orderableFields:
+        - fieldName: claimDocumentGroupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimDocumentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: displayOrder
+          orderByExpression: Int32OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimDocumentGroup
+        - relationshipName: claimDocument
+  graphql:
+    expressionTypeName: ClaimDocumentGroupClaimDocumentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimDocumentGroupClaimDocuments
+  objectType: ClaimDocumentGroupClaimDocuments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_document_group_claim_documents
+  filterExpressionType: ClaimDocumentGroupClaimDocumentsBoolExp
+  aggregateExpression: ClaimDocumentGroupClaimDocumentsAggExp
+  orderByExpression: ClaimDocumentGroupClaimDocumentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimDocumentGroupClaimDocuments
+      subscription:
+        rootField: claimDocumentGroupClaimDocuments
+    selectUniques:
+      - queryRootField: claimDocumentGroupClaimDocumentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimDocumentGroupClaimDocumentsById
+    filterInputTypeName: ClaimDocumentGroupClaimDocumentsFilterInput
+    aggregate:
+      queryRootField: claimDocumentGroupClaimDocumentsAggregate
+      subscription:
+        rootField: claimDocumentGroupClaimDocumentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimDocumentGroupClaimDocuments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocumentGroup
+  sourceType: ClaimDocumentGroupClaimDocuments
+  target:
+    model:
+      name: ClaimDocumentGroups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentGroupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocument
+  sourceType: ClaimDocumentGroupClaimDocuments
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentId
+      target:
+        modelField:
+          - fieldName: claimDocumentId
+

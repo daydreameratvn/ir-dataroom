@@ -1,0 +1,242 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyCoPaymentInsuredCertificate
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: policyCoPaymentId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PolicyCoPaymentInsuredCertificate
+    inputTypeName: PolicyCoPaymentInsuredCertificateInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_co_payment_insured_certificate
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        policyCoPaymentId:
+          column:
+            name: policy_co_payment_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyCoPaymentInsuredCertificate
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - insuredCertificateId
+          - policyCoPaymentId
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyCoPaymentInsuredCertificateBoolExp
+  operand:
+    object:
+      type: PolicyCoPaymentInsuredCertificate
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: insuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyCoPaymentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: insuredCertificate
+        - relationshipName: policyCoPayment
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyCoPaymentInsuredCertificateBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyCoPaymentInsuredCertificateAggExp
+  operand:
+    object:
+      aggregatedType: PolicyCoPaymentInsuredCertificate
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: insuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: policyCoPaymentId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyCoPaymentInsuredCertificateAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyCoPaymentInsuredCertificateOrderByExp
+  operand:
+    object:
+      orderedType: PolicyCoPaymentInsuredCertificate
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: insuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyCoPaymentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredCertificate
+        - relationshipName: policyCoPayment
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: PolicyCoPaymentInsuredCertificateOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyCoPaymentInsuredCertificate
+  objectType: PolicyCoPaymentInsuredCertificate
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_co_payment_insured_certificate
+  filterExpressionType: PolicyCoPaymentInsuredCertificateBoolExp
+  aggregateExpression: PolicyCoPaymentInsuredCertificateAggExp
+  orderByExpression: PolicyCoPaymentInsuredCertificateOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyCoPaymentInsuredCertificate
+      subscription:
+        rootField: policyCoPaymentInsuredCertificate
+    selectUniques:
+      - queryRootField: policyCoPaymentInsuredCertificateByPolicyCoPaymentInsuredCertificatePkey
+        uniqueIdentifier:
+          - insuredCertificateId
+          - policyCoPaymentId
+        subscription:
+          rootField: policyCoPaymentInsuredCertificateByPolicyCoPaymentInsuredCertificatePkey
+    filterInputTypeName: PolicyCoPaymentInsuredCertificateFilterInput
+    aggregate:
+      queryRootField: policyCoPaymentInsuredCertificateAggregate
+      subscription:
+        rootField: policyCoPaymentInsuredCertificateAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyCoPaymentInsuredCertificate
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: PolicyCoPaymentInsuredCertificate
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPayment
+  sourceType: PolicyCoPaymentInsuredCertificate
+  target:
+    model:
+      name: PolicyCoPayments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyCoPaymentId
+      target:
+        modelField:
+          - fieldName: policyCoPaymentId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: PolicyCoPaymentInsuredCertificate
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

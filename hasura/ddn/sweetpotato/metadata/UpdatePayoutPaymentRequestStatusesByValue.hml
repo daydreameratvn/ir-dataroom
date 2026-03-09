@@ -1,0 +1,182 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPayoutPaymentRequestStatusesComment
+  description: Update the 'comment' column in the
+    'payout_payment_request_statuses' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPayoutPaymentRequestStatusesComment
+    inputTypeName: UpdateColumnPayoutPaymentRequestStatusesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_payout_payment_request_statuses_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPayoutPaymentRequestStatusesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPayoutPaymentRequestStatusesValue
+  description: Update the 'value' column in the 'payout_payment_request_statuses' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPayoutPaymentRequestStatusesValue
+    inputTypeName: UpdateColumnPayoutPaymentRequestStatusesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_payout_payment_request_statuses_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPayoutPaymentRequestStatusesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutPaymentRequestStatusesByValueUpdateColumns
+  description: Update the columns of the 'payout_payment_request_statuses' collection
+  fields:
+    - name: comment
+      type: UpdateColumnPayoutPaymentRequestStatusesComment
+      description: Update the 'comment' column in the
+        'payout_payment_request_statuses' collection.
+    - name: value
+      type: UpdateColumnPayoutPaymentRequestStatusesValue
+      description: Update the 'value' column in the 'payout_payment_request_statuses'
+        collection.
+  graphql:
+    typeName: UpdatePayoutPaymentRequestStatusesByValueUpdateColumns
+    inputTypeName: UpdatePayoutPaymentRequestStatusesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_payment_request_statuses_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutPaymentRequestStatusesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutPaymentRequestStatusesByValueResponse
+  description: Responses from the
+    'update_payout_payment_request_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPaymentRequestStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePayoutPaymentRequestStatusesByValueResponse
+    inputTypeName: UpdatePayoutPaymentRequestStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_payment_request_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutPaymentRequestStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePayoutPaymentRequestStatusesByValue
+  outputType: UpdatePayoutPaymentRequestStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: PayoutPaymentRequestStatusesBoolExp
+      description: Update permission post-condition predicate over the
+        'payout_payment_request_statuses' collection
+    - name: preCheck
+      type: PayoutPaymentRequestStatusesBoolExp
+      description: Update permission pre-condition predicate over the
+        'payout_payment_request_statuses' collection
+    - name: updateColumns
+      type: UpdatePayoutPaymentRequestStatusesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_payout_payment_request_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePayoutPaymentRequestStatusesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'payout_payment_request_statuses' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePayoutPaymentRequestStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

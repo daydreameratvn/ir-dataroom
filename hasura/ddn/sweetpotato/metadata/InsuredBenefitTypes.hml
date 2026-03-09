@@ -1,0 +1,355 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredBenefitTypes
+  description: Phân loại quyền lợi bảo hiểm
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsuredBenefitTypes
+    inputTypeName: InsuredBenefitTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_benefit_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredBenefitTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredBenefitTypesBoolExp
+  operand:
+    object:
+      type: InsuredBenefitTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: cerebrateDocumentComplianceRules
+        - relationshipName: claimCases
+        - relationshipName: fwdBenefitTypes
+        - relationshipName: insuredBenefitType
+        - relationshipName: insuredBenefits
+        - relationshipName: insuredPersonRemarks
+        - relationshipName: mpMedicalProviderBenefits
+        - relationshipName: originalClaimCases
+        - relationshipName: planParentBenefitBalanceDisplays
+        - relationshipName: policyTerms
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredBenefitTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredBenefitTypesAggExp
+  operand:
+    object:
+      aggregatedType: InsuredBenefitTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredBenefitTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredBenefitTypesOrderByExp
+  operand:
+    object:
+      orderedType: InsuredBenefitTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: insuredBenefitType
+  graphql:
+    expressionTypeName: InsuredBenefitTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredBenefitTypes
+  objectType: InsuredBenefitTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_benefit_types
+  filterExpressionType: InsuredBenefitTypesBoolExp
+  aggregateExpression: InsuredBenefitTypesAggExp
+  orderByExpression: InsuredBenefitTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredBenefitTypes
+      subscription:
+        rootField: insuredBenefitTypes
+    selectUniques:
+      - queryRootField: insuredBenefitTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: insuredBenefitTypesByValue
+    filterInputTypeName: InsuredBenefitTypesFilterInput
+    aggregate:
+      queryRootField: insuredBenefitTypesAggregate
+      subscription:
+        rootField: insuredBenefitTypesAggregate
+  description: Phân loại quyền lợi bảo hiểm
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredBenefitTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: cerebrateDocumentComplianceRules
+  sourceType: InsuredBenefitTypes
+  target:
+    model:
+      name: CerebrateDocumentComplianceRules
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CerebrateDocumentComplianceRulesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: benefitType
+  graphql:
+    aggregateFieldName: cerebrateDocumentComplianceRulesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCases
+  sourceType: InsuredBenefitTypes
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: benefitType
+  graphql:
+    aggregateFieldName: claimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdBenefitTypes
+  sourceType: InsuredBenefitTypes
+  target:
+    model:
+      name: FwdBenefitTypes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdBenefitTypesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: ppyBenefitTypeCode
+  graphql:
+    aggregateFieldName: fwdBenefitTypesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredBenefitType
+  sourceType: InsuredBenefitTypes
+  target:
+    model:
+      name: InsuredBenefitTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredBenefits
+  sourceType: InsuredBenefitTypes
+  target:
+    model:
+      name: InsuredBenefits
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredBenefitsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: insuredBenefitsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersonRemarks
+  sourceType: InsuredBenefitTypes
+  target:
+    model:
+      name: InsuredPersonRemarks
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredPersonRemarksAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: insuredBenefitType
+  graphql:
+    aggregateFieldName: insuredPersonRemarksAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderBenefits
+  sourceType: InsuredBenefitTypes
+  target:
+    model:
+      name: MpMedicalProviderBenefits
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProviderBenefitsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: benefitType
+  graphql:
+    aggregateFieldName: mpMedicalProviderBenefitsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: originalClaimCases
+  sourceType: InsuredBenefitTypes
+  target:
+    model:
+      name: OriginalClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OriginalClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: benefitType
+  graphql:
+    aggregateFieldName: originalClaimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planParentBenefitBalanceDisplays
+  sourceType: InsuredBenefitTypes
+  target:
+    model:
+      name: PlanParentBenefitBalanceDisplay
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanParentBenefitBalanceDisplayAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: benefitType
+  graphql:
+    aggregateFieldName: planParentBenefitBalanceDisplaysAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyTerms
+  sourceType: InsuredBenefitTypes
+  target:
+    model:
+      name: PolicyTerms
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyTermsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: benefitType
+  graphql:
+    aggregateFieldName: policyTermsAggregate
+

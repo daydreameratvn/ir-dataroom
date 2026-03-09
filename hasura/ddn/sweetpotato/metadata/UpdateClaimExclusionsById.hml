@@ -1,0 +1,134 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimExclusionsByIdUpdateColumns
+  description: Update the columns of the 'claim_exclusions' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnClaimExclusionsCreatedAt
+      description: Update the 'created_at' column in the 'claim_exclusions' collection.
+    - name: deletedAt
+      type: UpdateColumnClaimExclusionsDeletedAt
+      description: Update the 'deleted_at' column in the 'claim_exclusions' collection.
+    - name: email
+      type: UpdateColumnClaimExclusionsEmail
+      description: Update the 'email' column in the 'claim_exclusions' collection.
+    - name: id
+      type: UpdateColumnClaimExclusionsId
+      description: Update the 'id' column in the 'claim_exclusions' collection.
+  graphql:
+    typeName: UpdateClaimExclusionsByIdUpdateColumns
+    inputTypeName: UpdateClaimExclusionsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_exclusions_by_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        email:
+          column:
+            name: email
+        id:
+          column:
+            name: id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimExclusionsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - email
+          - id
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimExclusionsByIdResponse
+  description: Responses from the 'update_claim_exclusions_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimExclusions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateClaimExclusionsByIdResponse
+    inputTypeName: UpdateClaimExclusionsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_exclusions_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimExclusionsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateClaimExclusionsById
+  outputType: UpdateClaimExclusionsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: ClaimExclusionsBoolExp
+      description: Update permission post-condition predicate over the
+        'claim_exclusions' collection
+    - name: preCheck
+      type: ClaimExclusionsBoolExp
+      description: Update permission pre-condition predicate over the
+        'claim_exclusions' collection
+    - name: updateColumns
+      type: UpdateClaimExclusionsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_claim_exclusions_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateClaimExclusionsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'claim_exclusions' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateClaimExclusionsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

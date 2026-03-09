@@ -1,0 +1,80 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteLabelsObjectsByDeletedAtAndLabelIdAndObjectIdResponse
+  description: Responses from the
+    'delete_labels_objects_by_deleted_at_and_label_id_and_object_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[LabelsObjects!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteLabelsObjectsByDeletedAtAndLabelIdAndObjectIdResponse
+    inputTypeName: DeleteLabelsObjectsByDeletedAtAndLabelIdAndObjectIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_labels_objects_by_deleted_at_and_label_id_and_object_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteLabelsObjectsByDeletedAtAndLabelIdAndObjectIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteLabelsObjectsByDeletedAtAndLabelIdAndObjectId
+  outputType: DeleteLabelsObjectsByDeletedAtAndLabelIdAndObjectIdResponse!
+  arguments:
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyLabelId
+      type: Uuid!
+    - name: keyObjectId
+      type: Uuid!
+    - name: preCheck
+      type: LabelsObjectsBoolExp
+      description: Delete permission predicate over the 'labels_objects' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_labels_objects_by_deleted_at_and_label_id_and_object_id
+    argumentMapping:
+      keyDeletedAt: key_deleted_at
+      keyLabelId: key_label_id
+      keyObjectId: key_object_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteLabelsObjectsByDeletedAtAndLabelIdAndObjectId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'labels_objects' collection using the
+    'deleted_at', 'label_id' and 'object_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteLabelsObjectsByDeletedAtAndLabelIdAndObjectId
+  permissions:
+    - role: admin
+      allowExecution: true
+

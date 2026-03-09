@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteSlvCoveragesByCvgNoAndPolicyIdResponse
+  description: Responses from the 'delete_slv_coverages_by_cvg_no_and_policy_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvCoverages!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteSlvCoveragesByCvgNoAndPolicyIdResponse
+    inputTypeName: DeleteSlvCoveragesByCvgNoAndPolicyIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_slv_coverages_by_cvg_no_and_policy_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteSlvCoveragesByCvgNoAndPolicyIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteSlvCoveragesByCvgNoAndPolicyId
+  outputType: DeleteSlvCoveragesByCvgNoAndPolicyIdResponse!
+  arguments:
+    - name: keyCvgNo
+      type: String_1!
+    - name: keyPolicyId
+      type: Uuid!
+    - name: preCheck
+      type: SlvCoveragesBoolExp
+      description: Delete permission predicate over the 'slv_coverages' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_slv_coverages_by_cvg_no_and_policy_id
+    argumentMapping:
+      keyCvgNo: key_cvg_no
+      keyPolicyId: key_policy_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteSlvCoveragesByCvgNoAndPolicyId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'slv_coverages' collection using the 'cvg_no'
+    and 'policy_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteSlvCoveragesByCvgNoAndPolicyId
+  permissions:
+    - role: admin
+      allowExecution: true
+

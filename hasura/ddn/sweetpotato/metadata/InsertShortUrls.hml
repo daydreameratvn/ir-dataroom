@@ -1,0 +1,132 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertShortUrlsObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: originalUrl
+      type: String_1!
+    - name: requestCount
+      type: Int64
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertShortUrlsObject
+    inputTypeName: InsertShortUrlsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_short_urls_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        originalUrl:
+          column:
+            name: original_url
+        requestCount:
+          column:
+            name: request_count
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertShortUrlsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - deletedAt
+          - originalUrl
+          - requestCount
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertShortUrlsResponse
+  description: Responses from the 'insert_short_urls' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ShortUrls!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertShortUrlsResponse
+    inputTypeName: InsertShortUrlsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_short_urls_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertShortUrlsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertShortUrls
+  outputType: InsertShortUrlsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertShortUrlsObject!]!"
+    - name: postCheck
+      type: ShortUrlsBoolExp
+      description: Insert permission predicate over the 'short_urls' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_short_urls
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertShortUrls
+    rootFieldKind: Mutation
+  description: Insert into the short_urls table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertShortUrls
+  permissions:
+    - role: admin
+      allowExecution: true
+

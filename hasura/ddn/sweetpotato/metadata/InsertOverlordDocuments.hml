@@ -1,0 +1,168 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOverlordDocumentsObject
+  fields:
+    - name: bookingId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: issuedAt
+      type: Timestamptz!
+    - name: name
+      type: String_1
+    - name: note
+      type: String_1
+    - name: refCode
+      type: String_1!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertOverlordDocumentsObject
+    inputTypeName: InsertOverlordDocumentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_overlord_documents_object
+      fieldMapping:
+        bookingId:
+          column:
+            name: booking_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        issuedAt:
+          column:
+            name: issued_at
+        name:
+          column:
+            name: name
+        note:
+          column:
+            name: note
+        refCode:
+          column:
+            name: ref_code
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOverlordDocumentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bookingId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - issuedAt
+          - name
+          - note
+          - refCode
+          - type
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOverlordDocumentsResponse
+  description: Responses from the 'insert_overlord_documents' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OverlordDocuments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOverlordDocumentsResponse
+    inputTypeName: InsertOverlordDocumentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_overlord_documents_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOverlordDocumentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOverlordDocuments
+  outputType: InsertOverlordDocumentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOverlordDocumentsObject!]!"
+    - name: postCheck
+      type: OverlordDocumentsBoolExp
+      description: Insert permission predicate over the 'overlord_documents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_overlord_documents
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOverlordDocuments
+    rootFieldKind: Mutation
+  description: Insert into the overlord_documents table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOverlordDocuments
+  permissions:
+    - role: admin
+      allowExecution: true
+

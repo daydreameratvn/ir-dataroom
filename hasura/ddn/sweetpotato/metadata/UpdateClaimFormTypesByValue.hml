@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnClaimFormTypesComment
+  description: Update the 'comment' column in the 'claim_form_types' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnClaimFormTypesComment
+    inputTypeName: UpdateColumnClaimFormTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_claim_form_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnClaimFormTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnClaimFormTypesValue
+  description: Update the 'value' column in the 'claim_form_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnClaimFormTypesValue
+    inputTypeName: UpdateColumnClaimFormTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_claim_form_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnClaimFormTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimFormTypesByValueUpdateColumns
+  description: Update the columns of the 'claim_form_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnClaimFormTypesComment
+      description: Update the 'comment' column in the 'claim_form_types' collection.
+    - name: value
+      type: UpdateColumnClaimFormTypesValue
+      description: Update the 'value' column in the 'claim_form_types' collection.
+  graphql:
+    typeName: UpdateClaimFormTypesByValueUpdateColumns
+    inputTypeName: UpdateClaimFormTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_form_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimFormTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimFormTypesByValueResponse
+  description: Responses from the 'update_claim_form_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimFormTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateClaimFormTypesByValueResponse
+    inputTypeName: UpdateClaimFormTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_form_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimFormTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateClaimFormTypesByValue
+  outputType: UpdateClaimFormTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: ClaimFormTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'claim_form_types' collection
+    - name: preCheck
+      type: ClaimFormTypesBoolExp
+      description: Update permission pre-condition predicate over the
+        'claim_form_types' collection
+    - name: updateColumns
+      type: UpdateClaimFormTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_claim_form_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateClaimFormTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'claim_form_types' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateClaimFormTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

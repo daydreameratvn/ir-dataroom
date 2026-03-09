@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimCaseFeedbacksByClaimCaseIdAndDeletedAtResponse
+  description: Responses from the
+    'delete_claim_case_feedbacks_by_claim_case_id_and_deleted_at' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseFeedbacks!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimCaseFeedbacksByClaimCaseIdAndDeletedAtResponse
+    inputTypeName: DeleteClaimCaseFeedbacksByClaimCaseIdAndDeletedAtResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_case_feedbacks_by_claim_case_id_and_deleted_at_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimCaseFeedbacksByClaimCaseIdAndDeletedAtResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimCaseFeedbacksByClaimCaseIdAndDeletedAt
+  outputType: DeleteClaimCaseFeedbacksByClaimCaseIdAndDeletedAtResponse!
+  arguments:
+    - name: keyClaimCaseId
+      type: Uuid!
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: preCheck
+      type: ClaimCaseFeedbacksBoolExp
+      description: Delete permission predicate over the 'claim_case_feedbacks' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_case_feedbacks_by_claim_case_id_and_deleted_at
+    argumentMapping:
+      keyClaimCaseId: key_claim_case_id
+      keyDeletedAt: key_deleted_at
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimCaseFeedbacksByClaimCaseIdAndDeletedAt
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_case_feedbacks' collection using the
+    'claim_case_id' and 'deleted_at' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimCaseFeedbacksByClaimCaseIdAndDeletedAt
+  permissions:
+    - role: admin
+      allowExecution: true
+

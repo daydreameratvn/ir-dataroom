@@ -1,0 +1,344 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredRelationships
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insuredPersonFromId
+      type: Uuid!
+    - name: insuredPersonToId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: InsuredRelationships
+    inputTypeName: InsuredRelationshipsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_relationships
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredPersonFromId:
+          column:
+            name: insured_person_from_id
+        insuredPersonToId:
+          column:
+            name: insured_person_to_id
+        tenantId:
+          column:
+            name: tenant_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredRelationships
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - insuredPersonFromId
+          - insuredPersonToId
+          - tenantId
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredRelationshipsBoolExp
+  operand:
+    object:
+      type: InsuredRelationships
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredPersonFromId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredPersonToId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: type
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: hazelnutInsuranceRequestsInsuredPersons
+        - relationshipName: hazelnutInsuranceRequestsInsuredPersonsByInsuredPersonIdAndRequesterId
+        - relationshipName: insuredPerson
+        - relationshipName: insuredPersonByInsuredPersonToId
+        - relationshipName: tenant
+        - relationshipName: insuredRelationshipType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredRelationshipsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredRelationshipsAggExp
+  operand:
+    object:
+      aggregatedType: InsuredRelationships
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredPersonFromId
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredPersonToId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: type
+          aggregateExpression: VarcharAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredRelationshipsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredRelationshipsOrderByExp
+  operand:
+    object:
+      orderedType: InsuredRelationships
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredPersonFromId
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredPersonToId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredPerson
+        - relationshipName: insuredPersonByInsuredPersonToId
+        - relationshipName: tenant
+        - relationshipName: insuredRelationshipType
+  graphql:
+    expressionTypeName: InsuredRelationshipsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredRelationships
+  objectType: InsuredRelationships
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_relationships
+  filterExpressionType: InsuredRelationshipsBoolExp
+  aggregateExpression: InsuredRelationshipsAggExp
+  orderByExpression: InsuredRelationshipsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredRelationships
+      subscription:
+        rootField: insuredRelationships
+    selectUniques:
+      - queryRootField: insuredRelationshipsByInsuredRelationshipsPkey
+        uniqueIdentifier:
+          - insuredPersonFromId
+          - insuredPersonToId
+        subscription:
+          rootField: insuredRelationshipsByInsuredRelationshipsPkey
+    filterInputTypeName: InsuredRelationshipsFilterInput
+    aggregate:
+      queryRootField: insuredRelationshipsAggregate
+      subscription:
+        rootField: insuredRelationshipsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredRelationships
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequestsInsuredPersons
+  sourceType: InsuredRelationships
+  target:
+    model:
+      name: HazelnutInsuranceRequestsInsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceRequestsInsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonFromId
+      target:
+        modelField:
+          - fieldName: beneficiaryId
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonToId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: hazelnutInsuranceRequestsInsuredPersonsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequestsInsuredPersonsByInsuredPersonIdAndRequesterId
+  sourceType: InsuredRelationships
+  target:
+    model:
+      name: HazelnutInsuranceRequestsInsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceRequestsInsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonFromId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonToId
+      target:
+        modelField:
+          - fieldName: requesterId
+  graphql:
+    aggregateFieldName: hazelnutInsuranceRequestsInsuredPersonsByInsuredPersonIdAndRequesterIdAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPerson
+  sourceType: InsuredRelationships
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonFromId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersonByInsuredPersonToId
+  sourceType: InsuredRelationships
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonToId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: InsuredRelationships
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredRelationshipType
+  sourceType: InsuredRelationships
+  target:
+    model:
+      name: InsuredRelationshipTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

@@ -1,0 +1,155 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityPermissionHierarchiesByNameUpdateColumns
+  description: Update the columns of the 'identity_permission_hierarchies' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnIdentityPermissionHierarchiesCreatedAt
+      description: Update the 'created_at' column in the
+        'identity_permission_hierarchies' collection.
+    - name: description
+      type: UpdateColumnIdentityPermissionHierarchiesDescription
+      description: Update the 'description' column in the
+        'identity_permission_hierarchies' collection.
+    - name: id
+      type: UpdateColumnIdentityPermissionHierarchiesId
+      description: Update the 'id' column in the 'identity_permission_hierarchies'
+        collection.
+    - name: name
+      type: UpdateColumnIdentityPermissionHierarchiesName
+      description: Update the 'name' column in the 'identity_permission_hierarchies'
+        collection.
+    - name: parentPermissionId
+      type: UpdateColumnIdentityPermissionHierarchiesParentPermissionId
+      description: Update the 'parent_permission_id' column in the
+        'identity_permission_hierarchies' collection.
+    - name: updatedAt
+      type: UpdateColumnIdentityPermissionHierarchiesUpdatedAt
+      description: Update the 'updated_at' column in the
+        'identity_permission_hierarchies' collection.
+  graphql:
+    typeName: UpdateIdentityPermissionHierarchiesByNameUpdateColumns
+    inputTypeName: UpdateIdentityPermissionHierarchiesByNameUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_permission_hierarchies_by_name_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        parentPermissionId:
+          column:
+            name: parent_permission_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityPermissionHierarchiesByNameUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - description
+          - id
+          - name
+          - parentPermissionId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityPermissionHierarchiesByNameResponse
+  description: Responses from the 'update_identity_permission_hierarchies_by_name' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityPermissionHierarchies!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateIdentityPermissionHierarchiesByNameResponse
+    inputTypeName: UpdateIdentityPermissionHierarchiesByNameResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_permission_hierarchies_by_name_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityPermissionHierarchiesByNameResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateIdentityPermissionHierarchiesByName
+  outputType: UpdateIdentityPermissionHierarchiesByNameResponse!
+  arguments:
+    - name: keyName
+      type: String_1!
+    - name: postCheck
+      type: IdentityPermissionHierarchiesBoolExp
+      description: Update permission post-condition predicate over the
+        'identity_permission_hierarchies' collection
+    - name: preCheck
+      type: IdentityPermissionHierarchiesBoolExp
+      description: Update permission pre-condition predicate over the
+        'identity_permission_hierarchies' collection
+    - name: updateColumns
+      type: UpdateIdentityPermissionHierarchiesByNameUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_identity_permission_hierarchies_by_name
+    argumentMapping:
+      keyName: key_name
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateIdentityPermissionHierarchiesByName
+    rootFieldKind: Mutation
+  description: Update any row on the 'identity_permission_hierarchies' collection
+    using the 'name' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateIdentityPermissionHierarchiesByName
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,273 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProviderGroupHistories
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: endDate
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: isAppliedWhenPolicyEffectiveAfterGroupHistoryStartDate
+      type: Boolean_1!
+      description: This rule is applied for policies that has effective date greater
+        than start date of group history
+    - name: medicalProviderGroupId
+      type: Uuid
+    - name: startDate
+      type: Timestamptz!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: MpMedicalProviderGroupHistories
+    inputTypeName: MpMedicalProviderGroupHistoriesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_provider_group_histories
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        endDate:
+          column:
+            name: end_date
+        id:
+          column:
+            name: id
+        isAppliedWhenPolicyEffectiveAfterGroupHistoryStartDate:
+          column:
+            name: is_applied_when_policy_effective_after_group_history_start_date
+        medicalProviderGroupId:
+          column:
+            name: medical_provider_group_id
+        startDate:
+          column:
+            name: start_date
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProviderGroupHistories
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - endDate
+          - id
+          - isAppliedWhenPolicyEffectiveAfterGroupHistoryStartDate
+          - medicalProviderGroupId
+          - startDate
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProviderGroupHistoriesBoolExp
+  operand:
+    object:
+      type: MpMedicalProviderGroupHistories
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: endDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isAppliedWhenPolicyEffectiveAfterGroupHistoryStartDate
+          booleanExpressionType: BoolBoolExp
+        - fieldName: medicalProviderGroupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: startDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProviderGroupApplications
+        - relationshipName: mpMedicalProviderGroup
+        - relationshipName: mpMedicalProviderGroupMedicalProviders
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProviderGroupHistoriesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProviderGroupHistoriesAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProviderGroupHistories
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: endDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isAppliedWhenPolicyEffectiveAfterGroupHistoryStartDate
+          aggregateExpression: BoolAggExp
+        - fieldName: medicalProviderGroupId
+          aggregateExpression: UuidAggExp
+        - fieldName: startDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProviderGroupHistoriesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProviderGroupHistoriesOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProviderGroupHistories
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: endDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isAppliedWhenPolicyEffectiveAfterGroupHistoryStartDate
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: medicalProviderGroupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: startDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: mpMedicalProviderGroup
+  graphql:
+    expressionTypeName: MpMedicalProviderGroupHistoriesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProviderGroupHistories
+  objectType: MpMedicalProviderGroupHistories
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_provider_group_histories
+  filterExpressionType: MpMedicalProviderGroupHistoriesBoolExp
+  aggregateExpression: MpMedicalProviderGroupHistoriesAggExp
+  orderByExpression: MpMedicalProviderGroupHistoriesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProviderGroupHistories
+      subscription:
+        rootField: mpMedicalProviderGroupHistories
+    selectUniques:
+      - queryRootField: mpMedicalProviderGroupHistoriesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: mpMedicalProviderGroupHistoriesById
+    filterInputTypeName: MpMedicalProviderGroupHistoriesFilterInput
+    aggregate:
+      queryRootField: mpMedicalProviderGroupHistoriesAggregate
+      subscription:
+        rootField: mpMedicalProviderGroupHistoriesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProviderGroupHistories
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderGroupApplications
+  sourceType: MpMedicalProviderGroupHistories
+  target:
+    model:
+      name: MpMedicalProviderGroupApplications
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProviderGroupApplicationsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: medicalProviderGroupHistoryId
+  graphql:
+    aggregateFieldName: mpMedicalProviderGroupApplicationsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderGroup
+  sourceType: MpMedicalProviderGroupHistories
+  target:
+    model:
+      name: MpMedicalProviderGroups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderGroupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderGroupMedicalProviders
+  sourceType: MpMedicalProviderGroupHistories
+  target:
+    model:
+      name: MpMedicalProviderGroupMedicalProviders
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProviderGroupMedicalProvidersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: medicalProviderGroupHistoryId
+  graphql:
+    aggregateFieldName: mpMedicalProviderGroupMedicalProvidersAggregate
+

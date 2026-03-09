@@ -1,0 +1,157 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertNotificationNotificationsObject
+  fields:
+    - name: code
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: firstSeenAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: originId
+      type: Uuid!
+    - name: originType
+      type: String_1!
+    - name: reason
+      type: String_1
+    - name: receiverId
+      type: Uuid!
+    - name: receiverType
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertNotificationNotificationsObject
+    inputTypeName: InsertNotificationNotificationsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_notification_notifications_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        firstSeenAt:
+          column:
+            name: first_seen_at
+        id:
+          column:
+            name: id
+        originId:
+          column:
+            name: origin_id
+        originType:
+          column:
+            name: origin_type
+        reason:
+          column:
+            name: reason
+        receiverId:
+          column:
+            name: receiver_id
+        receiverType:
+          column:
+            name: receiver_type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertNotificationNotificationsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - firstSeenAt
+          - id
+          - originId
+          - originType
+          - reason
+          - receiverId
+          - receiverType
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertNotificationNotificationsResponse
+  description: Responses from the 'insert_notification_notifications' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[NotificationNotifications!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertNotificationNotificationsResponse
+    inputTypeName: InsertNotificationNotificationsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_notification_notifications_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertNotificationNotificationsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertNotificationNotifications
+  outputType: InsertNotificationNotificationsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertNotificationNotificationsObject!]!"
+    - name: postCheck
+      type: NotificationNotificationsBoolExp
+      description: Insert permission predicate over the 'notification_notifications'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_notification_notifications
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertNotificationNotifications
+    rootFieldKind: Mutation
+  description: Insert into the notification_notifications table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertNotificationNotifications
+  permissions:
+    - role: admin
+      allowExecution: true
+

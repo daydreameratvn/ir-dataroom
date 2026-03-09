@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanInsuredBenefitsObject
+  fields:
+    - name: applyCopay
+      type: Boolean_1
+    - name: applyToDependents
+      type: Boolean_1
+    - name: coefficient
+      type: Bigdecimal
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: formulaType
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: insuredBenefitId
+      type: Uuid!
+    - name: isDirectBilling
+      type: Boolean_1
+    - name: planId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertPlanInsuredBenefitsObject
+    inputTypeName: InsertPlanInsuredBenefitsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_insured_benefits_object
+      fieldMapping:
+        applyCopay:
+          column:
+            name: apply_copay
+        applyToDependents:
+          column:
+            name: apply_to_dependents
+        coefficient:
+          column:
+            name: coefficient
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        formulaType:
+          column:
+            name: formula_type
+        id:
+          column:
+            name: id
+        insuredBenefitId:
+          column:
+            name: insured_benefit_id
+        isDirectBilling:
+          column:
+            name: is_direct_billing
+        planId:
+          column:
+            name: plan_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanInsuredBenefitsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - applyCopay
+          - applyToDependents
+          - coefficient
+          - createdAt
+          - createdBy
+          - deletedAt
+          - formulaType
+          - id
+          - insuredBenefitId
+          - isDirectBilling
+          - planId
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanInsuredBenefitsResponse
+  description: Responses from the 'insert_plan_insured_benefits' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanInsuredBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPlanInsuredBenefitsResponse
+    inputTypeName: InsertPlanInsuredBenefitsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_insured_benefits_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanInsuredBenefitsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPlanInsuredBenefits
+  outputType: InsertPlanInsuredBenefitsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPlanInsuredBenefitsObject!]!"
+    - name: postCheck
+      type: PlanInsuredBenefitsBoolExp
+      description: Insert permission predicate over the 'plan_insured_benefits' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_plan_insured_benefits
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPlanInsuredBenefits
+    rootFieldKind: Mutation
+  description: Insert into the plan_insured_benefits table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPlanInsuredBenefits
+  permissions:
+    - role: admin
+      allowExecution: true
+

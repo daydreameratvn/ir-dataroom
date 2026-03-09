@@ -1,0 +1,186 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornPatientsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: dob
+      type: Timestamptz
+    - name: email
+      type: String_1
+    - name: fullName
+      type: String_1
+    - name: gender
+      type: String_1
+    - name: healthProfileId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: paperNumber
+      type: String_1
+    - name: phone
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid
+    - name: yob
+      type: Int32
+  graphql:
+    typeName: InsertHawthornPatientsObject
+    inputTypeName: InsertHawthornPatientsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_patients_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        dob:
+          column:
+            name: dob
+        email:
+          column:
+            name: email
+        fullName:
+          column:
+            name: full_name
+        gender:
+          column:
+            name: gender
+        healthProfileId:
+          column:
+            name: health_profile_id
+        id:
+          column:
+            name: id
+        paperNumber:
+          column:
+            name: paper_number
+        phone:
+          column:
+            name: phone
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+        yob:
+          column:
+            name: yob
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornPatientsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - dob
+          - email
+          - fullName
+          - gender
+          - healthProfileId
+          - id
+          - paperNumber
+          - phone
+          - updatedAt
+          - updatedBy
+          - userId
+          - yob
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornPatientsResponse
+  description: Responses from the 'insert_hawthorn_patients' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornPatients!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornPatientsResponse
+    inputTypeName: InsertHawthornPatientsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_patients_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornPatientsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornPatients
+  outputType: InsertHawthornPatientsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornPatientsObject!]!"
+    - name: postCheck
+      type: HawthornPatientsBoolExp
+      description: Insert permission predicate over the 'hawthorn_patients' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_patients
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornPatients
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_patients table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornPatients
+  permissions:
+    - role: admin
+      allowExecution: true
+

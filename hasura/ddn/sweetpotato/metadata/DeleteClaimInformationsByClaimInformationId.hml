@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimInformationsByClaimInformationIdResponse
+  description: Responses from the
+    'delete_claim_informations_by_claim_information_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimInformations!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimInformationsByClaimInformationIdResponse
+    inputTypeName: DeleteClaimInformationsByClaimInformationIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_informations_by_claim_information_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimInformationsByClaimInformationIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimInformationsByClaimInformationId
+  outputType: DeleteClaimInformationsByClaimInformationIdResponse!
+  arguments:
+    - name: keyClaimInformationId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimInformationsBoolExp
+      description: Delete permission predicate over the 'claim_informations' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_informations_by_claim_information_id
+    argumentMapping:
+      keyClaimInformationId: key_claim_information_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimInformationsByClaimInformationId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_informations' collection using the
+    'claim_information_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimInformationsByClaimInformationId
+  permissions:
+    - role: admin
+      allowExecution: true
+

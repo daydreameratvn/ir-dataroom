@@ -1,0 +1,197 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SlvClaimCaseSameEventGroupStatuses
+  description: SLV Claim Case Status List
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: SlvClaimCaseSameEventGroupStatuses
+    inputTypeName: SlvClaimCaseSameEventGroupStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: slv_claim_case_same_event_group_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SlvClaimCaseSameEventGroupStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SlvClaimCaseSameEventGroupStatusesBoolExp
+  operand:
+    object:
+      type: SlvClaimCaseSameEventGroupStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: slvClaimCaseSameEventGroups
+        - relationshipName: slvHistoryClaimCases
+        - relationshipName: slvHistoryClaimRecords
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SlvClaimCaseSameEventGroupStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SlvClaimCaseSameEventGroupStatusesAggExp
+  operand:
+    object:
+      aggregatedType: SlvClaimCaseSameEventGroupStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SlvClaimCaseSameEventGroupStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SlvClaimCaseSameEventGroupStatusesOrderByExp
+  operand:
+    object:
+      orderedType: SlvClaimCaseSameEventGroupStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: SlvClaimCaseSameEventGroupStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SlvClaimCaseSameEventGroupStatuses
+  objectType: SlvClaimCaseSameEventGroupStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: slv_claim_case_same_event_group_statuses
+  filterExpressionType: SlvClaimCaseSameEventGroupStatusesBoolExp
+  aggregateExpression: SlvClaimCaseSameEventGroupStatusesAggExp
+  orderByExpression: SlvClaimCaseSameEventGroupStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: slvClaimCaseSameEventGroupStatuses
+      subscription:
+        rootField: slvClaimCaseSameEventGroupStatuses
+    selectUniques:
+      - queryRootField: slvClaimCaseSameEventGroupStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: slvClaimCaseSameEventGroupStatusesByValue
+    filterInputTypeName: SlvClaimCaseSameEventGroupStatusesFilterInput
+    aggregate:
+      queryRootField: slvClaimCaseSameEventGroupStatusesAggregate
+      subscription:
+        rootField: slvClaimCaseSameEventGroupStatusesAggregate
+  description: SLV Claim Case Status List
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SlvClaimCaseSameEventGroupStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvClaimCaseSameEventGroups
+  sourceType: SlvClaimCaseSameEventGroupStatuses
+  target:
+    model:
+      name: SlvClaimCaseSameEventGroups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvClaimCaseSameEventGroupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: slvClaimCaseSameEventGroupsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvHistoryClaimCases
+  sourceType: SlvClaimCaseSameEventGroupStatuses
+  target:
+    model:
+      name: SlvHistoryClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvHistoryClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: slvHistoryClaimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvHistoryClaimRecords
+  sourceType: SlvClaimCaseSameEventGroupStatuses
+  target:
+    model:
+      name: SlvHistoryClaimRecords
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvHistoryClaimRecordsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: slvHistoryClaimRecordsAggregate
+

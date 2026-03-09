@@ -1,0 +1,168 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHdbCatalogEventLogObject
+  fields:
+    - name: archived
+      type: Boolean_1
+    - name: createdAt
+      type: Timestamp
+    - name: delivered
+      type: Boolean_1
+    - name: error
+      type: Boolean_1
+    - name: id
+      type: String_1
+    - name: locked
+      type: Timestamptz
+    - name: nextRetryAt
+      type: Timestamp
+    - name: payload
+      type: Json!
+    - name: schemaName
+      type: String_1!
+    - name: tableName
+      type: String_1!
+    - name: tries
+      type: Int32
+    - name: triggerName
+      type: String_1!
+  graphql:
+    typeName: InsertHdbCatalogEventLogObject
+    inputTypeName: InsertHdbCatalogEventLogObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hdb_catalog_event_log_object
+      fieldMapping:
+        archived:
+          column:
+            name: archived
+        createdAt:
+          column:
+            name: created_at
+        delivered:
+          column:
+            name: delivered
+        error:
+          column:
+            name: error
+        id:
+          column:
+            name: id
+        locked:
+          column:
+            name: locked
+        nextRetryAt:
+          column:
+            name: next_retry_at
+        payload:
+          column:
+            name: payload
+        schemaName:
+          column:
+            name: schema_name
+        tableName:
+          column:
+            name: table_name
+        tries:
+          column:
+            name: tries
+        triggerName:
+          column:
+            name: trigger_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHdbCatalogEventLogObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - archived
+          - createdAt
+          - delivered
+          - error
+          - id
+          - locked
+          - nextRetryAt
+          - payload
+          - schemaName
+          - tableName
+          - tries
+          - triggerName
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHdbCatalogEventLogResponse
+  description: Responses from the 'insert_hdb_catalog_event_log' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HdbCatalogEventLog!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHdbCatalogEventLogResponse
+    inputTypeName: InsertHdbCatalogEventLogResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hdb_catalog_event_log_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHdbCatalogEventLogResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHdbCatalogEventLog
+  outputType: InsertHdbCatalogEventLogResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHdbCatalogEventLogObject!]!"
+    - name: postCheck
+      type: HdbCatalogEventLogBoolExp
+      description: Insert permission predicate over the 'hdb_catalog_event_log' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hdb_catalog_event_log
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHdbCatalogEventLog
+    rootFieldKind: Mutation
+  description: Insert into the hdb_catalog_event_log table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHdbCatalogEventLog
+  permissions:
+    - role: admin
+      allowExecution: true
+

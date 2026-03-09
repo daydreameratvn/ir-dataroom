@@ -1,0 +1,452 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MedicalBookingCustomers
+  description: customers
+  fields:
+    - name: companyId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: dependedId
+      type: Uuid
+    - name: dependentType
+      type: String_1
+    - name: dob
+      type: Timestamptz!
+    - name: email
+      type: Json
+    - name: gender
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: packageName
+      type: String_1
+    - name: phone
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid
+  graphql:
+    typeName: MedicalBookingCustomers
+    inputTypeName: MedicalBookingCustomersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: medical_booking_customers
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        dependedId:
+          column:
+            name: depended_id
+        dependentType:
+          column:
+            name: dependent_type
+        dob:
+          column:
+            name: dob
+        email:
+          column:
+            name: email
+        gender:
+          column:
+            name: gender
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        packageName:
+          column:
+            name: package_name
+        phone:
+          column:
+            name: phone
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MedicalBookingCustomers
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - dependedId
+          - dependentType
+          - dob
+          - email
+          - gender
+          - id
+          - name
+          - packageName
+          - phone
+          - updatedAt
+          - updatedBy
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MedicalBookingCustomersBoolExp
+  operand:
+    object:
+      type: MedicalBookingCustomers
+      comparableFields:
+        - fieldName: companyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: dependedId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: dependentType
+          booleanExpressionType: TextBoolExp
+        - fieldName: dob
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: email
+          booleanExpressionType: CitextBoolExp
+        - fieldName: gender
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: packageName
+          booleanExpressionType: TextBoolExp
+        - fieldName: phone
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: medicalBookingBookings
+        - relationshipName: company
+        - relationshipName: medicalBookingCustomer
+        - relationshipName: medicalBookingCustomers
+        - relationshipName: genderByGender
+        - relationshipName: identityUser
+        - relationshipName: medicalBookingCustomersContracts
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MedicalBookingCustomersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MedicalBookingCustomersAggExp
+  operand:
+    object:
+      aggregatedType: MedicalBookingCustomers
+      aggregatableFields:
+        - fieldName: companyId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: dependedId
+          aggregateExpression: UuidAggExp
+        - fieldName: dependentType
+          aggregateExpression: TextAggExp
+        - fieldName: dob
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: email
+          aggregateExpression: CitextAggExp
+        - fieldName: gender
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: packageName
+          aggregateExpression: TextAggExp
+        - fieldName: phone
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MedicalBookingCustomersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MedicalBookingCustomersOrderByExp
+  operand:
+    object:
+      orderedType: MedicalBookingCustomers
+      orderableFields:
+        - fieldName: companyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: dependedId
+          orderByExpression: UuidOrderByExp
+        - fieldName: dependentType
+          orderByExpression: String1OrderByExp
+        - fieldName: dob
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: email
+          orderByExpression: JsonOrderByExp
+        - fieldName: gender
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: packageName
+          orderByExpression: String1OrderByExp
+        - fieldName: phone
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+        - relationshipName: medicalBookingCustomer
+        - relationshipName: genderByGender
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: MedicalBookingCustomersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MedicalBookingCustomers
+  objectType: MedicalBookingCustomers
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: medical_booking_customers
+  filterExpressionType: MedicalBookingCustomersBoolExp
+  aggregateExpression: MedicalBookingCustomersAggExp
+  orderByExpression: MedicalBookingCustomersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: medicalBookingCustomers
+      subscription:
+        rootField: medicalBookingCustomers
+    selectUniques:
+      - queryRootField: medicalBookingCustomersById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: medicalBookingCustomersById
+    filterInputTypeName: MedicalBookingCustomersFilterInput
+    aggregate:
+      queryRootField: medicalBookingCustomersAggregate
+      subscription:
+        rootField: medicalBookingCustomersAggregate
+  description: customers
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MedicalBookingCustomers
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingBookings
+  sourceType: MedicalBookingCustomers
+  target:
+    model:
+      name: MedicalBookingBookings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingBookingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: customerId
+  graphql:
+    aggregateFieldName: medicalBookingBookingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: MedicalBookingCustomers
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingCustomer
+  sourceType: MedicalBookingCustomers
+  target:
+    model:
+      name: MedicalBookingCustomers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: dependedId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingCustomers
+  sourceType: MedicalBookingCustomers
+  target:
+    model:
+      name: MedicalBookingCustomers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingCustomersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: dependedId
+  graphql:
+    aggregateFieldName: medicalBookingCustomersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: genderByGender
+  sourceType: MedicalBookingCustomers
+  target:
+    model:
+      name: Genders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: gender
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: MedicalBookingCustomers
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingCustomersContracts
+  sourceType: MedicalBookingCustomers
+  target:
+    model:
+      name: MedicalBookingCustomersContracts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingCustomersContractsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: customerId
+  graphql:
+    aggregateFieldName: medicalBookingCustomersContractsAggregate
+

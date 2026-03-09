@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimNoteTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimNoteTypes
+    inputTypeName: ClaimNoteTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_note_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimNoteTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimNoteTypesBoolExp
+  operand:
+    object:
+      type: ClaimNoteTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimNotes
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimNoteTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimNoteTypesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimNoteTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimNoteTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimNoteTypesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimNoteTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimNoteTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimNoteTypes
+  objectType: ClaimNoteTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_note_types
+  filterExpressionType: ClaimNoteTypesBoolExp
+  aggregateExpression: ClaimNoteTypesAggExp
+  orderByExpression: ClaimNoteTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimNoteTypes
+      subscription:
+        rootField: claimNoteTypes
+    selectUniques:
+      - queryRootField: claimNoteTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimNoteTypesByValue
+    filterInputTypeName: ClaimNoteTypesFilterInput
+    aggregate:
+      queryRootField: claimNoteTypesAggregate
+      subscription:
+        rootField: claimNoteTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimNoteTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimNotes
+  sourceType: ClaimNoteTypes
+  target:
+    model:
+      name: ClaimNotes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimNotesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: claimNotesAggregate
+

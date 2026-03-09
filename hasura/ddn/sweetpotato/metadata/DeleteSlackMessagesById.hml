@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteSlackMessagesByIdResponse
+  description: Responses from the 'delete_slack_messages_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlackMessages!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteSlackMessagesByIdResponse
+    inputTypeName: DeleteSlackMessagesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_slack_messages_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteSlackMessagesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteSlackMessagesById
+  outputType: DeleteSlackMessagesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: SlackMessagesBoolExp
+      description: Delete permission predicate over the 'slack_messages' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_slack_messages_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteSlackMessagesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'slack_messages' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteSlackMessagesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

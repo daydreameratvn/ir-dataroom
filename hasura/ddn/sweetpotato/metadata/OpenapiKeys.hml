@@ -1,0 +1,257 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OpenapiKeys
+  fields:
+    - name: app
+      type: String_1!
+    - name: callbackSecret
+      type: String_1
+    - name: companyId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: enabled
+      type: Boolean_1!
+    - name: id
+      type: Uuid!
+    - name: lastUsedAt
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: OpenapiKeys
+    inputTypeName: OpenapiKeysInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: openapi_keys
+      fieldMapping:
+        app:
+          column:
+            name: app
+        callbackSecret:
+          column:
+            name: callback_secret
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        enabled:
+          column:
+            name: enabled
+        id:
+          column:
+            name: id
+        lastUsedAt:
+          column:
+            name: last_used_at
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OpenapiKeys
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - app
+          - callbackSecret
+          - companyId
+          - createdAt
+          - enabled
+          - id
+          - lastUsedAt
+          - updatedAt
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OpenapiKeysBoolExp
+  operand:
+    object:
+      type: OpenapiKeys
+      comparableFields:
+        - fieldName: app
+          booleanExpressionType: TextBoolExp
+        - fieldName: callbackSecret
+          booleanExpressionType: TextBoolExp
+        - fieldName: companyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: enabled
+          booleanExpressionType: BoolBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: lastUsedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: openapiApp
+        - relationshipName: company
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OpenapiKeysBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OpenapiKeysAggExp
+  operand:
+    object:
+      aggregatedType: OpenapiKeys
+      aggregatableFields:
+        - fieldName: app
+          aggregateExpression: TextAggExp
+        - fieldName: callbackSecret
+          aggregateExpression: TextAggExp
+        - fieldName: companyId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: enabled
+          aggregateExpression: BoolAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: lastUsedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OpenapiKeysAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OpenapiKeysOrderByExp
+  operand:
+    object:
+      orderedType: OpenapiKeys
+      orderableFields:
+        - fieldName: app
+          orderByExpression: String1OrderByExp
+        - fieldName: callbackSecret
+          orderByExpression: String1OrderByExp
+        - fieldName: companyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: enabled
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: lastUsedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: openapiApp
+        - relationshipName: company
+  graphql:
+    expressionTypeName: OpenapiKeysOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OpenapiKeys
+  objectType: OpenapiKeys
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: openapi_keys
+  filterExpressionType: OpenapiKeysBoolExp
+  aggregateExpression: OpenapiKeysAggExp
+  orderByExpression: OpenapiKeysOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: openapiKeys
+      subscription:
+        rootField: openapiKeys
+    selectUniques:
+      - queryRootField: openapiKeysById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: openapiKeysById
+    filterInputTypeName: OpenapiKeysFilterInput
+    aggregate:
+      queryRootField: openapiKeysAggregate
+      subscription:
+        rootField: openapiKeysAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OpenapiKeys
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: openapiApp
+  sourceType: OpenapiKeys
+  target:
+    model:
+      name: OpenapiApps
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: app
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: OpenapiKeys
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyId
+      target:
+        modelField:
+          - fieldName: companyId
+

@@ -1,0 +1,179 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnOverlordApiLogStatusesComment
+  description: Update the 'comment' column in the 'overlord_api_log_statuses' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnOverlordApiLogStatusesComment
+    inputTypeName: UpdateColumnOverlordApiLogStatusesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_overlord_api_log_statuses_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnOverlordApiLogStatusesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnOverlordApiLogStatusesValue
+  description: Update the 'value' column in the 'overlord_api_log_statuses' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnOverlordApiLogStatusesValue
+    inputTypeName: UpdateColumnOverlordApiLogStatusesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_overlord_api_log_statuses_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnOverlordApiLogStatusesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateOverlordApiLogStatusesByValueUpdateColumns
+  description: Update the columns of the 'overlord_api_log_statuses' collection
+  fields:
+    - name: comment
+      type: UpdateColumnOverlordApiLogStatusesComment
+      description: Update the 'comment' column in the 'overlord_api_log_statuses'
+        collection.
+    - name: value
+      type: UpdateColumnOverlordApiLogStatusesValue
+      description: Update the 'value' column in the 'overlord_api_log_statuses' collection.
+  graphql:
+    typeName: UpdateOverlordApiLogStatusesByValueUpdateColumns
+    inputTypeName: UpdateOverlordApiLogStatusesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_overlord_api_log_statuses_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateOverlordApiLogStatusesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateOverlordApiLogStatusesByValueResponse
+  description: Responses from the 'update_overlord_api_log_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OverlordApiLogStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateOverlordApiLogStatusesByValueResponse
+    inputTypeName: UpdateOverlordApiLogStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_overlord_api_log_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateOverlordApiLogStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateOverlordApiLogStatusesByValue
+  outputType: UpdateOverlordApiLogStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: OverlordApiLogStatusesBoolExp
+      description: Update permission post-condition predicate over the
+        'overlord_api_log_statuses' collection
+    - name: preCheck
+      type: OverlordApiLogStatusesBoolExp
+      description: Update permission pre-condition predicate over the
+        'overlord_api_log_statuses' collection
+    - name: updateColumns
+      type: UpdateOverlordApiLogStatusesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_overlord_api_log_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateOverlordApiLogStatusesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'overlord_api_log_statuses' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateOverlordApiLogStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

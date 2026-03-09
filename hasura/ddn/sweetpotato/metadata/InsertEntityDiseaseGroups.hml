@@ -1,0 +1,156 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertEntityDiseaseGroupsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: diseaseGroupId
+      type: Uuid!
+    - name: diseaseGroupTypeValue
+      type: String_1!
+    - name: entityId
+      type: Uuid!
+    - name: entityTypeValue
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: timeInDays
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz
+    - name: waitingTimeInDays
+      type: Bigdecimal
+  graphql:
+    typeName: InsertEntityDiseaseGroupsObject
+    inputTypeName: InsertEntityDiseaseGroupsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_entity_disease_groups_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        diseaseGroupId:
+          column:
+            name: disease_group_id
+        diseaseGroupTypeValue:
+          column:
+            name: disease_group_type_value
+        entityId:
+          column:
+            name: entity_id
+        entityTypeValue:
+          column:
+            name: entity_type_value
+        id:
+          column:
+            name: id
+        timeInDays:
+          column:
+            name: time_in_days
+        updatedAt:
+          column:
+            name: updated_at
+        waitingTimeInDays:
+          column:
+            name: waiting_time_in_days
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertEntityDiseaseGroupsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - diseaseGroupId
+          - diseaseGroupTypeValue
+          - entityId
+          - entityTypeValue
+          - id
+          - timeInDays
+          - updatedAt
+          - waitingTimeInDays
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertEntityDiseaseGroupsResponse
+  description: Responses from the 'insert_entity_disease_groups' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[EntityDiseaseGroups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertEntityDiseaseGroupsResponse
+    inputTypeName: InsertEntityDiseaseGroupsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_entity_disease_groups_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertEntityDiseaseGroupsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertEntityDiseaseGroups
+  outputType: InsertEntityDiseaseGroupsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertEntityDiseaseGroupsObject!]!"
+    - name: postCheck
+      type: EntityDiseaseGroupsBoolExp
+      description: Insert permission predicate over the 'entity_disease_groups' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_entity_disease_groups
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertEntityDiseaseGroups
+    rootFieldKind: Mutation
+  description: Insert into the entity_disease_groups table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertEntityDiseaseGroups
+  permissions:
+    - role: admin
+      allowExecution: true
+

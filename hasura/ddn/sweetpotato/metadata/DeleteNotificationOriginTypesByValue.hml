@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteNotificationOriginTypesByValueResponse
+  description: Responses from the 'delete_notification_origin_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[NotificationOriginTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteNotificationOriginTypesByValueResponse
+    inputTypeName: DeleteNotificationOriginTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_notification_origin_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteNotificationOriginTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteNotificationOriginTypesByValue
+  outputType: DeleteNotificationOriginTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: NotificationOriginTypesBoolExp
+      description: Delete permission predicate over the 'notification_origin_types'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_notification_origin_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteNotificationOriginTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'notification_origin_types' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteNotificationOriginTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

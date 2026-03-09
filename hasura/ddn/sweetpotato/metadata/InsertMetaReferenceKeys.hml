@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetaReferenceKeysObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertMetaReferenceKeysObject
+    inputTypeName: InsertMetaReferenceKeysObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_meta_reference_keys_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetaReferenceKeysObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetaReferenceKeysResponse
+  description: Responses from the 'insert_meta_reference_keys' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetaReferenceKeys!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMetaReferenceKeysResponse
+    inputTypeName: InsertMetaReferenceKeysResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_meta_reference_keys_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetaReferenceKeysResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMetaReferenceKeys
+  outputType: InsertMetaReferenceKeysResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMetaReferenceKeysObject!]!"
+    - name: postCheck
+      type: MetaReferenceKeysBoolExp
+      description: Insert permission predicate over the 'meta_reference_keys' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_meta_reference_keys
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMetaReferenceKeys
+    rootFieldKind: Mutation
+  description: Insert into the meta_reference_keys table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMetaReferenceKeys
+  permissions:
+    - role: admin
+      allowExecution: true
+

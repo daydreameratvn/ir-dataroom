@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutPaymentRequestsByIdResponse
+  description: Responses from the 'delete_payout_payment_requests_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPaymentRequests!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutPaymentRequestsByIdResponse
+    inputTypeName: DeletePayoutPaymentRequestsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_payment_requests_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutPaymentRequestsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutPaymentRequestsById
+  outputType: DeletePayoutPaymentRequestsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: PayoutPaymentRequestsBoolExp
+      description: Delete permission predicate over the 'payout_payment_requests' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_payment_requests_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutPaymentRequestsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_payment_requests' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutPaymentRequestsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

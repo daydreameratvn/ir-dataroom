@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePresentCaseStatusesByValueResponse
+  description: Responses from the 'delete_present_case_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PresentCaseStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePresentCaseStatusesByValueResponse
+    inputTypeName: DeletePresentCaseStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_present_case_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePresentCaseStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePresentCaseStatusesByValue
+  outputType: DeletePresentCaseStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: PresentCaseStatusesBoolExp
+      description: Delete permission predicate over the 'present_case_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_present_case_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePresentCaseStatusesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'present_case_statuses' collection using the
+    'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePresentCaseStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

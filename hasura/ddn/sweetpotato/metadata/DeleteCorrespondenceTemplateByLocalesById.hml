@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCorrespondenceTemplateByLocalesByIdResponse
+  description: Responses from the
+    'delete_correspondence_template_by_locales_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceTemplateByLocales!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCorrespondenceTemplateByLocalesByIdResponse
+    inputTypeName: DeleteCorrespondenceTemplateByLocalesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_correspondence_template_by_locales_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCorrespondenceTemplateByLocalesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCorrespondenceTemplateByLocalesById
+  outputType: DeleteCorrespondenceTemplateByLocalesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: CorrespondenceTemplateByLocalesBoolExp
+      description: Delete permission predicate over the
+        'correspondence_template_by_locales' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_correspondence_template_by_locales_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCorrespondenceTemplateByLocalesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'correspondence_template_by_locales'
+    collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCorrespondenceTemplateByLocalesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

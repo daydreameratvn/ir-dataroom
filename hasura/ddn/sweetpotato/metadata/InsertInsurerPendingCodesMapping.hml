@@ -1,0 +1,139 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsurerPendingCodesMappingObject
+  fields:
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: insurerId
+      type: Uuid!
+    - name: insurerPendingCode
+      type: String_1!
+    - name: ppyPendingCode
+      type: String_1!
+    - name: productCode
+      type: String_1!
+    - name: productId
+      type: Uuid!
+  graphql:
+    typeName: InsertInsurerPendingCodesMappingObject
+    inputTypeName: InsertInsurerPendingCodesMappingObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insurer_pending_codes_mapping_object
+      fieldMapping:
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        insurerPendingCode:
+          column:
+            name: insurer_pending_code
+        ppyPendingCode:
+          column:
+            name: ppy_pending_code
+        productCode:
+          column:
+            name: product_code
+        productId:
+          column:
+            name: product_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsurerPendingCodesMappingObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - description
+          - id
+          - insurerId
+          - insurerPendingCode
+          - ppyPendingCode
+          - productCode
+          - productId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsurerPendingCodesMappingResponse
+  description: Responses from the 'insert_insurer_pending_codes_mapping' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsurerPendingCodesMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertInsurerPendingCodesMappingResponse
+    inputTypeName: InsertInsurerPendingCodesMappingResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insurer_pending_codes_mapping_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsurerPendingCodesMappingResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertInsurerPendingCodesMapping
+  outputType: InsertInsurerPendingCodesMappingResponse!
+  arguments:
+    - name: objects
+      type: "[InsertInsurerPendingCodesMappingObject!]!"
+    - name: postCheck
+      type: InsurerPendingCodesMappingBoolExp
+      description: Insert permission predicate over the
+        'insurer_pending_codes_mapping' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_insurer_pending_codes_mapping
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertInsurerPendingCodesMapping
+    rootFieldKind: Mutation
+  description: Insert into the insurer_pending_codes_mapping table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertInsurerPendingCodesMapping
+  permissions:
+    - role: admin
+      allowExecution: true
+

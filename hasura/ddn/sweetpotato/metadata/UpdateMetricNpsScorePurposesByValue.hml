@@ -1,0 +1,179 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnMetricNpsScorePurposesComment
+  description: Update the 'comment' column in the 'metric_nps_score_purposes' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnMetricNpsScorePurposesComment
+    inputTypeName: UpdateColumnMetricNpsScorePurposesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_metric_nps_score_purposes_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnMetricNpsScorePurposesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnMetricNpsScorePurposesValue
+  description: Update the 'value' column in the 'metric_nps_score_purposes' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnMetricNpsScorePurposesValue
+    inputTypeName: UpdateColumnMetricNpsScorePurposesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_metric_nps_score_purposes_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnMetricNpsScorePurposesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMetricNpsScorePurposesByValueUpdateColumns
+  description: Update the columns of the 'metric_nps_score_purposes' collection
+  fields:
+    - name: comment
+      type: UpdateColumnMetricNpsScorePurposesComment
+      description: Update the 'comment' column in the 'metric_nps_score_purposes'
+        collection.
+    - name: value
+      type: UpdateColumnMetricNpsScorePurposesValue
+      description: Update the 'value' column in the 'metric_nps_score_purposes' collection.
+  graphql:
+    typeName: UpdateMetricNpsScorePurposesByValueUpdateColumns
+    inputTypeName: UpdateMetricNpsScorePurposesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_metric_nps_score_purposes_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMetricNpsScorePurposesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMetricNpsScorePurposesByValueResponse
+  description: Responses from the 'update_metric_nps_score_purposes_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetricNpsScorePurposes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateMetricNpsScorePurposesByValueResponse
+    inputTypeName: UpdateMetricNpsScorePurposesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_metric_nps_score_purposes_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMetricNpsScorePurposesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateMetricNpsScorePurposesByValue
+  outputType: UpdateMetricNpsScorePurposesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: MetricNpsScorePurposesBoolExp
+      description: Update permission post-condition predicate over the
+        'metric_nps_score_purposes' collection
+    - name: preCheck
+      type: MetricNpsScorePurposesBoolExp
+      description: Update permission pre-condition predicate over the
+        'metric_nps_score_purposes' collection
+    - name: updateColumns
+      type: UpdateMetricNpsScorePurposesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_metric_nps_score_purposes_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateMetricNpsScorePurposesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'metric_nps_score_purposes' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateMetricNpsScorePurposesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

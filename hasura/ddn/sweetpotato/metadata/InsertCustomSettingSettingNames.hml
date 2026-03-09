@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCustomSettingSettingNamesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertCustomSettingSettingNamesObject
+    inputTypeName: InsertCustomSettingSettingNamesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_custom_setting_setting_names_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCustomSettingSettingNamesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCustomSettingSettingNamesResponse
+  description: Responses from the 'insert_custom_setting_setting_names' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingSettingNames!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCustomSettingSettingNamesResponse
+    inputTypeName: InsertCustomSettingSettingNamesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_custom_setting_setting_names_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCustomSettingSettingNamesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCustomSettingSettingNames
+  outputType: InsertCustomSettingSettingNamesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCustomSettingSettingNamesObject!]!"
+    - name: postCheck
+      type: CustomSettingSettingNamesBoolExp
+      description: Insert permission predicate over the 'custom_setting_setting_names'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_custom_setting_setting_names
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCustomSettingSettingNames
+    rootFieldKind: Mutation
+  description: Insert into the custom_setting_setting_names table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCustomSettingSettingNames
+  permissions:
+    - role: admin
+      allowExecution: true
+

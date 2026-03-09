@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornBiomarkerValueTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: HawthornBiomarkerValueTypes
+    inputTypeName: HawthornBiomarkerValueTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_biomarker_value_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornBiomarkerValueTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornBiomarkerValueTypesBoolExp
+  operand:
+    object:
+      type: HawthornBiomarkerValueTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornBiomarkerResults
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornBiomarkerValueTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornBiomarkerValueTypesAggExp
+  operand:
+    object:
+      aggregatedType: HawthornBiomarkerValueTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornBiomarkerValueTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornBiomarkerValueTypesOrderByExp
+  operand:
+    object:
+      orderedType: HawthornBiomarkerValueTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HawthornBiomarkerValueTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornBiomarkerValueTypes
+  objectType: HawthornBiomarkerValueTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_biomarker_value_types
+  filterExpressionType: HawthornBiomarkerValueTypesBoolExp
+  aggregateExpression: HawthornBiomarkerValueTypesAggExp
+  orderByExpression: HawthornBiomarkerValueTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornBiomarkerValueTypes
+      subscription:
+        rootField: hawthornBiomarkerValueTypes
+    selectUniques:
+      - queryRootField: hawthornBiomarkerValueTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: hawthornBiomarkerValueTypesByValue
+    filterInputTypeName: HawthornBiomarkerValueTypesFilterInput
+    aggregate:
+      queryRootField: hawthornBiomarkerValueTypesAggregate
+      subscription:
+        rootField: hawthornBiomarkerValueTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornBiomarkerValueTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornBiomarkerResults
+  sourceType: HawthornBiomarkerValueTypes
+  target:
+    model:
+      name: HawthornBiomarkerResults
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornBiomarkerResultsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: valueType
+  graphql:
+    aggregateFieldName: hawthornBiomarkerResultsAggregate
+

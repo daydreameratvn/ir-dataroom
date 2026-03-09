@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteDisplayedCopayByIdResponse
+  description: Responses from the 'delete_displayed_copay_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[DisplayedCopay!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteDisplayedCopayByIdResponse
+    inputTypeName: DeleteDisplayedCopayByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_displayed_copay_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteDisplayedCopayByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteDisplayedCopayById
+  outputType: DeleteDisplayedCopayByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: DisplayedCopayBoolExp
+      description: Delete permission predicate over the 'displayed_copay' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_displayed_copay_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteDisplayedCopayById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'displayed_copay' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteDisplayedCopayById
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,88 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCompanyCorrespondencesByCompanyIdAndCorrespondenceTemplateIdAndDeletedAtAndPlanIdAndSendWhenResponse
+  description: Responses from the
+    'delete_company_correspondences_by_company_id_and_correspondence_template_id_and_deleted_at_and_plan_id_and_send_when'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanyCorrespondences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCompanyCorrespondencesByCompanyIdAndCorrespondenceTemplateIdAndDeletedAtAndPlanIdAndSendWhenResponse
+    inputTypeName: DeleteCompanyCorrespondencesByCompanyIdAndCorrespondenceTemplateIdAndDeletedAtAndPlanIdAndSendWhenResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_company_correspondences_by_company_id_and_correspondence_template_id_and_deleted_at_and_plan_id_and_send_when_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCompanyCorrespondencesByCompanyIdAndCorrespondenceTemplateIdAndDeletedAtAndPlanIdAndSendWhenResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCompanyCorrespondencesByCompanyIdAndCorrespondenceTemplateIdAndDeletedAtAndPlanIdAndSendWhen
+  outputType: DeleteCompanyCorrespondencesByCompanyIdAndCorrespondenceTemplateIdAndDeletedAtAndPlanIdAndSendWhenResponse!
+  arguments:
+    - name: keyCompanyId
+      type: Uuid!
+    - name: keyCorrespondenceTemplateId
+      type: Uuid!
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyPlanId
+      type: Uuid
+    - name: keySendWhen
+      type: String_1
+    - name: preCheck
+      type: CompanyCorrespondencesBoolExp
+      description: Delete permission predicate over the 'company_correspondences' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_company_correspondences_by_company_id_and_correspondence_template_id_and_deleted_at_and_plan_id_and_send_when
+    argumentMapping:
+      keyCompanyId: key_company_id
+      keyCorrespondenceTemplateId: key_correspondence_template_id
+      keyDeletedAt: key_deleted_at
+      keyPlanId: key_plan_id
+      keySendWhen: key_send_when
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCompanyCorrespondencesByCompanyIdAndCorrespondenceTemplateIdAndDeletedAtAndPlanIdAndSendWhen
+    rootFieldKind: Mutation
+  description: Delete any row on the 'company_correspondences' collection using
+    the 'company_id', 'correspondence_template_id', 'deleted_at', 'plan_id' and
+    'send_when' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCompanyCorrespondencesByCompanyIdAndCorrespondenceTemplateIdAndDeletedAtAndPlanIdAndSendWhen
+  permissions:
+    - role: admin
+      allowExecution: true
+

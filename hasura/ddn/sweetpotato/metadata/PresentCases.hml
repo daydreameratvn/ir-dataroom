@@ -1,0 +1,370 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PresentCases
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: decisionAt
+      type: Timestamptz
+    - name: decisionNote
+      type: String_1
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insurerAssessmentAt
+      type: Timestamptz
+      description: "@deprecated"
+    - name: insurerAssessmentBy
+      type: Uuid
+    - name: insurerAssessmentNote
+      type: String_1
+    - name: presentCaseId
+      type: Uuid!
+    - name: presentCaseTime
+      type: Int32!
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: PresentCases
+    inputTypeName: PresentCasesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: present_cases
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        decisionAt:
+          column:
+            name: decision_at
+        decisionNote:
+          column:
+            name: decision_note
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insurerAssessmentAt:
+          column:
+            name: insurer_assessment_at
+        insurerAssessmentBy:
+          column:
+            name: insurer_assessment_by
+        insurerAssessmentNote:
+          column:
+            name: insurer_assessment_note
+        presentCaseId:
+          column:
+            name: present_case_id
+        presentCaseTime:
+          column:
+            name: present_case_time
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PresentCases
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - createdBy
+          - decisionAt
+          - decisionNote
+          - deletedAt
+          - id
+          - insurerAssessmentAt
+          - insurerAssessmentBy
+          - insurerAssessmentNote
+          - presentCaseId
+          - presentCaseTime
+          - status
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PresentCasesBoolExp
+  operand:
+    object:
+      type: PresentCases
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: decisionAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: decisionNote
+          booleanExpressionType: TextBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerAssessmentAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: insurerAssessmentBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerAssessmentNote
+          booleanExpressionType: TextBoolExp
+        - fieldName: presentCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: presentCaseTime
+          booleanExpressionType: Int4BoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+        - relationshipName: presentCaseStatus
+        - relationshipName: identityUserByUpdatedBy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PresentCasesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PresentCasesAggExp
+  operand:
+    object:
+      aggregatedType: PresentCases
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: decisionAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: decisionNote
+          aggregateExpression: TextAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerAssessmentAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: insurerAssessmentBy
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerAssessmentNote
+          aggregateExpression: TextAggExp
+        - fieldName: presentCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: presentCaseTime
+          aggregateExpression: Int4AggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PresentCasesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PresentCasesOrderByExp
+  operand:
+    object:
+      orderedType: PresentCases
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: decisionAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: decisionNote
+          orderByExpression: String1OrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerAssessmentAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: insurerAssessmentBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerAssessmentNote
+          orderByExpression: String1OrderByExp
+        - fieldName: presentCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: presentCaseTime
+          orderByExpression: Int32OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+        - relationshipName: presentCaseStatus
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: PresentCasesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PresentCases
+  objectType: PresentCases
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: present_cases
+  filterExpressionType: PresentCasesBoolExp
+  aggregateExpression: PresentCasesAggExp
+  orderByExpression: PresentCasesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: presentCases
+      subscription:
+        rootField: presentCases
+    selectUniques:
+      - queryRootField: presentCasesByPresentCaseId
+        uniqueIdentifier:
+          - presentCaseId
+        subscription:
+          rootField: presentCasesByPresentCaseId
+    filterInputTypeName: PresentCasesFilterInput
+    aggregate:
+      queryRootField: presentCasesAggregate
+      subscription:
+        rootField: presentCasesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PresentCases
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: PresentCases
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: PresentCases
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: presentCaseStatus
+  sourceType: PresentCases
+  target:
+    model:
+      name: PresentCaseStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: PresentCases
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+

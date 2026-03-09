@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMedicalBookingSchedulesByIdResponse
+  description: Responses from the 'delete_medical_booking_schedules_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingSchedules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMedicalBookingSchedulesByIdResponse
+    inputTypeName: DeleteMedicalBookingSchedulesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_medical_booking_schedules_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMedicalBookingSchedulesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMedicalBookingSchedulesById
+  outputType: DeleteMedicalBookingSchedulesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: MedicalBookingSchedulesBoolExp
+      description: Delete permission predicate over the 'medical_booking_schedules'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_medical_booking_schedules_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMedicalBookingSchedulesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'medical_booking_schedules' collection using
+    the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMedicalBookingSchedulesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

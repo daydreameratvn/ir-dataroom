@@ -1,0 +1,364 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanDisplayedBalances
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: displayOrder
+      type: Int32!
+    - name: id
+      type: Uuid!
+    - name: language
+      type: String_1
+    - name: name
+      type: String_1!
+    - name: parentId
+      type: Uuid
+    - name: planBalanceId
+      type: Uuid
+    - name: planId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: PlanDisplayedBalances
+    inputTypeName: PlanDisplayedBalancesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_displayed_balances
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        language:
+          column:
+            name: language
+        name:
+          column:
+            name: name
+        parentId:
+          column:
+            name: parent_id
+        planBalanceId:
+          column:
+            name: plan_balance_id
+        planId:
+          column:
+            name: plan_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanDisplayedBalances
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - displayOrder
+          - id
+          - language
+          - name
+          - parentId
+          - planBalanceId
+          - planId
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanDisplayedBalancesBoolExp
+  operand:
+    object:
+      type: PlanDisplayedBalances
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: displayOrder
+          booleanExpressionType: Int4BoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: language
+          booleanExpressionType: TextBoolExp
+        - fieldName: name
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: parentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planBalanceId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: languageByLanguage
+        - relationshipName: planDisplayedBalance
+        - relationshipName: planDisplayedBalances
+        - relationshipName: planBalance
+        - relationshipName: plan
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanDisplayedBalancesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanDisplayedBalancesAggExp
+  operand:
+    object:
+      aggregatedType: PlanDisplayedBalances
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: displayOrder
+          aggregateExpression: Int4AggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: language
+          aggregateExpression: TextAggExp
+        - fieldName: name
+          aggregateExpression: VarcharAggExp
+        - fieldName: parentId
+          aggregateExpression: UuidAggExp
+        - fieldName: planBalanceId
+          aggregateExpression: UuidAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanDisplayedBalancesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanDisplayedBalancesOrderByExp
+  operand:
+    object:
+      orderedType: PlanDisplayedBalances
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: displayOrder
+          orderByExpression: Int32OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: language
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: parentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planBalanceId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: languageByLanguage
+        - relationshipName: planDisplayedBalance
+        - relationshipName: planBalance
+        - relationshipName: plan
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: PlanDisplayedBalancesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanDisplayedBalances
+  objectType: PlanDisplayedBalances
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_displayed_balances
+  filterExpressionType: PlanDisplayedBalancesBoolExp
+  aggregateExpression: PlanDisplayedBalancesAggExp
+  orderByExpression: PlanDisplayedBalancesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planDisplayedBalances
+      subscription:
+        rootField: planDisplayedBalances
+    selectUniques:
+      - queryRootField: planDisplayedBalancesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: planDisplayedBalancesById
+    filterInputTypeName: PlanDisplayedBalancesFilterInput
+    aggregate:
+      queryRootField: planDisplayedBalancesAggregate
+      subscription:
+        rootField: planDisplayedBalancesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanDisplayedBalances
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: languageByLanguage
+  sourceType: PlanDisplayedBalances
+  target:
+    model:
+      name: Languages
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: language
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planDisplayedBalance
+  sourceType: PlanDisplayedBalances
+  target:
+    model:
+      name: PlanDisplayedBalances
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: parentId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planDisplayedBalances
+  sourceType: PlanDisplayedBalances
+  target:
+    model:
+      name: PlanDisplayedBalances
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanDisplayedBalancesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: parentId
+  graphql:
+    aggregateFieldName: planDisplayedBalancesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalance
+  sourceType: PlanDisplayedBalances
+  target:
+    model:
+      name: PlanBalances
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planBalanceId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plan
+  sourceType: PlanDisplayedBalances
+  target:
+    model:
+      name: Plans
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: PlanDisplayedBalances
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

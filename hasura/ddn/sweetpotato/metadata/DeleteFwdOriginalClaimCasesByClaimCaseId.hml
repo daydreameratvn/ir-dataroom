@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdOriginalClaimCasesByClaimCaseIdResponse
+  description: Responses from the
+    'delete_fwd_original_claim_cases_by_claim_case_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdOriginalClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdOriginalClaimCasesByClaimCaseIdResponse
+    inputTypeName: DeleteFwdOriginalClaimCasesByClaimCaseIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_original_claim_cases_by_claim_case_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdOriginalClaimCasesByClaimCaseIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdOriginalClaimCasesByClaimCaseId
+  outputType: DeleteFwdOriginalClaimCasesByClaimCaseIdResponse!
+  arguments:
+    - name: keyClaimCaseId
+      type: Uuid!
+    - name: preCheck
+      type: FwdOriginalClaimCasesBoolExp
+      description: Delete permission predicate over the 'fwd_original_claim_cases'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_original_claim_cases_by_claim_case_id
+    argumentMapping:
+      keyClaimCaseId: key_claim_case_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdOriginalClaimCasesByClaimCaseId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_original_claim_cases' collection using
+    the 'claim_case_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdOriginalClaimCasesByClaimCaseId
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCorrespondenceEmailsByCounterResponse
+  description: Responses from the 'delete_correspondence_emails_by_counter' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmails!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCorrespondenceEmailsByCounterResponse
+    inputTypeName: DeleteCorrespondenceEmailsByCounterResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_correspondence_emails_by_counter_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCorrespondenceEmailsByCounterResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCorrespondenceEmailsByCounter
+  outputType: DeleteCorrespondenceEmailsByCounterResponse!
+  arguments:
+    - name: keyCounter
+      type: Int32!
+    - name: preCheck
+      type: CorrespondenceEmailsBoolExp
+      description: Delete permission predicate over the 'correspondence_emails' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_correspondence_emails_by_counter
+    argumentMapping:
+      keyCounter: key_counter
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCorrespondenceEmailsByCounter
+    rootFieldKind: Mutation
+  description: Delete any row on the 'correspondence_emails' collection using the
+    'counter' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCorrespondenceEmailsByCounter
+  permissions:
+    - role: admin
+      allowExecution: true
+

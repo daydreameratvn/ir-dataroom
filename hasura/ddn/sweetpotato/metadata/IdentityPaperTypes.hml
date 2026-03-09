@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityPaperTypes
+  description: Loại giấy tờ tùy thân
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: IdentityPaperTypes
+    inputTypeName: IdentityPaperTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_paper_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityPaperTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityPaperTypesBoolExp
+  operand:
+    object:
+      type: IdentityPaperTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: insuredPersons
+        - relationshipName: payoutMoneyLaunderingSuspects
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityPaperTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityPaperTypesAggExp
+  operand:
+    object:
+      aggregatedType: IdentityPaperTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityPaperTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityPaperTypesOrderByExp
+  operand:
+    object:
+      orderedType: IdentityPaperTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: IdentityPaperTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityPaperTypes
+  objectType: IdentityPaperTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_paper_types
+  filterExpressionType: IdentityPaperTypesBoolExp
+  aggregateExpression: IdentityPaperTypesAggExp
+  orderByExpression: IdentityPaperTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityPaperTypes
+      subscription:
+        rootField: identityPaperTypes
+    selectUniques:
+      - queryRootField: identityPaperTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: identityPaperTypesByValue
+    filterInputTypeName: IdentityPaperTypesFilterInput
+    aggregate:
+      queryRootField: identityPaperTypesAggregate
+      subscription:
+        rootField: identityPaperTypesAggregate
+  description: Loại giấy tờ tùy thân
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityPaperTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersons
+  sourceType: IdentityPaperTypes
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: identityPaperType
+  graphql:
+    aggregateFieldName: insuredPersonsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutMoneyLaunderingSuspects
+  sourceType: IdentityPaperTypes
+  target:
+    model:
+      name: PayoutMoneyLaunderingSuspects
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutMoneyLaunderingSuspectsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: identityPaperType
+  graphql:
+    aggregateFieldName: payoutMoneyLaunderingSuspectsAggregate
+

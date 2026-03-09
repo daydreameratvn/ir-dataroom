@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteStpStpRulesByNameAndStpRuleSetIdResponse
+  description: Responses from the
+    'delete_stp_stp_rules_by_name_and_stp_rule_set_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpStpRules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteStpStpRulesByNameAndStpRuleSetIdResponse
+    inputTypeName: DeleteStpStpRulesByNameAndStpRuleSetIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_stp_stp_rules_by_name_and_stp_rule_set_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteStpStpRulesByNameAndStpRuleSetIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteStpStpRulesByNameAndStpRuleSetId
+  outputType: DeleteStpStpRulesByNameAndStpRuleSetIdResponse!
+  arguments:
+    - name: keyName
+      type: String_1!
+    - name: keyStpRuleSetId
+      type: Uuid!
+    - name: preCheck
+      type: StpStpRulesBoolExp
+      description: Delete permission predicate over the 'stp_stp_rules' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_stp_stp_rules_by_name_and_stp_rule_set_id
+    argumentMapping:
+      keyName: key_name
+      keyStpRuleSetId: key_stp_rule_set_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteStpStpRulesByNameAndStpRuleSetId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'stp_stp_rules' collection using the 'name'
+    and 'stp_rule_set_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteStpStpRulesByNameAndStpRuleSetId
+  permissions:
+    - role: admin
+      allowExecution: true
+

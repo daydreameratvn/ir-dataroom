@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPolicyKindsComment
+  description: Update the 'comment' column in the 'policy_kinds' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPolicyKindsComment
+    inputTypeName: UpdateColumnPolicyKindsCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_policy_kinds_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPolicyKindsComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPolicyKindsValue
+  description: Update the 'value' column in the 'policy_kinds' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPolicyKindsValue
+    inputTypeName: UpdateColumnPolicyKindsValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_policy_kinds_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPolicyKindsValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePolicyKindsByValueUpdateColumns
+  description: Update the columns of the 'policy_kinds' collection
+  fields:
+    - name: comment
+      type: UpdateColumnPolicyKindsComment
+      description: Update the 'comment' column in the 'policy_kinds' collection.
+    - name: value
+      type: UpdateColumnPolicyKindsValue
+      description: Update the 'value' column in the 'policy_kinds' collection.
+  graphql:
+    typeName: UpdatePolicyKindsByValueUpdateColumns
+    inputTypeName: UpdatePolicyKindsByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_policy_kinds_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePolicyKindsByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePolicyKindsByValueResponse
+  description: Responses from the 'update_policy_kinds_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyKinds!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePolicyKindsByValueResponse
+    inputTypeName: UpdatePolicyKindsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_policy_kinds_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePolicyKindsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePolicyKindsByValue
+  outputType: UpdatePolicyKindsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: PolicyKindsBoolExp
+      description: Update permission post-condition predicate over the 'policy_kinds'
+        collection
+    - name: preCheck
+      type: PolicyKindsBoolExp
+      description: Update permission pre-condition predicate over the 'policy_kinds'
+        collection
+    - name: updateColumns
+      type: UpdatePolicyKindsByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_policy_kinds_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePolicyKindsByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'policy_kinds' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePolicyKindsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,82 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutPayoutBankAccountsByAccountNumberAndDeletedAtAndPaymentProviderResponse
+  description: Responses from the
+    'delete_payout_payout_bank_accounts_by_account_number_and_deleted_at_and_payment_provider'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPayoutBankAccounts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutPayoutBankAccountsByAccountNumberAndDeletedAtAndPaymentProviderResponse
+    inputTypeName: DeletePayoutPayoutBankAccountsByAccountNumberAndDeletedAtAndPaymentProviderResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_payout_bank_accounts_by_account_number_and_deleted_at_and_payment_provider_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutPayoutBankAccountsByAccountNumberAndDeletedAtAndPaymentProviderResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutPayoutBankAccountsByAccountNumberAndDeletedAtAndPaymentProvider
+  outputType: DeletePayoutPayoutBankAccountsByAccountNumberAndDeletedAtAndPaymentProviderResponse!
+  arguments:
+    - name: keyAccountNumber
+      type: String_1!
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyPaymentProvider
+      type: String_1!
+    - name: preCheck
+      type: PayoutPayoutBankAccountsBoolExp
+      description: Delete permission predicate over the 'payout_payout_bank_accounts'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_payout_bank_accounts_by_account_number_and_deleted_at_and_payment_provider
+    argumentMapping:
+      keyAccountNumber: key_account_number
+      keyDeletedAt: key_deleted_at
+      keyPaymentProvider: key_payment_provider
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutPayoutBankAccountsByAccountNumberAndDeletedAtAndPaymentProvider
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_payout_bank_accounts' collection
+    using the 'account_number', 'deleted_at' and 'payment_provider' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutPayoutBankAccountsByAccountNumberAndDeletedAtAndPaymentProvider
+  permissions:
+    - role: admin
+      allowExecution: true
+

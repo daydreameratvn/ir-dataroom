@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SlvSyncErrorCodes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: SlvSyncErrorCodes
+    inputTypeName: SlvSyncErrorCodesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: slv_sync_error_codes
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SlvSyncErrorCodes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SlvSyncErrorCodesBoolExp
+  operand:
+    object:
+      type: SlvSyncErrorCodes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: slvSyncLogs
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SlvSyncErrorCodesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SlvSyncErrorCodesAggExp
+  operand:
+    object:
+      aggregatedType: SlvSyncErrorCodes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SlvSyncErrorCodesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SlvSyncErrorCodesOrderByExp
+  operand:
+    object:
+      orderedType: SlvSyncErrorCodes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: SlvSyncErrorCodesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SlvSyncErrorCodes
+  objectType: SlvSyncErrorCodes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: slv_sync_error_codes
+  filterExpressionType: SlvSyncErrorCodesBoolExp
+  aggregateExpression: SlvSyncErrorCodesAggExp
+  orderByExpression: SlvSyncErrorCodesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: slvSyncErrorCodes
+      subscription:
+        rootField: slvSyncErrorCodes
+    selectUniques:
+      - queryRootField: slvSyncErrorCodesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: slvSyncErrorCodesByValue
+    filterInputTypeName: SlvSyncErrorCodesFilterInput
+    aggregate:
+      queryRootField: slvSyncErrorCodesAggregate
+      subscription:
+        rootField: slvSyncErrorCodesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SlvSyncErrorCodes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvSyncLogs
+  sourceType: SlvSyncErrorCodes
+  target:
+    model:
+      name: SlvSyncLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvSyncLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: errorCode
+  graphql:
+    aggregateFieldName: slvSyncLogsAggregate
+

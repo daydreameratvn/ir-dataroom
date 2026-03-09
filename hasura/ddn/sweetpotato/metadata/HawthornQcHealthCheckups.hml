@@ -1,0 +1,278 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornQcHealthCheckups
+  description: Kết quả QC của health checkup
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: healthCheckupId
+      type: Uuid!
+    - name: id
+      type: Uuid!
+    - name: qcAt
+      type: Timestamptz!
+    - name: qcById
+      type: Uuid!
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: HawthornQcHealthCheckups
+    inputTypeName: HawthornQcHealthCheckupsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_qc_health_checkups
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        healthCheckupId:
+          column:
+            name: health_checkup_id
+        id:
+          column:
+            name: id
+        qcAt:
+          column:
+            name: qc_at
+        qcById:
+          column:
+            name: qc_by_id
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornQcHealthCheckups
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - healthCheckupId
+          - id
+          - qcAt
+          - qcById
+          - status
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornQcHealthCheckupsBoolExp
+  operand:
+    object:
+      type: HawthornQcHealthCheckups
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: healthCheckupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: qcAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: qcById
+          booleanExpressionType: UuidBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornQcHealthCheckupDetails
+        - relationshipName: hawthornHealthCheckup
+        - relationshipName: identityUser
+        - relationshipName: hawthornQcStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornQcHealthCheckupsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornQcHealthCheckupsAggExp
+  operand:
+    object:
+      aggregatedType: HawthornQcHealthCheckups
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: healthCheckupId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: qcAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: qcById
+          aggregateExpression: UuidAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornQcHealthCheckupsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornQcHealthCheckupsOrderByExp
+  operand:
+    object:
+      orderedType: HawthornQcHealthCheckups
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: healthCheckupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: qcAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: qcById
+          orderByExpression: UuidOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: hawthornHealthCheckup
+        - relationshipName: identityUser
+        - relationshipName: hawthornQcStatus
+  graphql:
+    expressionTypeName: HawthornQcHealthCheckupsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornQcHealthCheckups
+  objectType: HawthornQcHealthCheckups
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_qc_health_checkups
+  filterExpressionType: HawthornQcHealthCheckupsBoolExp
+  aggregateExpression: HawthornQcHealthCheckupsAggExp
+  orderByExpression: HawthornQcHealthCheckupsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornQcHealthCheckups
+      subscription:
+        rootField: hawthornQcHealthCheckups
+    selectUniques:
+      - queryRootField: hawthornQcHealthCheckupsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hawthornQcHealthCheckupsById
+    filterInputTypeName: HawthornQcHealthCheckupsFilterInput
+    aggregate:
+      queryRootField: hawthornQcHealthCheckupsAggregate
+      subscription:
+        rootField: hawthornQcHealthCheckupsAggregate
+  description: Kết quả QC của health checkup
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornQcHealthCheckups
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornQcHealthCheckupDetails
+  sourceType: HawthornQcHealthCheckups
+  target:
+    model:
+      name: HawthornQcHealthCheckupDetails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornQcHealthCheckupDetailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: qcHealthCheckupId
+  graphql:
+    aggregateFieldName: hawthornQcHealthCheckupDetailsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornHealthCheckup
+  sourceType: HawthornQcHealthCheckups
+  target:
+    model:
+      name: HawthornHealthCheckups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: healthCheckupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: HawthornQcHealthCheckups
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: qcById
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornQcStatus
+  sourceType: HawthornQcHealthCheckups
+  target:
+    model:
+      name: HawthornQcStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+

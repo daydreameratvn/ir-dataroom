@@ -1,0 +1,209 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MetricClicks
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: feature
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: input
+      type: String_1
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: MetricClicks
+    inputTypeName: MetricClicksInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: metric_clicks
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        feature:
+          column:
+            name: feature
+        id:
+          column:
+            name: id
+        input:
+          column:
+            name: input
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MetricClicks
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - feature
+          - id
+          - input
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MetricClicksBoolExp
+  operand:
+    object:
+      type: MetricClicks
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: feature
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: input
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: metricFeature
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MetricClicksBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MetricClicksAggExp
+  operand:
+    object:
+      aggregatedType: MetricClicks
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: feature
+          aggregateExpression: VarcharAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: input
+          aggregateExpression: VarcharAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MetricClicksAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MetricClicksOrderByExp
+  operand:
+    object:
+      orderedType: MetricClicks
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: feature
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: input
+          orderByExpression: String1OrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: metricFeature
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: MetricClicksOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MetricClicks
+  objectType: MetricClicks
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: metric_clicks
+  filterExpressionType: MetricClicksBoolExp
+  aggregateExpression: MetricClicksAggExp
+  orderByExpression: MetricClicksOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: metricClicks
+      subscription:
+        rootField: metricClicks
+    selectUniques:
+      - queryRootField: metricClicksById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: metricClicksById
+    filterInputTypeName: MetricClicksFilterInput
+    aggregate:
+      queryRootField: metricClicksAggregate
+      subscription:
+        rootField: metricClicksAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MetricClicks
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: metricFeature
+  sourceType: MetricClicks
+  target:
+    model:
+      name: MetricFeatures
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: feature
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: MetricClicks
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

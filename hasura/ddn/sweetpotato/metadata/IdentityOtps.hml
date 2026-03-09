@@ -1,0 +1,306 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityOtps
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: expiresAt
+      type: Timestamptz!
+    - name: otp
+      type: String_1!
+    - name: otpId
+      type: Uuid!
+    - name: recipient
+      type: String_1!
+    - name: tenantId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+    - name: used
+      type: Boolean_1!
+    - name: uses
+      type: Int32!
+  graphql:
+    typeName: IdentityOtps
+    inputTypeName: IdentityOtpsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_otps
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        expiresAt:
+          column:
+            name: expires_at
+        otp:
+          column:
+            name: otp
+        otpId:
+          column:
+            name: otp_id
+        recipient:
+          column:
+            name: recipient
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        used:
+          column:
+            name: used
+        uses:
+          column:
+            name: uses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityOtps
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - expiresAt
+          - otp
+          - otpId
+          - recipient
+          - tenantId
+          - updatedAt
+          - used
+          - uses
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityOtpsBoolExp
+  operand:
+    object:
+      type: IdentityOtps
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: expiresAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: otp
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: otpId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: recipient
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: used
+          booleanExpressionType: BoolBoolExp
+        - fieldName: uses
+          booleanExpressionType: Int4BoolExp
+      comparableRelationships:
+        - relationshipName: claimCasesOtps
+        - relationshipName: hazelnutInsuranceRequests
+        - relationshipName: tenant
+        - relationshipName: identityUserCredentials
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityOtpsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityOtpsAggExp
+  operand:
+    object:
+      aggregatedType: IdentityOtps
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: expiresAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: otp
+          aggregateExpression: VarcharAggExp
+        - fieldName: otpId
+          aggregateExpression: UuidAggExp
+        - fieldName: recipient
+          aggregateExpression: VarcharAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: used
+          aggregateExpression: BoolAggExp
+        - fieldName: uses
+          aggregateExpression: Int4AggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityOtpsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityOtpsOrderByExp
+  operand:
+    object:
+      orderedType: IdentityOtps
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: expiresAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: otp
+          orderByExpression: String1OrderByExp
+        - fieldName: otpId
+          orderByExpression: UuidOrderByExp
+        - fieldName: recipient
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: used
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: uses
+          orderByExpression: Int32OrderByExp
+      orderableRelationships:
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: IdentityOtpsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityOtps
+  objectType: IdentityOtps
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_otps
+  filterExpressionType: IdentityOtpsBoolExp
+  aggregateExpression: IdentityOtpsAggExp
+  orderByExpression: IdentityOtpsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityOtps
+      subscription:
+        rootField: identityOtps
+    selectUniques:
+      - queryRootField: identityOtpsByOtpId
+        uniqueIdentifier:
+          - otpId
+        subscription:
+          rootField: identityOtpsByOtpId
+    filterInputTypeName: IdentityOtpsFilterInput
+    aggregate:
+      queryRootField: identityOtpsAggregate
+      subscription:
+        rootField: identityOtpsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityOtps
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCasesOtps
+  sourceType: IdentityOtps
+  target:
+    model:
+      name: ClaimCasesOtps
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCasesOtpsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: otpId
+      target:
+        modelField:
+          - fieldName: otpId
+  graphql:
+    aggregateFieldName: claimCasesOtpsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequests
+  sourceType: IdentityOtps
+  target:
+    model:
+      name: HazelnutInsuranceRequests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceRequestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: otpId
+      target:
+        modelField:
+          - fieldName: requesterOtpId
+  graphql:
+    aggregateFieldName: hazelnutInsuranceRequestsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: IdentityOtps
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserCredentials
+  sourceType: IdentityOtps
+  target:
+    model:
+      name: IdentityUserCredentials
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityUserCredentialsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: otpId
+      target:
+        modelField:
+          - fieldName: otpId
+  graphql:
+    aggregateFieldName: identityUserCredentialsAggregate
+

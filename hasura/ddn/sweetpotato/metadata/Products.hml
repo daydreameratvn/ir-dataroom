@@ -1,0 +1,269 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Products
+  fields:
+    - name: code
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: insurerId
+      type: Uuid!
+    - name: name
+      type: String_1!
+  graphql:
+    typeName: Products_1
+    inputTypeName: ProductsInput_1
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: products
+      fieldMapping:
+        code:
+          column:
+            name: code
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        name:
+          column:
+            name: name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Products
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - id
+          - insurerId
+          - name
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProductsBoolExp
+  operand:
+    object:
+      type: Products
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: insurerDeclineCodesMappings
+        - relationshipName: insurerPendingCodesMappings
+        - relationshipName: insurerPresentCaseCodesMappings
+        - relationshipName: plans
+        - relationshipName: company
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProductsBoolExp_1
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ProductsAggExp
+  operand:
+    object:
+      aggregatedType: Products
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerId
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ProductsAggExp_1
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ProductsOrderByExp
+  operand:
+    object:
+      orderedType: Products
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: company
+  graphql:
+    expressionTypeName: ProductsOrderByExp_1
+
+---
+kind: Model
+version: v2
+definition:
+  name: Products
+  objectType: Products
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: products
+  filterExpressionType: ProductsBoolExp
+  aggregateExpression: ProductsAggExp
+  orderByExpression: ProductsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: products_1
+      subscription:
+        rootField: products_1
+    selectUniques:
+      - queryRootField: productsById_1
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: productsById_1
+    filterInputTypeName: ProductsFilterInput_1
+    aggregate:
+      queryRootField: productsAggregate_1
+      subscription:
+        rootField: productsAggregate_1
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Products
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insurerDeclineCodesMappings
+  sourceType: Products
+  target:
+    model:
+      name: InsurerDeclineCodesMapping
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsurerDeclineCodesMappingAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: productId
+  graphql:
+    aggregateFieldName: insurerDeclineCodesMappingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insurerPendingCodesMappings
+  sourceType: Products
+  target:
+    model:
+      name: InsurerPendingCodesMapping
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsurerPendingCodesMappingAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: productId
+  graphql:
+    aggregateFieldName: insurerPendingCodesMappingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insurerPresentCaseCodesMappings
+  sourceType: Products
+  target:
+    model:
+      name: InsurerPresentCaseCodesMapping
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsurerPresentCaseCodesMappingAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: productId
+  graphql:
+    aggregateFieldName: insurerPresentCaseCodesMappingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plans
+  sourceType: Products
+  target:
+    model:
+      name: Plans
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlansAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: productId
+  graphql:
+    aggregateFieldName: plansAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: Products
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insurerId
+      target:
+        modelField:
+          - fieldName: companyId
+

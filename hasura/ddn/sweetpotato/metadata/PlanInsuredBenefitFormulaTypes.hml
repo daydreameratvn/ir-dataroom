@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanInsuredBenefitFormulaTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PlanInsuredBenefitFormulaTypes
+    inputTypeName: PlanInsuredBenefitFormulaTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_insured_benefit_formula_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanInsuredBenefitFormulaTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanInsuredBenefitFormulaTypesBoolExp
+  operand:
+    object:
+      type: PlanInsuredBenefitFormulaTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: planInsuredBenefits
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanInsuredBenefitFormulaTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanInsuredBenefitFormulaTypesAggExp
+  operand:
+    object:
+      aggregatedType: PlanInsuredBenefitFormulaTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanInsuredBenefitFormulaTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanInsuredBenefitFormulaTypesOrderByExp
+  operand:
+    object:
+      orderedType: PlanInsuredBenefitFormulaTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PlanInsuredBenefitFormulaTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanInsuredBenefitFormulaTypes
+  objectType: PlanInsuredBenefitFormulaTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_insured_benefit_formula_types
+  filterExpressionType: PlanInsuredBenefitFormulaTypesBoolExp
+  aggregateExpression: PlanInsuredBenefitFormulaTypesAggExp
+  orderByExpression: PlanInsuredBenefitFormulaTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planInsuredBenefitFormulaTypes
+      subscription:
+        rootField: planInsuredBenefitFormulaTypes
+    selectUniques:
+      - queryRootField: planInsuredBenefitFormulaTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: planInsuredBenefitFormulaTypesByValue
+    filterInputTypeName: PlanInsuredBenefitFormulaTypesFilterInput
+    aggregate:
+      queryRootField: planInsuredBenefitFormulaTypesAggregate
+      subscription:
+        rootField: planInsuredBenefitFormulaTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanInsuredBenefitFormulaTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planInsuredBenefits
+  sourceType: PlanInsuredBenefitFormulaTypes
+  target:
+    model:
+      name: PlanInsuredBenefits
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanInsuredBenefitsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: formulaType
+  graphql:
+    aggregateFieldName: planInsuredBenefitsAggregate
+

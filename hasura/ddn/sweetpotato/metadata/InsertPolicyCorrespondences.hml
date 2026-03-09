@@ -1,0 +1,162 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyCorrespondencesObject
+  fields:
+    - name: autoSend
+      type: Boolean_1
+    - name: conditions
+      type: Json
+    - name: correspondenceTemplateId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: policyId
+      type: Uuid!
+    - name: sendWhen
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertPolicyCorrespondencesObject
+    inputTypeName: InsertPolicyCorrespondencesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_correspondences_object
+      fieldMapping:
+        autoSend:
+          column:
+            name: auto_send
+        conditions:
+          column:
+            name: conditions
+        correspondenceTemplateId:
+          column:
+            name: correspondence_template_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        sendWhen:
+          column:
+            name: send_when
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyCorrespondencesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoSend
+          - conditions
+          - correspondenceTemplateId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - policyId
+          - sendWhen
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyCorrespondencesResponse
+  description: Responses from the 'insert_policy_correspondences' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyCorrespondences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyCorrespondencesResponse
+    inputTypeName: InsertPolicyCorrespondencesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_correspondences_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyCorrespondencesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyCorrespondences
+  outputType: InsertPolicyCorrespondencesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyCorrespondencesObject!]!"
+    - name: postCheck
+      type: PolicyCorrespondencesBoolExp
+      description: Insert permission predicate over the 'policy_correspondences' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_correspondences
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyCorrespondences
+    rootFieldKind: Mutation
+  description: Insert into the policy_correspondences table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyCorrespondences
+  permissions:
+    - role: admin
+      allowExecution: true
+

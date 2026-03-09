@@ -1,0 +1,223 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutInsuranceRequestsObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: decisionReason
+      type: String_1
+    - name: deletedAt
+      type: Timestamptz
+    - name: discountCriteriaId
+      type: Uuid
+    - name: documentId
+      type: Uuid
+    - name: dueAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insurerDiscountPercent
+      type: Bigdecimal
+    - name: internalDiscountPercent
+      type: Bigdecimal
+    - name: isApproved
+      type: Boolean_1
+    - name: issuedAt
+      type: Timestamptz
+    - name: paidAt
+      type: Timestamptz
+    - name: policyId
+      type: Uuid
+    - name: requesterId
+      type: Uuid!
+    - name: requesterOtpId
+      type: Uuid
+    - name: status
+      type: String_1!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertHazelnutInsuranceRequestsObject
+    inputTypeName: InsertHazelnutInsuranceRequestsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_insurance_requests_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        decisionReason:
+          column:
+            name: decision_reason
+        deletedAt:
+          column:
+            name: deleted_at
+        discountCriteriaId:
+          column:
+            name: discount_criteria_id
+        documentId:
+          column:
+            name: document_id
+        dueAt:
+          column:
+            name: due_at
+        id:
+          column:
+            name: id
+        insurerDiscountPercent:
+          column:
+            name: insurer_discount_percent
+        internalDiscountPercent:
+          column:
+            name: internal_discount_percent
+        isApproved:
+          column:
+            name: is_approved
+        issuedAt:
+          column:
+            name: issued_at
+        paidAt:
+          column:
+            name: paid_at
+        policyId:
+          column:
+            name: policy_id
+        requesterId:
+          column:
+            name: requester_id
+        requesterOtpId:
+          column:
+            name: requester_otp_id
+        status:
+          column:
+            name: status
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutInsuranceRequestsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - createdBy
+          - decisionReason
+          - deletedAt
+          - discountCriteriaId
+          - documentId
+          - dueAt
+          - id
+          - insurerDiscountPercent
+          - internalDiscountPercent
+          - isApproved
+          - issuedAt
+          - paidAt
+          - policyId
+          - requesterId
+          - requesterOtpId
+          - status
+          - type
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutInsuranceRequestsResponse
+  description: Responses from the 'insert_hazelnut_insurance_requests' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutInsuranceRequests!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHazelnutInsuranceRequestsResponse
+    inputTypeName: InsertHazelnutInsuranceRequestsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_insurance_requests_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutInsuranceRequestsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHazelnutInsuranceRequests
+  outputType: InsertHazelnutInsuranceRequestsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHazelnutInsuranceRequestsObject!]!"
+    - name: postCheck
+      type: HazelnutInsuranceRequestsBoolExp
+      description: Insert permission predicate over the 'hazelnut_insurance_requests'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hazelnut_insurance_requests
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHazelnutInsuranceRequests
+    rootFieldKind: Mutation
+  description: Insert into the hazelnut_insurance_requests table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHazelnutInsuranceRequests
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePlanRemarksByIdResponse
+  description: Responses from the 'delete_plan_remarks_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanRemarks!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePlanRemarksByIdResponse
+    inputTypeName: DeletePlanRemarksByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_plan_remarks_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePlanRemarksByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePlanRemarksById
+  outputType: DeletePlanRemarksByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: PlanRemarksBoolExp
+      description: Delete permission predicate over the 'plan_remarks' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_plan_remarks_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePlanRemarksById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'plan_remarks' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePlanRemarksById
+  permissions:
+    - role: admin
+      allowExecution: true
+

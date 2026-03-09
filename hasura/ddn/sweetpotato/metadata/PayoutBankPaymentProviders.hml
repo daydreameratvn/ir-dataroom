@@ -1,0 +1,230 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutBankPaymentProviders
+  fields:
+    - name: bankId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: flexBankCode
+      type: String_1
+    - name: flexBankName
+      type: String_1
+    - name: flexFastTransferSupported
+      type: Boolean_1
+    - name: id
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: xenditBankCode
+      type: String_1
+  graphql:
+    typeName: PayoutBankPaymentProviders
+    inputTypeName: PayoutBankPaymentProvidersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_bank_payment_providers
+      fieldMapping:
+        bankId:
+          column:
+            name: bank_id
+        createdAt:
+          column:
+            name: created_at
+        flexBankCode:
+          column:
+            name: flex_bank_code
+        flexBankName:
+          column:
+            name: flex_bank_name
+        flexFastTransferSupported:
+          column:
+            name: flex_fast_transfer_supported
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+        xenditBankCode:
+          column:
+            name: xendit_bank_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutBankPaymentProviders
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankId
+          - createdAt
+          - flexBankCode
+          - flexBankName
+          - flexFastTransferSupported
+          - id
+          - updatedAt
+          - xenditBankCode
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutBankPaymentProvidersBoolExp
+  operand:
+    object:
+      type: PayoutBankPaymentProviders
+      comparableFields:
+        - fieldName: bankId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: flexBankCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: flexBankName
+          booleanExpressionType: TextBoolExp
+        - fieldName: flexFastTransferSupported
+          booleanExpressionType: BoolBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: xenditBankCode
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: bank
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutBankPaymentProvidersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutBankPaymentProvidersAggExp
+  operand:
+    object:
+      aggregatedType: PayoutBankPaymentProviders
+      aggregatableFields:
+        - fieldName: bankId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: flexBankCode
+          aggregateExpression: TextAggExp
+        - fieldName: flexBankName
+          aggregateExpression: TextAggExp
+        - fieldName: flexFastTransferSupported
+          aggregateExpression: BoolAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: xenditBankCode
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutBankPaymentProvidersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutBankPaymentProvidersOrderByExp
+  operand:
+    object:
+      orderedType: PayoutBankPaymentProviders
+      orderableFields:
+        - fieldName: bankId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: flexBankCode
+          orderByExpression: String1OrderByExp
+        - fieldName: flexBankName
+          orderByExpression: String1OrderByExp
+        - fieldName: flexFastTransferSupported
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: xenditBankCode
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: bank
+  graphql:
+    expressionTypeName: PayoutBankPaymentProvidersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutBankPaymentProviders
+  objectType: PayoutBankPaymentProviders
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_bank_payment_providers
+  filterExpressionType: PayoutBankPaymentProvidersBoolExp
+  aggregateExpression: PayoutBankPaymentProvidersAggExp
+  orderByExpression: PayoutBankPaymentProvidersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutBankPaymentProviders
+      subscription:
+        rootField: payoutBankPaymentProviders
+    selectUniques:
+      - queryRootField: payoutBankPaymentProvidersByBankId
+        uniqueIdentifier:
+          - bankId
+        subscription:
+          rootField: payoutBankPaymentProvidersByBankId
+      - queryRootField: payoutBankPaymentProvidersById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: payoutBankPaymentProvidersById
+    filterInputTypeName: PayoutBankPaymentProvidersFilterInput
+    aggregate:
+      queryRootField: payoutBankPaymentProvidersAggregate
+      subscription:
+        rootField: payoutBankPaymentProvidersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutBankPaymentProviders
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bank
+  sourceType: PayoutBankPaymentProviders
+  target:
+    model:
+      name: Banks
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bankId
+      target:
+        modelField:
+          - fieldName: id
+

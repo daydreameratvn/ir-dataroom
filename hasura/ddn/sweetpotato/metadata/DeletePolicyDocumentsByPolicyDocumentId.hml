@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicyDocumentsByPolicyDocumentIdResponse
+  description: Responses from the 'delete_policy_documents_by_policy_document_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyDocuments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicyDocumentsByPolicyDocumentIdResponse
+    inputTypeName: DeletePolicyDocumentsByPolicyDocumentIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_documents_by_policy_document_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicyDocumentsByPolicyDocumentIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicyDocumentsByPolicyDocumentId
+  outputType: DeletePolicyDocumentsByPolicyDocumentIdResponse!
+  arguments:
+    - name: keyPolicyDocumentId
+      type: Uuid!
+    - name: preCheck
+      type: PolicyDocumentsBoolExp
+      description: Delete permission predicate over the 'policy_documents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_documents_by_policy_document_id
+    argumentMapping:
+      keyPolicyDocumentId: key_policy_document_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicyDocumentsByPolicyDocumentId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_documents' collection using the
+    'policy_document_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicyDocumentsByPolicyDocumentId
+  permissions:
+    - role: admin
+      allowExecution: true
+

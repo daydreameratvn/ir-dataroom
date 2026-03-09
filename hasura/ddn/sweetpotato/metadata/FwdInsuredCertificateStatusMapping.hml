@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdInsuredCertificateStatusMapping
+  fields:
+    - name: insuredCertificateStatusCode
+      type: String_1!
+    - name: policyStatusCode
+      type: String_1!
+  graphql:
+    typeName: FwdInsuredCertificateStatusMapping
+    inputTypeName: FwdInsuredCertificateStatusMappingInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_insured_certificate_status_mapping
+      fieldMapping:
+        insuredCertificateStatusCode:
+          column:
+            name: insured_certificate_status_code
+        policyStatusCode:
+          column:
+            name: policy_status_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdInsuredCertificateStatusMapping
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - insuredCertificateStatusCode
+          - policyStatusCode
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdInsuredCertificateStatusMappingBoolExp
+  operand:
+    object:
+      type: FwdInsuredCertificateStatusMapping
+      comparableFields:
+        - fieldName: insuredCertificateStatusCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: policyStatusCode
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: insuredCertificateStatus
+        - relationshipName: fwdPolicyStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdInsuredCertificateStatusMappingBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdInsuredCertificateStatusMappingAggExp
+  operand:
+    object:
+      aggregatedType: FwdInsuredCertificateStatusMapping
+      aggregatableFields:
+        - fieldName: insuredCertificateStatusCode
+          aggregateExpression: TextAggExp
+        - fieldName: policyStatusCode
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdInsuredCertificateStatusMappingAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdInsuredCertificateStatusMappingOrderByExp
+  operand:
+    object:
+      orderedType: FwdInsuredCertificateStatusMapping
+      orderableFields:
+        - fieldName: insuredCertificateStatusCode
+          orderByExpression: String1OrderByExp
+        - fieldName: policyStatusCode
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: insuredCertificateStatus
+        - relationshipName: fwdPolicyStatus
+  graphql:
+    expressionTypeName: FwdInsuredCertificateStatusMappingOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdInsuredCertificateStatusMapping
+  objectType: FwdInsuredCertificateStatusMapping
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_insured_certificate_status_mapping
+  filterExpressionType: FwdInsuredCertificateStatusMappingBoolExp
+  aggregateExpression: FwdInsuredCertificateStatusMappingAggExp
+  orderByExpression: FwdInsuredCertificateStatusMappingOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdInsuredCertificateStatusMapping
+      subscription:
+        rootField: fwdInsuredCertificateStatusMapping
+    selectUniques:
+      - queryRootField: fwdInsuredCertificateStatusMappingByInsuredCertificateStatusMappingPkey
+        uniqueIdentifier:
+          - insuredCertificateStatusCode
+          - policyStatusCode
+        subscription:
+          rootField: fwdInsuredCertificateStatusMappingByInsuredCertificateStatusMappingPkey
+    filterInputTypeName: FwdInsuredCertificateStatusMappingFilterInput
+    aggregate:
+      queryRootField: fwdInsuredCertificateStatusMappingAggregate
+      subscription:
+        rootField: fwdInsuredCertificateStatusMappingAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdInsuredCertificateStatusMapping
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateStatus
+  sourceType: FwdInsuredCertificateStatusMapping
+  target:
+    model:
+      name: InsuredCertificateStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredCertificateStatusCode
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdPolicyStatus
+  sourceType: FwdInsuredCertificateStatusMapping
+  target:
+    model:
+      name: FwdPolicyStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyStatusCode
+      target:
+        modelField:
+          - fieldName: value
+

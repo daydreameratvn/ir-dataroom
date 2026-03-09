@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdSyncDirectionsComment
+  description: Update the 'comment' column in the 'fwd_sync_directions' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdSyncDirectionsComment
+    inputTypeName: UpdateColumnFwdSyncDirectionsCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_sync_directions_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdSyncDirectionsComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdSyncDirectionsValue
+  description: Update the 'value' column in the 'fwd_sync_directions' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdSyncDirectionsValue
+    inputTypeName: UpdateColumnFwdSyncDirectionsValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_sync_directions_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdSyncDirectionsValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdSyncDirectionsByValueUpdateColumns
+  description: Update the columns of the 'fwd_sync_directions' collection
+  fields:
+    - name: comment
+      type: UpdateColumnFwdSyncDirectionsComment
+      description: Update the 'comment' column in the 'fwd_sync_directions' collection.
+    - name: value
+      type: UpdateColumnFwdSyncDirectionsValue
+      description: Update the 'value' column in the 'fwd_sync_directions' collection.
+  graphql:
+    typeName: UpdateFwdSyncDirectionsByValueUpdateColumns
+    inputTypeName: UpdateFwdSyncDirectionsByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_sync_directions_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdSyncDirectionsByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdSyncDirectionsByValueResponse
+  description: Responses from the 'update_fwd_sync_directions_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdSyncDirections!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateFwdSyncDirectionsByValueResponse
+    inputTypeName: UpdateFwdSyncDirectionsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_sync_directions_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdSyncDirectionsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateFwdSyncDirectionsByValue
+  outputType: UpdateFwdSyncDirectionsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: FwdSyncDirectionsBoolExp
+      description: Update permission post-condition predicate over the
+        'fwd_sync_directions' collection
+    - name: preCheck
+      type: FwdSyncDirectionsBoolExp
+      description: Update permission pre-condition predicate over the
+        'fwd_sync_directions' collection
+    - name: updateColumns
+      type: UpdateFwdSyncDirectionsByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_fwd_sync_directions_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateFwdSyncDirectionsByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'fwd_sync_directions' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateFwdSyncDirectionsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

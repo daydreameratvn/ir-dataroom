@@ -1,0 +1,247 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertStpClaimCaseStpExecutionsObject
+  fields:
+    - name: assessmentQcAt
+      type: Timestamptz
+    - name: assessmentQcNote
+      type: String_1
+    - name: assessmentQcResult
+      type: Boolean_1
+    - name: claimCaseId
+      type: Uuid!
+    - name: continuationToken
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: endedAt
+      type: Timestamptz
+    - name: executionArn
+      type: String_1
+    - name: executionHistory
+      type: Json
+    - name: id
+      type: Uuid
+    - name: initializationArn
+      type: String_1
+    - name: isSuccess
+      type: Boolean_1
+    - name: lockCode
+      type: String_1
+    - name: ocrQcAt
+      type: Timestamptz
+    - name: ocrQcResult
+      type: Boolean_1
+    - name: shouldStopStp
+      type: Boolean_1
+    - name: startedAt
+      type: Timestamptz
+    - name: stateMachineArn
+      type: String_1
+    - name: stateMachineDefinition
+      type: Json
+    - name: stateMachineEndStatus
+      type: String_1
+    - name: stateMachineVersion
+      type: String_1
+    - name: stopStpNote
+      type: String_1
+    - name: taskToken
+      type: Json
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertStpClaimCaseStpExecutionsObject
+    inputTypeName: InsertStpClaimCaseStpExecutionsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_stp_claim_case_stp_executions_object
+      fieldMapping:
+        assessmentQcAt:
+          column:
+            name: assessment_qc_at
+        assessmentQcNote:
+          column:
+            name: assessment_qc_note
+        assessmentQcResult:
+          column:
+            name: assessment_qc_result
+        claimCaseId:
+          column:
+            name: claim_case_id
+        continuationToken:
+          column:
+            name: continuation_token
+        createdAt:
+          column:
+            name: created_at
+        endedAt:
+          column:
+            name: ended_at
+        executionArn:
+          column:
+            name: execution_arn
+        executionHistory:
+          column:
+            name: execution_history
+        id:
+          column:
+            name: id
+        initializationArn:
+          column:
+            name: initialization_arn
+        isSuccess:
+          column:
+            name: is_success
+        lockCode:
+          column:
+            name: lock_code
+        ocrQcAt:
+          column:
+            name: ocr_qc_at
+        ocrQcResult:
+          column:
+            name: ocr_qc_result
+        shouldStopStp:
+          column:
+            name: should_stop_stp
+        startedAt:
+          column:
+            name: started_at
+        stateMachineArn:
+          column:
+            name: state_machine_arn
+        stateMachineDefinition:
+          column:
+            name: state_machine_definition
+        stateMachineEndStatus:
+          column:
+            name: state_machine_end_status
+        stateMachineVersion:
+          column:
+            name: state_machine_version
+        stopStpNote:
+          column:
+            name: stop_stp_note
+        taskToken:
+          column:
+            name: task_token
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertStpClaimCaseStpExecutionsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - assessmentQcAt
+          - assessmentQcNote
+          - assessmentQcResult
+          - claimCaseId
+          - continuationToken
+          - createdAt
+          - endedAt
+          - executionArn
+          - executionHistory
+          - id
+          - initializationArn
+          - isSuccess
+          - lockCode
+          - ocrQcAt
+          - ocrQcResult
+          - shouldStopStp
+          - startedAt
+          - stateMachineArn
+          - stateMachineDefinition
+          - stateMachineEndStatus
+          - stateMachineVersion
+          - stopStpNote
+          - taskToken
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertStpClaimCaseStpExecutionsResponse
+  description: Responses from the 'insert_stp_claim_case_stp_executions' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpClaimCaseStpExecutions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertStpClaimCaseStpExecutionsResponse
+    inputTypeName: InsertStpClaimCaseStpExecutionsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_stp_claim_case_stp_executions_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertStpClaimCaseStpExecutionsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertStpClaimCaseStpExecutions
+  outputType: InsertStpClaimCaseStpExecutionsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertStpClaimCaseStpExecutionsObject!]!"
+    - name: postCheck
+      type: StpClaimCaseStpExecutionsBoolExp
+      description: Insert permission predicate over the
+        'stp_claim_case_stp_executions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_stp_claim_case_stp_executions
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertStpClaimCaseStpExecutions
+    rootFieldKind: Mutation
+  description: Insert into the stp_claim_case_stp_executions table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertStpClaimCaseStpExecutions
+  permissions:
+    - role: admin
+      allowExecution: true
+

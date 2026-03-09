@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsurerPendingCodesMappingByIdResponse
+  description: Responses from the 'delete_insurer_pending_codes_mapping_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsurerPendingCodesMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsurerPendingCodesMappingByIdResponse
+    inputTypeName: DeleteInsurerPendingCodesMappingByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insurer_pending_codes_mapping_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsurerPendingCodesMappingByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsurerPendingCodesMappingById
+  outputType: DeleteInsurerPendingCodesMappingByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: InsurerPendingCodesMappingBoolExp
+      description: Delete permission predicate over the
+        'insurer_pending_codes_mapping' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insurer_pending_codes_mapping_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsurerPendingCodesMappingById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insurer_pending_codes_mapping' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsurerPendingCodesMappingById
+  permissions:
+    - role: admin
+      allowExecution: true
+

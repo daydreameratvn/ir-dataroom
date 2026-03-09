@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseQaObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: isPassed
+      type: Boolean_1
+    - name: qaById
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertClaimCaseQaObject
+    inputTypeName: InsertClaimCaseQaObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_qa_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        isPassed:
+          column:
+            name: is_passed
+        qaById:
+          column:
+            name: qa_by_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseQaObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - isPassed
+          - qaById
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseQaResponse
+  description: Responses from the 'insert_claim_case_qa' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseQa!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCaseQaResponse
+    inputTypeName: InsertClaimCaseQaResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_qa_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseQaResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCaseQa
+  outputType: InsertClaimCaseQaResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCaseQaObject!]!"
+    - name: postCheck
+      type: ClaimCaseQaBoolExp
+      description: Insert permission predicate over the 'claim_case_qa' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_case_qa
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCaseQa
+    rootFieldKind: Mutation
+  description: Insert into the claim_case_qa table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCaseQa
+  permissions:
+    - role: admin
+      allowExecution: true
+

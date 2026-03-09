@@ -1,0 +1,244 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OcrQcPolsts
+  description: Qc Bảng Kê
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: hasSurgeryKeywords
+      type: Boolean_1!
+    - name: id
+      type: Uuid!
+    - name: issuedAt
+      type: Timestamptz
+    - name: medicalProviderId
+      type: Uuid
+    - name: paperId
+      type: Uuid!
+    - name: patientName
+      type: String_1
+    - name: totalPaymentAmount
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: OcrQcPolsts
+    inputTypeName: OcrQcPolstsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: ocr_qc_polsts
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        hasSurgeryKeywords:
+          column:
+            name: has_surgery_keywords
+        id:
+          column:
+            name: id
+        issuedAt:
+          column:
+            name: issued_at
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        paperId:
+          column:
+            name: paper_id
+        patientName:
+          column:
+            name: patient_name
+        totalPaymentAmount:
+          column:
+            name: total_payment_amount
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OcrQcPolsts
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - hasSurgeryKeywords
+          - id
+          - issuedAt
+          - medicalProviderId
+          - paperId
+          - patientName
+          - totalPaymentAmount
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OcrQcPolstsBoolExp
+  operand:
+    object:
+      type: OcrQcPolsts
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: hasSurgeryKeywords
+          booleanExpressionType: BoolBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: issuedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paperId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: patientName
+          booleanExpressionType: TextBoolExp
+        - fieldName: totalPaymentAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: ocrPaper
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OcrQcPolstsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OcrQcPolstsAggExp
+  operand:
+    object:
+      aggregatedType: OcrQcPolsts
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: hasSurgeryKeywords
+          aggregateExpression: BoolAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: issuedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: paperId
+          aggregateExpression: UuidAggExp
+        - fieldName: patientName
+          aggregateExpression: TextAggExp
+        - fieldName: totalPaymentAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OcrQcPolstsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OcrQcPolstsOrderByExp
+  operand:
+    object:
+      orderedType: OcrQcPolsts
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: hasSurgeryKeywords
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: issuedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: paperId
+          orderByExpression: UuidOrderByExp
+        - fieldName: patientName
+          orderByExpression: String1OrderByExp
+        - fieldName: totalPaymentAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: ocrPaper
+  graphql:
+    expressionTypeName: OcrQcPolstsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OcrQcPolsts
+  objectType: OcrQcPolsts
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: ocr_qc_polsts
+  filterExpressionType: OcrQcPolstsBoolExp
+  aggregateExpression: OcrQcPolstsAggExp
+  orderByExpression: OcrQcPolstsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: ocrQcPolsts
+      subscription:
+        rootField: ocrQcPolsts
+    selectUniques:
+      - queryRootField: ocrQcPolstsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: ocrQcPolstsById
+      - queryRootField: ocrQcPolstsByPaperId
+        uniqueIdentifier:
+          - paperId
+        subscription:
+          rootField: ocrQcPolstsByPaperId
+    filterInputTypeName: OcrQcPolstsFilterInput
+    aggregate:
+      queryRootField: ocrQcPolstsAggregate
+      subscription:
+        rootField: ocrQcPolstsAggregate
+  description: Qc Bảng Kê
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OcrQcPolsts
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPaper
+  sourceType: OcrQcPolsts
+  target:
+    model:
+      name: OcrPapers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paperId
+      target:
+        modelField:
+          - fieldName: id
+

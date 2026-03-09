@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutPayoutBankAccountActionLogsByIdUpdateColumns
+  description: Update the columns of the 'payout_payout_bank_account_action_logs' collection
+  fields:
+    - name: action
+      type: UpdateColumnPayoutPayoutBankAccountActionLogsAction
+      description: Update the 'action' column in the
+        'payout_payout_bank_account_action_logs' collection.
+    - name: amount
+      type: UpdateColumnPayoutPayoutBankAccountActionLogsAmount
+      description: Update the 'amount' column in the
+        'payout_payout_bank_account_action_logs' collection.
+    - name: createdAt
+      type: UpdateColumnPayoutPayoutBankAccountActionLogsCreatedAt
+      description: Update the 'created_at' column in the
+        'payout_payout_bank_account_action_logs' collection.
+    - name: customData
+      type: UpdateColumnPayoutPayoutBankAccountActionLogsCustomData
+      description: Update the 'custom_data' column in the
+        'payout_payout_bank_account_action_logs' collection.
+    - name: happenedAt
+      type: UpdateColumnPayoutPayoutBankAccountActionLogsHappenedAt
+      description: Update the 'happened_at' column in the
+        'payout_payout_bank_account_action_logs' collection.
+    - name: id
+      type: UpdateColumnPayoutPayoutBankAccountActionLogsId
+      description: Update the 'id' column in the
+        'payout_payout_bank_account_action_logs' collection.
+    - name: payoutBankAccountId
+      type: UpdateColumnPayoutPayoutBankAccountActionLogsPayoutBankAccountId
+      description: Update the 'payout_bank_account_id' column in the
+        'payout_payout_bank_account_action_logs' collection.
+    - name: updatedAt
+      type: UpdateColumnPayoutPayoutBankAccountActionLogsUpdatedAt
+      description: Update the 'updated_at' column in the
+        'payout_payout_bank_account_action_logs' collection.
+  graphql:
+    typeName: UpdatePayoutPayoutBankAccountActionLogsByIdUpdateColumns
+    inputTypeName: UpdatePayoutPayoutBankAccountActionLogsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_payout_bank_account_action_logs_by_id_update_columns
+      fieldMapping:
+        action:
+          column:
+            name: action
+        amount:
+          column:
+            name: amount
+        createdAt:
+          column:
+            name: created_at
+        customData:
+          column:
+            name: custom_data
+        happenedAt:
+          column:
+            name: happened_at
+        id:
+          column:
+            name: id
+        payoutBankAccountId:
+          column:
+            name: payout_bank_account_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutPayoutBankAccountActionLogsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - amount
+          - createdAt
+          - customData
+          - happenedAt
+          - id
+          - payoutBankAccountId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutPayoutBankAccountActionLogsByIdResponse
+  description: Responses from the
+    'update_payout_payout_bank_account_action_logs_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPayoutBankAccountActionLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePayoutPayoutBankAccountActionLogsByIdResponse
+    inputTypeName: UpdatePayoutPayoutBankAccountActionLogsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_payout_bank_account_action_logs_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutPayoutBankAccountActionLogsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePayoutPayoutBankAccountActionLogsById
+  outputType: UpdatePayoutPayoutBankAccountActionLogsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: PayoutPayoutBankAccountActionLogsBoolExp
+      description: Update permission post-condition predicate over the
+        'payout_payout_bank_account_action_logs' collection
+    - name: preCheck
+      type: PayoutPayoutBankAccountActionLogsBoolExp
+      description: Update permission pre-condition predicate over the
+        'payout_payout_bank_account_action_logs' collection
+    - name: updateColumns
+      type: UpdatePayoutPayoutBankAccountActionLogsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_payout_payout_bank_account_action_logs_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePayoutPayoutBankAccountActionLogsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'payout_payout_bank_account_action_logs'
+    collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePayoutPayoutBankAccountActionLogsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

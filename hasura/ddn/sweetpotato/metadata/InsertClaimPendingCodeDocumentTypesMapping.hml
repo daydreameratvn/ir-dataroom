@@ -1,0 +1,116 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimPendingCodeDocumentTypesMappingObject
+  fields:
+    - name: documentType
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: pendingCode
+      type: String_1!
+  graphql:
+    typeName: InsertClaimPendingCodeDocumentTypesMappingObject
+    inputTypeName: InsertClaimPendingCodeDocumentTypesMappingObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_pending_code_document_types_mapping_object
+      fieldMapping:
+        documentType:
+          column:
+            name: document_type
+        id:
+          column:
+            name: id
+        pendingCode:
+          column:
+            name: pending_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimPendingCodeDocumentTypesMappingObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - documentType
+          - id
+          - pendingCode
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimPendingCodeDocumentTypesMappingResponse
+  description: Responses from the
+    'insert_claim_pending_code_document_types_mapping' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimPendingCodeDocumentTypesMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimPendingCodeDocumentTypesMappingResponse
+    inputTypeName: InsertClaimPendingCodeDocumentTypesMappingResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_pending_code_document_types_mapping_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimPendingCodeDocumentTypesMappingResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimPendingCodeDocumentTypesMapping
+  outputType: InsertClaimPendingCodeDocumentTypesMappingResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimPendingCodeDocumentTypesMappingObject!]!"
+    - name: postCheck
+      type: ClaimPendingCodeDocumentTypesMappingBoolExp
+      description: Insert permission predicate over the
+        'claim_pending_code_document_types_mapping' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_pending_code_document_types_mapping
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimPendingCodeDocumentTypesMapping
+    rootFieldKind: Mutation
+  description: Insert into the claim_pending_code_document_types_mapping table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimPendingCodeDocumentTypesMapping
+  permissions:
+    - role: admin
+      allowExecution: true
+

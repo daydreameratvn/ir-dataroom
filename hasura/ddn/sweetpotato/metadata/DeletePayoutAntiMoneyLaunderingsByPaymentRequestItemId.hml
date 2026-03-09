@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutAntiMoneyLaunderingsByPaymentRequestItemIdResponse
+  description: Responses from the
+    'delete_payout_anti_money_launderings_by_payment_request_item_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutAntiMoneyLaunderings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutAntiMoneyLaunderingsByPaymentRequestItemIdResponse
+    inputTypeName: DeletePayoutAntiMoneyLaunderingsByPaymentRequestItemIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_anti_money_launderings_by_payment_request_item_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutAntiMoneyLaunderingsByPaymentRequestItemIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutAntiMoneyLaunderingsByPaymentRequestItemId
+  outputType: DeletePayoutAntiMoneyLaunderingsByPaymentRequestItemIdResponse!
+  arguments:
+    - name: keyPaymentRequestItemId
+      type: Uuid
+    - name: preCheck
+      type: PayoutAntiMoneyLaunderingsBoolExp
+      description: Delete permission predicate over the
+        'payout_anti_money_launderings' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_anti_money_launderings_by_payment_request_item_id
+    argumentMapping:
+      keyPaymentRequestItemId: key_payment_request_item_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutAntiMoneyLaunderingsByPaymentRequestItemId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_anti_money_launderings' collection
+    using the 'payment_request_item_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutAntiMoneyLaunderingsByPaymentRequestItemId
+  permissions:
+    - role: admin
+      allowExecution: true
+

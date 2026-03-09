@@ -1,0 +1,144 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertJetRulesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: enabled
+      type: Boolean_1
+    - name: id
+      type: Uuid
+    - name: jetRuleSetId
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: order
+      type: Int32
+    - name: rule
+      type: Json!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertJetRulesObject
+    inputTypeName: InsertJetRulesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_jet_rules_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        enabled:
+          column:
+            name: enabled
+        id:
+          column:
+            name: id
+        jetRuleSetId:
+          column:
+            name: jet_rule_set_id
+        name:
+          column:
+            name: name
+        order:
+          column:
+            name: order
+        rule:
+          column:
+            name: rule
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertJetRulesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - enabled
+          - id
+          - jetRuleSetId
+          - name
+          - order
+          - rule
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertJetRulesResponse
+  description: Responses from the 'insert_jet_rules' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[JetRules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertJetRulesResponse
+    inputTypeName: InsertJetRulesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_jet_rules_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertJetRulesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertJetRules
+  outputType: InsertJetRulesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertJetRulesObject!]!"
+    - name: postCheck
+      type: JetRulesBoolExp
+      description: Insert permission predicate over the 'jet_rules' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_jet_rules
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertJetRules
+    rootFieldKind: Mutation
+  description: Insert into the jet_rules table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertJetRules
+  permissions:
+    - role: admin
+      allowExecution: true
+

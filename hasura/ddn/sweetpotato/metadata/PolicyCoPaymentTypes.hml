@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyCoPaymentTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PolicyCoPaymentTypes
+    inputTypeName: PolicyCoPaymentTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_co_payment_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyCoPaymentTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyCoPaymentTypesBoolExp
+  operand:
+    object:
+      type: PolicyCoPaymentTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policySettings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyCoPaymentTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyCoPaymentTypesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyCoPaymentTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyCoPaymentTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyCoPaymentTypesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyCoPaymentTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicyCoPaymentTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyCoPaymentTypes
+  objectType: PolicyCoPaymentTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_co_payment_types
+  filterExpressionType: PolicyCoPaymentTypesBoolExp
+  aggregateExpression: PolicyCoPaymentTypesAggExp
+  orderByExpression: PolicyCoPaymentTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyCoPaymentTypes
+      subscription:
+        rootField: policyCoPaymentTypes
+    selectUniques:
+      - queryRootField: policyCoPaymentTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: policyCoPaymentTypesByValue
+    filterInputTypeName: PolicyCoPaymentTypesFilterInput
+    aggregate:
+      queryRootField: policyCoPaymentTypesAggregate
+      subscription:
+        rootField: policyCoPaymentTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyCoPaymentTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policySettings
+  sourceType: PolicyCoPaymentTypes
+  target:
+    model:
+      name: PolicySettings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicySettingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: coPaymentType
+  graphql:
+    aggregateFieldName: policySettingsAggregate
+

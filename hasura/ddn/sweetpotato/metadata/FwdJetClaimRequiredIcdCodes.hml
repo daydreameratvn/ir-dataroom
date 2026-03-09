@@ -1,0 +1,157 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdJetClaimRequiredIcdCodes
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: FwdJetClaimRequiredIcdCodes
+    inputTypeName: FwdJetClaimRequiredIcdCodesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_jet_claim_required_icd_codes
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdJetClaimRequiredIcdCodes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - deletedAt
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdJetClaimRequiredIcdCodesBoolExp
+  operand:
+    object:
+      type: FwdJetClaimRequiredIcdCodes
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdJetClaimRequiredIcdCodesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdJetClaimRequiredIcdCodesAggExp
+  operand:
+    object:
+      aggregatedType: FwdJetClaimRequiredIcdCodes
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdJetClaimRequiredIcdCodesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdJetClaimRequiredIcdCodesOrderByExp
+  operand:
+    object:
+      orderedType: FwdJetClaimRequiredIcdCodes
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: FwdJetClaimRequiredIcdCodesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdJetClaimRequiredIcdCodes
+  objectType: FwdJetClaimRequiredIcdCodes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_jet_claim_required_icd_codes
+  filterExpressionType: FwdJetClaimRequiredIcdCodesBoolExp
+  aggregateExpression: FwdJetClaimRequiredIcdCodesAggExp
+  orderByExpression: FwdJetClaimRequiredIcdCodesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdJetClaimRequiredIcdCodes
+      subscription:
+        rootField: fwdJetClaimRequiredIcdCodes
+    selectUniques:
+      - queryRootField: fwdJetClaimRequiredIcdCodesByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: fwdJetClaimRequiredIcdCodesByCode
+    filterInputTypeName: FwdJetClaimRequiredIcdCodesFilterInput
+    aggregate:
+      queryRootField: fwdJetClaimRequiredIcdCodesAggregate
+      subscription:
+        rootField: fwdJetClaimRequiredIcdCodesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdJetClaimRequiredIcdCodes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

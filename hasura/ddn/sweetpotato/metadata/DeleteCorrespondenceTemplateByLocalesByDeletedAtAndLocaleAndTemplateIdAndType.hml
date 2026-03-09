@@ -1,0 +1,85 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCorrespondenceTemplateByLocalesByDeletedAtAndLocaleAndTemplateIdAndTypeResponse
+  description: Responses from the
+    'delete_correspondence_template_by_locales_by_deleted_at_and_locale_and_template_id_and_type'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceTemplateByLocales!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCorrespondenceTemplateByLocalesByDeletedAtAndLocaleAndTemplateIdAndTypeResponse
+    inputTypeName: DeleteCorrespondenceTemplateByLocalesByDeletedAtAndLocaleAndTemplateIdAndTypeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_correspondence_template_by_locales_by_deleted_at_and_locale_and_template_id_and_type_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCorrespondenceTemplateByLocalesByDeletedAtAndLocaleAndTemplateIdAndTypeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCorrespondenceTemplateByLocalesByDeletedAtAndLocaleAndTemplateIdAndType
+  outputType: DeleteCorrespondenceTemplateByLocalesByDeletedAtAndLocaleAndTemplateIdAndTypeResponse!
+  arguments:
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyLocale
+      type: String_1!
+    - name: keyTemplateId
+      type: Uuid!
+    - name: keyType
+      type: String_1
+    - name: preCheck
+      type: CorrespondenceTemplateByLocalesBoolExp
+      description: Delete permission predicate over the
+        'correspondence_template_by_locales' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_correspondence_template_by_locales_by_deleted_at_and_locale_and_template_id_and_type
+    argumentMapping:
+      keyDeletedAt: key_deleted_at
+      keyLocale: key_locale
+      keyTemplateId: key_template_id
+      keyType: key_type
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCorrespondenceTemplateByLocalesByDeletedAtAndLocaleAndTemplateIdAndType
+    rootFieldKind: Mutation
+  description: Delete any row on the 'correspondence_template_by_locales'
+    collection using the 'deleted_at', 'locale', 'template_id' and 'type' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCorrespondenceTemplateByLocalesByDeletedAtAndLocaleAndTemplateIdAndType
+  permissions:
+    - role: admin
+      allowExecution: true
+

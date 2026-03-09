@@ -1,0 +1,196 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: EnumLocalizations
+  fields:
+    - name: enumTranslation
+      type: String_1
+    - name: enumType
+      type: String_1!
+    - name: enumValue
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: locale
+      type: String_1!
+  graphql:
+    typeName: EnumLocalizations
+    inputTypeName: EnumLocalizationsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: enum_localizations
+      fieldMapping:
+        enumTranslation:
+          column:
+            name: enum_translation
+        enumType:
+          column:
+            name: enum_type
+        enumValue:
+          column:
+            name: enum_value
+        id:
+          column:
+            name: id
+        locale:
+          column:
+            name: locale
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: EnumLocalizations
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - enumTranslation
+          - enumType
+          - enumValue
+          - id
+          - locale
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: EnumLocalizationsBoolExp
+  operand:
+    object:
+      type: EnumLocalizations
+      comparableFields:
+        - fieldName: enumTranslation
+          booleanExpressionType: TextBoolExp
+        - fieldName: enumType
+          booleanExpressionType: TextBoolExp
+        - fieldName: enumValue
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: locale
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: language
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: EnumLocalizationsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: EnumLocalizationsAggExp
+  operand:
+    object:
+      aggregatedType: EnumLocalizations
+      aggregatableFields:
+        - fieldName: enumTranslation
+          aggregateExpression: TextAggExp
+        - fieldName: enumType
+          aggregateExpression: TextAggExp
+        - fieldName: enumValue
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: locale
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: EnumLocalizationsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: EnumLocalizationsOrderByExp
+  operand:
+    object:
+      orderedType: EnumLocalizations
+      orderableFields:
+        - fieldName: enumTranslation
+          orderByExpression: String1OrderByExp
+        - fieldName: enumType
+          orderByExpression: String1OrderByExp
+        - fieldName: enumValue
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: locale
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: language
+  graphql:
+    expressionTypeName: EnumLocalizationsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: EnumLocalizations
+  objectType: EnumLocalizations
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: enum_localizations
+  filterExpressionType: EnumLocalizationsBoolExp
+  aggregateExpression: EnumLocalizationsAggExp
+  orderByExpression: EnumLocalizationsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: enumLocalizations
+      subscription:
+        rootField: enumLocalizations
+    selectUniques:
+      - queryRootField: enumLocalizationsByEnumLocalizationsEnumTypeEnumValueLocaleKey
+        uniqueIdentifier:
+          - enumType
+          - enumValue
+          - locale
+        subscription:
+          rootField: enumLocalizationsByEnumLocalizationsEnumTypeEnumValueLocaleKey
+      - queryRootField: enumLocalizationsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: enumLocalizationsById
+    filterInputTypeName: EnumLocalizationsFilterInput
+    aggregate:
+      queryRootField: enumLocalizationsAggregate
+      subscription:
+        rootField: enumLocalizationsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: EnumLocalizations
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: language
+  sourceType: EnumLocalizations
+  target:
+    model:
+      name: Languages
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: locale
+      target:
+        modelField:
+          - fieldName: value
+

@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteStpClaimCaseStpExecutionsByIdResponse
+  description: Responses from the 'delete_stp_claim_case_stp_executions_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpClaimCaseStpExecutions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteStpClaimCaseStpExecutionsByIdResponse
+    inputTypeName: DeleteStpClaimCaseStpExecutionsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_stp_claim_case_stp_executions_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteStpClaimCaseStpExecutionsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteStpClaimCaseStpExecutionsById
+  outputType: DeleteStpClaimCaseStpExecutionsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: StpClaimCaseStpExecutionsBoolExp
+      description: Delete permission predicate over the
+        'stp_claim_case_stp_executions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_stp_claim_case_stp_executions_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteStpClaimCaseStpExecutionsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'stp_claim_case_stp_executions' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteStpClaimCaseStpExecutionsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

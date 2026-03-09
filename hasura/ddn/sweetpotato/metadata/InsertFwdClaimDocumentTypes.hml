@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdClaimDocumentTypesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertFwdClaimDocumentTypesObject
+    inputTypeName: InsertFwdClaimDocumentTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_claim_document_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdClaimDocumentTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdClaimDocumentTypesResponse
+  description: Responses from the 'insert_fwd_claim_document_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdClaimDocumentTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdClaimDocumentTypesResponse
+    inputTypeName: InsertFwdClaimDocumentTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_claim_document_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdClaimDocumentTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdClaimDocumentTypes
+  outputType: InsertFwdClaimDocumentTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdClaimDocumentTypesObject!]!"
+    - name: postCheck
+      type: FwdClaimDocumentTypesBoolExp
+      description: Insert permission predicate over the 'fwd_claim_document_types'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_claim_document_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdClaimDocumentTypes
+    rootFieldKind: Mutation
+  description: Insert into the fwd_claim_document_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdClaimDocumentTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

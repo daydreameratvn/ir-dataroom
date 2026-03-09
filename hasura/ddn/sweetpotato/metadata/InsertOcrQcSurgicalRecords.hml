@@ -1,0 +1,204 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrQcSurgicalRecordsObject
+  fields:
+    - name: address
+      type: String_1
+    - name: admissionAt
+      type: Timestamptz
+    - name: age
+      type: Bigdecimal
+    - name: anesthesia
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: diagnosis
+      type: String_1
+    - name: dischargeAt
+      type: Timestamptz
+    - name: dob
+      type: Timestamptz
+    - name: hasRubberStamp
+      type: Boolean_1
+    - name: id
+      type: Uuid
+    - name: medicalProviderName
+      type: String_1
+    - name: paperId
+      type: Uuid!
+    - name: patientName
+      type: String_1
+    - name: signedAt
+      type: Timestamptz
+    - name: surgeonName
+      type: String_1
+    - name: surgeryAt
+      type: Timestamptz
+    - name: surgicalMethod
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertOcrQcSurgicalRecordsObject
+    inputTypeName: InsertOcrQcSurgicalRecordsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_qc_surgical_records_object
+      fieldMapping:
+        address:
+          column:
+            name: address
+        admissionAt:
+          column:
+            name: admission_at
+        age:
+          column:
+            name: age
+        anesthesia:
+          column:
+            name: anesthesia
+        createdAt:
+          column:
+            name: created_at
+        diagnosis:
+          column:
+            name: diagnosis
+        dischargeAt:
+          column:
+            name: discharge_at
+        dob:
+          column:
+            name: dob
+        hasRubberStamp:
+          column:
+            name: has_rubber_stamp
+        id:
+          column:
+            name: id
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        paperId:
+          column:
+            name: paper_id
+        patientName:
+          column:
+            name: patient_name
+        signedAt:
+          column:
+            name: signed_at
+        surgeonName:
+          column:
+            name: surgeon_name
+        surgeryAt:
+          column:
+            name: surgery_at
+        surgicalMethod:
+          column:
+            name: surgical_method
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrQcSurgicalRecordsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - address
+          - admissionAt
+          - age
+          - anesthesia
+          - createdAt
+          - diagnosis
+          - dischargeAt
+          - dob
+          - hasRubberStamp
+          - id
+          - medicalProviderName
+          - paperId
+          - patientName
+          - signedAt
+          - surgeonName
+          - surgeryAt
+          - surgicalMethod
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrQcSurgicalRecordsResponse
+  description: Responses from the 'insert_ocr_qc_surgical_records' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrQcSurgicalRecords!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOcrQcSurgicalRecordsResponse
+    inputTypeName: InsertOcrQcSurgicalRecordsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_qc_surgical_records_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrQcSurgicalRecordsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOcrQcSurgicalRecords
+  outputType: InsertOcrQcSurgicalRecordsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOcrQcSurgicalRecordsObject!]!"
+    - name: postCheck
+      type: OcrQcSurgicalRecordsBoolExp
+      description: Insert permission predicate over the 'ocr_qc_surgical_records' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_ocr_qc_surgical_records
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOcrQcSurgicalRecords
+    rootFieldKind: Mutation
+  description: Insert into the ocr_qc_surgical_records table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOcrQcSurgicalRecords
+  permissions:
+    - role: admin
+      allowExecution: true
+

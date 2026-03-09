@@ -1,0 +1,186 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyTermsObject
+  fields:
+    - name: benefitType
+      type: String_1
+    - name: content
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: displayOrder
+      type: Bigdecimal
+    - name: id
+      type: Uuid
+    - name: note
+      type: String_1
+    - name: parentId
+      type: Uuid
+    - name: parentInsurerId
+      type: Uuid
+    - name: planId
+      type: Uuid
+    - name: planIds
+      type: "[Uuid]"
+    - name: policyId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertPolicyTermsObject
+    inputTypeName: InsertPolicyTermsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_terms_object
+      fieldMapping:
+        benefitType:
+          column:
+            name: benefit_type
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        note:
+          column:
+            name: note
+        parentId:
+          column:
+            name: parent_id
+        parentInsurerId:
+          column:
+            name: parent_insurer_id
+        planId:
+          column:
+            name: plan_id
+        planIds:
+          column:
+            name: plan_ids
+        policyId:
+          column:
+            name: policy_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyTermsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - benefitType
+          - content
+          - createdAt
+          - createdBy
+          - deletedAt
+          - displayOrder
+          - id
+          - note
+          - parentId
+          - parentInsurerId
+          - planId
+          - planIds
+          - policyId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyTermsResponse
+  description: Responses from the 'insert_policy_terms' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyTerms!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyTermsResponse
+    inputTypeName: InsertPolicyTermsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_terms_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyTermsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyTerms
+  outputType: InsertPolicyTermsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyTermsObject!]!"
+    - name: postCheck
+      type: PolicyTermsBoolExp
+      description: Insert permission predicate over the 'policy_terms' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_terms
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyTerms
+    rootFieldKind: Mutation
+  description: Insert into the policy_terms table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyTerms
+  permissions:
+    - role: admin
+      allowExecution: true
+

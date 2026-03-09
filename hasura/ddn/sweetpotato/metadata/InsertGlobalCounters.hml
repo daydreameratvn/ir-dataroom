@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertGlobalCountersObject
+  fields:
+    - name: counter
+      type: Int32!
+    - name: type
+      type: String_1!
+  graphql:
+    typeName: InsertGlobalCountersObject
+    inputTypeName: InsertGlobalCountersObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_global_counters_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertGlobalCountersObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - counter
+          - type
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertGlobalCountersResponse
+  description: Responses from the 'insert_global_counters' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[GlobalCounters!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertGlobalCountersResponse
+    inputTypeName: InsertGlobalCountersResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_global_counters_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertGlobalCountersResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertGlobalCounters
+  outputType: InsertGlobalCountersResponse!
+  arguments:
+    - name: objects
+      type: "[InsertGlobalCountersObject!]!"
+    - name: postCheck
+      type: GlobalCountersBoolExp
+      description: Insert permission predicate over the 'global_counters' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_global_counters
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertGlobalCounters
+    rootFieldKind: Mutation
+  description: Insert into the global_counters table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertGlobalCounters
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpMedicalProviderStatusesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertMpMedicalProviderStatusesObject
+    inputTypeName: InsertMpMedicalProviderStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_medical_provider_statuses_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpMedicalProviderStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpMedicalProviderStatusesResponse
+  description: Responses from the 'insert_mp_medical_provider_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMpMedicalProviderStatusesResponse
+    inputTypeName: InsertMpMedicalProviderStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_medical_provider_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpMedicalProviderStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMpMedicalProviderStatuses
+  outputType: InsertMpMedicalProviderStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMpMedicalProviderStatusesObject!]!"
+    - name: postCheck
+      type: MpMedicalProviderStatusesBoolExp
+      description: Insert permission predicate over the 'mp_medical_provider_statuses'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_mp_medical_provider_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMpMedicalProviderStatuses
+    rootFieldKind: Mutation
+  description: Insert into the mp_medical_provider_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMpMedicalProviderStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

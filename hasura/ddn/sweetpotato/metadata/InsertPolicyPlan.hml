@@ -1,0 +1,186 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyPlanObject
+  fields:
+    - name: cardId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: enCardId
+      type: Uuid
+    - name: extraPaymentRatio
+      type: Bigdecimal
+    - name: id
+      type: Uuid
+    - name: insuredBenefitTypes
+      type: "[String_1]"
+    - name: jsonDetails
+      type: Json
+    - name: planCode
+      type: String_1
+    - name: planId
+      type: Uuid!
+    - name: planName
+      type: String_1
+    - name: policyId
+      type: Uuid!
+    - name: premium
+      type: Bigdecimal
+    - name: tenantId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPolicyPlanObject
+    inputTypeName: InsertPolicyPlanObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_plan_object
+      fieldMapping:
+        cardId:
+          column:
+            name: card_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        enCardId:
+          column:
+            name: en_card_id
+        extraPaymentRatio:
+          column:
+            name: extra_payment_ratio
+        id:
+          column:
+            name: id
+        insuredBenefitTypes:
+          column:
+            name: insured_benefit_types
+        jsonDetails:
+          column:
+            name: json_details
+        planCode:
+          column:
+            name: plan_code
+        planId:
+          column:
+            name: plan_id
+        planName:
+          column:
+            name: plan_name
+        policyId:
+          column:
+            name: policy_id
+        premium:
+          column:
+            name: premium
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyPlanObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - cardId
+          - createdAt
+          - deletedAt
+          - enCardId
+          - extraPaymentRatio
+          - id
+          - insuredBenefitTypes
+          - jsonDetails
+          - planCode
+          - planId
+          - planName
+          - policyId
+          - premium
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyPlanResponse
+  description: Responses from the 'insert_policy_plan' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyPlan!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyPlanResponse
+    inputTypeName: InsertPolicyPlanResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_plan_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyPlanResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyPlan
+  outputType: InsertPolicyPlanResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyPlanObject!]!"
+    - name: postCheck
+      type: PolicyPlanBoolExp
+      description: Insert permission predicate over the 'policy_plan' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_plan
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyPlan
+    rootFieldKind: Mutation
+  description: Insert into the policy_plan table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyPlan
+  permissions:
+    - role: admin
+      allowExecution: true
+

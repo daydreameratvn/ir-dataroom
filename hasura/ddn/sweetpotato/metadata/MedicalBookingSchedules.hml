@@ -1,0 +1,337 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MedicalBookingSchedules
+  description: Slot lịch khám
+  fields:
+    - name: contractId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: date
+      type: Date!
+    - name: dayOfWeek
+      type: Int32!
+    - name: deletedAt
+      type: Timestamp
+    - name: fromTime
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: maxSlots
+      type: Int32!
+    - name: timePeriod
+      type: String_1!
+    - name: toTime
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: MedicalBookingSchedules
+    inputTypeName: MedicalBookingSchedulesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: medical_booking_schedules
+      fieldMapping:
+        contractId:
+          column:
+            name: contract_id
+        createdAt:
+          column:
+            name: created_at
+        date:
+          column:
+            name: date
+        dayOfWeek:
+          column:
+            name: day_of_week
+        deletedAt:
+          column:
+            name: deleted_at
+        fromTime:
+          column:
+            name: from_time
+        id:
+          column:
+            name: id
+        maxSlots:
+          column:
+            name: max_slots
+        timePeriod:
+          column:
+            name: time_period
+        toTime:
+          column:
+            name: to_time
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MedicalBookingSchedules
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - contractId
+          - createdAt
+          - date
+          - dayOfWeek
+          - deletedAt
+          - fromTime
+          - id
+          - maxSlots
+          - timePeriod
+          - toTime
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MedicalBookingSchedulesBoolExp
+  operand:
+    object:
+      type: MedicalBookingSchedules
+      comparableFields:
+        - fieldName: contractId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: date
+          booleanExpressionType: DateBoolExp
+        - fieldName: dayOfWeek
+          booleanExpressionType: Int4BoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: fromTime
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: maxSlots
+          booleanExpressionType: Int4BoolExp
+        - fieldName: timePeriod
+          booleanExpressionType: TextBoolExp
+        - fieldName: toTime
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: medicalBookingBookingsSchedules
+        - relationshipName: medicalBookingBookingsSchedulesHistories
+        - relationshipName: medicalBookingContract
+        - relationshipName: medicalBookingScheduleTimePeriod
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MedicalBookingSchedulesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MedicalBookingSchedulesAggExp
+  operand:
+    object:
+      aggregatedType: MedicalBookingSchedules
+      aggregatableFields:
+        - fieldName: contractId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: date
+          aggregateExpression: DateAggExp
+        - fieldName: dayOfWeek
+          aggregateExpression: Int4AggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: fromTime
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: maxSlots
+          aggregateExpression: Int4AggExp
+        - fieldName: timePeriod
+          aggregateExpression: TextAggExp
+        - fieldName: toTime
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MedicalBookingSchedulesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MedicalBookingSchedulesOrderByExp
+  operand:
+    object:
+      orderedType: MedicalBookingSchedules
+      orderableFields:
+        - fieldName: contractId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: date
+          orderByExpression: DateOrderByExp
+        - fieldName: dayOfWeek
+          orderByExpression: Int32OrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestampOrderByExp
+        - fieldName: fromTime
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: maxSlots
+          orderByExpression: Int32OrderByExp
+        - fieldName: timePeriod
+          orderByExpression: String1OrderByExp
+        - fieldName: toTime
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: medicalBookingContract
+        - relationshipName: medicalBookingScheduleTimePeriod
+  graphql:
+    expressionTypeName: MedicalBookingSchedulesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MedicalBookingSchedules
+  objectType: MedicalBookingSchedules
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: medical_booking_schedules
+  filterExpressionType: MedicalBookingSchedulesBoolExp
+  aggregateExpression: MedicalBookingSchedulesAggExp
+  orderByExpression: MedicalBookingSchedulesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: medicalBookingSchedules
+      subscription:
+        rootField: medicalBookingSchedules
+    selectUniques:
+      - queryRootField: medicalBookingSchedulesBySchedulesDateTimePeriodDayOfWeekContractIdKey
+        uniqueIdentifier:
+          - contractId
+          - date
+          - dayOfWeek
+          - timePeriod
+        subscription:
+          rootField: medicalBookingSchedulesBySchedulesDateTimePeriodDayOfWeekContractIdKey
+      - queryRootField: medicalBookingSchedulesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: medicalBookingSchedulesById
+    filterInputTypeName: MedicalBookingSchedulesFilterInput
+    aggregate:
+      queryRootField: medicalBookingSchedulesAggregate
+      subscription:
+        rootField: medicalBookingSchedulesAggregate
+  description: Slot lịch khám
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MedicalBookingSchedules
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingBookingsSchedules
+  sourceType: MedicalBookingSchedules
+  target:
+    model:
+      name: MedicalBookingBookingsSchedules
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingBookingsSchedulesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: scheduleId
+  graphql:
+    aggregateFieldName: medicalBookingBookingsSchedulesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingBookingsSchedulesHistories
+  sourceType: MedicalBookingSchedules
+  target:
+    model:
+      name: MedicalBookingBookingsSchedulesHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingBookingsSchedulesHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: scheduleId
+  graphql:
+    aggregateFieldName: medicalBookingBookingsSchedulesHistoriesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingContract
+  sourceType: MedicalBookingSchedules
+  target:
+    model:
+      name: MedicalBookingContracts
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: contractId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingScheduleTimePeriod
+  sourceType: MedicalBookingSchedules
+  target:
+    model:
+      name: MedicalBookingScheduleTimePeriods
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: timePeriod
+      target:
+        modelField:
+          - fieldName: value
+

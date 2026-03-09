@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CustomSettingSettingNames
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CustomSettingSettingNames
+    inputTypeName: CustomSettingSettingNamesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: custom_setting_setting_names
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CustomSettingSettingNames
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CustomSettingSettingNamesBoolExp
+  operand:
+    object:
+      type: CustomSettingSettingNames
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: customSettingSettings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CustomSettingSettingNamesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CustomSettingSettingNamesAggExp
+  operand:
+    object:
+      aggregatedType: CustomSettingSettingNames
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CustomSettingSettingNamesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CustomSettingSettingNamesOrderByExp
+  operand:
+    object:
+      orderedType: CustomSettingSettingNames
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CustomSettingSettingNamesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CustomSettingSettingNames
+  objectType: CustomSettingSettingNames
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: custom_setting_setting_names
+  filterExpressionType: CustomSettingSettingNamesBoolExp
+  aggregateExpression: CustomSettingSettingNamesAggExp
+  orderByExpression: CustomSettingSettingNamesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: customSettingSettingNames
+      subscription:
+        rootField: customSettingSettingNames
+    selectUniques:
+      - queryRootField: customSettingSettingNamesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: customSettingSettingNamesByValue
+    filterInputTypeName: CustomSettingSettingNamesFilterInput
+    aggregate:
+      queryRootField: customSettingSettingNamesAggregate
+      subscription:
+        rootField: customSettingSettingNamesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CustomSettingSettingNames
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customSettingSettings
+  sourceType: CustomSettingSettingNames
+  target:
+    model:
+      name: CustomSettingSettings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CustomSettingSettingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: name
+  graphql:
+    aggregateFieldName: customSettingSettingsAggregate
+

@@ -1,0 +1,259 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProviderTpa
+  fields:
+    - name: companyId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: medicalProviderId
+      type: Uuid
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: MpMedicalProviderTpa
+    inputTypeName: MpMedicalProviderTpaInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_provider_tpa
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProviderTpa
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - createdAt
+          - deletedAt
+          - id
+          - medicalProviderId
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProviderTpaBoolExp
+  operand:
+    object:
+      type: MpMedicalProviderTpa
+      comparableFields:
+        - fieldName: companyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProvider
+        - relationshipName: tenant
+        - relationshipName: company
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProviderTpaBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProviderTpaAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProviderTpa
+      aggregatableFields:
+        - fieldName: companyId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProviderTpaAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProviderTpaOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProviderTpa
+      orderableFields:
+        - fieldName: companyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: mpMedicalProvider
+        - relationshipName: tenant
+        - relationshipName: company
+  graphql:
+    expressionTypeName: MpMedicalProviderTpaOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProviderTpa
+  objectType: MpMedicalProviderTpa
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_provider_tpa
+  filterExpressionType: MpMedicalProviderTpaBoolExp
+  aggregateExpression: MpMedicalProviderTpaAggExp
+  orderByExpression: MpMedicalProviderTpaOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProviderTpa
+      subscription:
+        rootField: mpMedicalProviderTpa
+    selectUniques:
+      - queryRootField: mpMedicalProviderTpaByMedicalProviderTpaMedicalProviderIdCompanyIdKey
+        uniqueIdentifier:
+          - companyId
+          - medicalProviderId
+        subscription:
+          rootField: mpMedicalProviderTpaByMedicalProviderTpaMedicalProviderIdCompanyIdKey
+      - queryRootField: mpMedicalProviderTpaById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: mpMedicalProviderTpaById
+    filterInputTypeName: MpMedicalProviderTpaFilterInput
+    aggregate:
+      queryRootField: mpMedicalProviderTpaAggregate
+      subscription:
+        rootField: mpMedicalProviderTpaAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProviderTpa
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: MpMedicalProviderTpa
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: MpMedicalProviderTpa
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: MpMedicalProviderTpa
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyId
+      target:
+        modelField:
+          - fieldName: companyId
+

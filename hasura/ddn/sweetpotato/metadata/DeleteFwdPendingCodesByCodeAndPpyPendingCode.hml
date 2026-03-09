@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdPendingCodesByCodeAndPpyPendingCodeResponse
+  description: Responses from the
+    'delete_fwd_pending_codes_by_code_and_ppy_pending_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdPendingCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdPendingCodesByCodeAndPpyPendingCodeResponse
+    inputTypeName: DeleteFwdPendingCodesByCodeAndPpyPendingCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_pending_codes_by_code_and_ppy_pending_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdPendingCodesByCodeAndPpyPendingCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdPendingCodesByCodeAndPpyPendingCode
+  outputType: DeleteFwdPendingCodesByCodeAndPpyPendingCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: keyPpyPendingCode
+      type: String_1!
+    - name: preCheck
+      type: FwdPendingCodesBoolExp
+      description: Delete permission predicate over the 'fwd_pending_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_pending_codes_by_code_and_ppy_pending_code
+    argumentMapping:
+      keyCode: key_code
+      keyPpyPendingCode: key_ppy_pending_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdPendingCodesByCodeAndPpyPendingCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_pending_codes' collection using the
+    'code' and 'ppy_pending_code' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdPendingCodesByCodeAndPpyPendingCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

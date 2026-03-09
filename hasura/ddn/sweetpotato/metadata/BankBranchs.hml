@@ -1,0 +1,331 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: BankBranchs
+  fields:
+    - name: bankId
+      type: Uuid!
+    - name: citadCode
+      type: String_1!
+    - name: cityId
+      type: Int32!
+    - name: createdAt
+      type: Timestamptz!
+    - name: enName
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: isHead
+      type: Boolean_1
+    - name: updatedAt
+      type: Timestamptz!
+    - name: vnName
+      type: String_1!
+  graphql:
+    typeName: BankBranchs
+    inputTypeName: BankBranchsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: bank_branchs
+      fieldMapping:
+        bankId:
+          column:
+            name: bank_id
+        citadCode:
+          column:
+            name: citad_code
+        cityId:
+          column:
+            name: city_id
+        createdAt:
+          column:
+            name: created_at
+        enName:
+          column:
+            name: en_name
+        id:
+          column:
+            name: id
+        isHead:
+          column:
+            name: is_head
+        updatedAt:
+          column:
+            name: updated_at
+        vnName:
+          column:
+            name: vn_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: BankBranchs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankId
+          - citadCode
+          - cityId
+          - createdAt
+          - enName
+          - id
+          - isHead
+          - updatedAt
+          - vnName
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: BankBranchsBoolExp
+  operand:
+    object:
+      type: BankBranchs
+      comparableFields:
+        - fieldName: bankId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: citadCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: cityId
+          booleanExpressionType: Int4BoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: enName
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isHead
+          booleanExpressionType: BoolBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: vnName
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: bank
+        - relationshipName: city
+        - relationshipName: claimCaseBeneficiaries
+        - relationshipName: payoutBeneficiaryBankAccounts
+        - relationshipName: payoutBeneficiaryPapers
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: BankBranchsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: BankBranchsAggExp
+  operand:
+    object:
+      aggregatedType: BankBranchs
+      aggregatableFields:
+        - fieldName: bankId
+          aggregateExpression: UuidAggExp
+        - fieldName: citadCode
+          aggregateExpression: TextAggExp
+        - fieldName: cityId
+          aggregateExpression: Int4AggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: enName
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isHead
+          aggregateExpression: BoolAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: vnName
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: BankBranchsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: BankBranchsOrderByExp
+  operand:
+    object:
+      orderedType: BankBranchs
+      orderableFields:
+        - fieldName: bankId
+          orderByExpression: UuidOrderByExp
+        - fieldName: citadCode
+          orderByExpression: String1OrderByExp
+        - fieldName: cityId
+          orderByExpression: Int32OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: enName
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isHead
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: vnName
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: bank
+        - relationshipName: city
+  graphql:
+    expressionTypeName: BankBranchsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: BankBranchs
+  objectType: BankBranchs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: bank_branchs
+  filterExpressionType: BankBranchsBoolExp
+  aggregateExpression: BankBranchsAggExp
+  orderByExpression: BankBranchsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: bankBranchs
+      subscription:
+        rootField: bankBranchs
+    selectUniques:
+      - queryRootField: bankBranchsByCitadCode
+        uniqueIdentifier:
+          - citadCode
+        subscription:
+          rootField: bankBranchsByCitadCode
+      - queryRootField: bankBranchsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: bankBranchsById
+    filterInputTypeName: BankBranchsFilterInput
+    aggregate:
+      queryRootField: bankBranchsAggregate
+      subscription:
+        rootField: bankBranchsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: BankBranchs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bank
+  sourceType: BankBranchs
+  target:
+    model:
+      name: Banks
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bankId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: city
+  sourceType: BankBranchs
+  target:
+    model:
+      name: Cities
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: cityId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseBeneficiaries
+  sourceType: BankBranchs
+  target:
+    model:
+      name: ClaimCaseBeneficiaries
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseBeneficiariesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankBranchId
+  graphql:
+    aggregateFieldName: claimCaseBeneficiariesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutBeneficiaryBankAccounts
+  sourceType: BankBranchs
+  target:
+    model:
+      name: PayoutBeneficiaryBankAccounts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutBeneficiaryBankAccountsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankBranchId
+  graphql:
+    aggregateFieldName: payoutBeneficiaryBankAccountsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutBeneficiaryPapers
+  sourceType: BankBranchs
+  target:
+    model:
+      name: PayoutBeneficiaryPapers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutBeneficiaryPapersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankBranchId
+  graphql:
+    aggregateFieldName: payoutBeneficiaryPapersAggregate
+

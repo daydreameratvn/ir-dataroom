@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPtiDiseaseGroupsComment
+  description: Update the 'comment' column in the 'pti_disease_groups' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPtiDiseaseGroupsComment
+    inputTypeName: UpdateColumnPtiDiseaseGroupsCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_pti_disease_groups_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPtiDiseaseGroupsComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPtiDiseaseGroupsValue
+  description: Update the 'value' column in the 'pti_disease_groups' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPtiDiseaseGroupsValue
+    inputTypeName: UpdateColumnPtiDiseaseGroupsValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_pti_disease_groups_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPtiDiseaseGroupsValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePtiDiseaseGroupsByValueUpdateColumns
+  description: Update the columns of the 'pti_disease_groups' collection
+  fields:
+    - name: comment
+      type: UpdateColumnPtiDiseaseGroupsComment
+      description: Update the 'comment' column in the 'pti_disease_groups' collection.
+    - name: value
+      type: UpdateColumnPtiDiseaseGroupsValue
+      description: Update the 'value' column in the 'pti_disease_groups' collection.
+  graphql:
+    typeName: UpdatePtiDiseaseGroupsByValueUpdateColumns
+    inputTypeName: UpdatePtiDiseaseGroupsByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_pti_disease_groups_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePtiDiseaseGroupsByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePtiDiseaseGroupsByValueResponse
+  description: Responses from the 'update_pti_disease_groups_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PtiDiseaseGroups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePtiDiseaseGroupsByValueResponse
+    inputTypeName: UpdatePtiDiseaseGroupsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_pti_disease_groups_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePtiDiseaseGroupsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePtiDiseaseGroupsByValue
+  outputType: UpdatePtiDiseaseGroupsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: PtiDiseaseGroupsBoolExp
+      description: Update permission post-condition predicate over the
+        'pti_disease_groups' collection
+    - name: preCheck
+      type: PtiDiseaseGroupsBoolExp
+      description: Update permission pre-condition predicate over the
+        'pti_disease_groups' collection
+    - name: updateColumns
+      type: UpdatePtiDiseaseGroupsByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_pti_disease_groups_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePtiDiseaseGroupsByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'pti_disease_groups' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePtiDiseaseGroupsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

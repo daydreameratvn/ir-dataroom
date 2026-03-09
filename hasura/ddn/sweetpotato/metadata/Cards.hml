@@ -1,0 +1,397 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Cards
+  fields:
+    - name: content
+      type: String_1!
+    - name: contentBack
+      type: String_1
+    - name: contentBackUseFile
+      type: Boolean_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insurerId
+      type: Uuid
+    - name: isDefault
+      type: Boolean_1!
+    - name: name
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: Cards
+    inputTypeName: CardsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: cards
+      fieldMapping:
+        content:
+          column:
+            name: content
+        contentBack:
+          column:
+            name: content_back
+        contentBackUseFile:
+          column:
+            name: content_back_use_file
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        isDefault:
+          column:
+            name: is_default
+        name:
+          column:
+            name: name
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Cards
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - content
+          - contentBack
+          - contentBackUseFile
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - insurerId
+          - isDefault
+          - name
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CardsBoolExp
+  operand:
+    object:
+      type: Cards
+      comparableFields:
+        - fieldName: content
+          booleanExpressionType: TextBoolExp
+        - fieldName: contentBack
+          booleanExpressionType: TextBoolExp
+        - fieldName: contentBackUseFile
+          booleanExpressionType: BoolBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isDefault
+          booleanExpressionType: BoolBoolExp
+        - fieldName: name
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: company
+        - relationshipName: tenant
+        - relationshipName: files
+        - relationshipName: plans
+        - relationshipName: policyPlans
+        - relationshipName: policyPlansByEnCardId
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CardsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CardsAggExp
+  operand:
+    object:
+      aggregatedType: Cards
+      aggregatableFields:
+        - fieldName: content
+          aggregateExpression: TextAggExp
+        - fieldName: contentBack
+          aggregateExpression: TextAggExp
+        - fieldName: contentBackUseFile
+          aggregateExpression: BoolAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerId
+          aggregateExpression: UuidAggExp
+        - fieldName: isDefault
+          aggregateExpression: BoolAggExp
+        - fieldName: name
+          aggregateExpression: VarcharAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CardsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CardsOrderByExp
+  operand:
+    object:
+      orderedType: Cards
+      orderableFields:
+        - fieldName: content
+          orderByExpression: String1OrderByExp
+        - fieldName: contentBack
+          orderByExpression: String1OrderByExp
+        - fieldName: contentBackUseFile
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: isDefault
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: CardsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Cards
+  objectType: Cards
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: cards
+  filterExpressionType: CardsBoolExp
+  aggregateExpression: CardsAggExp
+  orderByExpression: CardsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: cards
+      subscription:
+        rootField: cards
+    selectUniques:
+      - queryRootField: cardsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: cardsById
+    filterInputTypeName: CardsFilterInput
+    aggregate:
+      queryRootField: cardsAggregate
+      subscription:
+        rootField: cardsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Cards
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: Cards
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insurerId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: Cards
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: files
+  sourceType: Cards
+  target:
+    model:
+      name: Files
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: cardId
+  graphql:
+    aggregateFieldName: filesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plans
+  sourceType: Cards
+  target:
+    model:
+      name: Plans
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlansAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: cardId
+  graphql:
+    aggregateFieldName: plansAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyPlans
+  sourceType: Cards
+  target:
+    model:
+      name: PolicyPlan
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyPlanAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: cardId
+  graphql:
+    aggregateFieldName: policyPlansAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyPlansByEnCardId
+  sourceType: Cards
+  target:
+    model:
+      name: PolicyPlan
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyPlanAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: enCardId
+  graphql:
+    aggregateFieldName: policyPlansByEnCardIdAggregate
+

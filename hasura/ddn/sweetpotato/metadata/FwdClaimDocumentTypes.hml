@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdClaimDocumentTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: FwdClaimDocumentTypes
+    inputTypeName: FwdClaimDocumentTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_claim_document_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdClaimDocumentTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdClaimDocumentTypesBoolExp
+  operand:
+    object:
+      type: FwdClaimDocumentTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdClaimDocumentTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdClaimDocumentTypesAggExp
+  operand:
+    object:
+      aggregatedType: FwdClaimDocumentTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdClaimDocumentTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdClaimDocumentTypesOrderByExp
+  operand:
+    object:
+      orderedType: FwdClaimDocumentTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: FwdClaimDocumentTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdClaimDocumentTypes
+  objectType: FwdClaimDocumentTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_claim_document_types
+  filterExpressionType: FwdClaimDocumentTypesBoolExp
+  aggregateExpression: FwdClaimDocumentTypesAggExp
+  orderByExpression: FwdClaimDocumentTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdClaimDocumentTypes
+      subscription:
+        rootField: fwdClaimDocumentTypes
+    selectUniques:
+      - queryRootField: fwdClaimDocumentTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: fwdClaimDocumentTypesByValue
+    filterInputTypeName: FwdClaimDocumentTypesFilterInput
+    aggregate:
+      queryRootField: fwdClaimDocumentTypesAggregate
+      subscription:
+        rootField: fwdClaimDocumentTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdClaimDocumentTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

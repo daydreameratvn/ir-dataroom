@@ -1,0 +1,146 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateReportsByNameUpdateColumns
+  description: Update the columns of the 'reports' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnReportsCreatedAt
+      description: Update the 'created_at' column in the 'reports' collection.
+    - name: deletedAt
+      type: UpdateColumnReportsDeletedAt
+      description: Update the 'deleted_at' column in the 'reports' collection.
+    - name: fileId
+      type: UpdateColumnReportsFileId
+      description: Update the 'file_id' column in the 'reports' collection.
+    - name: id
+      type: UpdateColumnReportsId
+      description: Update the 'id' column in the 'reports' collection.
+    - name: name
+      type: UpdateColumnReportsName
+      description: Update the 'name' column in the 'reports' collection.
+    - name: updatedAt
+      type: UpdateColumnReportsUpdatedAt
+      description: Update the 'updated_at' column in the 'reports' collection.
+  graphql:
+    typeName: UpdateReportsByNameUpdateColumns
+    inputTypeName: UpdateReportsByNameUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_reports_by_name_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateReportsByNameUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - fileId
+          - id
+          - name
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateReportsByNameResponse
+  description: Responses from the 'update_reports_by_name' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Reports!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateReportsByNameResponse
+    inputTypeName: UpdateReportsByNameResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_reports_by_name_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateReportsByNameResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateReportsByName
+  outputType: UpdateReportsByNameResponse!
+  arguments:
+    - name: keyName
+      type: String_1!
+    - name: postCheck
+      type: ReportsBoolExp
+      description: Update permission post-condition predicate over the 'reports' collection
+    - name: preCheck
+      type: ReportsBoolExp
+      description: Update permission pre-condition predicate over the 'reports' collection
+    - name: updateColumns
+      type: UpdateReportsByNameUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_reports_by_name
+    argumentMapping:
+      keyName: key_name
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateReportsByName
+    rootFieldKind: Mutation
+  description: Update any row on the 'reports' collection using the 'name' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateReportsByName
+  permissions:
+    - role: admin
+      allowExecution: true
+

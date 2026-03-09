@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMbalInsuredCertificateBeneficiariesByIdUpdateColumns
+  description: Update the columns of the 'mbal_insured_certificate_beneficiaries' collection
+  fields:
+    - name: bankAccount
+      type: UpdateColumnMbalInsuredCertificateBeneficiariesBankAccount
+      description: Update the 'bank_account' column in the
+        'mbal_insured_certificate_beneficiaries' collection.
+    - name: bankCode
+      type: UpdateColumnMbalInsuredCertificateBeneficiariesBankCode
+      description: Update the 'bank_code' column in the
+        'mbal_insured_certificate_beneficiaries' collection.
+    - name: bankName
+      type: UpdateColumnMbalInsuredCertificateBeneficiariesBankName
+      description: Update the 'bank_name' column in the
+        'mbal_insured_certificate_beneficiaries' collection.
+    - name: beneficiaryName
+      type: UpdateColumnMbalInsuredCertificateBeneficiariesBeneficiaryName
+      description: Update the 'beneficiary_name' column in the
+        'mbal_insured_certificate_beneficiaries' collection.
+    - name: createdAt
+      type: UpdateColumnMbalInsuredCertificateBeneficiariesCreatedAt
+      description: Update the 'created_at' column in the
+        'mbal_insured_certificate_beneficiaries' collection.
+    - name: id
+      type: UpdateColumnMbalInsuredCertificateBeneficiariesId
+      description: Update the 'id' column in the
+        'mbal_insured_certificate_beneficiaries' collection.
+    - name: insuredCertificateId
+      type: UpdateColumnMbalInsuredCertificateBeneficiariesInsuredCertificateId
+      description: Update the 'insured_certificate_id' column in the
+        'mbal_insured_certificate_beneficiaries' collection.
+    - name: updatedAt
+      type: UpdateColumnMbalInsuredCertificateBeneficiariesUpdatedAt
+      description: Update the 'updated_at' column in the
+        'mbal_insured_certificate_beneficiaries' collection.
+  graphql:
+    typeName: UpdateMbalInsuredCertificateBeneficiariesByIdUpdateColumns
+    inputTypeName: UpdateMbalInsuredCertificateBeneficiariesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mbal_insured_certificate_beneficiaries_by_id_update_columns
+      fieldMapping:
+        bankAccount:
+          column:
+            name: bank_account
+        bankCode:
+          column:
+            name: bank_code
+        bankName:
+          column:
+            name: bank_name
+        beneficiaryName:
+          column:
+            name: beneficiary_name
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMbalInsuredCertificateBeneficiariesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankAccount
+          - bankCode
+          - bankName
+          - beneficiaryName
+          - createdAt
+          - id
+          - insuredCertificateId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMbalInsuredCertificateBeneficiariesByIdResponse
+  description: Responses from the
+    'update_mbal_insured_certificate_beneficiaries_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MbalInsuredCertificateBeneficiaries!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateMbalInsuredCertificateBeneficiariesByIdResponse
+    inputTypeName: UpdateMbalInsuredCertificateBeneficiariesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mbal_insured_certificate_beneficiaries_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMbalInsuredCertificateBeneficiariesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateMbalInsuredCertificateBeneficiariesById
+  outputType: UpdateMbalInsuredCertificateBeneficiariesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: MbalInsuredCertificateBeneficiariesBoolExp
+      description: Update permission post-condition predicate over the
+        'mbal_insured_certificate_beneficiaries' collection
+    - name: preCheck
+      type: MbalInsuredCertificateBeneficiariesBoolExp
+      description: Update permission pre-condition predicate over the
+        'mbal_insured_certificate_beneficiaries' collection
+    - name: updateColumns
+      type: UpdateMbalInsuredCertificateBeneficiariesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_mbal_insured_certificate_beneficiaries_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateMbalInsuredCertificateBeneficiariesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'mbal_insured_certificate_beneficiaries'
+    collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateMbalInsuredCertificateBeneficiariesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

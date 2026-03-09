@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFigToDosByValueResponse
+  description: Responses from the 'delete_fig_to_dos_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FigToDos!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFigToDosByValueResponse
+    inputTypeName: DeleteFigToDosByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fig_to_dos_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFigToDosByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFigToDosByValue
+  outputType: DeleteFigToDosByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: FigToDosBoolExp
+      description: Delete permission predicate over the 'fig_to_dos' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fig_to_dos_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFigToDosByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fig_to_dos' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFigToDosByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

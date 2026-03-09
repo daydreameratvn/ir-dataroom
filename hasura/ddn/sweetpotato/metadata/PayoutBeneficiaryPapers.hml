@@ -1,0 +1,408 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutBeneficiaryPapers
+  description: Thông tin thanh toán dùng cho payment method CHECKS
+  fields:
+    - name: bankBranch
+      type: String_1
+    - name: bankBranchId
+      type: Uuid
+    - name: bankCity
+      type: String_1
+    - name: bankCityId
+      type: Int32
+    - name: bankId
+      type: Uuid
+    - name: bankName
+      type: String_1
+    - name: beneficiaryName
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: paperIssuedDate
+      type: Timestamptz
+    - name: paperIssuedPlace
+      type: String_1
+    - name: paperNumber
+      type: String_1!
+    - name: paymentAmount
+      type: Bigdecimal
+    - name: paymentRequestId
+      type: Uuid
+    - name: paymentRequestItemId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PayoutBeneficiaryPapers
+    inputTypeName: PayoutBeneficiaryPapersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_beneficiary_papers
+      fieldMapping:
+        bankBranch:
+          column:
+            name: bank_branch
+        bankBranchId:
+          column:
+            name: bank_branch_id
+        bankCity:
+          column:
+            name: bank_city
+        bankCityId:
+          column:
+            name: bank_city_id
+        bankId:
+          column:
+            name: bank_id
+        bankName:
+          column:
+            name: bank_name
+        beneficiaryName:
+          column:
+            name: beneficiary_name
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        paperIssuedDate:
+          column:
+            name: paper_issued_date
+        paperIssuedPlace:
+          column:
+            name: paper_issued_place
+        paperNumber:
+          column:
+            name: paper_number
+        paymentAmount:
+          column:
+            name: payment_amount
+        paymentRequestId:
+          column:
+            name: payment_request_id
+        paymentRequestItemId:
+          column:
+            name: payment_request_item_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutBeneficiaryPapers
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankBranch
+          - bankBranchId
+          - bankCity
+          - bankCityId
+          - bankId
+          - bankName
+          - beneficiaryName
+          - createdAt
+          - id
+          - paperIssuedDate
+          - paperIssuedPlace
+          - paperNumber
+          - paymentAmount
+          - paymentRequestId
+          - paymentRequestItemId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutBeneficiaryPapersBoolExp
+  operand:
+    object:
+      type: PayoutBeneficiaryPapers
+      comparableFields:
+        - fieldName: bankBranch
+          booleanExpressionType: TextBoolExp
+        - fieldName: bankBranchId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: bankCity
+          booleanExpressionType: TextBoolExp
+        - fieldName: bankCityId
+          booleanExpressionType: Int4BoolExp
+        - fieldName: bankId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: bankName
+          booleanExpressionType: TextBoolExp
+        - fieldName: beneficiaryName
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paperIssuedDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: paperIssuedPlace
+          booleanExpressionType: TextBoolExp
+        - fieldName: paperNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: paymentAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: paymentRequestId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paymentRequestItemId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: bankBranchByBankBranchId
+        - relationshipName: city
+        - relationshipName: bank
+        - relationshipName: payoutPaymentRequest
+        - relationshipName: payoutPaymentRequestItem
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutBeneficiaryPapersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutBeneficiaryPapersAggExp
+  operand:
+    object:
+      aggregatedType: PayoutBeneficiaryPapers
+      aggregatableFields:
+        - fieldName: bankBranch
+          aggregateExpression: TextAggExp
+        - fieldName: bankBranchId
+          aggregateExpression: UuidAggExp
+        - fieldName: bankCity
+          aggregateExpression: TextAggExp
+        - fieldName: bankCityId
+          aggregateExpression: Int4AggExp
+        - fieldName: bankId
+          aggregateExpression: UuidAggExp
+        - fieldName: bankName
+          aggregateExpression: TextAggExp
+        - fieldName: beneficiaryName
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: paperIssuedDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: paperIssuedPlace
+          aggregateExpression: TextAggExp
+        - fieldName: paperNumber
+          aggregateExpression: TextAggExp
+        - fieldName: paymentAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: paymentRequestId
+          aggregateExpression: UuidAggExp
+        - fieldName: paymentRequestItemId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutBeneficiaryPapersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutBeneficiaryPapersOrderByExp
+  operand:
+    object:
+      orderedType: PayoutBeneficiaryPapers
+      orderableFields:
+        - fieldName: bankBranch
+          orderByExpression: String1OrderByExp
+        - fieldName: bankBranchId
+          orderByExpression: UuidOrderByExp
+        - fieldName: bankCity
+          orderByExpression: String1OrderByExp
+        - fieldName: bankCityId
+          orderByExpression: Int32OrderByExp
+        - fieldName: bankId
+          orderByExpression: UuidOrderByExp
+        - fieldName: bankName
+          orderByExpression: String1OrderByExp
+        - fieldName: beneficiaryName
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: paperIssuedDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: paperIssuedPlace
+          orderByExpression: String1OrderByExp
+        - fieldName: paperNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: paymentAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: paymentRequestId
+          orderByExpression: UuidOrderByExp
+        - fieldName: paymentRequestItemId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: bankBranchByBankBranchId
+        - relationshipName: city
+        - relationshipName: bank
+        - relationshipName: payoutPaymentRequest
+        - relationshipName: payoutPaymentRequestItem
+  graphql:
+    expressionTypeName: PayoutBeneficiaryPapersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutBeneficiaryPapers
+  objectType: PayoutBeneficiaryPapers
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_beneficiary_papers
+  filterExpressionType: PayoutBeneficiaryPapersBoolExp
+  aggregateExpression: PayoutBeneficiaryPapersAggExp
+  orderByExpression: PayoutBeneficiaryPapersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutBeneficiaryPapers
+      subscription:
+        rootField: payoutBeneficiaryPapers
+    selectUniques:
+      - queryRootField: payoutBeneficiaryPapersByPaymentRequestItemId
+        uniqueIdentifier:
+          - paymentRequestItemId
+        subscription:
+          rootField: payoutBeneficiaryPapersByPaymentRequestItemId
+      - queryRootField: payoutBeneficiaryPapersById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: payoutBeneficiaryPapersById
+    filterInputTypeName: PayoutBeneficiaryPapersFilterInput
+    aggregate:
+      queryRootField: payoutBeneficiaryPapersAggregate
+      subscription:
+        rootField: payoutBeneficiaryPapersAggregate
+  description: Thông tin thanh toán dùng cho payment method CHECKS
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutBeneficiaryPapers
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bankBranchByBankBranchId
+  sourceType: PayoutBeneficiaryPapers
+  target:
+    model:
+      name: BankBranchs
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bankBranchId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: city
+  sourceType: PayoutBeneficiaryPapers
+  target:
+    model:
+      name: Cities
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bankCityId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bank
+  sourceType: PayoutBeneficiaryPapers
+  target:
+    model:
+      name: Banks
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bankId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequest
+  sourceType: PayoutBeneficiaryPapers
+  target:
+    model:
+      name: PayoutPaymentRequests
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentRequestId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestItem
+  sourceType: PayoutBeneficiaryPapers
+  target:
+    model:
+      name: PayoutPaymentRequestItems
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentRequestItemId
+      target:
+        modelField:
+          - fieldName: id
+

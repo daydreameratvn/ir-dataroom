@@ -1,0 +1,212 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateHawthornPatientsByIdUpdateColumns
+  description: Update the columns of the 'hawthorn_patients' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnHawthornPatientsCreatedAt
+      description: Update the 'created_at' column in the 'hawthorn_patients' collection.
+    - name: createdBy
+      type: UpdateColumnHawthornPatientsCreatedBy
+      description: Update the 'created_by' column in the 'hawthorn_patients' collection.
+    - name: deletedAt
+      type: UpdateColumnHawthornPatientsDeletedAt
+      description: Update the 'deleted_at' column in the 'hawthorn_patients' collection.
+    - name: dob
+      type: UpdateColumnHawthornPatientsDob
+      description: Update the 'dob' column in the 'hawthorn_patients' collection.
+    - name: email
+      type: UpdateColumnHawthornPatientsEmail
+      description: Update the 'email' column in the 'hawthorn_patients' collection.
+    - name: fullName
+      type: UpdateColumnHawthornPatientsFullName
+      description: Update the 'full_name' column in the 'hawthorn_patients' collection.
+    - name: gender
+      type: UpdateColumnHawthornPatientsGender
+      description: Update the 'gender' column in the 'hawthorn_patients' collection.
+    - name: healthProfileId
+      type: UpdateColumnHawthornPatientsHealthProfileId
+      description: Update the 'health_profile_id' column in the 'hawthorn_patients'
+        collection.
+    - name: id
+      type: UpdateColumnHawthornPatientsId
+      description: Update the 'id' column in the 'hawthorn_patients' collection.
+    - name: paperNumber
+      type: UpdateColumnHawthornPatientsPaperNumber
+      description: Update the 'paper_number' column in the 'hawthorn_patients' collection.
+    - name: phone
+      type: UpdateColumnHawthornPatientsPhone
+      description: Update the 'phone' column in the 'hawthorn_patients' collection.
+    - name: updatedAt
+      type: UpdateColumnHawthornPatientsUpdatedAt
+      description: Update the 'updated_at' column in the 'hawthorn_patients' collection.
+    - name: updatedBy
+      type: UpdateColumnHawthornPatientsUpdatedBy
+      description: Update the 'updated_by' column in the 'hawthorn_patients' collection.
+    - name: userId
+      type: UpdateColumnHawthornPatientsUserId
+      description: Update the 'user_id' column in the 'hawthorn_patients' collection.
+    - name: yob
+      type: UpdateColumnHawthornPatientsYob
+      description: Update the 'yob' column in the 'hawthorn_patients' collection.
+  graphql:
+    typeName: UpdateHawthornPatientsByIdUpdateColumns
+    inputTypeName: UpdateHawthornPatientsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_hawthorn_patients_by_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        dob:
+          column:
+            name: dob
+        email:
+          column:
+            name: email
+        fullName:
+          column:
+            name: full_name
+        gender:
+          column:
+            name: gender
+        healthProfileId:
+          column:
+            name: health_profile_id
+        id:
+          column:
+            name: id
+        paperNumber:
+          column:
+            name: paper_number
+        phone:
+          column:
+            name: phone
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+        yob:
+          column:
+            name: yob
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateHawthornPatientsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - dob
+          - email
+          - fullName
+          - gender
+          - healthProfileId
+          - id
+          - paperNumber
+          - phone
+          - updatedAt
+          - updatedBy
+          - userId
+          - yob
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateHawthornPatientsByIdResponse
+  description: Responses from the 'update_hawthorn_patients_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornPatients!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateHawthornPatientsByIdResponse
+    inputTypeName: UpdateHawthornPatientsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_hawthorn_patients_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateHawthornPatientsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateHawthornPatientsById
+  outputType: UpdateHawthornPatientsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: HawthornPatientsBoolExp
+      description: Update permission post-condition predicate over the
+        'hawthorn_patients' collection
+    - name: preCheck
+      type: HawthornPatientsBoolExp
+      description: Update permission pre-condition predicate over the
+        'hawthorn_patients' collection
+    - name: updateColumns
+      type: UpdateHawthornPatientsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_hawthorn_patients_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateHawthornPatientsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'hawthorn_patients' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateHawthornPatientsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,210 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrQcDischargePapersObject
+  fields:
+    - name: admissionDate
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz
+    - name: diagnosis
+      type: String_1
+    - name: dischargeDate
+      type: Timestamptz
+    - name: dob
+      type: Timestamptz
+    - name: gender
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: isDischargePaper
+      type: Boolean_1
+    - name: isFacultyOfTraditionalMedicineOrPhysiotherapy
+      type: Boolean_1
+    - name: isHaveRubberStamp
+      type: Boolean_1
+    - name: isSignatureOverlapRubberStamp
+      type: Boolean_1
+    - name: medicalProviderId
+      type: Uuid
+    - name: monthsOld
+      type: Int32
+    - name: paperId
+      type: Uuid!
+    - name: patientName
+      type: String_1
+    - name: treatmentMethod
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: yearsOld
+      type: Int32
+    - name: yob
+      type: Int32
+  graphql:
+    typeName: InsertOcrQcDischargePapersObject
+    inputTypeName: InsertOcrQcDischargePapersObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_qc_discharge_papers_object
+      fieldMapping:
+        admissionDate:
+          column:
+            name: admission_date
+        createdAt:
+          column:
+            name: created_at
+        diagnosis:
+          column:
+            name: diagnosis
+        dischargeDate:
+          column:
+            name: discharge_date
+        dob:
+          column:
+            name: dob
+        gender:
+          column:
+            name: gender
+        id:
+          column:
+            name: id
+        isDischargePaper:
+          column:
+            name: is_discharge_paper
+        isFacultyOfTraditionalMedicineOrPhysiotherapy:
+          column:
+            name: is_faculty_of_traditional_medicine_or_physiotherapy
+        isHaveRubberStamp:
+          column:
+            name: is_have_rubber_stamp
+        isSignatureOverlapRubberStamp:
+          column:
+            name: is_signature_overlap_rubber_stamp
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        monthsOld:
+          column:
+            name: months_old
+        paperId:
+          column:
+            name: paper_id
+        patientName:
+          column:
+            name: patient_name
+        treatmentMethod:
+          column:
+            name: treatment_method
+        updatedAt:
+          column:
+            name: updated_at
+        yearsOld:
+          column:
+            name: years_old
+        yob:
+          column:
+            name: yob
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrQcDischargePapersObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - admissionDate
+          - createdAt
+          - diagnosis
+          - dischargeDate
+          - dob
+          - gender
+          - id
+          - isDischargePaper
+          - isFacultyOfTraditionalMedicineOrPhysiotherapy
+          - isHaveRubberStamp
+          - isSignatureOverlapRubberStamp
+          - medicalProviderId
+          - monthsOld
+          - paperId
+          - patientName
+          - treatmentMethod
+          - updatedAt
+          - yearsOld
+          - yob
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrQcDischargePapersResponse
+  description: Responses from the 'insert_ocr_qc_discharge_papers' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrQcDischargePapers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOcrQcDischargePapersResponse
+    inputTypeName: InsertOcrQcDischargePapersResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_qc_discharge_papers_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrQcDischargePapersResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOcrQcDischargePapers
+  outputType: InsertOcrQcDischargePapersResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOcrQcDischargePapersObject!]!"
+    - name: postCheck
+      type: OcrQcDischargePapersBoolExp
+      description: Insert permission predicate over the 'ocr_qc_discharge_papers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_ocr_qc_discharge_papers
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOcrQcDischargePapers
+    rootFieldKind: Mutation
+  description: Insert into the ocr_qc_discharge_papers table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOcrQcDischargePapers
+  permissions:
+    - role: admin
+      allowExecution: true
+

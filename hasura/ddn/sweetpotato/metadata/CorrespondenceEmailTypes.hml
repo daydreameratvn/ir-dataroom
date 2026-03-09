@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceEmailTypes
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CorrespondenceEmailTypes
+    inputTypeName: CorrespondenceEmailTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_email_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceEmailTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceEmailTypesBoolExp
+  operand:
+    object:
+      type: CorrespondenceEmailTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: correspondenceEmails
+        - relationshipName: correspondenceEmailsByPurposeType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceEmailTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceEmailTypesAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceEmailTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceEmailTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceEmailTypesOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceEmailTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CorrespondenceEmailTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceEmailTypes
+  objectType: CorrespondenceEmailTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_email_types
+  filterExpressionType: CorrespondenceEmailTypesBoolExp
+  aggregateExpression: CorrespondenceEmailTypesAggExp
+  orderByExpression: CorrespondenceEmailTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceEmailTypes
+      subscription:
+        rootField: correspondenceEmailTypes
+    selectUniques:
+      - queryRootField: correspondenceEmailTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: correspondenceEmailTypesByValue
+    filterInputTypeName: CorrespondenceEmailTypesFilterInput
+    aggregate:
+      queryRootField: correspondenceEmailTypesAggregate
+      subscription:
+        rootField: correspondenceEmailTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceEmailTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmails
+  sourceType: CorrespondenceEmailTypes
+  target:
+    model:
+      name: CorrespondenceEmails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceEmailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: deliveryType
+  graphql:
+    aggregateFieldName: correspondenceEmailsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmailsByPurposeType
+  sourceType: CorrespondenceEmailTypes
+  target:
+    model:
+      name: CorrespondenceEmails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceEmailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: purposeType
+  graphql:
+    aggregateFieldName: correspondenceEmailsByPurposeTypeAggregate
+

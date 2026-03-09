@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteSlvHistoryClaimCasesByCodeAndDeletedAtResponse
+  description: Responses from the
+    'delete_slv_history_claim_cases_by_code_and_deleted_at' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvHistoryClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteSlvHistoryClaimCasesByCodeAndDeletedAtResponse
+    inputTypeName: DeleteSlvHistoryClaimCasesByCodeAndDeletedAtResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_slv_history_claim_cases_by_code_and_deleted_at_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteSlvHistoryClaimCasesByCodeAndDeletedAtResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteSlvHistoryClaimCasesByCodeAndDeletedAt
+  outputType: DeleteSlvHistoryClaimCasesByCodeAndDeletedAtResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: preCheck
+      type: SlvHistoryClaimCasesBoolExp
+      description: Delete permission predicate over the 'slv_history_claim_cases' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_slv_history_claim_cases_by_code_and_deleted_at
+    argumentMapping:
+      keyCode: key_code
+      keyDeletedAt: key_deleted_at
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteSlvHistoryClaimCasesByCodeAndDeletedAt
+    rootFieldKind: Mutation
+  description: Delete any row on the 'slv_history_claim_cases' collection using
+    the 'code' and 'deleted_at' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteSlvHistoryClaimCasesByCodeAndDeletedAt
+  permissions:
+    - role: admin
+      allowExecution: true
+

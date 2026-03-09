@@ -1,0 +1,88 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimCaseDetailsByClaimCaseIdAndDeletedAtAndGracePeriodStartDateAndInsuredCertificateHistoryIdAndPlanInsuredBenefitIdResponse
+  description: Responses from the
+    'delete_claim_case_details_by_claim_case_id_and_deleted_at_and_grace_period_start_date_and_insured_certificate_history_id_and_plan_insured_benefit_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseDetails!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimCaseDetailsByClaimCaseIdAndDeletedAtAndGracePeriodStartDateAndInsuredCertificateHistoryIdAndPlanInsuredBenefitIdResponse
+    inputTypeName: DeleteClaimCaseDetailsByClaimCaseIdAndDeletedAtAndGracePeriodStartDateAndInsuredCertificateHistoryIdAndPlanInsuredBenefitIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_case_details_by_claim_case_id_and_deleted_at_and_grace_period_start_date_and_insured_certificate_history_id_and_plan_insured_benefit_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimCaseDetailsByClaimCaseIdAndDeletedAtAndGracePeriodStartDateAndInsuredCertificateHistoryIdAndPlanInsuredBenefitIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimCaseDetailsByClaimCaseIdAndDeletedAtAndGracePeriodStartDateAndInsuredCertificateHistoryIdAndPlanInsuredBenefitId
+  outputType: DeleteClaimCaseDetailsByClaimCaseIdAndDeletedAtAndGracePeriodStartDateAndInsuredCertificateHistoryIdAndPlanInsuredBenefitIdResponse!
+  arguments:
+    - name: keyClaimCaseId
+      type: Uuid!
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyGracePeriodStartDate
+      type: Timestamptz
+    - name: keyInsuredCertificateHistoryId
+      type: Uuid
+    - name: keyPlanInsuredBenefitId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimCaseDetailsBoolExp
+      description: Delete permission predicate over the 'claim_case_details' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_case_details_by_claim_case_id_and_deleted_at_and_grace_period_start_date_and_insured_certificate_history_id_and_plan_insured_benefit_id
+    argumentMapping:
+      keyClaimCaseId: key_claim_case_id
+      keyDeletedAt: key_deleted_at
+      keyGracePeriodStartDate: key_grace_period_start_date
+      keyInsuredCertificateHistoryId: key_insured_certificate_history_id
+      keyPlanInsuredBenefitId: key_plan_insured_benefit_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimCaseDetailsByClaimCaseIdAndDeletedAtAndGracePeriodStartDateAndInsuredCertificateHistoryIdAndPlanInsuredBenefitId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_case_details' collection using the
+    'claim_case_id', 'deleted_at', 'grace_period_start_date',
+    'insured_certificate_history_id' and 'plan_insured_benefit_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimCaseDetailsByClaimCaseIdAndDeletedAtAndGracePeriodStartDateAndInsuredCertificateHistoryIdAndPlanInsuredBenefitId
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicyPlanByPlanIdAndPolicyIdResponse
+  description: Responses from the 'delete_policy_plan_by_plan_id_and_policy_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyPlan!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicyPlanByPlanIdAndPolicyIdResponse
+    inputTypeName: DeletePolicyPlanByPlanIdAndPolicyIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_plan_by_plan_id_and_policy_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicyPlanByPlanIdAndPolicyIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicyPlanByPlanIdAndPolicyId
+  outputType: DeletePolicyPlanByPlanIdAndPolicyIdResponse!
+  arguments:
+    - name: keyPlanId
+      type: Uuid!
+    - name: keyPolicyId
+      type: Uuid!
+    - name: preCheck
+      type: PolicyPlanBoolExp
+      description: Delete permission predicate over the 'policy_plan' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_plan_by_plan_id_and_policy_id
+    argumentMapping:
+      keyPlanId: key_plan_id
+      keyPolicyId: key_policy_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicyPlanByPlanIdAndPolicyId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_plan' collection using the 'plan_id'
+    and 'policy_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicyPlanByPlanIdAndPolicyId
+  permissions:
+    - role: admin
+      allowExecution: true
+

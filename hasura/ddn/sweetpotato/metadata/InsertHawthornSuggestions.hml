@@ -1,0 +1,156 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornSuggestionsObject
+  fields:
+    - name: content
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: diagnosticTestId
+      type: Uuid
+    - name: documentContentId
+      type: Uuid
+    - name: healthCheckupId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: patientId
+      type: Uuid!
+    - name: physicalExaminationId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertHawthornSuggestionsObject
+    inputTypeName: InsertHawthornSuggestionsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_suggestions_object
+      fieldMapping:
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        diagnosticTestId:
+          column:
+            name: diagnostic_test_id
+        documentContentId:
+          column:
+            name: document_content_id
+        healthCheckupId:
+          column:
+            name: health_checkup_id
+        id:
+          column:
+            name: id
+        patientId:
+          column:
+            name: patient_id
+        physicalExaminationId:
+          column:
+            name: physical_examination_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornSuggestionsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - content
+          - createdAt
+          - deletedAt
+          - diagnosticTestId
+          - documentContentId
+          - healthCheckupId
+          - id
+          - patientId
+          - physicalExaminationId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornSuggestionsResponse
+  description: Responses from the 'insert_hawthorn_suggestions' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornSuggestions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornSuggestionsResponse
+    inputTypeName: InsertHawthornSuggestionsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_suggestions_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornSuggestionsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornSuggestions
+  outputType: InsertHawthornSuggestionsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornSuggestionsObject!]!"
+    - name: postCheck
+      type: HawthornSuggestionsBoolExp
+      description: Insert permission predicate over the 'hawthorn_suggestions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_suggestions
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornSuggestions
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_suggestions table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornSuggestions
+  permissions:
+    - role: admin
+      allowExecution: true
+

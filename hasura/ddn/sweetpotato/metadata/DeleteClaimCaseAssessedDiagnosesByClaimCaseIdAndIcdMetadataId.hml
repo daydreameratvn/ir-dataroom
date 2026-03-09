@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimCaseAssessedDiagnosesByClaimCaseIdAndIcdMetadataIdResponse
+  description: Responses from the
+    'delete_claim_case_assessed_diagnoses_by_claim_case_id_and_icd_metadata_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseAssessedDiagnoses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimCaseAssessedDiagnosesByClaimCaseIdAndIcdMetadataIdResponse
+    inputTypeName: DeleteClaimCaseAssessedDiagnosesByClaimCaseIdAndIcdMetadataIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_case_assessed_diagnoses_by_claim_case_id_and_icd_metadata_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimCaseAssessedDiagnosesByClaimCaseIdAndIcdMetadataIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimCaseAssessedDiagnosesByClaimCaseIdAndIcdMetadataId
+  outputType: DeleteClaimCaseAssessedDiagnosesByClaimCaseIdAndIcdMetadataIdResponse!
+  arguments:
+    - name: keyClaimCaseId
+      type: Uuid!
+    - name: keyIcdMetadataId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimCaseAssessedDiagnosesBoolExp
+      description: Delete permission predicate over the
+        'claim_case_assessed_diagnoses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_case_assessed_diagnoses_by_claim_case_id_and_icd_metadata_id
+    argumentMapping:
+      keyClaimCaseId: key_claim_case_id
+      keyIcdMetadataId: key_icd_metadata_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimCaseAssessedDiagnosesByClaimCaseIdAndIcdMetadataId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_case_assessed_diagnoses' collection
+    using the 'claim_case_id' and 'icd_metadata_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimCaseAssessedDiagnosesByClaimCaseIdAndIcdMetadataId
+  permissions:
+    - role: admin
+      allowExecution: true
+

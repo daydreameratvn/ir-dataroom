@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DrugCategories
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: DrugCategories
+    inputTypeName: DrugCategoriesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: drug_categories
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DrugCategories
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: DrugCategoriesBoolExp
+  operand:
+    object:
+      type: DrugCategories
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: drugs
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: DrugCategoriesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: DrugCategoriesAggExp
+  operand:
+    object:
+      aggregatedType: DrugCategories
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: DrugCategoriesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: DrugCategoriesOrderByExp
+  operand:
+    object:
+      orderedType: DrugCategories
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: DrugCategoriesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: DrugCategories
+  objectType: DrugCategories
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: drug_categories
+  filterExpressionType: DrugCategoriesBoolExp
+  aggregateExpression: DrugCategoriesAggExp
+  orderByExpression: DrugCategoriesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: drugCategories
+      subscription:
+        rootField: drugCategories
+    selectUniques:
+      - queryRootField: drugCategoriesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: drugCategoriesByValue
+    filterInputTypeName: DrugCategoriesFilterInput
+    aggregate:
+      queryRootField: drugCategoriesAggregate
+      subscription:
+        rootField: drugCategoriesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: DrugCategories
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: drugs
+  sourceType: DrugCategories
+  target:
+    model:
+      name: Drugs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: DrugsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: category
+  graphql:
+    aggregateFieldName: drugsAggregate
+

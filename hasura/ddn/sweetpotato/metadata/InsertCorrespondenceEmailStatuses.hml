@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceEmailStatusesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertCorrespondenceEmailStatusesObject
+    inputTypeName: InsertCorrespondenceEmailStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_email_statuses_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceEmailStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceEmailStatusesResponse
+  description: Responses from the 'insert_correspondence_email_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmailStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCorrespondenceEmailStatusesResponse
+    inputTypeName: InsertCorrespondenceEmailStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_email_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceEmailStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCorrespondenceEmailStatuses
+  outputType: InsertCorrespondenceEmailStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCorrespondenceEmailStatusesObject!]!"
+    - name: postCheck
+      type: CorrespondenceEmailStatusesBoolExp
+      description: Insert permission predicate over the
+        'correspondence_email_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_correspondence_email_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCorrespondenceEmailStatuses
+    rootFieldKind: Mutation
+  description: Insert into the correspondence_email_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCorrespondenceEmailStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

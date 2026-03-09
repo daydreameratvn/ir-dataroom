@@ -1,0 +1,238 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredCertificateStatuses
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsuredCertificateStatuses
+    inputTypeName: InsuredCertificateStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_certificate_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredCertificateStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredCertificateStatusesBoolExp
+  operand:
+    object:
+      type: InsuredCertificateStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: fwdInsuredCertificateStatusMappings
+        - relationshipName: insuredCertificateRelatedEvents
+        - relationshipName: insuredCertificateRelatedEventsByOldValue
+        - relationshipName: insuredCertificateStatus
+        - relationshipName: insuredCertificates
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredCertificateStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredCertificateStatusesAggExp
+  operand:
+    object:
+      aggregatedType: InsuredCertificateStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredCertificateStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredCertificateStatusesOrderByExp
+  operand:
+    object:
+      orderedType: InsuredCertificateStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: insuredCertificateStatus
+  graphql:
+    expressionTypeName: InsuredCertificateStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredCertificateStatuses
+  objectType: InsuredCertificateStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_certificate_statuses
+  filterExpressionType: InsuredCertificateStatusesBoolExp
+  aggregateExpression: InsuredCertificateStatusesAggExp
+  orderByExpression: InsuredCertificateStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredCertificateStatuses
+      subscription:
+        rootField: insuredCertificateStatuses
+    selectUniques:
+      - queryRootField: insuredCertificateStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: insuredCertificateStatusesByValue
+    filterInputTypeName: InsuredCertificateStatusesFilterInput
+    aggregate:
+      queryRootField: insuredCertificateStatusesAggregate
+      subscription:
+        rootField: insuredCertificateStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredCertificateStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdInsuredCertificateStatusMappings
+  sourceType: InsuredCertificateStatuses
+  target:
+    model:
+      name: FwdInsuredCertificateStatusMapping
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdInsuredCertificateStatusMappingAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: insuredCertificateStatusCode
+  graphql:
+    aggregateFieldName: fwdInsuredCertificateStatusMappingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateRelatedEvents
+  sourceType: InsuredCertificateStatuses
+  target:
+    model:
+      name: InsuredCertificateRelatedEvents
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredCertificateRelatedEventsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: newValue
+  graphql:
+    aggregateFieldName: insuredCertificateRelatedEventsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateRelatedEventsByOldValue
+  sourceType: InsuredCertificateStatuses
+  target:
+    model:
+      name: InsuredCertificateRelatedEvents
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredCertificateRelatedEventsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: oldValue
+  graphql:
+    aggregateFieldName: insuredCertificateRelatedEventsByOldValueAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateStatus
+  sourceType: InsuredCertificateStatuses
+  target:
+    model:
+      name: InsuredCertificateStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificates
+  sourceType: InsuredCertificateStatuses
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredCertificatesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: insuredCertificatesAggregate
+

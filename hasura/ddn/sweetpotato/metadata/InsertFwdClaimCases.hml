@@ -1,0 +1,186 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdClaimCasesObject
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: claimSequenceNo
+      type: String_1
+    - name: claimType
+      type: String_1
+    - name: declineCodeValue
+      type: String_1
+    - name: declineDescription
+      type: String_1
+    - name: exclusionInfo
+      type: String_1
+    - name: icuAdmissionDate
+      type: Timestamptz
+    - name: icuDischargeDate
+      type: Timestamptz
+    - name: isSurgery
+      type: Boolean_1
+    - name: policyNote
+      type: String_1
+    - name: receivedAt
+      type: Timestamptz
+    - name: relatedToAccident
+      type: Boolean_1
+    - name: syncedDecisionAt
+      type: Timestamptz
+    - name: syncedDocumentAt
+      type: Timestamptz
+    - name: syncedPaymentDateAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertFwdClaimCasesObject
+    inputTypeName: InsertFwdClaimCasesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_claim_cases_object
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        claimSequenceNo:
+          column:
+            name: claim_sequence_no
+        claimType:
+          column:
+            name: claim_type
+        declineCodeValue:
+          column:
+            name: decline_code_value
+        declineDescription:
+          column:
+            name: decline_description
+        exclusionInfo:
+          column:
+            name: exclusion_info
+        icuAdmissionDate:
+          column:
+            name: icu_admission_date
+        icuDischargeDate:
+          column:
+            name: icu_discharge_date
+        isSurgery:
+          column:
+            name: is_surgery
+        policyNote:
+          column:
+            name: policy_note
+        receivedAt:
+          column:
+            name: received_at
+        relatedToAccident:
+          column:
+            name: related_to_accident
+        syncedDecisionAt:
+          column:
+            name: synced_decision_at
+        syncedDocumentAt:
+          column:
+            name: synced_document_at
+        syncedPaymentDateAt:
+          column:
+            name: synced_payment_date_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdClaimCasesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - claimSequenceNo
+          - claimType
+          - declineCodeValue
+          - declineDescription
+          - exclusionInfo
+          - icuAdmissionDate
+          - icuDischargeDate
+          - isSurgery
+          - policyNote
+          - receivedAt
+          - relatedToAccident
+          - syncedDecisionAt
+          - syncedDocumentAt
+          - syncedPaymentDateAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdClaimCasesResponse
+  description: Responses from the 'insert_fwd_claim_cases' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdClaimCasesResponse
+    inputTypeName: InsertFwdClaimCasesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_claim_cases_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdClaimCasesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdClaimCases
+  outputType: InsertFwdClaimCasesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdClaimCasesObject!]!"
+    - name: postCheck
+      type: FwdClaimCasesBoolExp
+      description: Insert permission predicate over the 'fwd_claim_cases' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_claim_cases
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdClaimCases
+    rootFieldKind: Mutation
+  description: Insert into the fwd_claim_cases table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdClaimCases
+  permissions:
+    - role: admin
+      allowExecution: true
+

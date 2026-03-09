@@ -1,0 +1,193 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornPipelineExecutionsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: definition
+      type: Json!
+    - name: deletedAt
+      type: Timestamp
+    - name: endedAt
+      type: Timestamptz
+    - name: error
+      type: Json
+    - name: executionArn
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: input
+      type: Json
+    - name: output
+      type: Json
+    - name: pipelineArn
+      type: String_1!
+    - name: pipelineName
+      type: String_1!
+    - name: startedAt
+      type: Timestamptz
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertHawthornPipelineExecutionsObject
+    inputTypeName: InsertHawthornPipelineExecutionsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_pipeline_executions_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        definition:
+          column:
+            name: definition
+        deletedAt:
+          column:
+            name: deleted_at
+        endedAt:
+          column:
+            name: ended_at
+        error:
+          column:
+            name: error
+        executionArn:
+          column:
+            name: execution_arn
+        id:
+          column:
+            name: id
+        input:
+          column:
+            name: input
+        output:
+          column:
+            name: output
+        pipelineArn:
+          column:
+            name: pipeline_arn
+        pipelineName:
+          column:
+            name: pipeline_name
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornPipelineExecutionsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - definition
+          - deletedAt
+          - endedAt
+          - error
+          - executionArn
+          - id
+          - input
+          - output
+          - pipelineArn
+          - pipelineName
+          - startedAt
+          - status
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornPipelineExecutionsResponse
+  description: Responses from the 'insert_hawthorn_pipeline_executions' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornPipelineExecutions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornPipelineExecutionsResponse
+    inputTypeName: InsertHawthornPipelineExecutionsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_pipeline_executions_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornPipelineExecutionsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornPipelineExecutions
+  outputType: InsertHawthornPipelineExecutionsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornPipelineExecutionsObject!]!"
+    - name: postCheck
+      type: HawthornPipelineExecutionsBoolExp
+      description: Insert permission predicate over the 'hawthorn_pipeline_executions'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_pipeline_executions
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornPipelineExecutions
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_pipeline_executions table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornPipelineExecutions
+  permissions:
+    - role: admin
+      allowExecution: true
+

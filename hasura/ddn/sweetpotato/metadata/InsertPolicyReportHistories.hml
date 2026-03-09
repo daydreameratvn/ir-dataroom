@@ -1,0 +1,168 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyReportHistoriesObject
+  fields:
+    - name: ccEmails
+      type: "[String_1]"
+    - name: createdAt
+      type: Timestamptz
+    - name: dataFilter
+      type: Json
+    - name: groupPolicies
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: policyReportConfigIds
+      type: "[Uuid]!"
+    - name: runAt
+      type: Timestamptz!
+    - name: status
+      type: String_1!
+    - name: subject
+      type: String_1!
+    - name: toEmails
+      type: "[String_1]!"
+    - name: updatedAt
+      type: Timestamptz
+    - name: url
+      type: String_1
+  graphql:
+    typeName: InsertPolicyReportHistoriesObject
+    inputTypeName: InsertPolicyReportHistoriesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_report_histories_object
+      fieldMapping:
+        ccEmails:
+          column:
+            name: cc_emails
+        createdAt:
+          column:
+            name: created_at
+        dataFilter:
+          column:
+            name: data_filter
+        groupPolicies:
+          column:
+            name: group_policies
+        id:
+          column:
+            name: id
+        policyReportConfigIds:
+          column:
+            name: policy_report_config_ids
+        runAt:
+          column:
+            name: run_at
+        status:
+          column:
+            name: status
+        subject:
+          column:
+            name: subject
+        toEmails:
+          column:
+            name: to_emails
+        updatedAt:
+          column:
+            name: updated_at
+        url:
+          column:
+            name: url
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyReportHistoriesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - ccEmails
+          - createdAt
+          - dataFilter
+          - groupPolicies
+          - id
+          - policyReportConfigIds
+          - runAt
+          - status
+          - subject
+          - toEmails
+          - updatedAt
+          - url
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyReportHistoriesResponse
+  description: Responses from the 'insert_policy_report_histories' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyReportHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyReportHistoriesResponse
+    inputTypeName: InsertPolicyReportHistoriesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_report_histories_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyReportHistoriesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyReportHistories
+  outputType: InsertPolicyReportHistoriesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyReportHistoriesObject!]!"
+    - name: postCheck
+      type: PolicyReportHistoriesBoolExp
+      description: Insert permission predicate over the 'policy_report_histories' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_report_histories
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyReportHistories
+    rootFieldKind: Mutation
+  description: Insert into the policy_report_histories table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyReportHistories
+  permissions:
+    - role: admin
+      allowExecution: true
+

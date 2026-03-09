@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPresentCaseCodeStatusesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertPresentCaseCodeStatusesObject
+    inputTypeName: InsertPresentCaseCodeStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_present_case_code_statuses_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPresentCaseCodeStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPresentCaseCodeStatusesResponse
+  description: Responses from the 'insert_present_case_code_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PresentCaseCodeStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPresentCaseCodeStatusesResponse
+    inputTypeName: InsertPresentCaseCodeStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_present_case_code_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPresentCaseCodeStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPresentCaseCodeStatuses
+  outputType: InsertPresentCaseCodeStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPresentCaseCodeStatusesObject!]!"
+    - name: postCheck
+      type: PresentCaseCodeStatusesBoolExp
+      description: Insert permission predicate over the 'present_case_code_statuses'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_present_case_code_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPresentCaseCodeStatuses
+    rootFieldKind: Mutation
+  description: Insert into the present_case_code_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPresentCaseCodeStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCustomAmountReasonsByValueResponse
+  description: Responses from the 'delete_custom_amount_reasons_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomAmountReasons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCustomAmountReasonsByValueResponse
+    inputTypeName: DeleteCustomAmountReasonsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_custom_amount_reasons_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCustomAmountReasonsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCustomAmountReasonsByValue
+  outputType: DeleteCustomAmountReasonsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: CustomAmountReasonsBoolExp
+      description: Delete permission predicate over the 'custom_amount_reasons' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_custom_amount_reasons_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCustomAmountReasonsByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'custom_amount_reasons' collection using the
+    'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCustomAmountReasonsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

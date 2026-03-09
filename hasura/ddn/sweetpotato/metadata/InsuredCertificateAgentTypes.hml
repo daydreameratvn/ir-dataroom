@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredCertificateAgentTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsuredCertificateAgentTypes
+    inputTypeName: InsuredCertificateAgentTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_certificate_agent_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredCertificateAgentTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredCertificateAgentTypesBoolExp
+  operand:
+    object:
+      type: InsuredCertificateAgentTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: insuredCertificateAgents
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredCertificateAgentTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredCertificateAgentTypesAggExp
+  operand:
+    object:
+      aggregatedType: InsuredCertificateAgentTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredCertificateAgentTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredCertificateAgentTypesOrderByExp
+  operand:
+    object:
+      orderedType: InsuredCertificateAgentTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: InsuredCertificateAgentTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredCertificateAgentTypes
+  objectType: InsuredCertificateAgentTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_certificate_agent_types
+  filterExpressionType: InsuredCertificateAgentTypesBoolExp
+  aggregateExpression: InsuredCertificateAgentTypesAggExp
+  orderByExpression: InsuredCertificateAgentTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredCertificateAgentTypes
+      subscription:
+        rootField: insuredCertificateAgentTypes
+    selectUniques:
+      - queryRootField: insuredCertificateAgentTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: insuredCertificateAgentTypesByValue
+    filterInputTypeName: InsuredCertificateAgentTypesFilterInput
+    aggregate:
+      queryRootField: insuredCertificateAgentTypesAggregate
+      subscription:
+        rootField: insuredCertificateAgentTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredCertificateAgentTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateAgents
+  sourceType: InsuredCertificateAgentTypes
+  target:
+    model:
+      name: InsuredCertificateAgents
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredCertificateAgentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: insuredCertificateAgentsAggregate
+

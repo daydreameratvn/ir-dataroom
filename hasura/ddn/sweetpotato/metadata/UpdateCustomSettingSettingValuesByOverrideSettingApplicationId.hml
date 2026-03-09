@@ -1,0 +1,188 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCustomSettingSettingValuesByOverrideSettingApplicationIdUpdateColumns
+  description: Update the columns of the 'custom_setting_setting_values' collection
+  fields:
+    - name: booleanValue
+      type: UpdateColumnCustomSettingSettingValuesBooleanValue
+      description: Update the 'boolean_value' column in the
+        'custom_setting_setting_values' collection.
+    - name: createdAt
+      type: UpdateColumnCustomSettingSettingValuesCreatedAt
+      description: Update the 'created_at' column in the
+        'custom_setting_setting_values' collection.
+    - name: fallbackSettingApplicationId
+      type: UpdateColumnCustomSettingSettingValuesFallbackSettingApplicationId
+      description: Update the 'fallback_setting_application_id' column in the
+        'custom_setting_setting_values' collection.
+    - name: id
+      type: UpdateColumnCustomSettingSettingValuesId
+      description: Update the 'id' column in the 'custom_setting_setting_values' collection.
+    - name: jsonbValue
+      type: UpdateColumnCustomSettingSettingValuesJsonbValue
+      description: Update the 'jsonb_value' column in the
+        'custom_setting_setting_values' collection.
+    - name: numericValue
+      type: UpdateColumnCustomSettingSettingValuesNumericValue
+      description: Update the 'numeric_value' column in the
+        'custom_setting_setting_values' collection.
+    - name: overrideSettingApplicationId
+      type: UpdateColumnCustomSettingSettingValuesOverrideSettingApplicationId
+      description: Update the 'override_setting_application_id' column in the
+        'custom_setting_setting_values' collection.
+    - name: textValue
+      type: UpdateColumnCustomSettingSettingValuesTextValue
+      description: Update the 'text_value' column in the
+        'custom_setting_setting_values' collection.
+    - name: timestamptzValue
+      type: UpdateColumnCustomSettingSettingValuesTimestamptzValue
+      description: Update the 'timestamptz_value' column in the
+        'custom_setting_setting_values' collection.
+    - name: updatedAt
+      type: UpdateColumnCustomSettingSettingValuesUpdatedAt
+      description: Update the 'updated_at' column in the
+        'custom_setting_setting_values' collection.
+  graphql:
+    typeName: UpdateCustomSettingSettingValuesByOverrideSettingApplicationIdUpdateColumns
+    inputTypeName: UpdateCustomSettingSettingValuesByOverrideSettingApplicationIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_custom_setting_setting_values_by_override_setting_application_id_update_columns
+      fieldMapping:
+        booleanValue:
+          column:
+            name: boolean_value
+        createdAt:
+          column:
+            name: created_at
+        fallbackSettingApplicationId:
+          column:
+            name: fallback_setting_application_id
+        id:
+          column:
+            name: id
+        jsonbValue:
+          column:
+            name: jsonb_value
+        numericValue:
+          column:
+            name: numeric_value
+        overrideSettingApplicationId:
+          column:
+            name: override_setting_application_id
+        textValue:
+          column:
+            name: text_value
+        timestamptzValue:
+          column:
+            name: timestamptz_value
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCustomSettingSettingValuesByOverrideSettingApplicationIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - booleanValue
+          - createdAt
+          - fallbackSettingApplicationId
+          - id
+          - jsonbValue
+          - numericValue
+          - overrideSettingApplicationId
+          - textValue
+          - timestamptzValue
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCustomSettingSettingValuesByOverrideSettingApplicationIdResponse
+  description: Responses from the
+    'update_custom_setting_setting_values_by_override_setting_application_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingSettingValues!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCustomSettingSettingValuesByOverrideSettingApplicationIdResponse
+    inputTypeName: UpdateCustomSettingSettingValuesByOverrideSettingApplicationIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_custom_setting_setting_values_by_override_setting_application_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCustomSettingSettingValuesByOverrideSettingApplicationIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCustomSettingSettingValuesByOverrideSettingApplicationId
+  outputType: UpdateCustomSettingSettingValuesByOverrideSettingApplicationIdResponse!
+  arguments:
+    - name: keyOverrideSettingApplicationId
+      type: Uuid
+    - name: postCheck
+      type: CustomSettingSettingValuesBoolExp
+      description: Update permission post-condition predicate over the
+        'custom_setting_setting_values' collection
+    - name: preCheck
+      type: CustomSettingSettingValuesBoolExp
+      description: Update permission pre-condition predicate over the
+        'custom_setting_setting_values' collection
+    - name: updateColumns
+      type: UpdateCustomSettingSettingValuesByOverrideSettingApplicationIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_custom_setting_setting_values_by_override_setting_application_id
+    argumentMapping:
+      keyOverrideSettingApplicationId: key_override_setting_application_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCustomSettingSettingValuesByOverrideSettingApplicationId
+    rootFieldKind: Mutation
+  description: Update any row on the 'custom_setting_setting_values' collection
+    using the 'override_setting_application_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCustomSettingSettingValuesByOverrideSettingApplicationId
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,133 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCasesCountByHourObject
+  fields:
+    - name: fwdHsCount
+      type: Int64
+    - name: fwdMrCount
+      type: Int64
+    - name: hour
+      type: Timestamptz
+    - name: mbalHsCount
+      type: Int64
+    - name: noneLifeCount
+      type: Int64
+    - name: slvHsCount
+      type: Int64
+  graphql:
+    typeName: InsertClaimCasesCountByHourObject
+    inputTypeName: InsertClaimCasesCountByHourObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_cases_count_by_hour_object
+      fieldMapping:
+        fwdHsCount:
+          column:
+            name: fwd_hs_count
+        fwdMrCount:
+          column:
+            name: fwd_mr_count
+        hour:
+          column:
+            name: hour
+        mbalHsCount:
+          column:
+            name: mbal_hs_count
+        noneLifeCount:
+          column:
+            name: none_life_count
+        slvHsCount:
+          column:
+            name: slv_hs_count
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCasesCountByHourObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - fwdHsCount
+          - fwdMrCount
+          - hour
+          - mbalHsCount
+          - noneLifeCount
+          - slvHsCount
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCasesCountByHourResponse
+  description: Responses from the 'insert_claim_cases_count_by_hour' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCasesCountByHour!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCasesCountByHourResponse
+    inputTypeName: InsertClaimCasesCountByHourResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_cases_count_by_hour_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCasesCountByHourResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCasesCountByHour
+  outputType: InsertClaimCasesCountByHourResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCasesCountByHourObject!]!"
+    - name: postCheck
+      type: ClaimCasesCountByHourBoolExp
+      description: Insert permission predicate over the 'claim_cases_count_by_hour'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_cases_count_by_hour
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCasesCountByHour
+    rootFieldKind: Mutation
+  description: Insert into the claim_cases_count_by_hour table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCasesCountByHour
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpFilesByUrlUpdateColumns
+  description: Update the columns of the 'mp_files' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnMpFilesCreatedAt
+      description: Update the 'created_at' column in the 'mp_files' collection.
+    - name: deletedAt
+      type: UpdateColumnMpFilesDeletedAt
+      description: Update the 'deleted_at' column in the 'mp_files' collection.
+    - name: fileId
+      type: UpdateColumnMpFilesFileId
+      description: Update the 'file_id' column in the 'mp_files' collection.
+    - name: fileType
+      type: UpdateColumnMpFilesFileType
+      description: Update the 'file_type' column in the 'mp_files' collection.
+    - name: medicalProviderId
+      type: UpdateColumnMpFilesMedicalProviderId
+      description: Update the 'medical_provider_id' column in the 'mp_files' collection.
+    - name: mimeType
+      type: UpdateColumnMpFilesMimeType
+      description: Update the 'mime_type' column in the 'mp_files' collection.
+    - name: name
+      type: UpdateColumnMpFilesName
+      description: Update the 'name' column in the 'mp_files' collection.
+    - name: status
+      type: UpdateColumnMpFilesStatus
+      description: Update the 'status' column in the 'mp_files' collection.
+    - name: updatedAt
+      type: UpdateColumnMpFilesUpdatedAt
+      description: Update the 'updated_at' column in the 'mp_files' collection.
+    - name: url
+      type: UpdateColumnMpFilesUrl
+      description: Update the 'url' column in the 'mp_files' collection.
+  graphql:
+    typeName: UpdateMpFilesByUrlUpdateColumns
+    inputTypeName: UpdateMpFilesByUrlUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_files_by_url_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        fileId:
+          column:
+            name: file_id
+        fileType:
+          column:
+            name: file_type
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        mimeType:
+          column:
+            name: mime_type
+        name:
+          column:
+            name: name
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+        url:
+          column:
+            name: url
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpFilesByUrlUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - fileId
+          - fileType
+          - medicalProviderId
+          - mimeType
+          - name
+          - status
+          - updatedAt
+          - url
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpFilesByUrlResponse
+  description: Responses from the 'update_mp_files_by_url' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpFiles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateMpFilesByUrlResponse
+    inputTypeName: UpdateMpFilesByUrlResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_files_by_url_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpFilesByUrlResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateMpFilesByUrl
+  outputType: UpdateMpFilesByUrlResponse!
+  arguments:
+    - name: keyUrl
+      type: String_1
+    - name: postCheck
+      type: MpFilesBoolExp
+      description: Update permission post-condition predicate over the 'mp_files' collection
+    - name: preCheck
+      type: MpFilesBoolExp
+      description: Update permission pre-condition predicate over the 'mp_files' collection
+    - name: updateColumns
+      type: UpdateMpFilesByUrlUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_mp_files_by_url
+    argumentMapping:
+      keyUrl: key_url
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateMpFilesByUrl
+    rootFieldKind: Mutation
+  description: Update any row on the 'mp_files' collection using the 'url' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateMpFilesByUrl
+  permissions:
+    - role: admin
+      allowExecution: true
+

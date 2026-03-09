@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimPendingCodeStatuses
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimPendingCodeStatuses
+    inputTypeName: ClaimPendingCodeStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_pending_code_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimPendingCodeStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimPendingCodeStatusesBoolExp
+  operand:
+    object:
+      type: ClaimPendingCodeStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimPendingCodes
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimPendingCodeStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimPendingCodeStatusesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimPendingCodeStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimPendingCodeStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimPendingCodeStatusesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimPendingCodeStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimPendingCodeStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimPendingCodeStatuses
+  objectType: ClaimPendingCodeStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_pending_code_statuses
+  filterExpressionType: ClaimPendingCodeStatusesBoolExp
+  aggregateExpression: ClaimPendingCodeStatusesAggExp
+  orderByExpression: ClaimPendingCodeStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimPendingCodeStatuses
+      subscription:
+        rootField: claimPendingCodeStatuses
+    selectUniques:
+      - queryRootField: claimPendingCodeStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimPendingCodeStatusesByValue
+    filterInputTypeName: ClaimPendingCodeStatusesFilterInput
+    aggregate:
+      queryRootField: claimPendingCodeStatusesAggregate
+      subscription:
+        rootField: claimPendingCodeStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimPendingCodeStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimPendingCodes
+  sourceType: ClaimPendingCodeStatuses
+  target:
+    model:
+      name: ClaimPendingCodes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimPendingCodesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: claimPendingCodesAggregate
+

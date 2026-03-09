@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdSyncDocumentsByIdResponse
+  description: Responses from the 'delete_fwd_sync_documents_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdSyncDocuments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdSyncDocumentsByIdResponse
+    inputTypeName: DeleteFwdSyncDocumentsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_sync_documents_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdSyncDocumentsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdSyncDocumentsById
+  outputType: DeleteFwdSyncDocumentsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: FwdSyncDocumentsBoolExp
+      description: Delete permission predicate over the 'fwd_sync_documents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_sync_documents_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdSyncDocumentsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_sync_documents' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdSyncDocumentsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

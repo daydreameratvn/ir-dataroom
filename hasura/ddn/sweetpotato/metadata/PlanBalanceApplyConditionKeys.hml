@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanBalanceApplyConditionKeys
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PlanBalanceApplyConditionKeys
+    inputTypeName: PlanBalanceApplyConditionKeysInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_balance_apply_condition_keys
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanBalanceApplyConditionKeys
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanBalanceApplyConditionKeysBoolExp
+  operand:
+    object:
+      type: PlanBalanceApplyConditionKeys
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: planBalances
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanBalanceApplyConditionKeysBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanBalanceApplyConditionKeysAggExp
+  operand:
+    object:
+      aggregatedType: PlanBalanceApplyConditionKeys
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanBalanceApplyConditionKeysAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanBalanceApplyConditionKeysOrderByExp
+  operand:
+    object:
+      orderedType: PlanBalanceApplyConditionKeys
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PlanBalanceApplyConditionKeysOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanBalanceApplyConditionKeys
+  objectType: PlanBalanceApplyConditionKeys
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_balance_apply_condition_keys
+  filterExpressionType: PlanBalanceApplyConditionKeysBoolExp
+  aggregateExpression: PlanBalanceApplyConditionKeysAggExp
+  orderByExpression: PlanBalanceApplyConditionKeysOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planBalanceApplyConditionKeys
+      subscription:
+        rootField: planBalanceApplyConditionKeys
+    selectUniques:
+      - queryRootField: planBalanceApplyConditionKeysByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: planBalanceApplyConditionKeysByValue
+    filterInputTypeName: PlanBalanceApplyConditionKeysFilterInput
+    aggregate:
+      queryRootField: planBalanceApplyConditionKeysAggregate
+      subscription:
+        rootField: planBalanceApplyConditionKeysAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanBalanceApplyConditionKeys
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalances
+  sourceType: PlanBalanceApplyConditionKeys
+  target:
+    model:
+      name: PlanBalances
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanBalancesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: applyConditionKey
+  graphql:
+    aggregateFieldName: planBalancesAggregate
+

@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutPaymentProvidersByValueResponse
+  description: Responses from the 'delete_payout_payment_providers_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPaymentProviders!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutPaymentProvidersByValueResponse
+    inputTypeName: DeletePayoutPaymentProvidersByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_payment_providers_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutPaymentProvidersByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutPaymentProvidersByValue
+  outputType: DeletePayoutPaymentProvidersByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: PayoutPaymentProvidersBoolExp
+      description: Delete permission predicate over the 'payout_payment_providers'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_payment_providers_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutPaymentProvidersByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_payment_providers' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutPaymentProvidersByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

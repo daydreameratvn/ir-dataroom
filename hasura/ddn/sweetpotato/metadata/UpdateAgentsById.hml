@@ -1,0 +1,167 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateAgentsByIdUpdateColumns
+  description: Update the columns of the 'agents' collection
+  fields:
+    - name: code
+      type: UpdateColumnAgentsCode
+      description: Update the 'code' column in the 'agents' collection.
+    - name: createdAt
+      type: UpdateColumnAgentsCreatedAt
+      description: Update the 'created_at' column in the 'agents' collection.
+    - name: email
+      type: UpdateColumnAgentsEmail
+      description: Update the 'email' column in the 'agents' collection.
+    - name: groupCode
+      type: UpdateColumnAgentsGroupCode
+      description: Update the 'group_code' column in the 'agents' collection.
+    - name: id
+      type: UpdateColumnAgentsId
+      description: Update the 'id' column in the 'agents' collection.
+    - name: insurerId
+      type: UpdateColumnAgentsInsurerId
+      description: Update the 'insurer_id' column in the 'agents' collection.
+    - name: name
+      type: UpdateColumnAgentsName
+      description: Update the 'name' column in the 'agents' collection.
+    - name: phone
+      type: UpdateColumnAgentsPhone
+      description: Update the 'phone' column in the 'agents' collection.
+    - name: updatedAt
+      type: UpdateColumnAgentsUpdatedAt
+      description: Update the 'updated_at' column in the 'agents' collection.
+  graphql:
+    typeName: UpdateAgentsByIdUpdateColumns
+    inputTypeName: UpdateAgentsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_agents_by_id_update_columns
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        email:
+          column:
+            name: email
+        groupCode:
+          column:
+            name: group_code
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        name:
+          column:
+            name: name
+        phone:
+          column:
+            name: phone
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateAgentsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - email
+          - groupCode
+          - id
+          - insurerId
+          - name
+          - phone
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateAgentsByIdResponse
+  description: Responses from the 'update_agents_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Agents!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateAgentsByIdResponse
+    inputTypeName: UpdateAgentsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_agents_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateAgentsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateAgentsById
+  outputType: UpdateAgentsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: AgentsBoolExp
+      description: Update permission post-condition predicate over the 'agents' collection
+    - name: preCheck
+      type: AgentsBoolExp
+      description: Update permission pre-condition predicate over the 'agents' collection
+    - name: updateColumns
+      type: UpdateAgentsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_agents_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateAgentsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'agents' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateAgentsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

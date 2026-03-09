@@ -1,0 +1,181 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ShortUrls
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: originalUrl
+      type: String_1!
+    - name: requestCount
+      type: Int64!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: ShortUrls
+    inputTypeName: ShortUrlsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: short_urls
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        originalUrl:
+          column:
+            name: original_url
+        requestCount:
+          column:
+            name: request_count
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ShortUrls
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - deletedAt
+          - originalUrl
+          - requestCount
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ShortUrlsBoolExp
+  operand:
+    object:
+      type: ShortUrls
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: originalUrl
+          booleanExpressionType: TextBoolExp
+        - fieldName: requestCount
+          booleanExpressionType: Int8BoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ShortUrlsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ShortUrlsAggExp
+  operand:
+    object:
+      aggregatedType: ShortUrls
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: originalUrl
+          aggregateExpression: TextAggExp
+        - fieldName: requestCount
+          aggregateExpression: Int8AggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ShortUrlsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ShortUrlsOrderByExp
+  operand:
+    object:
+      orderedType: ShortUrls
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: originalUrl
+          orderByExpression: String1OrderByExp
+        - fieldName: requestCount
+          orderByExpression: Int64OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ShortUrlsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ShortUrls
+  objectType: ShortUrls
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: short_urls
+  filterExpressionType: ShortUrlsBoolExp
+  aggregateExpression: ShortUrlsAggExp
+  orderByExpression: ShortUrlsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: shortUrls
+      subscription:
+        rootField: shortUrls
+    selectUniques:
+      - queryRootField: shortUrlsByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: shortUrlsByCode
+    filterInputTypeName: ShortUrlsFilterInput
+    aggregate:
+      queryRootField: shortUrlsAggregate
+      subscription:
+        rootField: shortUrlsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ShortUrls
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

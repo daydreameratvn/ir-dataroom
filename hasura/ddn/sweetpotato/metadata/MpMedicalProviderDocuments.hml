@@ -1,0 +1,197 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProviderDocuments
+  fields:
+    - name: deletedAt
+      type: Timestamptz
+    - name: fileId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: medicalProviderId
+      type: Uuid
+  graphql:
+    typeName: MpMedicalProviderDocuments
+    inputTypeName: MpMedicalProviderDocumentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_provider_documents
+      fieldMapping:
+        deletedAt:
+          column:
+            name: deleted_at
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProviderDocuments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - deletedAt
+          - fileId
+          - id
+          - medicalProviderId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProviderDocumentsBoolExp
+  operand:
+    object:
+      type: MpMedicalProviderDocuments
+      comparableFields:
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: file
+        - relationshipName: mpMedicalProvider
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProviderDocumentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProviderDocumentsAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProviderDocuments
+      aggregatableFields:
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fileId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProviderDocumentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProviderDocumentsOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProviderDocuments
+      orderableFields:
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: file
+        - relationshipName: mpMedicalProvider
+  graphql:
+    expressionTypeName: MpMedicalProviderDocumentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProviderDocuments
+  objectType: MpMedicalProviderDocuments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_provider_documents
+  filterExpressionType: MpMedicalProviderDocumentsBoolExp
+  aggregateExpression: MpMedicalProviderDocumentsAggExp
+  orderByExpression: MpMedicalProviderDocumentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProviderDocuments
+      subscription:
+        rootField: mpMedicalProviderDocuments
+    selectUniques:
+      - queryRootField: mpMedicalProviderDocumentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: mpMedicalProviderDocumentsById
+    filterInputTypeName: MpMedicalProviderDocumentsFilterInput
+    aggregate:
+      queryRootField: mpMedicalProviderDocumentsAggregate
+      subscription:
+        rootField: mpMedicalProviderDocumentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProviderDocuments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: file
+  sourceType: MpMedicalProviderDocuments
+  target:
+    model:
+      name: Files
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: MpMedicalProviderDocuments
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+

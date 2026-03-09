@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityUserFcmTokensByIdUpdateColumns
+  description: Update the columns of the 'identity_user_fcm_tokens' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnIdentityUserFcmTokensCreatedAt
+      description: Update the 'created_at' column in the 'identity_user_fcm_tokens'
+        collection.
+    - name: deletedAt
+      type: UpdateColumnIdentityUserFcmTokensDeletedAt
+      description: Update the 'deleted_at' column in the 'identity_user_fcm_tokens'
+        collection.
+    - name: expiredAt
+      type: UpdateColumnIdentityUserFcmTokensExpiredAt
+      description: Update the 'expired_at' column in the 'identity_user_fcm_tokens'
+        collection.
+    - name: fcmToken
+      type: UpdateColumnIdentityUserFcmTokensFcmToken
+      description: Update the 'fcm_token' column in the 'identity_user_fcm_tokens'
+        collection.
+    - name: id
+      type: UpdateColumnIdentityUserFcmTokensId
+      description: Update the 'id' column in the 'identity_user_fcm_tokens' collection.
+    - name: updatedAt
+      type: UpdateColumnIdentityUserFcmTokensUpdatedAt
+      description: Update the 'updated_at' column in the 'identity_user_fcm_tokens'
+        collection.
+    - name: userDeviceId
+      type: UpdateColumnIdentityUserFcmTokensUserDeviceId
+      description: Update the 'user_device_id' column in the
+        'identity_user_fcm_tokens' collection.
+    - name: userId
+      type: UpdateColumnIdentityUserFcmTokensUserId
+      description: Update the 'user_id' column in the 'identity_user_fcm_tokens' collection.
+  graphql:
+    typeName: UpdateIdentityUserFcmTokensByIdUpdateColumns
+    inputTypeName: UpdateIdentityUserFcmTokensByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_user_fcm_tokens_by_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        expiredAt:
+          column:
+            name: expired_at
+        fcmToken:
+          column:
+            name: fcm_token
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+        userDeviceId:
+          column:
+            name: user_device_id
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityUserFcmTokensByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - expiredAt
+          - fcmToken
+          - id
+          - updatedAt
+          - userDeviceId
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityUserFcmTokensByIdResponse
+  description: Responses from the 'update_identity_user_fcm_tokens_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityUserFcmTokens!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateIdentityUserFcmTokensByIdResponse
+    inputTypeName: UpdateIdentityUserFcmTokensByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_user_fcm_tokens_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityUserFcmTokensByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateIdentityUserFcmTokensById
+  outputType: UpdateIdentityUserFcmTokensByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: IdentityUserFcmTokensBoolExp
+      description: Update permission post-condition predicate over the
+        'identity_user_fcm_tokens' collection
+    - name: preCheck
+      type: IdentityUserFcmTokensBoolExp
+      description: Update permission pre-condition predicate over the
+        'identity_user_fcm_tokens' collection
+    - name: updateColumns
+      type: UpdateIdentityUserFcmTokensByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_identity_user_fcm_tokens_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateIdentityUserFcmTokensById
+    rootFieldKind: Mutation
+  description: Update any row on the 'identity_user_fcm_tokens' collection using
+    the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateIdentityUserFcmTokensById
+  permissions:
+    - role: admin
+      allowExecution: true
+

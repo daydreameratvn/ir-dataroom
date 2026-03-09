@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CustomSettingModules
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CustomSettingModules
+    inputTypeName: CustomSettingModulesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: custom_setting_modules
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CustomSettingModules
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CustomSettingModulesBoolExp
+  operand:
+    object:
+      type: CustomSettingModules
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: customSettingSettings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CustomSettingModulesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CustomSettingModulesAggExp
+  operand:
+    object:
+      aggregatedType: CustomSettingModules
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CustomSettingModulesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CustomSettingModulesOrderByExp
+  operand:
+    object:
+      orderedType: CustomSettingModules
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CustomSettingModulesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CustomSettingModules
+  objectType: CustomSettingModules
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: custom_setting_modules
+  filterExpressionType: CustomSettingModulesBoolExp
+  aggregateExpression: CustomSettingModulesAggExp
+  orderByExpression: CustomSettingModulesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: customSettingModules
+      subscription:
+        rootField: customSettingModules
+    selectUniques:
+      - queryRootField: customSettingModulesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: customSettingModulesByValue
+    filterInputTypeName: CustomSettingModulesFilterInput
+    aggregate:
+      queryRootField: customSettingModulesAggregate
+      subscription:
+        rootField: customSettingModulesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CustomSettingModules
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customSettingSettings
+  sourceType: CustomSettingModules
+  target:
+    model:
+      name: CustomSettingSettings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CustomSettingSettingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: module
+  graphql:
+    aggregateFieldName: customSettingSettingsAggregate
+

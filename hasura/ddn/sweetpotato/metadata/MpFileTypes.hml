@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpFileTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MpFileTypes
+    inputTypeName: MpFileTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_file_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpFileTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpFileTypesBoolExp
+  operand:
+    object:
+      type: MpFileTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: mpFiles
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpFileTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpFileTypesAggExp
+  operand:
+    object:
+      aggregatedType: MpFileTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpFileTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpFileTypesOrderByExp
+  operand:
+    object:
+      orderedType: MpFileTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MpFileTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpFileTypes
+  objectType: MpFileTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_file_types
+  filterExpressionType: MpFileTypesBoolExp
+  aggregateExpression: MpFileTypesAggExp
+  orderByExpression: MpFileTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpFileTypes
+      subscription:
+        rootField: mpFileTypes
+    selectUniques:
+      - queryRootField: mpFileTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: mpFileTypesByValue
+    filterInputTypeName: MpFileTypesFilterInput
+    aggregate:
+      queryRootField: mpFileTypesAggregate
+      subscription:
+        rootField: mpFileTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpFileTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpFiles
+  sourceType: MpFileTypes
+  target:
+    model:
+      name: MpFiles
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpFilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: fileType
+  graphql:
+    aggregateFieldName: mpFilesAggregate
+

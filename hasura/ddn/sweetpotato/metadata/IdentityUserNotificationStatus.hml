@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityUserNotificationStatus
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: IdentityUserNotificationStatus
+    inputTypeName: IdentityUserNotificationStatusInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_user_notification_status
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityUserNotificationStatus
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityUserNotificationStatusBoolExp
+  operand:
+    object:
+      type: IdentityUserNotificationStatus
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: identityUserNotifications
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityUserNotificationStatusBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityUserNotificationStatusAggExp
+  operand:
+    object:
+      aggregatedType: IdentityUserNotificationStatus
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityUserNotificationStatusAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityUserNotificationStatusOrderByExp
+  operand:
+    object:
+      orderedType: IdentityUserNotificationStatus
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: IdentityUserNotificationStatusOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityUserNotificationStatus
+  objectType: IdentityUserNotificationStatus
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_user_notification_status
+  filterExpressionType: IdentityUserNotificationStatusBoolExp
+  aggregateExpression: IdentityUserNotificationStatusAggExp
+  orderByExpression: IdentityUserNotificationStatusOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityUserNotificationStatus
+      subscription:
+        rootField: identityUserNotificationStatus
+    selectUniques:
+      - queryRootField: identityUserNotificationStatusByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: identityUserNotificationStatusByValue
+    filterInputTypeName: IdentityUserNotificationStatusFilterInput
+    aggregate:
+      queryRootField: identityUserNotificationStatusAggregate
+      subscription:
+        rootField: identityUserNotificationStatusAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityUserNotificationStatus
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserNotifications
+  sourceType: IdentityUserNotificationStatus
+  target:
+    model:
+      name: IdentityUserNotifications
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityUserNotificationsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: identityUserNotificationsAggregate
+

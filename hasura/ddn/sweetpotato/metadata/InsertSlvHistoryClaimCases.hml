@@ -1,0 +1,144 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvHistoryClaimCasesObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: decisionAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insuredPersonId
+      type: Uuid!
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertSlvHistoryClaimCasesObject
+    inputTypeName: InsertSlvHistoryClaimCasesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_history_claim_cases_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        decisionAt:
+          column:
+            name: decision_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvHistoryClaimCasesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - decisionAt
+          - deletedAt
+          - id
+          - insuredPersonId
+          - status
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvHistoryClaimCasesResponse
+  description: Responses from the 'insert_slv_history_claim_cases' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvHistoryClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertSlvHistoryClaimCasesResponse
+    inputTypeName: InsertSlvHistoryClaimCasesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_history_claim_cases_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvHistoryClaimCasesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertSlvHistoryClaimCases
+  outputType: InsertSlvHistoryClaimCasesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertSlvHistoryClaimCasesObject!]!"
+    - name: postCheck
+      type: SlvHistoryClaimCasesBoolExp
+      description: Insert permission predicate over the 'slv_history_claim_cases' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_slv_history_claim_cases
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertSlvHistoryClaimCases
+    rootFieldKind: Mutation
+  description: Insert into the slv_history_claim_cases table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertSlvHistoryClaimCases
+  permissions:
+    - role: admin
+      allowExecution: true
+

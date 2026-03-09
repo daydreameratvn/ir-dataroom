@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OverlordBookingStatuses
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: OverlordBookingStatuses
+    inputTypeName: OverlordBookingStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: overlord_booking_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OverlordBookingStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OverlordBookingStatusesBoolExp
+  operand:
+    object:
+      type: OverlordBookingStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: overlordBookingStatus
+        - relationshipName: overlordBookings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OverlordBookingStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OverlordBookingStatusesAggExp
+  operand:
+    object:
+      aggregatedType: OverlordBookingStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OverlordBookingStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OverlordBookingStatusesOrderByExp
+  operand:
+    object:
+      orderedType: OverlordBookingStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: overlordBookingStatus
+  graphql:
+    expressionTypeName: OverlordBookingStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OverlordBookingStatuses
+  objectType: OverlordBookingStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: overlord_booking_statuses
+  filterExpressionType: OverlordBookingStatusesBoolExp
+  aggregateExpression: OverlordBookingStatusesAggExp
+  orderByExpression: OverlordBookingStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: overlordBookingStatuses
+      subscription:
+        rootField: overlordBookingStatuses
+    selectUniques:
+      - queryRootField: overlordBookingStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: overlordBookingStatusesByValue
+    filterInputTypeName: OverlordBookingStatusesFilterInput
+    aggregate:
+      queryRootField: overlordBookingStatusesAggregate
+      subscription:
+        rootField: overlordBookingStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OverlordBookingStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: overlordBookingStatus
+  sourceType: OverlordBookingStatuses
+  target:
+    model:
+      name: OverlordBookingStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: overlordBookings
+  sourceType: OverlordBookingStatuses
+  target:
+    model:
+      name: OverlordBookings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OverlordBookingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: overlordBookingsAggregate
+

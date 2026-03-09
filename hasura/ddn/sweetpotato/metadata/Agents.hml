@@ -1,0 +1,312 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Agents
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: email
+      type: String_1
+    - name: groupCode
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: insurerId
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: phone
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: Agents
+    inputTypeName: AgentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: agents
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        email:
+          column:
+            name: email
+        groupCode:
+          column:
+            name: group_code
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        name:
+          column:
+            name: name
+        phone:
+          column:
+            name: phone
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Agents
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - email
+          - groupCode
+          - id
+          - insurerId
+          - name
+          - phone
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AgentsBoolExp
+  operand:
+    object:
+      type: Agents
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: email
+          booleanExpressionType: TextBoolExp
+        - fieldName: groupCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: phone
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: company
+        - relationshipName: claimCases
+        - relationshipName: insuredCertificateAgents
+        - relationshipName: originalClaimCases
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AgentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AgentsAggExp
+  operand:
+    object:
+      aggregatedType: Agents
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: email
+          aggregateExpression: TextAggExp
+        - fieldName: groupCode
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerId
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: phone
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AgentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AgentsOrderByExp
+  operand:
+    object:
+      orderedType: Agents
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: email
+          orderByExpression: String1OrderByExp
+        - fieldName: groupCode
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: phone
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+  graphql:
+    expressionTypeName: AgentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Agents
+  objectType: Agents
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: agents
+  filterExpressionType: AgentsBoolExp
+  aggregateExpression: AgentsAggExp
+  orderByExpression: AgentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: agents
+      subscription:
+        rootField: agents
+    selectUniques:
+      - queryRootField: agentsByAgentsCodeInsurerIdKey
+        uniqueIdentifier:
+          - code
+          - insurerId
+        subscription:
+          rootField: agentsByAgentsCodeInsurerIdKey
+      - queryRootField: agentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: agentsById
+    filterInputTypeName: AgentsFilterInput
+    aggregate:
+      queryRootField: agentsAggregate
+      subscription:
+        rootField: agentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Agents
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: Agents
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insurerId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCases
+  sourceType: Agents
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: agentId
+  graphql:
+    aggregateFieldName: claimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateAgents
+  sourceType: Agents
+  target:
+    model:
+      name: InsuredCertificateAgents
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredCertificateAgentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: agentId
+  graphql:
+    aggregateFieldName: insuredCertificateAgentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: originalClaimCases
+  sourceType: Agents
+  target:
+    model:
+      name: OriginalClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OriginalClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: agentId
+  graphql:
+    aggregateFieldName: originalClaimCasesAggregate
+

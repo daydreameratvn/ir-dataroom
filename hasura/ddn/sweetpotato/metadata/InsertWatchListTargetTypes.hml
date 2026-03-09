@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertWatchListTargetTypesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertWatchListTargetTypesObject
+    inputTypeName: InsertWatchListTargetTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_watch_list_target_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertWatchListTargetTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertWatchListTargetTypesResponse
+  description: Responses from the 'insert_watch_list_target_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[WatchListTargetTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertWatchListTargetTypesResponse
+    inputTypeName: InsertWatchListTargetTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_watch_list_target_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertWatchListTargetTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertWatchListTargetTypes
+  outputType: InsertWatchListTargetTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertWatchListTargetTypesObject!]!"
+    - name: postCheck
+      type: WatchListTargetTypesBoolExp
+      description: Insert permission predicate over the 'watch_list_target_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_watch_list_target_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertWatchListTargetTypes
+    rootFieldKind: Mutation
+  description: Insert into the watch_list_target_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertWatchListTargetTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

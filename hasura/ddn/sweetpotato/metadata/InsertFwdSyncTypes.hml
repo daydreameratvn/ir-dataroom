@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdSyncTypesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertFwdSyncTypesObject
+    inputTypeName: InsertFwdSyncTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_sync_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdSyncTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdSyncTypesResponse
+  description: Responses from the 'insert_fwd_sync_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdSyncTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdSyncTypesResponse
+    inputTypeName: InsertFwdSyncTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_sync_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdSyncTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdSyncTypes
+  outputType: InsertFwdSyncTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdSyncTypesObject!]!"
+    - name: postCheck
+      type: FwdSyncTypesBoolExp
+      description: Insert permission predicate over the 'fwd_sync_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_sync_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdSyncTypes
+    rootFieldKind: Mutation
+  description: Insert into the fwd_sync_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdSyncTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

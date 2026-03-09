@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetricNpsScorePurposesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertMetricNpsScorePurposesObject
+    inputTypeName: InsertMetricNpsScorePurposesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_metric_nps_score_purposes_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetricNpsScorePurposesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetricNpsScorePurposesResponse
+  description: Responses from the 'insert_metric_nps_score_purposes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetricNpsScorePurposes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMetricNpsScorePurposesResponse
+    inputTypeName: InsertMetricNpsScorePurposesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_metric_nps_score_purposes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetricNpsScorePurposesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMetricNpsScorePurposes
+  outputType: InsertMetricNpsScorePurposesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMetricNpsScorePurposesObject!]!"
+    - name: postCheck
+      type: MetricNpsScorePurposesBoolExp
+      description: Insert permission predicate over the 'metric_nps_score_purposes'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_metric_nps_score_purposes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMetricNpsScorePurposes
+    rootFieldKind: Mutation
+  description: Insert into the metric_nps_score_purposes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMetricNpsScorePurposes
+  permissions:
+    - role: admin
+      allowExecution: true
+

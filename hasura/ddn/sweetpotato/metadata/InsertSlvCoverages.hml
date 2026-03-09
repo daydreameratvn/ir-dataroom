@@ -1,0 +1,198 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvCoveragesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: cvgExpiryDate
+      type: Timestamptz
+    - name: cvgIssDate
+      type: Timestamptz
+    - name: cvgLapseDate
+      type: Timestamptz
+    - name: cvgNo
+      type: String_1!
+    - name: cvgProductCode
+      type: String_1
+    - name: cvgProductName
+      type: String_1
+    - name: cvgReinstateDate
+      type: Timestamptz
+    - name: cvgSettleDate
+      type: Timestamptz
+    - name: cvgStatus
+      type: String_1!
+    - name: cvgSumAssured
+      type: Bigdecimal
+    - name: exclusion
+      type: String_1
+    - name: exclusionCmt
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: lifeAssuredId
+      type: Uuid
+    - name: policyId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertSlvCoveragesObject
+    inputTypeName: InsertSlvCoveragesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_coverages_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        cvgExpiryDate:
+          column:
+            name: cvg_expiry_date
+        cvgIssDate:
+          column:
+            name: cvg_iss_date
+        cvgLapseDate:
+          column:
+            name: cvg_lapse_date
+        cvgNo:
+          column:
+            name: cvg_no
+        cvgProductCode:
+          column:
+            name: cvg_product_code
+        cvgProductName:
+          column:
+            name: cvg_product_name
+        cvgReinstateDate:
+          column:
+            name: cvg_reinstate_date
+        cvgSettleDate:
+          column:
+            name: cvg_settle_date
+        cvgStatus:
+          column:
+            name: cvg_status
+        cvgSumAssured:
+          column:
+            name: cvg_sum_assured
+        exclusion:
+          column:
+            name: exclusion
+        exclusionCmt:
+          column:
+            name: exclusion_cmt
+        id:
+          column:
+            name: id
+        lifeAssuredId:
+          column:
+            name: life_assured_id
+        policyId:
+          column:
+            name: policy_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvCoveragesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - cvgExpiryDate
+          - cvgIssDate
+          - cvgLapseDate
+          - cvgNo
+          - cvgProductCode
+          - cvgProductName
+          - cvgReinstateDate
+          - cvgSettleDate
+          - cvgStatus
+          - cvgSumAssured
+          - exclusion
+          - exclusionCmt
+          - id
+          - lifeAssuredId
+          - policyId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvCoveragesResponse
+  description: Responses from the 'insert_slv_coverages' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvCoverages!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertSlvCoveragesResponse
+    inputTypeName: InsertSlvCoveragesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_coverages_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvCoveragesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertSlvCoverages
+  outputType: InsertSlvCoveragesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertSlvCoveragesObject!]!"
+    - name: postCheck
+      type: SlvCoveragesBoolExp
+      description: Insert permission predicate over the 'slv_coverages' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_slv_coverages
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertSlvCoverages
+    rootFieldKind: Mutation
+  description: Insert into the slv_coverages table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertSlvCoverages
+  permissions:
+    - role: admin
+      allowExecution: true
+

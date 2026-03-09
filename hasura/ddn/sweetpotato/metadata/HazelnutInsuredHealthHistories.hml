@@ -1,0 +1,364 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HazelnutInsuredHealthHistories
+  description: THÔNG TIN VỀ TÌNH TRẠNG SỨC KHỎE
+  fields:
+    - name: chronicDiseases
+      type: Boolean_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: hospitalTreatmentLast3Years
+      type: Boolean_1
+    - name: hospitalTreatmentNext12Months
+      type: Boolean_1
+    - name: id
+      type: Uuid!
+    - name: insuranceRequestId
+      type: Uuid!
+    - name: insuredPersonId
+      type: Uuid!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: HazelnutInsuredHealthHistories
+    inputTypeName: HazelnutInsuredHealthHistoriesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hazelnut_insured_health_histories
+      fieldMapping:
+        chronicDiseases:
+          column:
+            name: chronic_diseases
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        hospitalTreatmentLast3Years:
+          column:
+            name: hospital_treatment_last_3_years
+        hospitalTreatmentNext12Months:
+          column:
+            name: hospital_treatment_next_12_months
+        id:
+          column:
+            name: id
+        insuranceRequestId:
+          column:
+            name: insurance_request_id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HazelnutInsuredHealthHistories
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - chronicDiseases
+          - createdAt
+          - createdBy
+          - deletedAt
+          - hospitalTreatmentLast3Years
+          - hospitalTreatmentNext12Months
+          - id
+          - insuranceRequestId
+          - insuredPersonId
+          - type
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HazelnutInsuredHealthHistoriesBoolExp
+  operand:
+    object:
+      type: HazelnutInsuredHealthHistories
+      comparableFields:
+        - fieldName: chronicDiseases
+          booleanExpressionType: BoolBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: hospitalTreatmentLast3Years
+          booleanExpressionType: BoolBoolExp
+        - fieldName: hospitalTreatmentNext12Months
+          booleanExpressionType: BoolBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuranceRequestId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredPersonId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: hazelnutInsuranceRequestsInsuredPerson
+        - relationshipName: hazelnutInsuredHealthHistoryType
+        - relationshipName: identityUserByUpdatedBy
+        - relationshipName: hazelnutInsuredHealthHistoryRecords
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HazelnutInsuredHealthHistoriesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HazelnutInsuredHealthHistoriesAggExp
+  operand:
+    object:
+      aggregatedType: HazelnutInsuredHealthHistories
+      aggregatableFields:
+        - fieldName: chronicDiseases
+          aggregateExpression: BoolAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: hospitalTreatmentLast3Years
+          aggregateExpression: BoolAggExp
+        - fieldName: hospitalTreatmentNext12Months
+          aggregateExpression: BoolAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuranceRequestId
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredPersonId
+          aggregateExpression: UuidAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HazelnutInsuredHealthHistoriesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HazelnutInsuredHealthHistoriesOrderByExp
+  operand:
+    object:
+      orderedType: HazelnutInsuredHealthHistories
+      orderableFields:
+        - fieldName: chronicDiseases
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: hospitalTreatmentLast3Years
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: hospitalTreatmentNext12Months
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuranceRequestId
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredPersonId
+          orderByExpression: UuidOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: hazelnutInsuranceRequestsInsuredPerson
+        - relationshipName: hazelnutInsuredHealthHistoryType
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: HazelnutInsuredHealthHistoriesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HazelnutInsuredHealthHistories
+  objectType: HazelnutInsuredHealthHistories
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hazelnut_insured_health_histories
+  filterExpressionType: HazelnutInsuredHealthHistoriesBoolExp
+  aggregateExpression: HazelnutInsuredHealthHistoriesAggExp
+  orderByExpression: HazelnutInsuredHealthHistoriesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hazelnutInsuredHealthHistories
+      subscription:
+        rootField: hazelnutInsuredHealthHistories
+    selectUniques:
+      - queryRootField: hazelnutInsuredHealthHistoriesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hazelnutInsuredHealthHistoriesById
+    filterInputTypeName: HazelnutInsuredHealthHistoriesFilterInput
+    aggregate:
+      queryRootField: hazelnutInsuredHealthHistoriesAggregate
+      subscription:
+        rootField: hazelnutInsuredHealthHistoriesAggregate
+  description: THÔNG TIN VỀ TÌNH TRẠNG SỨC KHỎE
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HazelnutInsuredHealthHistories
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: HazelnutInsuredHealthHistories
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequestsInsuredPerson
+  sourceType: HazelnutInsuredHealthHistories
+  target:
+    model:
+      name: HazelnutInsuranceRequestsInsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuranceRequestId
+      target:
+        modelField:
+          - fieldName: insuranceRequestId
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuredHealthHistoryType
+  sourceType: HazelnutInsuredHealthHistories
+  target:
+    model:
+      name: HazelnutInsuredHealthHistoryTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: HazelnutInsuredHealthHistories
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuredHealthHistoryRecords
+  sourceType: HazelnutInsuredHealthHistories
+  target:
+    model:
+      name: HazelnutInsuredHealthHistoryRecords
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuredHealthHistoryRecordsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: insuredHealthHistoryId
+  graphql:
+    aggregateFieldName: hazelnutInsuredHealthHistoryRecordsAggregate
+

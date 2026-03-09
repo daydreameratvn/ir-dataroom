@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdSyncDocumentPagesObject
+  fields:
+    - name: claimDocumentId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: page
+      type: Int32
+    - name: syncDocumentId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertFwdSyncDocumentPagesObject
+    inputTypeName: InsertFwdSyncDocumentPagesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_sync_document_pages_object
+      fieldMapping:
+        claimDocumentId:
+          column:
+            name: claim_document_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        page:
+          column:
+            name: page
+        syncDocumentId:
+          column:
+            name: sync_document_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdSyncDocumentPagesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimDocumentId
+          - createdAt
+          - deletedAt
+          - id
+          - page
+          - syncDocumentId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdSyncDocumentPagesResponse
+  description: Responses from the 'insert_fwd_sync_document_pages' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdSyncDocumentPages!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdSyncDocumentPagesResponse
+    inputTypeName: InsertFwdSyncDocumentPagesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_sync_document_pages_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdSyncDocumentPagesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdSyncDocumentPages
+  outputType: InsertFwdSyncDocumentPagesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdSyncDocumentPagesObject!]!"
+    - name: postCheck
+      type: FwdSyncDocumentPagesBoolExp
+      description: Insert permission predicate over the 'fwd_sync_document_pages' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_sync_document_pages
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdSyncDocumentPages
+    rootFieldKind: Mutation
+  description: Insert into the fwd_sync_document_pages table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdSyncDocumentPages
+  permissions:
+    - role: admin
+      allowExecution: true
+

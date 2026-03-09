@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimFormTypes
+  description: Claim Form Types
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimFormTypes
+    inputTypeName: ClaimFormTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_form_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimFormTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimFormTypesBoolExp
+  operand:
+    object:
+      type: ClaimFormTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policySettings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimFormTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimFormTypesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimFormTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimFormTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimFormTypesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimFormTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimFormTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimFormTypes
+  objectType: ClaimFormTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_form_types
+  filterExpressionType: ClaimFormTypesBoolExp
+  aggregateExpression: ClaimFormTypesAggExp
+  orderByExpression: ClaimFormTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimFormTypes
+      subscription:
+        rootField: claimFormTypes
+    selectUniques:
+      - queryRootField: claimFormTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimFormTypesByValue
+    filterInputTypeName: ClaimFormTypesFilterInput
+    aggregate:
+      queryRootField: claimFormTypesAggregate
+      subscription:
+        rootField: claimFormTypesAggregate
+  description: Claim Form Types
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimFormTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policySettings
+  sourceType: ClaimFormTypes
+  target:
+    model:
+      name: PolicySettings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicySettingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: claimFormType
+  graphql:
+    aggregateFieldName: policySettingsAggregate
+

@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCustomSettingSettingApplicationsByObjectIdAndSettingIdResponse
+  description: Responses from the
+    'delete_custom_setting_setting_applications_by_object_id_and_setting_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingSettingApplications!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCustomSettingSettingApplicationsByObjectIdAndSettingIdResponse
+    inputTypeName: DeleteCustomSettingSettingApplicationsByObjectIdAndSettingIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_custom_setting_setting_applications_by_object_id_and_setting_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCustomSettingSettingApplicationsByObjectIdAndSettingIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCustomSettingSettingApplicationsByObjectIdAndSettingId
+  outputType: DeleteCustomSettingSettingApplicationsByObjectIdAndSettingIdResponse!
+  arguments:
+    - name: keyObjectId
+      type: Uuid!
+    - name: keySettingId
+      type: Uuid!
+    - name: preCheck
+      type: CustomSettingSettingApplicationsBoolExp
+      description: Delete permission predicate over the
+        'custom_setting_setting_applications' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_custom_setting_setting_applications_by_object_id_and_setting_id
+    argumentMapping:
+      keyObjectId: key_object_id
+      keySettingId: key_setting_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCustomSettingSettingApplicationsByObjectIdAndSettingId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'custom_setting_setting_applications'
+    collection using the 'object_id' and 'setting_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCustomSettingSettingApplicationsByObjectIdAndSettingId
+  permissions:
+    - role: admin
+      allowExecution: true
+

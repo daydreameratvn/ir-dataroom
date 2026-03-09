@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CompanyRoleTypes
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CompanyRoleTypes
+    inputTypeName: CompanyRoleTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: company_role_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CompanyRoleTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CompanyRoleTypesBoolExp
+  operand:
+    object:
+      type: CompanyRoleTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: companyRoles
+        - relationshipName: identityUserRoles
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CompanyRoleTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CompanyRoleTypesAggExp
+  operand:
+    object:
+      aggregatedType: CompanyRoleTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CompanyRoleTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CompanyRoleTypesOrderByExp
+  operand:
+    object:
+      orderedType: CompanyRoleTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CompanyRoleTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CompanyRoleTypes
+  objectType: CompanyRoleTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: company_role_types
+  filterExpressionType: CompanyRoleTypesBoolExp
+  aggregateExpression: CompanyRoleTypesAggExp
+  orderByExpression: CompanyRoleTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: companyRoleTypes
+      subscription:
+        rootField: companyRoleTypes
+    selectUniques:
+      - queryRootField: companyRoleTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: companyRoleTypesByValue
+    filterInputTypeName: CompanyRoleTypesFilterInput
+    aggregate:
+      queryRootField: companyRoleTypesAggregate
+      subscription:
+        rootField: companyRoleTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CompanyRoleTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: companyRoles
+  sourceType: CompanyRoleTypes
+  target:
+    model:
+      name: CompanyRoles
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CompanyRolesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: role
+  graphql:
+    aggregateFieldName: companyRolesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserRoles
+  sourceType: CompanyRoleTypes
+  target:
+    model:
+      name: IdentityUserRole
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityUserRoleAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: companyRoleType
+  graphql:
+    aggregateFieldName: identityUserRolesAggregate
+

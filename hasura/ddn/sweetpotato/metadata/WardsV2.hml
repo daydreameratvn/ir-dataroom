@@ -1,0 +1,205 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: WardsV2
+  fields:
+    - name: code
+      type: String_1!
+    - name: id
+      type: Bigdecimal!
+    - name: name
+      type: String_1!
+    - name: provinceId
+      type: Bigdecimal!
+  graphql:
+    typeName: WardsV2
+    inputTypeName: WardsV2Input
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: wards_v2
+      fieldMapping:
+        code:
+          column:
+            name: code
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        provinceId:
+          column:
+            name: province_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: WardsV2
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - id
+          - name
+          - provinceId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: WardsV2BoolExp
+  operand:
+    object:
+      type: WardsV2
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: NumericBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: provinceId
+          booleanExpressionType: NumericBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProviders
+        - relationshipName: province
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: WardsV2BoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: WardsV2AggExp
+  operand:
+    object:
+      aggregatedType: WardsV2
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: NumericAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: provinceId
+          aggregateExpression: NumericAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: WardsV2AggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: WardsV2OrderByExp
+  operand:
+    object:
+      orderedType: WardsV2
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: provinceId
+          orderByExpression: BigdecimalOrderByExp
+      orderableRelationships:
+        - relationshipName: province
+  graphql:
+    expressionTypeName: WardsV2OrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: WardsV2
+  objectType: WardsV2
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: wards_v2
+  filterExpressionType: WardsV2BoolExp
+  aggregateExpression: WardsV2AggExp
+  orderByExpression: WardsV2OrderByExp
+  graphql:
+    selectMany:
+      queryRootField: wardsV2
+      subscription:
+        rootField: wardsV2
+    selectUniques:
+      - queryRootField: wardsV2ByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: wardsV2ByCode
+      - queryRootField: wardsV2ById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: wardsV2ById
+    filterInputTypeName: WardsV2FilterInput
+    aggregate:
+      queryRootField: wardsV2Aggregate
+      subscription:
+        rootField: wardsV2Aggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: WardsV2
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviders
+  sourceType: WardsV2
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProvidersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: wardV2Id
+  graphql:
+    aggregateFieldName: mpMedicalProvidersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: province
+  sourceType: WardsV2
+  target:
+    model:
+      name: Provinces
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: provinceId
+      target:
+        modelField:
+          - fieldName: id
+

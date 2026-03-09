@@ -1,0 +1,132 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdPendingCodesObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: name
+      type: String_1!
+    - name: ppyPendingCode
+      type: String_1!
+    - name: remark
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertFwdPendingCodesObject
+    inputTypeName: InsertFwdPendingCodesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_pending_codes_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        name:
+          column:
+            name: name
+        ppyPendingCode:
+          column:
+            name: ppy_pending_code
+        remark:
+          column:
+            name: remark
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdPendingCodesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - name
+          - ppyPendingCode
+          - remark
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdPendingCodesResponse
+  description: Responses from the 'insert_fwd_pending_codes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdPendingCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdPendingCodesResponse
+    inputTypeName: InsertFwdPendingCodesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_pending_codes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdPendingCodesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdPendingCodes
+  outputType: InsertFwdPendingCodesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdPendingCodesObject!]!"
+    - name: postCheck
+      type: FwdPendingCodesBoolExp
+      description: Insert permission predicate over the 'fwd_pending_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_pending_codes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdPendingCodes
+    rootFieldKind: Mutation
+  description: Insert into the fwd_pending_codes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdPendingCodes
+  permissions:
+    - role: admin
+      allowExecution: true
+

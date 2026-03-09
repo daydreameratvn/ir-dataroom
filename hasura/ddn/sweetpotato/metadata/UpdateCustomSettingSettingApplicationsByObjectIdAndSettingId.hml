@@ -1,0 +1,176 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCustomSettingSettingApplicationsByObjectIdAndSettingIdUpdateColumns
+  description: Update the columns of the 'custom_setting_setting_applications' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnCustomSettingSettingApplicationsCreatedAt
+      description: Update the 'created_at' column in the
+        'custom_setting_setting_applications' collection.
+    - name: fallbackPriority
+      type: UpdateColumnCustomSettingSettingApplicationsFallbackPriority
+      description: Update the 'fallback_priority' column in the
+        'custom_setting_setting_applications' collection.
+    - name: id
+      type: UpdateColumnCustomSettingSettingApplicationsId
+      description: Update the 'id' column in the 'custom_setting_setting_applications'
+        collection.
+    - name: objectId
+      type: UpdateColumnCustomSettingSettingApplicationsObjectId
+      description: Update the 'object_id' column in the
+        'custom_setting_setting_applications' collection.
+    - name: objectType
+      type: UpdateColumnCustomSettingSettingApplicationsObjectType
+      description: Update the 'object_type' column in the
+        'custom_setting_setting_applications' collection.
+    - name: overridePriority
+      type: UpdateColumnCustomSettingSettingApplicationsOverridePriority
+      description: Update the 'override_priority' column in the
+        'custom_setting_setting_applications' collection.
+    - name: settingId
+      type: UpdateColumnCustomSettingSettingApplicationsSettingId
+      description: Update the 'setting_id' column in the
+        'custom_setting_setting_applications' collection.
+    - name: updatedAt
+      type: UpdateColumnCustomSettingSettingApplicationsUpdatedAt
+      description: Update the 'updated_at' column in the
+        'custom_setting_setting_applications' collection.
+  graphql:
+    typeName: UpdateCustomSettingSettingApplicationsByObjectIdAndSettingIdUpdateColumns
+    inputTypeName: UpdateCustomSettingSettingApplicationsByObjectIdAndSettingIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_custom_setting_setting_applications_by_object_id_and_setting_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        fallbackPriority:
+          column:
+            name: fallback_priority
+        id:
+          column:
+            name: id
+        objectId:
+          column:
+            name: object_id
+        objectType:
+          column:
+            name: object_type
+        overridePriority:
+          column:
+            name: override_priority
+        settingId:
+          column:
+            name: setting_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCustomSettingSettingApplicationsByObjectIdAndSettingIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - fallbackPriority
+          - id
+          - objectId
+          - objectType
+          - overridePriority
+          - settingId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCustomSettingSettingApplicationsByObjectIdAndSettingIdResponse
+  description: Responses from the
+    'update_custom_setting_setting_applications_by_object_id_and_setting_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingSettingApplications!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCustomSettingSettingApplicationsByObjectIdAndSettingIdResponse
+    inputTypeName: UpdateCustomSettingSettingApplicationsByObjectIdAndSettingIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_custom_setting_setting_applications_by_object_id_and_setting_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCustomSettingSettingApplicationsByObjectIdAndSettingIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCustomSettingSettingApplicationsByObjectIdAndSettingId
+  outputType: UpdateCustomSettingSettingApplicationsByObjectIdAndSettingIdResponse!
+  arguments:
+    - name: keyObjectId
+      type: Uuid!
+    - name: keySettingId
+      type: Uuid!
+    - name: postCheck
+      type: CustomSettingSettingApplicationsBoolExp
+      description: Update permission post-condition predicate over the
+        'custom_setting_setting_applications' collection
+    - name: preCheck
+      type: CustomSettingSettingApplicationsBoolExp
+      description: Update permission pre-condition predicate over the
+        'custom_setting_setting_applications' collection
+    - name: updateColumns
+      type: UpdateCustomSettingSettingApplicationsByObjectIdAndSettingIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_custom_setting_setting_applications_by_object_id_and_setting_id
+    argumentMapping:
+      keyObjectId: key_object_id
+      keySettingId: key_setting_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCustomSettingSettingApplicationsByObjectIdAndSettingId
+    rootFieldKind: Mutation
+  description: Update any row on the 'custom_setting_setting_applications'
+    collection using the 'object_id' and 'setting_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCustomSettingSettingApplicationsByObjectIdAndSettingId
+  permissions:
+    - role: admin
+      allowExecution: true
+

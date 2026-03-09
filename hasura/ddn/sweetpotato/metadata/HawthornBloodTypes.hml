@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornBloodTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: HawthornBloodTypes
+    inputTypeName: HawthornBloodTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_blood_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornBloodTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornBloodTypesBoolExp
+  operand:
+    object:
+      type: HawthornBloodTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornHealthProfiles
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornBloodTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornBloodTypesAggExp
+  operand:
+    object:
+      aggregatedType: HawthornBloodTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornBloodTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornBloodTypesOrderByExp
+  operand:
+    object:
+      orderedType: HawthornBloodTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HawthornBloodTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornBloodTypes
+  objectType: HawthornBloodTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_blood_types
+  filterExpressionType: HawthornBloodTypesBoolExp
+  aggregateExpression: HawthornBloodTypesAggExp
+  orderByExpression: HawthornBloodTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornBloodTypes
+      subscription:
+        rootField: hawthornBloodTypes
+    selectUniques:
+      - queryRootField: hawthornBloodTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: hawthornBloodTypesByValue
+    filterInputTypeName: HawthornBloodTypesFilterInput
+    aggregate:
+      queryRootField: hawthornBloodTypesAggregate
+      subscription:
+        rootField: hawthornBloodTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornBloodTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornHealthProfiles
+  sourceType: HawthornBloodTypes
+  target:
+    model:
+      name: HawthornHealthProfiles
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornHealthProfilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: bloodType
+  graphql:
+    aggregateFieldName: hawthornHealthProfilesAggregate
+

@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteOverlordBookingsByIdResponse
+  description: Responses from the 'delete_overlord_bookings_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OverlordBookings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteOverlordBookingsByIdResponse
+    inputTypeName: DeleteOverlordBookingsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_overlord_bookings_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteOverlordBookingsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteOverlordBookingsById
+  outputType: DeleteOverlordBookingsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: OverlordBookingsBoolExp
+      description: Delete permission predicate over the 'overlord_bookings' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_overlord_bookings_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteOverlordBookingsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'overlord_bookings' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteOverlordBookingsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

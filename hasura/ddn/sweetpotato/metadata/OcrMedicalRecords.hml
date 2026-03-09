@@ -1,0 +1,365 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OcrMedicalRecords
+  fields:
+    - name: age
+      type: Bigdecimal
+    - name: bhytNumber
+      type: String_1
+    - name: code
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: diagnosis
+      type: String_1
+    - name: dob
+      type: Timestamptz
+    - name: doctorLevel
+      type: String_1
+    - name: doctorName
+      type: String_1
+    - name: examinatedAt
+      type: Timestamptz
+    - name: gender
+      type: String_1
+    - name: hasSignature
+      type: Boolean_1!
+    - name: icdCodes
+      type: Json
+    - name: id
+      type: Uuid!
+    - name: medicalProviderName
+      type: String_1
+    - name: paperId
+      type: Uuid!
+    - name: patientName
+      type: String_1
+    - name: rawData
+      type: Json
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: OcrMedicalRecords
+    inputTypeName: OcrMedicalRecordsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: ocr_medical_records
+      fieldMapping:
+        age:
+          column:
+            name: age
+        bhytNumber:
+          column:
+            name: bhyt_number
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        diagnosis:
+          column:
+            name: diagnosis
+        dob:
+          column:
+            name: dob
+        doctorLevel:
+          column:
+            name: doctor_level
+        doctorName:
+          column:
+            name: doctor_name
+        examinatedAt:
+          column:
+            name: examinated_at
+        gender:
+          column:
+            name: gender
+        hasSignature:
+          column:
+            name: has_signature
+        icdCodes:
+          column:
+            name: icd_codes
+        id:
+          column:
+            name: id
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        paperId:
+          column:
+            name: paper_id
+        patientName:
+          column:
+            name: patient_name
+        rawData:
+          column:
+            name: raw_data
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OcrMedicalRecords
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - age
+          - bhytNumber
+          - code
+          - createdAt
+          - diagnosis
+          - dob
+          - doctorLevel
+          - doctorName
+          - examinatedAt
+          - gender
+          - hasSignature
+          - icdCodes
+          - id
+          - medicalProviderName
+          - paperId
+          - patientName
+          - rawData
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OcrMedicalRecordsBoolExp
+  operand:
+    object:
+      type: OcrMedicalRecords
+      comparableFields:
+        - fieldName: age
+          booleanExpressionType: NumericBoolExp
+        - fieldName: bhytNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: diagnosis
+          booleanExpressionType: TextBoolExp
+        - fieldName: dob
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: doctorLevel
+          booleanExpressionType: TextBoolExp
+        - fieldName: doctorName
+          booleanExpressionType: TextBoolExp
+        - fieldName: examinatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: gender
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: hasSignature
+          booleanExpressionType: BoolBoolExp
+        - fieldName: icdCodes
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderName
+          booleanExpressionType: TextBoolExp
+        - fieldName: paperId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: patientName
+          booleanExpressionType: TextBoolExp
+        - fieldName: rawData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: genderByGender
+        - relationshipName: ocrPaper
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OcrMedicalRecordsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OcrMedicalRecordsAggExp
+  operand:
+    object:
+      aggregatedType: OcrMedicalRecords
+      aggregatableFields:
+        - fieldName: age
+          aggregateExpression: NumericAggExp
+        - fieldName: bhytNumber
+          aggregateExpression: TextAggExp
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: diagnosis
+          aggregateExpression: TextAggExp
+        - fieldName: dob
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: doctorLevel
+          aggregateExpression: TextAggExp
+        - fieldName: doctorName
+          aggregateExpression: TextAggExp
+        - fieldName: examinatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: gender
+          aggregateExpression: VarcharAggExp
+        - fieldName: hasSignature
+          aggregateExpression: BoolAggExp
+        - fieldName: icdCodes
+          aggregateExpression: JsonbAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderName
+          aggregateExpression: TextAggExp
+        - fieldName: paperId
+          aggregateExpression: UuidAggExp
+        - fieldName: patientName
+          aggregateExpression: TextAggExp
+        - fieldName: rawData
+          aggregateExpression: JsonbAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OcrMedicalRecordsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OcrMedicalRecordsOrderByExp
+  operand:
+    object:
+      orderedType: OcrMedicalRecords
+      orderableFields:
+        - fieldName: age
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: bhytNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: diagnosis
+          orderByExpression: String1OrderByExp
+        - fieldName: dob
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: doctorLevel
+          orderByExpression: String1OrderByExp
+        - fieldName: doctorName
+          orderByExpression: String1OrderByExp
+        - fieldName: examinatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: gender
+          orderByExpression: String1OrderByExp
+        - fieldName: hasSignature
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: icdCodes
+          orderByExpression: JsonOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderName
+          orderByExpression: String1OrderByExp
+        - fieldName: paperId
+          orderByExpression: UuidOrderByExp
+        - fieldName: patientName
+          orderByExpression: String1OrderByExp
+        - fieldName: rawData
+          orderByExpression: JsonOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: genderByGender
+        - relationshipName: ocrPaper
+  graphql:
+    expressionTypeName: OcrMedicalRecordsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OcrMedicalRecords
+  objectType: OcrMedicalRecords
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: ocr_medical_records
+  filterExpressionType: OcrMedicalRecordsBoolExp
+  aggregateExpression: OcrMedicalRecordsAggExp
+  orderByExpression: OcrMedicalRecordsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: ocrMedicalRecords
+      subscription:
+        rootField: ocrMedicalRecords
+    selectUniques:
+      - queryRootField: ocrMedicalRecordsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: ocrMedicalRecordsById
+    filterInputTypeName: OcrMedicalRecordsFilterInput
+    aggregate:
+      queryRootField: ocrMedicalRecordsAggregate
+      subscription:
+        rootField: ocrMedicalRecordsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OcrMedicalRecords
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: genderByGender
+  sourceType: OcrMedicalRecords
+  target:
+    model:
+      name: Genders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: gender
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPaper
+  sourceType: OcrMedicalRecords
+  target:
+    model:
+      name: OcrPapers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paperId
+      target:
+        modelField:
+          - fieldName: id
+

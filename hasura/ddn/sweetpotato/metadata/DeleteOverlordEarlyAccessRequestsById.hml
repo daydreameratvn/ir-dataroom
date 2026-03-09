@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteOverlordEarlyAccessRequestsByIdResponse
+  description: Responses from the 'delete_overlord_early_access_requests_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OverlordEarlyAccessRequests!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteOverlordEarlyAccessRequestsByIdResponse
+    inputTypeName: DeleteOverlordEarlyAccessRequestsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_overlord_early_access_requests_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteOverlordEarlyAccessRequestsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteOverlordEarlyAccessRequestsById
+  outputType: DeleteOverlordEarlyAccessRequestsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: OverlordEarlyAccessRequestsBoolExp
+      description: Delete permission predicate over the
+        'overlord_early_access_requests' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_overlord_early_access_requests_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteOverlordEarlyAccessRequestsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'overlord_early_access_requests' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteOverlordEarlyAccessRequestsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

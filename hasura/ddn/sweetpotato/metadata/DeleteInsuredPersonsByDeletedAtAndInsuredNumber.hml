@@ -1,0 +1,78 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredPersonsByDeletedAtAndInsuredNumberResponse
+  description: Responses from the
+    'delete_insured_persons_by_deleted_at_and_insured_number' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredPersons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredPersonsByDeletedAtAndInsuredNumberResponse
+    inputTypeName: DeleteInsuredPersonsByDeletedAtAndInsuredNumberResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_persons_by_deleted_at_and_insured_number_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredPersonsByDeletedAtAndInsuredNumberResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredPersonsByDeletedAtAndInsuredNumber
+  outputType: DeleteInsuredPersonsByDeletedAtAndInsuredNumberResponse!
+  arguments:
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyInsuredNumber
+      type: String_1!
+      description: "@deprecated, use insured_certificates.insured_number"
+    - name: preCheck
+      type: InsuredPersonsBoolExp
+      description: Delete permission predicate over the 'insured_persons' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_persons_by_deleted_at_and_insured_number
+    argumentMapping:
+      keyDeletedAt: key_deleted_at
+      keyInsuredNumber: key_insured_number
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredPersonsByDeletedAtAndInsuredNumber
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_persons' collection using the
+    'deleted_at' and 'insured_number' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredPersonsByDeletedAtAndInsuredNumber
+  permissions:
+    - role: admin
+      allowExecution: true
+

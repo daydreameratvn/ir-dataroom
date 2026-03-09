@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHawthornPhysicalExaminationsByIdResponse
+  description: Responses from the 'delete_hawthorn_physical_examinations_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornPhysicalExaminations!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHawthornPhysicalExaminationsByIdResponse
+    inputTypeName: DeleteHawthornPhysicalExaminationsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hawthorn_physical_examinations_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHawthornPhysicalExaminationsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHawthornPhysicalExaminationsById
+  outputType: DeleteHawthornPhysicalExaminationsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: HawthornPhysicalExaminationsBoolExp
+      description: Delete permission predicate over the
+        'hawthorn_physical_examinations' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hawthorn_physical_examinations_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHawthornPhysicalExaminationsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hawthorn_physical_examinations' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHawthornPhysicalExaminationsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

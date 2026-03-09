@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertWardsObject
+  fields:
+    - name: cityId
+      type: Int32!
+    - name: displayOrder
+      type: Int32
+    - name: districtId
+      type: Int32!
+    - name: fullName
+      type: String_1
+    - name: id
+      type: Int32!
+    - name: name
+      type: String_1!
+    - name: prefix
+      type: String_1
+  graphql:
+    typeName: InsertWardsObject
+    inputTypeName: InsertWardsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_wards_object
+      fieldMapping:
+        cityId:
+          column:
+            name: city_id
+        displayOrder:
+          column:
+            name: display_order
+        districtId:
+          column:
+            name: district_id
+        fullName:
+          column:
+            name: full_name
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        prefix:
+          column:
+            name: prefix
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertWardsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - cityId
+          - displayOrder
+          - districtId
+          - fullName
+          - id
+          - name
+          - prefix
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertWardsResponse
+  description: Responses from the 'insert_wards' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Wards!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertWardsResponse
+    inputTypeName: InsertWardsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_wards_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertWardsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertWards
+  outputType: InsertWardsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertWardsObject!]!"
+    - name: postCheck
+      type: WardsBoolExp
+      description: Insert permission predicate over the 'wards' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_wards
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertWards
+    rootFieldKind: Mutation
+  description: Insert into the wards table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertWards
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,244 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanCoPaymentPlanInsuredBenefit
+  description: Plan Co Payment apply to Benefit
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: planCoPaymentId
+      type: Uuid!
+    - name: planInsuredBenefitId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PlanCoPaymentPlanInsuredBenefit
+    inputTypeName: PlanCoPaymentPlanInsuredBenefitInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_co_payment_plan_insured_benefit
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        planCoPaymentId:
+          column:
+            name: plan_co_payment_id
+        planInsuredBenefitId:
+          column:
+            name: plan_insured_benefit_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanCoPaymentPlanInsuredBenefit
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - planCoPaymentId
+          - planInsuredBenefitId
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanCoPaymentPlanInsuredBenefitBoolExp
+  operand:
+    object:
+      type: PlanCoPaymentPlanInsuredBenefit
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: planCoPaymentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planInsuredBenefitId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: planInsuredBenefit
+        - relationshipName: planCoPayment
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanCoPaymentPlanInsuredBenefitBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanCoPaymentPlanInsuredBenefitAggExp
+  operand:
+    object:
+      aggregatedType: PlanCoPaymentPlanInsuredBenefit
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: planCoPaymentId
+          aggregateExpression: UuidAggExp
+        - fieldName: planInsuredBenefitId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanCoPaymentPlanInsuredBenefitAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanCoPaymentPlanInsuredBenefitOrderByExp
+  operand:
+    object:
+      orderedType: PlanCoPaymentPlanInsuredBenefit
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: planCoPaymentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planInsuredBenefitId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: planInsuredBenefit
+        - relationshipName: planCoPayment
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: PlanCoPaymentPlanInsuredBenefitOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanCoPaymentPlanInsuredBenefit
+  objectType: PlanCoPaymentPlanInsuredBenefit
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_co_payment_plan_insured_benefit
+  filterExpressionType: PlanCoPaymentPlanInsuredBenefitBoolExp
+  aggregateExpression: PlanCoPaymentPlanInsuredBenefitAggExp
+  orderByExpression: PlanCoPaymentPlanInsuredBenefitOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planCoPaymentPlanInsuredBenefit
+      subscription:
+        rootField: planCoPaymentPlanInsuredBenefit
+    selectUniques:
+      - queryRootField: planCoPaymentPlanInsuredBenefitByPlanCoPaymentPlanInsuredBenefitPkey
+        uniqueIdentifier:
+          - planCoPaymentId
+          - planInsuredBenefitId
+        subscription:
+          rootField: planCoPaymentPlanInsuredBenefitByPlanCoPaymentPlanInsuredBenefitPkey
+    filterInputTypeName: PlanCoPaymentPlanInsuredBenefitFilterInput
+    aggregate:
+      queryRootField: planCoPaymentPlanInsuredBenefitAggregate
+      subscription:
+        rootField: planCoPaymentPlanInsuredBenefitAggregate
+  description: Plan Co Payment apply to Benefit
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanCoPaymentPlanInsuredBenefit
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planInsuredBenefit
+  sourceType: PlanCoPaymentPlanInsuredBenefit
+  target:
+    model:
+      name: PlanInsuredBenefits
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planInsuredBenefitId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planCoPayment
+  sourceType: PlanCoPaymentPlanInsuredBenefit
+  target:
+    model:
+      name: PlanCoPayments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planCoPaymentId
+      target:
+        modelField:
+          - fieldName: planCoPaymentId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: PlanCoPaymentPlanInsuredBenefit
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

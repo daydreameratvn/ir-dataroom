@@ -1,0 +1,195 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutPaymentProviders
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PayoutPaymentProviders
+    inputTypeName: PayoutPaymentProvidersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_payment_providers
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutPaymentProviders
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutPaymentProvidersBoolExp
+  operand:
+    object:
+      type: PayoutPaymentProviders
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: payoutPaymentRequestItems
+        - relationshipName: payoutPayoutBankAccounts
+        - relationshipName: payoutTransactions
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutPaymentProvidersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutPaymentProvidersAggExp
+  operand:
+    object:
+      aggregatedType: PayoutPaymentProviders
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutPaymentProvidersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutPaymentProvidersOrderByExp
+  operand:
+    object:
+      orderedType: PayoutPaymentProviders
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PayoutPaymentProvidersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutPaymentProviders
+  objectType: PayoutPaymentProviders
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_payment_providers
+  filterExpressionType: PayoutPaymentProvidersBoolExp
+  aggregateExpression: PayoutPaymentProvidersAggExp
+  orderByExpression: PayoutPaymentProvidersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutPaymentProviders
+      subscription:
+        rootField: payoutPaymentProviders
+    selectUniques:
+      - queryRootField: payoutPaymentProvidersByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: payoutPaymentProvidersByValue
+    filterInputTypeName: PayoutPaymentProvidersFilterInput
+    aggregate:
+      queryRootField: payoutPaymentProvidersAggregate
+      subscription:
+        rootField: payoutPaymentProvidersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutPaymentProviders
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestItems
+  sourceType: PayoutPaymentProviders
+  target:
+    model:
+      name: PayoutPaymentRequestItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPaymentRequestItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: paymentProvider
+  graphql:
+    aggregateFieldName: payoutPaymentRequestItemsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPayoutBankAccounts
+  sourceType: PayoutPaymentProviders
+  target:
+    model:
+      name: PayoutPayoutBankAccounts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPayoutBankAccountsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: paymentProvider
+  graphql:
+    aggregateFieldName: payoutPayoutBankAccountsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutTransactions
+  sourceType: PayoutPaymentProviders
+  target:
+    model:
+      name: PayoutTransactions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutTransactionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: paymentProvider
+  graphql:
+    aggregateFieldName: payoutTransactionsAggregate
+

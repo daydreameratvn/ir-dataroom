@@ -1,0 +1,127 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceEmailLoopsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: firstMessageId
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: lastMessageId
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertCorrespondenceEmailLoopsObject
+    inputTypeName: InsertCorrespondenceEmailLoopsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_email_loops_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        firstMessageId:
+          column:
+            name: first_message_id
+        id:
+          column:
+            name: id
+        lastMessageId:
+          column:
+            name: last_message_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceEmailLoopsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - firstMessageId
+          - id
+          - lastMessageId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceEmailLoopsResponse
+  description: Responses from the 'insert_correspondence_email_loops' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmailLoops!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCorrespondenceEmailLoopsResponse
+    inputTypeName: InsertCorrespondenceEmailLoopsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_email_loops_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceEmailLoopsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCorrespondenceEmailLoops
+  outputType: InsertCorrespondenceEmailLoopsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCorrespondenceEmailLoopsObject!]!"
+    - name: postCheck
+      type: CorrespondenceEmailLoopsBoolExp
+      description: Insert permission predicate over the 'correspondence_email_loops'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_correspondence_email_loops
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCorrespondenceEmailLoops
+    rootFieldKind: Mutation
+  description: Insert into the correspondence_email_loops table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCorrespondenceEmailLoops
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteIdentityPaperTypesByValueResponse
+  description: Responses from the 'delete_identity_paper_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityPaperTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteIdentityPaperTypesByValueResponse
+    inputTypeName: DeleteIdentityPaperTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_identity_paper_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteIdentityPaperTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteIdentityPaperTypesByValue
+  outputType: DeleteIdentityPaperTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: IdentityPaperTypesBoolExp
+      description: Delete permission predicate over the 'identity_paper_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_identity_paper_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteIdentityPaperTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'identity_paper_types' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteIdentityPaperTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

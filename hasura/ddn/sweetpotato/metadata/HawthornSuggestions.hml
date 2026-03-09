@@ -1,0 +1,331 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornSuggestions
+  description: Đề xuất, đề nghị từ bác sĩ
+  fields:
+    - name: content
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: diagnosticTestId
+      type: Uuid
+    - name: documentContentId
+      type: Uuid
+    - name: healthCheckupId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: patientId
+      type: Uuid!
+    - name: physicalExaminationId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: HawthornSuggestions
+    inputTypeName: HawthornSuggestionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_suggestions
+      fieldMapping:
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        diagnosticTestId:
+          column:
+            name: diagnostic_test_id
+        documentContentId:
+          column:
+            name: document_content_id
+        healthCheckupId:
+          column:
+            name: health_checkup_id
+        id:
+          column:
+            name: id
+        patientId:
+          column:
+            name: patient_id
+        physicalExaminationId:
+          column:
+            name: physical_examination_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornSuggestions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - content
+          - createdAt
+          - deletedAt
+          - diagnosticTestId
+          - documentContentId
+          - healthCheckupId
+          - id
+          - patientId
+          - physicalExaminationId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornSuggestionsBoolExp
+  operand:
+    object:
+      type: HawthornSuggestions
+      comparableFields:
+        - fieldName: content
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: diagnosticTestId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: documentContentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: healthCheckupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: patientId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: physicalExaminationId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornDiagnosticTest
+        - relationshipName: hawthornDocument
+        - relationshipName: hawthornHealthCheckup
+        - relationshipName: hawthornPatient
+        - relationshipName: hawthornPhysicalExamination
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornSuggestionsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornSuggestionsAggExp
+  operand:
+    object:
+      aggregatedType: HawthornSuggestions
+      aggregatableFields:
+        - fieldName: content
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: diagnosticTestId
+          aggregateExpression: UuidAggExp
+        - fieldName: documentContentId
+          aggregateExpression: UuidAggExp
+        - fieldName: healthCheckupId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: patientId
+          aggregateExpression: UuidAggExp
+        - fieldName: physicalExaminationId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornSuggestionsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornSuggestionsOrderByExp
+  operand:
+    object:
+      orderedType: HawthornSuggestions
+      orderableFields:
+        - fieldName: content
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: diagnosticTestId
+          orderByExpression: UuidOrderByExp
+        - fieldName: documentContentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: healthCheckupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: patientId
+          orderByExpression: UuidOrderByExp
+        - fieldName: physicalExaminationId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: hawthornDiagnosticTest
+        - relationshipName: hawthornDocument
+        - relationshipName: hawthornHealthCheckup
+        - relationshipName: hawthornPatient
+        - relationshipName: hawthornPhysicalExamination
+  graphql:
+    expressionTypeName: HawthornSuggestionsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornSuggestions
+  objectType: HawthornSuggestions
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_suggestions
+  filterExpressionType: HawthornSuggestionsBoolExp
+  aggregateExpression: HawthornSuggestionsAggExp
+  orderByExpression: HawthornSuggestionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornSuggestions
+      subscription:
+        rootField: hawthornSuggestions
+    selectUniques:
+      - queryRootField: hawthornSuggestionsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hawthornSuggestionsById
+    filterInputTypeName: HawthornSuggestionsFilterInput
+    aggregate:
+      queryRootField: hawthornSuggestionsAggregate
+      subscription:
+        rootField: hawthornSuggestionsAggregate
+  description: Đề xuất, đề nghị từ bác sĩ
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornSuggestions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnosticTest
+  sourceType: HawthornSuggestions
+  target:
+    model:
+      name: HawthornDiagnosticTests
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: diagnosticTestId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDocument
+  sourceType: HawthornSuggestions
+  target:
+    model:
+      name: HawthornDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: documentContentId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornHealthCheckup
+  sourceType: HawthornSuggestions
+  target:
+    model:
+      name: HawthornHealthCheckups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: healthCheckupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPatient
+  sourceType: HawthornSuggestions
+  target:
+    model:
+      name: HawthornPatients
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: patientId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPhysicalExamination
+  sourceType: HawthornSuggestions
+  target:
+    model:
+      name: HawthornPhysicalExaminations
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: physicalExaminationId
+      target:
+        modelField:
+          - fieldName: id
+

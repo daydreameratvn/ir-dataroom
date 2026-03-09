@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimPendingCodesByClaimPendingCodeIdResponse
+  description: Responses from the
+    'delete_claim_pending_codes_by_claim_pending_code_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimPendingCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimPendingCodesByClaimPendingCodeIdResponse
+    inputTypeName: DeleteClaimPendingCodesByClaimPendingCodeIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_pending_codes_by_claim_pending_code_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimPendingCodesByClaimPendingCodeIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimPendingCodesByClaimPendingCodeId
+  outputType: DeleteClaimPendingCodesByClaimPendingCodeIdResponse!
+  arguments:
+    - name: keyClaimPendingCodeId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimPendingCodesBoolExp
+      description: Delete permission predicate over the 'claim_pending_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_pending_codes_by_claim_pending_code_id
+    argumentMapping:
+      keyClaimPendingCodeId: key_claim_pending_code_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimPendingCodesByClaimPendingCodeId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_pending_codes' collection using the
+    'claim_pending_code_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimPendingCodesByClaimPendingCodeId
+  permissions:
+    - role: admin
+      allowExecution: true
+

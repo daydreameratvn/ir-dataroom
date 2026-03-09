@@ -1,0 +1,157 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutInsuredHealthHistoryRecordsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insuredHealthHistoryId
+      type: Uuid!
+    - name: treatmentDate
+      type: Timestamptz!
+    - name: treatmentDetails
+      type: String_1!
+    - name: treatmentResults
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertHazelnutInsuredHealthHistoryRecordsObject
+    inputTypeName: InsertHazelnutInsuredHealthHistoryRecordsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_insured_health_history_records_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredHealthHistoryId:
+          column:
+            name: insured_health_history_id
+        treatmentDate:
+          column:
+            name: treatment_date
+        treatmentDetails:
+          column:
+            name: treatment_details
+        treatmentResults:
+          column:
+            name: treatment_results
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutInsuredHealthHistoryRecordsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - insuredHealthHistoryId
+          - treatmentDate
+          - treatmentDetails
+          - treatmentResults
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutInsuredHealthHistoryRecordsResponse
+  description: Responses from the 'insert_hazelnut_insured_health_history_records' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutInsuredHealthHistoryRecords!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHazelnutInsuredHealthHistoryRecordsResponse
+    inputTypeName: InsertHazelnutInsuredHealthHistoryRecordsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_insured_health_history_records_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutInsuredHealthHistoryRecordsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHazelnutInsuredHealthHistoryRecords
+  outputType: InsertHazelnutInsuredHealthHistoryRecordsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHazelnutInsuredHealthHistoryRecordsObject!]!"
+    - name: postCheck
+      type: HazelnutInsuredHealthHistoryRecordsBoolExp
+      description: Insert permission predicate over the
+        'hazelnut_insured_health_history_records' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hazelnut_insured_health_history_records
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHazelnutInsuredHealthHistoryRecords
+    rootFieldKind: Mutation
+  description: Insert into the hazelnut_insured_health_history_records table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHazelnutInsuredHealthHistoryRecords
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HazelnutInsuredBenefitTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: HazelnutInsuredBenefitTypes
+    inputTypeName: HazelnutInsuredBenefitTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hazelnut_insured_benefit_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HazelnutInsuredBenefitTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HazelnutInsuredBenefitTypesBoolExp
+  operand:
+    object:
+      type: HazelnutInsuredBenefitTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: hazelnutInsuranceCoverageBenefits
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HazelnutInsuredBenefitTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HazelnutInsuredBenefitTypesAggExp
+  operand:
+    object:
+      aggregatedType: HazelnutInsuredBenefitTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HazelnutInsuredBenefitTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HazelnutInsuredBenefitTypesOrderByExp
+  operand:
+    object:
+      orderedType: HazelnutInsuredBenefitTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HazelnutInsuredBenefitTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HazelnutInsuredBenefitTypes
+  objectType: HazelnutInsuredBenefitTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hazelnut_insured_benefit_types
+  filterExpressionType: HazelnutInsuredBenefitTypesBoolExp
+  aggregateExpression: HazelnutInsuredBenefitTypesAggExp
+  orderByExpression: HazelnutInsuredBenefitTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hazelnutInsuredBenefitTypes
+      subscription:
+        rootField: hazelnutInsuredBenefitTypes
+    selectUniques:
+      - queryRootField: hazelnutInsuredBenefitTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: hazelnutInsuredBenefitTypesByValue
+    filterInputTypeName: HazelnutInsuredBenefitTypesFilterInput
+    aggregate:
+      queryRootField: hazelnutInsuredBenefitTypesAggregate
+      subscription:
+        rootField: hazelnutInsuredBenefitTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HazelnutInsuredBenefitTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceCoverageBenefits
+  sourceType: HazelnutInsuredBenefitTypes
+  target:
+    model:
+      name: HazelnutInsuranceCoverageBenefits
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceCoverageBenefitsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: hazelnutInsuranceCoverageBenefitsAggregate
+

@@ -1,0 +1,347 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: KumquatOauthClients
+  description: OAuth 2.0 client credentials for partner integrations
+  fields:
+    - name: accessTokenTtl
+      type: Int32
+    - name: clientId
+      type: String_1!
+    - name: clientSecretHash
+      type: String_1!
+      description: Argon2id hash of client_secret
+    - name: companyId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: grantTypes
+      type: "[String_1]"
+    - name: id
+      type: Uuid!
+    - name: isActive
+      type: Boolean_1
+    - name: name
+      type: String_1
+    - name: partnerCode
+      type: String_1!
+      description: "Code used for SSM key lookup: /kumquat/{env}/partners/{partner_code}/"
+    - name: redirectUris
+      type: "[String_1]"
+    - name: refreshTokenTtl
+      type: Int32
+    - name: scopes
+      type: "[String_1]"
+      description: Allowed OAuth scopes for this client
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: KumquatOauthClients
+    inputTypeName: KumquatOauthClientsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: kumquat_oauth_clients
+      fieldMapping:
+        accessTokenTtl:
+          column:
+            name: access_token_ttl
+        clientId:
+          column:
+            name: client_id
+        clientSecretHash:
+          column:
+            name: client_secret_hash
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        grantTypes:
+          column:
+            name: grant_types
+        id:
+          column:
+            name: id
+        isActive:
+          column:
+            name: is_active
+        name:
+          column:
+            name: name
+        partnerCode:
+          column:
+            name: partner_code
+        redirectUris:
+          column:
+            name: redirect_uris
+        refreshTokenTtl:
+          column:
+            name: refresh_token_ttl
+        scopes:
+          column:
+            name: scopes
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: KumquatOauthClients
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - accessTokenTtl
+          - clientId
+          - clientSecretHash
+          - companyId
+          - createdAt
+          - deletedAt
+          - grantTypes
+          - id
+          - isActive
+          - name
+          - partnerCode
+          - redirectUris
+          - refreshTokenTtl
+          - scopes
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: KumquatOauthClientsBoolExp
+  operand:
+    object:
+      type: KumquatOauthClients
+      comparableFields:
+        - fieldName: accessTokenTtl
+          booleanExpressionType: Int4BoolExp
+        - fieldName: clientId
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: clientSecretHash
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: companyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isActive
+          booleanExpressionType: BoolBoolExp
+        - fieldName: name
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: partnerCode
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: refreshTokenTtl
+          booleanExpressionType: Int4BoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: kumquatApiLogs
+        - relationshipName: kumquatOauthAuditLogs
+        - relationshipName: company
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: KumquatOauthClientsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: KumquatOauthClientsAggExp
+  operand:
+    object:
+      aggregatedType: KumquatOauthClients
+      aggregatableFields:
+        - fieldName: accessTokenTtl
+          aggregateExpression: Int4AggExp
+        - fieldName: clientId
+          aggregateExpression: VarcharAggExp
+        - fieldName: clientSecretHash
+          aggregateExpression: VarcharAggExp
+        - fieldName: companyId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isActive
+          aggregateExpression: BoolAggExp
+        - fieldName: name
+          aggregateExpression: VarcharAggExp
+        - fieldName: partnerCode
+          aggregateExpression: VarcharAggExp
+        - fieldName: refreshTokenTtl
+          aggregateExpression: Int4AggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: KumquatOauthClientsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: KumquatOauthClientsOrderByExp
+  operand:
+    object:
+      orderedType: KumquatOauthClients
+      orderableFields:
+        - fieldName: accessTokenTtl
+          orderByExpression: Int32OrderByExp
+        - fieldName: clientId
+          orderByExpression: String1OrderByExp
+        - fieldName: clientSecretHash
+          orderByExpression: String1OrderByExp
+        - fieldName: companyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isActive
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: partnerCode
+          orderByExpression: String1OrderByExp
+        - fieldName: refreshTokenTtl
+          orderByExpression: Int32OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+  graphql:
+    expressionTypeName: KumquatOauthClientsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: KumquatOauthClients
+  objectType: KumquatOauthClients
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: kumquat_oauth_clients
+  filterExpressionType: KumquatOauthClientsBoolExp
+  aggregateExpression: KumquatOauthClientsAggExp
+  orderByExpression: KumquatOauthClientsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: kumquatOauthClients
+      subscription:
+        rootField: kumquatOauthClients
+    selectUniques:
+      - queryRootField: kumquatOauthClientsByClientId
+        uniqueIdentifier:
+          - clientId
+        subscription:
+          rootField: kumquatOauthClientsByClientId
+      - queryRootField: kumquatOauthClientsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: kumquatOauthClientsById
+    filterInputTypeName: KumquatOauthClientsFilterInput
+    aggregate:
+      queryRootField: kumquatOauthClientsAggregate
+      subscription:
+        rootField: kumquatOauthClientsAggregate
+  description: OAuth 2.0 client credentials for partner integrations
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: KumquatOauthClients
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: kumquatApiLogs
+  sourceType: KumquatOauthClients
+  target:
+    model:
+      name: KumquatApiLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: KumquatApiLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: oauthClientId
+  graphql:
+    aggregateFieldName: kumquatApiLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: kumquatOauthAuditLogs
+  sourceType: KumquatOauthClients
+  target:
+    model:
+      name: KumquatOauthAuditLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: KumquatOauthAuditLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: oauthClientId
+  graphql:
+    aggregateFieldName: kumquatOauthAuditLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: KumquatOauthClients
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyId
+      target:
+        modelField:
+          - fieldName: companyId
+

@@ -1,0 +1,312 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PresentCaseAssessments
+  fields:
+    - name: assessedUserId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: decisionCode
+      type: String_1
+    - name: decisionNote
+      type: String_1
+    - name: emailId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: paidAmount
+      type: Bigdecimal
+    - name: presentCaseId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: userRole
+      type: String_1
+  graphql:
+    typeName: PresentCaseAssessments
+    inputTypeName: PresentCaseAssessmentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: present_case_assessments
+      fieldMapping:
+        assessedUserId:
+          column:
+            name: assessed_user_id
+        createdAt:
+          column:
+            name: created_at
+        decisionCode:
+          column:
+            name: decision_code
+        decisionNote:
+          column:
+            name: decision_note
+        emailId:
+          column:
+            name: email_id
+        id:
+          column:
+            name: id
+        paidAmount:
+          column:
+            name: paid_amount
+        presentCaseId:
+          column:
+            name: present_case_id
+        updatedAt:
+          column:
+            name: updated_at
+        userRole:
+          column:
+            name: user_role
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PresentCaseAssessments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - assessedUserId
+          - createdAt
+          - decisionCode
+          - decisionNote
+          - emailId
+          - id
+          - paidAmount
+          - presentCaseId
+          - updatedAt
+          - userRole
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PresentCaseAssessmentsBoolExp
+  operand:
+    object:
+      type: PresentCaseAssessments
+      comparableFields:
+        - fieldName: assessedUserId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: decisionCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: decisionNote
+          booleanExpressionType: TextBoolExp
+        - fieldName: emailId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paidAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: presentCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: userRole
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: presentCaseDecision
+        - relationshipName: correspondenceEmail
+        - relationshipName: identityRole
+        - relationshipName: presentCaseAssignments
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PresentCaseAssessmentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PresentCaseAssessmentsAggExp
+  operand:
+    object:
+      aggregatedType: PresentCaseAssessments
+      aggregatableFields:
+        - fieldName: assessedUserId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: decisionCode
+          aggregateExpression: TextAggExp
+        - fieldName: decisionNote
+          aggregateExpression: TextAggExp
+        - fieldName: emailId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: paidAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: presentCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: userRole
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PresentCaseAssessmentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PresentCaseAssessmentsOrderByExp
+  operand:
+    object:
+      orderedType: PresentCaseAssessments
+      orderableFields:
+        - fieldName: assessedUserId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: decisionCode
+          orderByExpression: String1OrderByExp
+        - fieldName: decisionNote
+          orderByExpression: String1OrderByExp
+        - fieldName: emailId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: paidAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: presentCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: userRole
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: presentCaseDecision
+        - relationshipName: correspondenceEmail
+        - relationshipName: identityRole
+  graphql:
+    expressionTypeName: PresentCaseAssessmentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PresentCaseAssessments
+  objectType: PresentCaseAssessments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: present_case_assessments
+  filterExpressionType: PresentCaseAssessmentsBoolExp
+  aggregateExpression: PresentCaseAssessmentsAggExp
+  orderByExpression: PresentCaseAssessmentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: presentCaseAssessments
+      subscription:
+        rootField: presentCaseAssessments
+    selectUniques:
+      - queryRootField: presentCaseAssessmentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: presentCaseAssessmentsById
+    filterInputTypeName: PresentCaseAssessmentsFilterInput
+    aggregate:
+      queryRootField: presentCaseAssessmentsAggregate
+      subscription:
+        rootField: presentCaseAssessmentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PresentCaseAssessments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: presentCaseDecision
+  sourceType: PresentCaseAssessments
+  target:
+    model:
+      name: PresentCaseDecisions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: decisionCode
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmail
+  sourceType: PresentCaseAssessments
+  target:
+    model:
+      name: CorrespondenceEmails
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: emailId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityRole
+  sourceType: PresentCaseAssessments
+  target:
+    model:
+      name: IdentityRoles
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userRole
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: presentCaseAssignments
+  sourceType: PresentCaseAssessments
+  target:
+    model:
+      name: PresentCaseAssignments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PresentCaseAssignmentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: newAssessmentId
+  graphql:
+    aggregateFieldName: presentCaseAssignmentsAggregate
+

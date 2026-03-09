@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdPolicyStatuses
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: FwdPolicyStatuses
+    inputTypeName: FwdPolicyStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_policy_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdPolicyStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdPolicyStatusesBoolExp
+  operand:
+    object:
+      type: FwdPolicyStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: fwdInsuredCertificateStatusMappings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdPolicyStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdPolicyStatusesAggExp
+  operand:
+    object:
+      aggregatedType: FwdPolicyStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdPolicyStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdPolicyStatusesOrderByExp
+  operand:
+    object:
+      orderedType: FwdPolicyStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: FwdPolicyStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdPolicyStatuses
+  objectType: FwdPolicyStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_policy_statuses
+  filterExpressionType: FwdPolicyStatusesBoolExp
+  aggregateExpression: FwdPolicyStatusesAggExp
+  orderByExpression: FwdPolicyStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdPolicyStatuses
+      subscription:
+        rootField: fwdPolicyStatuses
+    selectUniques:
+      - queryRootField: fwdPolicyStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: fwdPolicyStatusesByValue
+    filterInputTypeName: FwdPolicyStatusesFilterInput
+    aggregate:
+      queryRootField: fwdPolicyStatusesAggregate
+      subscription:
+        rootField: fwdPolicyStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdPolicyStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdInsuredCertificateStatusMappings
+  sourceType: FwdPolicyStatuses
+  target:
+    model:
+      name: FwdInsuredCertificateStatusMapping
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdInsuredCertificateStatusMappingAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: policyStatusCode
+  graphql:
+    aggregateFieldName: fwdInsuredCertificateStatusMappingsAggregate
+

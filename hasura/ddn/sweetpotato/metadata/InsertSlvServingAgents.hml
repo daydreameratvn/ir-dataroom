@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvServingAgentsObject
+  fields:
+    - name: agentCode
+      type: String_1!
+    - name: agentName
+      type: String_1
+    - name: agentOriginChnl
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: isAgentBlackList
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertSlvServingAgentsObject
+    inputTypeName: InsertSlvServingAgentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_serving_agents_object
+      fieldMapping:
+        agentCode:
+          column:
+            name: agent_code
+        agentName:
+          column:
+            name: agent_name
+        agentOriginChnl:
+          column:
+            name: agent_origin_chnl
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        isAgentBlackList:
+          column:
+            name: is_agent_black_list
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvServingAgentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - agentCode
+          - agentName
+          - agentOriginChnl
+          - createdAt
+          - id
+          - isAgentBlackList
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlvServingAgentsResponse
+  description: Responses from the 'insert_slv_serving_agents' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvServingAgents!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertSlvServingAgentsResponse
+    inputTypeName: InsertSlvServingAgentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slv_serving_agents_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlvServingAgentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertSlvServingAgents
+  outputType: InsertSlvServingAgentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertSlvServingAgentsObject!]!"
+    - name: postCheck
+      type: SlvServingAgentsBoolExp
+      description: Insert permission predicate over the 'slv_serving_agents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_slv_serving_agents
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertSlvServingAgents
+    rootFieldKind: Mutation
+  description: Insert into the slv_serving_agents table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertSlvServingAgents
+  permissions:
+    - role: admin
+      allowExecution: true
+

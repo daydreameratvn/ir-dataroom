@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyFaqsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: displayOrder
+      type: Int32
+    - name: faqId
+      type: Int32!
+    - name: id
+      type: Uuid
+    - name: planId
+      type: Uuid
+    - name: policyId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPolicyFaqsObject
+    inputTypeName: InsertPolicyFaqsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_faqs_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        displayOrder:
+          column:
+            name: display_order
+        faqId:
+          column:
+            name: faq_id
+        id:
+          column:
+            name: id
+        planId:
+          column:
+            name: plan_id
+        policyId:
+          column:
+            name: policy_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyFaqsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - displayOrder
+          - faqId
+          - id
+          - planId
+          - policyId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyFaqsResponse
+  description: Responses from the 'insert_policy_faqs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyFaqs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyFaqsResponse
+    inputTypeName: InsertPolicyFaqsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_faqs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyFaqsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyFaqs
+  outputType: InsertPolicyFaqsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyFaqsObject!]!"
+    - name: postCheck
+      type: PolicyFaqsBoolExp
+      description: Insert permission predicate over the 'policy_faqs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_faqs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyFaqs
+    rootFieldKind: Mutation
+  description: Insert into the policy_faqs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyFaqs
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceEmailTypesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertCorrespondenceEmailTypesObject
+    inputTypeName: InsertCorrespondenceEmailTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_email_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceEmailTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceEmailTypesResponse
+  description: Responses from the 'insert_correspondence_email_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmailTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCorrespondenceEmailTypesResponse
+    inputTypeName: InsertCorrespondenceEmailTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_email_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceEmailTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCorrespondenceEmailTypes
+  outputType: InsertCorrespondenceEmailTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCorrespondenceEmailTypesObject!]!"
+    - name: postCheck
+      type: CorrespondenceEmailTypesBoolExp
+      description: Insert permission predicate over the 'correspondence_email_types'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_correspondence_email_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCorrespondenceEmailTypes
+    rootFieldKind: Mutation
+  description: Insert into the correspondence_email_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCorrespondenceEmailTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,164 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityFlattenedPermissionRoles
+  fields:
+    - name: deletedAt
+      type: Timestamptz
+    - name: permissionId
+      type: Uuid
+    - name: permissionName
+      type: String_1
+    - name: roleName
+      type: String_1
+    - name: tenantId
+      type: Uuid
+  graphql:
+    typeName: IdentityFlattenedPermissionRoles
+    inputTypeName: IdentityFlattenedPermissionRolesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_flattened_permission_roles
+      fieldMapping:
+        deletedAt:
+          column:
+            name: deleted_at
+        permissionId:
+          column:
+            name: permission_id
+        permissionName:
+          column:
+            name: permission_name
+        roleName:
+          column:
+            name: role_name
+        tenantId:
+          column:
+            name: tenant_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityFlattenedPermissionRoles
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - deletedAt
+          - permissionId
+          - permissionName
+          - roleName
+          - tenantId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityFlattenedPermissionRolesBoolExp
+  operand:
+    object:
+      type: IdentityFlattenedPermissionRoles
+      comparableFields:
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: permissionId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: permissionName
+          booleanExpressionType: TextBoolExp
+        - fieldName: roleName
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityFlattenedPermissionRolesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityFlattenedPermissionRolesAggExp
+  operand:
+    object:
+      aggregatedType: IdentityFlattenedPermissionRoles
+      aggregatableFields:
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: permissionId
+          aggregateExpression: UuidAggExp
+        - fieldName: permissionName
+          aggregateExpression: TextAggExp
+        - fieldName: roleName
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityFlattenedPermissionRolesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityFlattenedPermissionRolesOrderByExp
+  operand:
+    object:
+      orderedType: IdentityFlattenedPermissionRoles
+      orderableFields:
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: permissionId
+          orderByExpression: UuidOrderByExp
+        - fieldName: permissionName
+          orderByExpression: String1OrderByExp
+        - fieldName: roleName
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: IdentityFlattenedPermissionRolesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityFlattenedPermissionRoles
+  objectType: IdentityFlattenedPermissionRoles
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_flattened_permission_roles
+  filterExpressionType: IdentityFlattenedPermissionRolesBoolExp
+  aggregateExpression: IdentityFlattenedPermissionRolesAggExp
+  orderByExpression: IdentityFlattenedPermissionRolesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityFlattenedPermissionRoles
+      subscription:
+        rootField: identityFlattenedPermissionRoles
+    selectUniques: []
+    filterInputTypeName: IdentityFlattenedPermissionRolesFilterInput
+    aggregate:
+      queryRootField: identityFlattenedPermissionRolesAggregate
+      subscription:
+        rootField: identityFlattenedPermissionRolesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityFlattenedPermissionRoles
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

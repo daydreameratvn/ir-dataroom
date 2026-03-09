@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicyUserRoleByPolicyIdAndUserRoleIdResponse
+  description: Responses from the
+    'delete_policy_user_role_by_policy_id_and_user_role_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyUserRole!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicyUserRoleByPolicyIdAndUserRoleIdResponse
+    inputTypeName: DeletePolicyUserRoleByPolicyIdAndUserRoleIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_user_role_by_policy_id_and_user_role_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicyUserRoleByPolicyIdAndUserRoleIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicyUserRoleByPolicyIdAndUserRoleId
+  outputType: DeletePolicyUserRoleByPolicyIdAndUserRoleIdResponse!
+  arguments:
+    - name: keyPolicyId
+      type: Uuid!
+    - name: keyUserRoleId
+      type: Uuid!
+    - name: preCheck
+      type: PolicyUserRoleBoolExp
+      description: Delete permission predicate over the 'policy_user_role' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_user_role_by_policy_id_and_user_role_id
+    argumentMapping:
+      keyPolicyId: key_policy_id
+      keyUserRoleId: key_user_role_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicyUserRoleByPolicyIdAndUserRoleId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_user_role' collection using the
+    'policy_id' and 'user_role_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicyUserRoleByPolicyIdAndUserRoleId
+  permissions:
+    - role: admin
+      allowExecution: true
+

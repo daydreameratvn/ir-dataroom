@@ -1,0 +1,210 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyUserRole
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: policyId
+      type: Uuid!
+    - name: userRoleId
+      type: Uuid!
+  graphql:
+    typeName: PolicyUserRole
+    inputTypeName: PolicyUserRoleInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_user_role
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        userRoleId:
+          column:
+            name: user_role_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyUserRole
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - policyId
+          - userRoleId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyUserRoleBoolExp
+  operand:
+    object:
+      type: PolicyUserRole
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userRoleId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: policy
+        - relationshipName: identityUserRole
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyUserRoleBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyUserRoleAggExp
+  operand:
+    object:
+      aggregatedType: PolicyUserRole
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: userRoleId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyUserRoleAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyUserRoleOrderByExp
+  operand:
+    object:
+      orderedType: PolicyUserRole
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: userRoleId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: policy
+        - relationshipName: identityUserRole
+  graphql:
+    expressionTypeName: PolicyUserRoleOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyUserRole
+  objectType: PolicyUserRole
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_user_role
+  filterExpressionType: PolicyUserRoleBoolExp
+  aggregateExpression: PolicyUserRoleAggExp
+  orderByExpression: PolicyUserRoleOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyUserRole
+      subscription:
+        rootField: policyUserRole
+    selectUniques:
+      - queryRootField: policyUserRoleByPolicyUserRolePkey
+        uniqueIdentifier:
+          - policyId
+          - userRoleId
+        subscription:
+          rootField: policyUserRoleByPolicyUserRolePkey
+    filterInputTypeName: PolicyUserRoleFilterInput
+    aggregate:
+      queryRootField: policyUserRoleAggregate
+      subscription:
+        rootField: policyUserRoleAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyUserRole
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: PolicyUserRole
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserRole
+  sourceType: PolicyUserRole
+  target:
+    model:
+      name: IdentityUserRole
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userRoleId
+      target:
+        modelField:
+          - fieldName: userRoleId
+

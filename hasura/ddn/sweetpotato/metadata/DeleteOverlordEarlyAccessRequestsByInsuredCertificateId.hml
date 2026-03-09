@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteOverlordEarlyAccessRequestsByInsuredCertificateIdResponse
+  description: Responses from the
+    'delete_overlord_early_access_requests_by_insured_certificate_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OverlordEarlyAccessRequests!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteOverlordEarlyAccessRequestsByInsuredCertificateIdResponse
+    inputTypeName: DeleteOverlordEarlyAccessRequestsByInsuredCertificateIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_overlord_early_access_requests_by_insured_certificate_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteOverlordEarlyAccessRequestsByInsuredCertificateIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteOverlordEarlyAccessRequestsByInsuredCertificateId
+  outputType: DeleteOverlordEarlyAccessRequestsByInsuredCertificateIdResponse!
+  arguments:
+    - name: keyInsuredCertificateId
+      type: Uuid
+    - name: preCheck
+      type: OverlordEarlyAccessRequestsBoolExp
+      description: Delete permission predicate over the
+        'overlord_early_access_requests' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_overlord_early_access_requests_by_insured_certificate_id
+    argumentMapping:
+      keyInsuredCertificateId: key_insured_certificate_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteOverlordEarlyAccessRequestsByInsuredCertificateId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'overlord_early_access_requests' collection
+    using the 'insured_certificate_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteOverlordEarlyAccessRequestsByInsuredCertificateId
+  permissions:
+    - role: admin
+      allowExecution: true
+

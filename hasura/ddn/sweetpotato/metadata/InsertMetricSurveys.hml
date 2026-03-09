@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetricSurveysObject
+  fields:
+    - name: answer
+      type: Json
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: source
+      type: String_1
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: InsertMetricSurveysObject
+    inputTypeName: InsertMetricSurveysObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_metric_surveys_object
+      fieldMapping:
+        answer:
+          column:
+            name: answer
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        source:
+          column:
+            name: source
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetricSurveysObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - answer
+          - createdAt
+          - id
+          - source
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetricSurveysResponse
+  description: Responses from the 'insert_metric_surveys' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetricSurveys!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMetricSurveysResponse
+    inputTypeName: InsertMetricSurveysResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_metric_surveys_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetricSurveysResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMetricSurveys
+  outputType: InsertMetricSurveysResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMetricSurveysObject!]!"
+    - name: postCheck
+      type: MetricSurveysBoolExp
+      description: Insert permission predicate over the 'metric_surveys' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_metric_surveys
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMetricSurveys
+    rootFieldKind: Mutation
+  description: Insert into the metric_surveys table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMetricSurveys
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,162 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimExclusions
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: email
+      type: String_1!
+    - name: id
+      type: Uuid!
+  graphql:
+    typeName: ClaimExclusions
+    inputTypeName: ClaimExclusionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_exclusions
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        email:
+          column:
+            name: email
+        id:
+          column:
+            name: id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimExclusions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - email
+          - id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimExclusionsBoolExp
+  operand:
+    object:
+      type: ClaimExclusions
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: email
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimExclusionsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimExclusionsAggExp
+  operand:
+    object:
+      aggregatedType: ClaimExclusions
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: email
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimExclusionsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimExclusionsOrderByExp
+  operand:
+    object:
+      orderedType: ClaimExclusions
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: email
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimExclusionsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimExclusions
+  objectType: ClaimExclusions
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_exclusions
+  filterExpressionType: ClaimExclusionsBoolExp
+  aggregateExpression: ClaimExclusionsAggExp
+  orderByExpression: ClaimExclusionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimExclusions
+      subscription:
+        rootField: claimExclusions
+    selectUniques:
+      - queryRootField: claimExclusionsByEmail
+        uniqueIdentifier:
+          - email
+        subscription:
+          rootField: claimExclusionsByEmail
+      - queryRootField: claimExclusionsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimExclusionsById
+    filterInputTypeName: ClaimExclusionsFilterInput
+    aggregate:
+      queryRootField: claimExclusionsAggregate
+      subscription:
+        rootField: claimExclusionsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimExclusions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPtiInsuredBenefitTypesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertPtiInsuredBenefitTypesObject
+    inputTypeName: InsertPtiInsuredBenefitTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_pti_insured_benefit_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPtiInsuredBenefitTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPtiInsuredBenefitTypesResponse
+  description: Responses from the 'insert_pti_insured_benefit_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PtiInsuredBenefitTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPtiInsuredBenefitTypesResponse
+    inputTypeName: InsertPtiInsuredBenefitTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_pti_insured_benefit_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPtiInsuredBenefitTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPtiInsuredBenefitTypes
+  outputType: InsertPtiInsuredBenefitTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPtiInsuredBenefitTypesObject!]!"
+    - name: postCheck
+      type: PtiInsuredBenefitTypesBoolExp
+      description: Insert permission predicate over the 'pti_insured_benefit_types'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_pti_insured_benefit_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPtiInsuredBenefitTypes
+    rootFieldKind: Mutation
+  description: Insert into the pti_insured_benefit_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPtiInsuredBenefitTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

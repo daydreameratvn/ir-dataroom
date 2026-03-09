@@ -1,0 +1,298 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Labels
+  fields:
+    - name: color
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: icon
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid!
+  graphql:
+    typeName: Labels
+    inputTypeName: LabelsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: labels
+      fieldMapping:
+        color:
+          column:
+            name: color
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        icon:
+          column:
+            name: icon
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Labels
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - color
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - icon
+          - id
+          - name
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: LabelsBoolExp
+  operand:
+    object:
+      type: Labels
+      comparableFields:
+        - fieldName: color
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: icon
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: identityUserByUpdatedBy
+        - relationshipName: labelsObjects
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: LabelsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: LabelsAggExp
+  operand:
+    object:
+      aggregatedType: Labels
+      aggregatableFields:
+        - fieldName: color
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: icon
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: LabelsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: LabelsOrderByExp
+  operand:
+    object:
+      orderedType: Labels
+      orderableFields:
+        - fieldName: color
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: icon
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: LabelsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Labels
+  objectType: Labels
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: labels
+  filterExpressionType: LabelsBoolExp
+  aggregateExpression: LabelsAggExp
+  orderByExpression: LabelsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: labels
+      subscription:
+        rootField: labels
+    selectUniques:
+      - queryRootField: labelsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: labelsById
+      - queryRootField: labelsByNameDeletedAtKey
+        uniqueIdentifier:
+          - deletedAt
+          - name
+        subscription:
+          rootField: labelsByNameDeletedAtKey
+    filterInputTypeName: LabelsFilterInput
+    aggregate:
+      queryRootField: labelsAggregate
+      subscription:
+        rootField: labelsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Labels
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: Labels
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: Labels
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: labelsObjects
+  sourceType: Labels
+  target:
+    model:
+      name: LabelsObjects
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: LabelsObjectsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: labelId
+  graphql:
+    aggregateFieldName: labelsObjectsAggregate
+

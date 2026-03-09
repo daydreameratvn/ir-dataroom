@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMedicalBookingMedicalBookingTimesByMedicalBookingTimeIdResponse
+  description: Responses from the
+    'delete_medical_booking_medical_booking_times_by_medical_booking_time_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingMedicalBookingTimes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMedicalBookingMedicalBookingTimesByMedicalBookingTimeIdResponse
+    inputTypeName: DeleteMedicalBookingMedicalBookingTimesByMedicalBookingTimeIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_medical_booking_medical_booking_times_by_medical_booking_time_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMedicalBookingMedicalBookingTimesByMedicalBookingTimeIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMedicalBookingMedicalBookingTimesByMedicalBookingTimeId
+  outputType: DeleteMedicalBookingMedicalBookingTimesByMedicalBookingTimeIdResponse!
+  arguments:
+    - name: keyMedicalBookingTimeId
+      type: Uuid!
+    - name: preCheck
+      type: MedicalBookingMedicalBookingTimesBoolExp
+      description: Delete permission predicate over the
+        'medical_booking_medical_booking_times' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_medical_booking_medical_booking_times_by_medical_booking_time_id
+    argumentMapping:
+      keyMedicalBookingTimeId: key_medical_booking_time_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMedicalBookingMedicalBookingTimesByMedicalBookingTimeId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'medical_booking_medical_booking_times'
+    collection using the 'medical_booking_time_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMedicalBookingMedicalBookingTimesByMedicalBookingTimeId
+  permissions:
+    - role: admin
+      allowExecution: true
+

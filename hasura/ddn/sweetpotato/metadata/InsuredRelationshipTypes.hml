@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredRelationshipTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsuredRelationshipTypes
+    inputTypeName: InsuredRelationshipTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_relationship_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredRelationshipTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredRelationshipTypesBoolExp
+  operand:
+    object:
+      type: InsuredRelationshipTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: insuredCertificates
+        - relationshipName: insuredRelationships
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredRelationshipTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredRelationshipTypesAggExp
+  operand:
+    object:
+      aggregatedType: InsuredRelationshipTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredRelationshipTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredRelationshipTypesOrderByExp
+  operand:
+    object:
+      orderedType: InsuredRelationshipTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: InsuredRelationshipTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredRelationshipTypes
+  objectType: InsuredRelationshipTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_relationship_types
+  filterExpressionType: InsuredRelationshipTypesBoolExp
+  aggregateExpression: InsuredRelationshipTypesAggExp
+  orderByExpression: InsuredRelationshipTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredRelationshipTypes
+      subscription:
+        rootField: insuredRelationshipTypes
+    selectUniques:
+      - queryRootField: insuredRelationshipTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: insuredRelationshipTypesByValue
+    filterInputTypeName: InsuredRelationshipTypesFilterInput
+    aggregate:
+      queryRootField: insuredRelationshipTypesAggregate
+      subscription:
+        rootField: insuredRelationshipTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredRelationshipTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificates
+  sourceType: InsuredRelationshipTypes
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredCertificatesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: relationshipType
+  graphql:
+    aggregateFieldName: insuredCertificatesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredRelationships
+  sourceType: InsuredRelationshipTypes
+  target:
+    model:
+      name: InsuredRelationships
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredRelationshipsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: insuredRelationshipsAggregate
+

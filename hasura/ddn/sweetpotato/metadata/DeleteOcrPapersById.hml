@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteOcrPapersByIdResponse
+  description: Responses from the 'delete_ocr_papers_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrPapers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteOcrPapersByIdResponse
+    inputTypeName: DeleteOcrPapersByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_ocr_papers_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteOcrPapersByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteOcrPapersById
+  outputType: DeleteOcrPapersByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: OcrPapersBoolExp
+      description: Delete permission predicate over the 'ocr_papers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_ocr_papers_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteOcrPapersById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'ocr_papers' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteOcrPapersById
+  permissions:
+    - role: admin
+      allowExecution: true
+

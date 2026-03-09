@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ReportTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ReportTypes
+    inputTypeName: ReportTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: report_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ReportTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ReportTypesBoolExp
+  operand:
+    object:
+      type: ReportTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: reportItems
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ReportTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ReportTypesAggExp
+  operand:
+    object:
+      aggregatedType: ReportTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ReportTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ReportTypesOrderByExp
+  operand:
+    object:
+      orderedType: ReportTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ReportTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ReportTypes
+  objectType: ReportTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: report_types
+  filterExpressionType: ReportTypesBoolExp
+  aggregateExpression: ReportTypesAggExp
+  orderByExpression: ReportTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: reportTypes
+      subscription:
+        rootField: reportTypes
+    selectUniques:
+      - queryRootField: reportTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: reportTypesByValue
+    filterInputTypeName: ReportTypesFilterInput
+    aggregate:
+      queryRootField: reportTypesAggregate
+      subscription:
+        rootField: reportTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ReportTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: reportItems
+  sourceType: ReportTypes
+  target:
+    model:
+      name: ReportItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ReportItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: reportType
+  graphql:
+    aggregateFieldName: reportItemsAggregate
+

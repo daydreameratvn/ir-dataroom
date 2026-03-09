@@ -1,0 +1,163 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsuredCertificateHistoriesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: endDate
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: planId
+      type: Uuid!
+    - name: startDate
+      type: Timestamptz
+    - name: sumAssured
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertInsuredCertificateHistoriesObject
+    inputTypeName: InsertInsuredCertificateHistoriesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insured_certificate_histories_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        endDate:
+          column:
+            name: end_date
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        planId:
+          column:
+            name: plan_id
+        startDate:
+          column:
+            name: start_date
+        sumAssured:
+          column:
+            name: sum_assured
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsuredCertificateHistoriesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - endDate
+          - id
+          - insuredCertificateId
+          - planId
+          - startDate
+          - sumAssured
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsuredCertificateHistoriesResponse
+  description: Responses from the 'insert_insured_certificate_histories' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertInsuredCertificateHistoriesResponse
+    inputTypeName: InsertInsuredCertificateHistoriesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insured_certificate_histories_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsuredCertificateHistoriesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertInsuredCertificateHistories
+  outputType: InsertInsuredCertificateHistoriesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertInsuredCertificateHistoriesObject!]!"
+    - name: postCheck
+      type: InsuredCertificateHistoriesBoolExp
+      description: Insert permission predicate over the
+        'insured_certificate_histories' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_insured_certificate_histories
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertInsuredCertificateHistories
+    rootFieldKind: Mutation
+  description: Insert into the insured_certificate_histories table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertInsuredCertificateHistories
+  permissions:
+    - role: admin
+      allowExecution: true
+

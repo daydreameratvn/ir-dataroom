@@ -1,0 +1,217 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdApiLogs
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: requestContent
+      type: Json!
+    - name: requestedAt
+      type: Timestamptz!
+    - name: respondedAt
+      type: Timestamptz!
+    - name: responseContent
+      type: Json
+    - name: responseStatus
+      type: Int32
+    - name: responseTime
+      type: Int32!
+    - name: url
+      type: String_1!
+  graphql:
+    typeName: FwdApiLogs
+    inputTypeName: FwdApiLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_api_logs
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        requestContent:
+          column:
+            name: request_content
+        requestedAt:
+          column:
+            name: requested_at
+        respondedAt:
+          column:
+            name: responded_at
+        responseContent:
+          column:
+            name: response_content
+        responseStatus:
+          column:
+            name: response_status
+        responseTime:
+          column:
+            name: response_time
+        url:
+          column:
+            name: url
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdApiLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - requestContent
+          - requestedAt
+          - respondedAt
+          - responseContent
+          - responseStatus
+          - responseTime
+          - url
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdApiLogsBoolExp
+  operand:
+    object:
+      type: FwdApiLogs
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: requestContent
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: requestedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: respondedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: responseContent
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: responseStatus
+          booleanExpressionType: Int4BoolExp
+        - fieldName: responseTime
+          booleanExpressionType: Int4BoolExp
+        - fieldName: url
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdApiLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdApiLogsAggExp
+  operand:
+    object:
+      aggregatedType: FwdApiLogs
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: requestContent
+          aggregateExpression: JsonbAggExp
+        - fieldName: requestedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: respondedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: responseContent
+          aggregateExpression: JsonbAggExp
+        - fieldName: responseStatus
+          aggregateExpression: Int4AggExp
+        - fieldName: responseTime
+          aggregateExpression: Int4AggExp
+        - fieldName: url
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdApiLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdApiLogsOrderByExp
+  operand:
+    object:
+      orderedType: FwdApiLogs
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: requestContent
+          orderByExpression: JsonOrderByExp
+        - fieldName: requestedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: respondedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: responseContent
+          orderByExpression: JsonOrderByExp
+        - fieldName: responseStatus
+          orderByExpression: Int32OrderByExp
+        - fieldName: responseTime
+          orderByExpression: Int32OrderByExp
+        - fieldName: url
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: FwdApiLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdApiLogs
+  objectType: FwdApiLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_api_logs
+  filterExpressionType: FwdApiLogsBoolExp
+  aggregateExpression: FwdApiLogsAggExp
+  orderByExpression: FwdApiLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdApiLogs
+      subscription:
+        rootField: fwdApiLogs
+    selectUniques:
+      - queryRootField: fwdApiLogsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: fwdApiLogsById
+    filterInputTypeName: FwdApiLogsFilterInput
+    aggregate:
+      queryRootField: fwdApiLogsAggregate
+      subscription:
+        rootField: fwdApiLogsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdApiLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

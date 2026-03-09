@@ -1,0 +1,273 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: JetResults
+  fields:
+    - name: claimCaseId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: isJet
+      type: Boolean_1!
+    - name: isJetByAssessor
+      type: Boolean_1
+    - name: jetRuleSetId
+      type: Uuid!
+    - name: originalClaimCaseId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: JetResults
+    inputTypeName: JetResultsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: jet_results
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        isJet:
+          column:
+            name: is_jet
+        isJetByAssessor:
+          column:
+            name: is_jet_by_assessor
+        jetRuleSetId:
+          column:
+            name: jet_rule_set_id
+        originalClaimCaseId:
+          column:
+            name: original_claim_case_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: JetResults
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - id
+          - isJet
+          - isJetByAssessor
+          - jetRuleSetId
+          - originalClaimCaseId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: JetResultsBoolExp
+  operand:
+    object:
+      type: JetResults
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isJet
+          booleanExpressionType: BoolBoolExp
+        - fieldName: isJetByAssessor
+          booleanExpressionType: BoolBoolExp
+        - fieldName: jetRuleSetId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: originalClaimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: jetResultDetails
+        - relationshipName: claimCase
+        - relationshipName: originalClaimCase
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: JetResultsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: JetResultsAggExp
+  operand:
+    object:
+      aggregatedType: JetResults
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isJet
+          aggregateExpression: BoolAggExp
+        - fieldName: isJetByAssessor
+          aggregateExpression: BoolAggExp
+        - fieldName: jetRuleSetId
+          aggregateExpression: UuidAggExp
+        - fieldName: originalClaimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: JetResultsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: JetResultsOrderByExp
+  operand:
+    object:
+      orderedType: JetResults
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isJet
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: isJetByAssessor
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: jetRuleSetId
+          orderByExpression: UuidOrderByExp
+        - fieldName: originalClaimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: originalClaimCase
+  graphql:
+    expressionTypeName: JetResultsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: JetResults
+  objectType: JetResults
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: jet_results
+  filterExpressionType: JetResultsBoolExp
+  aggregateExpression: JetResultsAggExp
+  orderByExpression: JetResultsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: jetResults
+      subscription:
+        rootField: jetResults
+    selectUniques:
+      - queryRootField: jetResultsByOriginalClaimCaseId
+        uniqueIdentifier:
+          - originalClaimCaseId
+        subscription:
+          rootField: jetResultsByOriginalClaimCaseId
+      - queryRootField: jetResultsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: jetResultsById
+    filterInputTypeName: JetResultsFilterInput
+    aggregate:
+      queryRootField: jetResultsAggregate
+      subscription:
+        rootField: jetResultsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: JetResults
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: jetResultDetails
+  sourceType: JetResults
+  target:
+    model:
+      name: JetResultDetails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: JetResultDetailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: jetResultId
+  graphql:
+    aggregateFieldName: jetResultDetailsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: JetResults
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: originalClaimCase
+  sourceType: JetResults
+  target:
+    model:
+      name: OriginalClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: originalClaimCaseId
+      target:
+        modelField:
+          - fieldName: id
+

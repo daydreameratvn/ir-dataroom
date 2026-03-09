@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredCertificateRelatedEventsByIdResponse
+  description: Responses from the
+    'delete_insured_certificate_related_events_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateRelatedEvents!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredCertificateRelatedEventsByIdResponse
+    inputTypeName: DeleteInsuredCertificateRelatedEventsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_certificate_related_events_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredCertificateRelatedEventsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredCertificateRelatedEventsById
+  outputType: DeleteInsuredCertificateRelatedEventsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: InsuredCertificateRelatedEventsBoolExp
+      description: Delete permission predicate over the
+        'insured_certificate_related_events' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_certificate_related_events_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredCertificateRelatedEventsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_certificate_related_events'
+    collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredCertificateRelatedEventsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

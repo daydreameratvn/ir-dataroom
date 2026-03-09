@@ -1,0 +1,270 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOriginalClaimCasesObject
+  fields:
+    - name: admissionDate
+      type: Timestamptz
+    - name: agentId
+      type: Uuid
+    - name: amount
+      type: Bigdecimal
+    - name: beneficiaryId
+      type: Uuid
+    - name: benefitType
+      type: String_1!
+    - name: challengeAbuse
+      type: Boolean_1
+    - name: claimNumber
+      type: String_1
+    - name: claimSequence
+      type: String_1
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: diagnosis
+      type: String_1
+    - name: dischargeDate
+      type: Timestamptz
+    - name: eventDate
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insuranceEvent
+      type: String_1
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: insuredPersonId
+      type: Uuid!
+    - name: insurerId
+      type: Uuid!
+    - name: isDirectBilling
+      type: Boolean_1
+    - name: isJet
+      type: Boolean_1
+    - name: medicalProviderId
+      type: Uuid
+    - name: medicalProviderName
+      type: String_1
+    - name: physicalExaminationDate
+      type: Timestamptz
+    - name: requestedAmount
+      type: Bigdecimal
+    - name: source
+      type: String_1!
+    - name: treatmentMethod
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertOriginalClaimCasesObject
+    inputTypeName: InsertOriginalClaimCasesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_original_claim_cases_object
+      fieldMapping:
+        admissionDate:
+          column:
+            name: admission_date
+        agentId:
+          column:
+            name: agent_id
+        amount:
+          column:
+            name: amount
+        beneficiaryId:
+          column:
+            name: beneficiary_id
+        benefitType:
+          column:
+            name: benefit_type
+        challengeAbuse:
+          column:
+            name: challenge_abuse
+        claimNumber:
+          column:
+            name: claim_number
+        claimSequence:
+          column:
+            name: claim_sequence
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        diagnosis:
+          column:
+            name: diagnosis
+        dischargeDate:
+          column:
+            name: discharge_date
+        eventDate:
+          column:
+            name: event_date
+        id:
+          column:
+            name: id
+        insuranceEvent:
+          column:
+            name: insurance_event
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        insurerId:
+          column:
+            name: insurer_id
+        isDirectBilling:
+          column:
+            name: is_direct_billing
+        isJet:
+          column:
+            name: is_jet
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        physicalExaminationDate:
+          column:
+            name: physical_examination_date
+        requestedAmount:
+          column:
+            name: requested_amount
+        source:
+          column:
+            name: source
+        treatmentMethod:
+          column:
+            name: treatment_method
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOriginalClaimCasesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - admissionDate
+          - agentId
+          - amount
+          - beneficiaryId
+          - benefitType
+          - challengeAbuse
+          - claimNumber
+          - claimSequence
+          - code
+          - createdAt
+          - createdBy
+          - deletedAt
+          - diagnosis
+          - dischargeDate
+          - eventDate
+          - id
+          - insuranceEvent
+          - insuredCertificateId
+          - insuredPersonId
+          - insurerId
+          - isDirectBilling
+          - isJet
+          - medicalProviderId
+          - medicalProviderName
+          - physicalExaminationDate
+          - requestedAmount
+          - source
+          - treatmentMethod
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOriginalClaimCasesResponse
+  description: Responses from the 'insert_original_claim_cases' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OriginalClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOriginalClaimCasesResponse
+    inputTypeName: InsertOriginalClaimCasesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_original_claim_cases_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOriginalClaimCasesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOriginalClaimCases
+  outputType: InsertOriginalClaimCasesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOriginalClaimCasesObject!]!"
+    - name: postCheck
+      type: OriginalClaimCasesBoolExp
+      description: Insert permission predicate over the 'original_claim_cases' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_original_claim_cases
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOriginalClaimCases
+    rootFieldKind: Mutation
+  description: Insert into the original_claim_cases table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOriginalClaimCases
+  permissions:
+    - role: admin
+      allowExecution: true
+

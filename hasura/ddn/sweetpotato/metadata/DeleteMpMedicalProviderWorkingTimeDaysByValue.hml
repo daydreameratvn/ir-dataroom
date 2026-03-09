@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMpMedicalProviderWorkingTimeDaysByValueResponse
+  description: Responses from the
+    'delete_mp_medical_provider_working_time_days_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderWorkingTimeDays!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMpMedicalProviderWorkingTimeDaysByValueResponse
+    inputTypeName: DeleteMpMedicalProviderWorkingTimeDaysByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mp_medical_provider_working_time_days_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMpMedicalProviderWorkingTimeDaysByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMpMedicalProviderWorkingTimeDaysByValue
+  outputType: DeleteMpMedicalProviderWorkingTimeDaysByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: MpMedicalProviderWorkingTimeDaysBoolExp
+      description: Delete permission predicate over the
+        'mp_medical_provider_working_time_days' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mp_medical_provider_working_time_days_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMpMedicalProviderWorkingTimeDaysByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mp_medical_provider_working_time_days'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMpMedicalProviderWorkingTimeDaysByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

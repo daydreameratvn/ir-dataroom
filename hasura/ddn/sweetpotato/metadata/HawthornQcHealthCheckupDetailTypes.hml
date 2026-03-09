@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornQcHealthCheckupDetailTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: HawthornQcHealthCheckupDetailTypes
+    inputTypeName: HawthornQcHealthCheckupDetailTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_qc_health_checkup_detail_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornQcHealthCheckupDetailTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornQcHealthCheckupDetailTypesBoolExp
+  operand:
+    object:
+      type: HawthornQcHealthCheckupDetailTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornQcHealthCheckupDetails
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornQcHealthCheckupDetailTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornQcHealthCheckupDetailTypesAggExp
+  operand:
+    object:
+      aggregatedType: HawthornQcHealthCheckupDetailTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornQcHealthCheckupDetailTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornQcHealthCheckupDetailTypesOrderByExp
+  operand:
+    object:
+      orderedType: HawthornQcHealthCheckupDetailTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HawthornQcHealthCheckupDetailTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornQcHealthCheckupDetailTypes
+  objectType: HawthornQcHealthCheckupDetailTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_qc_health_checkup_detail_types
+  filterExpressionType: HawthornQcHealthCheckupDetailTypesBoolExp
+  aggregateExpression: HawthornQcHealthCheckupDetailTypesAggExp
+  orderByExpression: HawthornQcHealthCheckupDetailTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornQcHealthCheckupDetailTypes
+      subscription:
+        rootField: hawthornQcHealthCheckupDetailTypes
+    selectUniques:
+      - queryRootField: hawthornQcHealthCheckupDetailTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: hawthornQcHealthCheckupDetailTypesByValue
+    filterInputTypeName: HawthornQcHealthCheckupDetailTypesFilterInput
+    aggregate:
+      queryRootField: hawthornQcHealthCheckupDetailTypesAggregate
+      subscription:
+        rootField: hawthornQcHealthCheckupDetailTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornQcHealthCheckupDetailTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornQcHealthCheckupDetails
+  sourceType: HawthornQcHealthCheckupDetailTypes
+  target:
+    model:
+      name: HawthornQcHealthCheckupDetails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornQcHealthCheckupDetailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: hawthornQcHealthCheckupDetailsAggregate
+

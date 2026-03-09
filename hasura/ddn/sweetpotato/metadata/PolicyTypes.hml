@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyTypes
+  description: Loại hợp đồng bảo hiểm
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PolicyTypes
+    inputTypeName: PolicyTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyTypesBoolExp
+  operand:
+    object:
+      type: PolicyTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: payoutMoneyLaunderingSuspects
+        - relationshipName: policies
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyTypesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyTypesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicyTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyTypes
+  objectType: PolicyTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_types
+  filterExpressionType: PolicyTypesBoolExp
+  aggregateExpression: PolicyTypesAggExp
+  orderByExpression: PolicyTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyTypes
+      subscription:
+        rootField: policyTypes
+    selectUniques:
+      - queryRootField: policyTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: policyTypesByValue
+    filterInputTypeName: PolicyTypesFilterInput
+    aggregate:
+      queryRootField: policyTypesAggregate
+      subscription:
+        rootField: policyTypesAggregate
+  description: Loại hợp đồng bảo hiểm
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutMoneyLaunderingSuspects
+  sourceType: PolicyTypes
+  target:
+    model:
+      name: PayoutMoneyLaunderingSuspects
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutMoneyLaunderingSuspectsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: policyType
+  graphql:
+    aggregateFieldName: payoutMoneyLaunderingSuspectsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: PolicyTypes
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: types
+  graphql:
+    aggregateFieldName: policiesAggregate
+

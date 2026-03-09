@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCompanyCampusesByCompanyIdAndNameResponse
+  description: Responses from the 'delete_company_campuses_by_company_id_and_name' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanyCampuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCompanyCampusesByCompanyIdAndNameResponse
+    inputTypeName: DeleteCompanyCampusesByCompanyIdAndNameResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_company_campuses_by_company_id_and_name_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCompanyCampusesByCompanyIdAndNameResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCompanyCampusesByCompanyIdAndName
+  outputType: DeleteCompanyCampusesByCompanyIdAndNameResponse!
+  arguments:
+    - name: keyCompanyId
+      type: Uuid!
+    - name: keyName
+      type: String_1!
+    - name: preCheck
+      type: CompanyCampusesBoolExp
+      description: Delete permission predicate over the 'company_campuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_company_campuses_by_company_id_and_name
+    argumentMapping:
+      keyCompanyId: key_company_id
+      keyName: key_name
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCompanyCampusesByCompanyIdAndName
+    rootFieldKind: Mutation
+  description: Delete any row on the 'company_campuses' collection using the
+    'company_id' and 'name' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCompanyCampusesByCompanyIdAndName
+  permissions:
+    - role: admin
+      allowExecution: true
+

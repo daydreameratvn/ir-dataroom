@@ -1,0 +1,451 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutTransactions
+  description: Record transactions with payment providers
+  fields:
+    - name: bankTransactionCode
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: failureCode
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: paymentAmount
+      type: Bigdecimal!
+    - name: paymentProvider
+      type: String_1!
+    - name: paymentProviderTransactionRefCode
+      type: String_1
+    - name: paymentRequestId
+      type: Uuid
+    - name: paymentRequestItemId
+      type: Uuid
+    - name: payoutBankAccountId
+      type: Uuid
+    - name: refCode
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: transactionLogs
+      type: Json!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PayoutTransactions
+    inputTypeName: PayoutTransactionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_transactions
+      fieldMapping:
+        bankTransactionCode:
+          column:
+            name: bank_transaction_code
+        createdAt:
+          column:
+            name: created_at
+        failureCode:
+          column:
+            name: failure_code
+        id:
+          column:
+            name: id
+        paymentAmount:
+          column:
+            name: payment_amount
+        paymentProvider:
+          column:
+            name: payment_provider
+        paymentProviderTransactionRefCode:
+          column:
+            name: payment_provider_transaction_ref_code
+        paymentRequestId:
+          column:
+            name: payment_request_id
+        paymentRequestItemId:
+          column:
+            name: payment_request_item_id
+        payoutBankAccountId:
+          column:
+            name: payout_bank_account_id
+        refCode:
+          column:
+            name: ref_code
+        status:
+          column:
+            name: status
+        transactionLogs:
+          column:
+            name: transaction_logs
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutTransactions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankTransactionCode
+          - createdAt
+          - failureCode
+          - id
+          - paymentAmount
+          - paymentProvider
+          - paymentProviderTransactionRefCode
+          - paymentRequestId
+          - paymentRequestItemId
+          - payoutBankAccountId
+          - refCode
+          - status
+          - transactionLogs
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutTransactionsBoolExp
+  operand:
+    object:
+      type: PayoutTransactions
+      comparableFields:
+        - fieldName: bankTransactionCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: failureCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paymentAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: paymentProvider
+          booleanExpressionType: TextBoolExp
+        - fieldName: paymentProviderTransactionRefCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: paymentRequestId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paymentRequestItemId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: payoutBankAccountId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: refCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: transactionLogs
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: files
+        - relationshipName: payoutActionLogs
+        - relationshipName: payoutTransactionFailureCode
+        - relationshipName: payoutPaymentProvider
+        - relationshipName: payoutPaymentRequest
+        - relationshipName: payoutPaymentRequestItem
+        - relationshipName: payoutPayoutBankAccount
+        - relationshipName: payoutTransactionStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutTransactionsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutTransactionsAggExp
+  operand:
+    object:
+      aggregatedType: PayoutTransactions
+      aggregatableFields:
+        - fieldName: bankTransactionCode
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: failureCode
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: paymentAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: paymentProvider
+          aggregateExpression: TextAggExp
+        - fieldName: paymentProviderTransactionRefCode
+          aggregateExpression: TextAggExp
+        - fieldName: paymentRequestId
+          aggregateExpression: UuidAggExp
+        - fieldName: paymentRequestItemId
+          aggregateExpression: UuidAggExp
+        - fieldName: payoutBankAccountId
+          aggregateExpression: UuidAggExp
+        - fieldName: refCode
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: transactionLogs
+          aggregateExpression: JsonbAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutTransactionsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutTransactionsOrderByExp
+  operand:
+    object:
+      orderedType: PayoutTransactions
+      orderableFields:
+        - fieldName: bankTransactionCode
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: failureCode
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: paymentAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: paymentProvider
+          orderByExpression: String1OrderByExp
+        - fieldName: paymentProviderTransactionRefCode
+          orderByExpression: String1OrderByExp
+        - fieldName: paymentRequestId
+          orderByExpression: UuidOrderByExp
+        - fieldName: paymentRequestItemId
+          orderByExpression: UuidOrderByExp
+        - fieldName: payoutBankAccountId
+          orderByExpression: UuidOrderByExp
+        - fieldName: refCode
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: transactionLogs
+          orderByExpression: JsonOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: payoutTransactionFailureCode
+        - relationshipName: payoutPaymentProvider
+        - relationshipName: payoutPaymentRequest
+        - relationshipName: payoutPaymentRequestItem
+        - relationshipName: payoutPayoutBankAccount
+        - relationshipName: payoutTransactionStatus
+  graphql:
+    expressionTypeName: PayoutTransactionsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutTransactions
+  objectType: PayoutTransactions
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_transactions
+  filterExpressionType: PayoutTransactionsBoolExp
+  aggregateExpression: PayoutTransactionsAggExp
+  orderByExpression: PayoutTransactionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutTransactions
+      subscription:
+        rootField: payoutTransactions
+    selectUniques:
+      - queryRootField: payoutTransactionsByTransactionsPaymentProviderPaymentProviderTransactionRef
+        uniqueIdentifier:
+          - paymentProvider
+          - paymentProviderTransactionRefCode
+        subscription:
+          rootField: payoutTransactionsByTransactionsPaymentProviderPaymentProviderTransactionRef
+      - queryRootField: payoutTransactionsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: payoutTransactionsById
+    filterInputTypeName: PayoutTransactionsFilterInput
+    aggregate:
+      queryRootField: payoutTransactionsAggregate
+      subscription:
+        rootField: payoutTransactionsAggregate
+  description: Record transactions with payment providers
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutTransactions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: files
+  sourceType: PayoutTransactions
+  target:
+    model:
+      name: Files
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: payoutTransactionId
+  graphql:
+    aggregateFieldName: filesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutActionLogs
+  sourceType: PayoutTransactions
+  target:
+    model:
+      name: PayoutActionLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutActionLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: transactionId
+  graphql:
+    aggregateFieldName: payoutActionLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutTransactionFailureCode
+  sourceType: PayoutTransactions
+  target:
+    model:
+      name: PayoutTransactionFailureCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: failureCode
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentProvider
+  sourceType: PayoutTransactions
+  target:
+    model:
+      name: PayoutPaymentProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentProvider
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequest
+  sourceType: PayoutTransactions
+  target:
+    model:
+      name: PayoutPaymentRequests
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentRequestId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestItem
+  sourceType: PayoutTransactions
+  target:
+    model:
+      name: PayoutPaymentRequestItems
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentRequestItemId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPayoutBankAccount
+  sourceType: PayoutTransactions
+  target:
+    model:
+      name: PayoutPayoutBankAccounts
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: payoutBankAccountId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutTransactionStatus
+  sourceType: PayoutTransactions
+  target:
+    model:
+      name: PayoutTransactionStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+

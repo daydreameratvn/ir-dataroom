@@ -1,0 +1,334 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseDetailExpenseItems
+  fields:
+    - name: amount
+      type: Bigdecimal
+    - name: claimCaseDetailId
+      type: Uuid
+    - name: claimDocumentGroupId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: isNonPaid
+      type: Boolean_1
+    - name: isSelected
+      type: Boolean_1
+    - name: parentId
+      type: Uuid
+    - name: refCode
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: ClaimCaseDetailExpenseItems
+    inputTypeName: ClaimCaseDetailExpenseItemsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_detail_expense_items
+      fieldMapping:
+        amount:
+          column:
+            name: amount
+        claimCaseDetailId:
+          column:
+            name: claim_case_detail_id
+        claimDocumentGroupId:
+          column:
+            name: claim_document_group_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        isNonPaid:
+          column:
+            name: is_non_paid
+        isSelected:
+          column:
+            name: is_selected
+        parentId:
+          column:
+            name: parent_id
+        refCode:
+          column:
+            name: ref_code
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseDetailExpenseItems
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - amount
+          - claimCaseDetailId
+          - claimDocumentGroupId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - isNonPaid
+          - isSelected
+          - parentId
+          - refCode
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseDetailExpenseItemsBoolExp
+  operand:
+    object:
+      type: ClaimCaseDetailExpenseItems
+      comparableFields:
+        - fieldName: amount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: claimCaseDetailId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimDocumentGroupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isNonPaid
+          booleanExpressionType: BoolBoolExp
+        - fieldName: isSelected
+          booleanExpressionType: BoolBoolExp
+        - fieldName: parentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: refCode
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimDocumentGroup
+        - relationshipName: claimCaseDetailExpenseItem
+        - relationshipName: claimCaseDetailExpenseItems
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseDetailExpenseItemsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseDetailExpenseItemsAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseDetailExpenseItems
+      aggregatableFields:
+        - fieldName: amount
+          aggregateExpression: NumericAggExp
+        - fieldName: claimCaseDetailId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimDocumentGroupId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isNonPaid
+          aggregateExpression: BoolAggExp
+        - fieldName: isSelected
+          aggregateExpression: BoolAggExp
+        - fieldName: parentId
+          aggregateExpression: UuidAggExp
+        - fieldName: refCode
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseDetailExpenseItemsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseDetailExpenseItemsOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseDetailExpenseItems
+      orderableFields:
+        - fieldName: amount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: claimCaseDetailId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimDocumentGroupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isNonPaid
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: isSelected
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: parentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: refCode
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimDocumentGroup
+        - relationshipName: claimCaseDetailExpenseItem
+  graphql:
+    expressionTypeName: ClaimCaseDetailExpenseItemsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseDetailExpenseItems
+  objectType: ClaimCaseDetailExpenseItems
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_detail_expense_items
+  filterExpressionType: ClaimCaseDetailExpenseItemsBoolExp
+  aggregateExpression: ClaimCaseDetailExpenseItemsAggExp
+  orderByExpression: ClaimCaseDetailExpenseItemsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseDetailExpenseItems
+      subscription:
+        rootField: claimCaseDetailExpenseItems
+    selectUniques:
+      - queryRootField: claimCaseDetailExpenseItemsByClaimCaseDetailExpenseItemsClaimCaseDetailIdRefCodeK
+        uniqueIdentifier:
+          - claimCaseDetailId
+          - refCode
+        subscription:
+          rootField: claimCaseDetailExpenseItemsByClaimCaseDetailExpenseItemsClaimCaseDetailIdRefCodeK
+      - queryRootField: claimCaseDetailExpenseItemsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimCaseDetailExpenseItemsById
+    filterInputTypeName: ClaimCaseDetailExpenseItemsFilterInput
+    aggregate:
+      queryRootField: claimCaseDetailExpenseItemsAggregate
+      subscription:
+        rootField: claimCaseDetailExpenseItemsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseDetailExpenseItems
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocumentGroup
+  sourceType: ClaimCaseDetailExpenseItems
+  target:
+    model:
+      name: ClaimDocumentGroups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentGroupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseDetailExpenseItem
+  sourceType: ClaimCaseDetailExpenseItems
+  target:
+    model:
+      name: ClaimCaseDetailExpenseItems
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: parentId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseDetailExpenseItems
+  sourceType: ClaimCaseDetailExpenseItems
+  target:
+    model:
+      name: ClaimCaseDetailExpenseItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseDetailExpenseItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: parentId
+  graphql:
+    aggregateFieldName: claimCaseDetailExpenseItemsAggregate
+

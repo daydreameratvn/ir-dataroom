@@ -1,0 +1,181 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdHealthLogs
+  fields:
+    - name: checkedAt
+      type: Timestamptz!
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: isRunning
+      type: Boolean_1!
+    - name: responseContent
+      type: Json
+    - name: responseStatus
+      type: Bigdecimal
+  graphql:
+    typeName: FwdHealthLogs
+    inputTypeName: FwdHealthLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_health_logs
+      fieldMapping:
+        checkedAt:
+          column:
+            name: checked_at
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        isRunning:
+          column:
+            name: is_running
+        responseContent:
+          column:
+            name: response_content
+        responseStatus:
+          column:
+            name: response_status
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdHealthLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - checkedAt
+          - createdAt
+          - id
+          - isRunning
+          - responseContent
+          - responseStatus
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdHealthLogsBoolExp
+  operand:
+    object:
+      type: FwdHealthLogs
+      comparableFields:
+        - fieldName: checkedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isRunning
+          booleanExpressionType: BoolBoolExp
+        - fieldName: responseContent
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: responseStatus
+          booleanExpressionType: NumericBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdHealthLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdHealthLogsAggExp
+  operand:
+    object:
+      aggregatedType: FwdHealthLogs
+      aggregatableFields:
+        - fieldName: checkedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isRunning
+          aggregateExpression: BoolAggExp
+        - fieldName: responseContent
+          aggregateExpression: JsonbAggExp
+        - fieldName: responseStatus
+          aggregateExpression: NumericAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdHealthLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdHealthLogsOrderByExp
+  operand:
+    object:
+      orderedType: FwdHealthLogs
+      orderableFields:
+        - fieldName: checkedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isRunning
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: responseContent
+          orderByExpression: JsonOrderByExp
+        - fieldName: responseStatus
+          orderByExpression: BigdecimalOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: FwdHealthLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdHealthLogs
+  objectType: FwdHealthLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_health_logs
+  filterExpressionType: FwdHealthLogsBoolExp
+  aggregateExpression: FwdHealthLogsAggExp
+  orderByExpression: FwdHealthLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdHealthLogs
+      subscription:
+        rootField: fwdHealthLogs
+    selectUniques:
+      - queryRootField: fwdHealthLogsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: fwdHealthLogsById
+    filterInputTypeName: FwdHealthLogsFilterInput
+    aggregate:
+      queryRootField: fwdHealthLogsAggregate
+      subscription:
+        rootField: fwdHealthLogsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdHealthLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HazelnutInsurancePackages
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: HazelnutInsurancePackages
+    inputTypeName: HazelnutInsurancePackagesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hazelnut_insurance_packages
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HazelnutInsurancePackages
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HazelnutInsurancePackagesBoolExp
+  operand:
+    object:
+      type: HazelnutInsurancePackages
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: hazelnutInsuranceCoverages
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HazelnutInsurancePackagesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HazelnutInsurancePackagesAggExp
+  operand:
+    object:
+      aggregatedType: HazelnutInsurancePackages
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HazelnutInsurancePackagesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HazelnutInsurancePackagesOrderByExp
+  operand:
+    object:
+      orderedType: HazelnutInsurancePackages
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HazelnutInsurancePackagesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HazelnutInsurancePackages
+  objectType: HazelnutInsurancePackages
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hazelnut_insurance_packages
+  filterExpressionType: HazelnutInsurancePackagesBoolExp
+  aggregateExpression: HazelnutInsurancePackagesAggExp
+  orderByExpression: HazelnutInsurancePackagesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hazelnutInsurancePackages
+      subscription:
+        rootField: hazelnutInsurancePackages
+    selectUniques:
+      - queryRootField: hazelnutInsurancePackagesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: hazelnutInsurancePackagesByValue
+    filterInputTypeName: HazelnutInsurancePackagesFilterInput
+    aggregate:
+      queryRootField: hazelnutInsurancePackagesAggregate
+      subscription:
+        rootField: hazelnutInsurancePackagesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HazelnutInsurancePackages
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceCoverages
+  sourceType: HazelnutInsurancePackages
+  target:
+    model:
+      name: HazelnutInsuranceCoverages
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceCoveragesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: package
+  graphql:
+    aggregateFieldName: hazelnutInsuranceCoveragesAggregate
+

@@ -1,0 +1,154 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeUpdateColumns
+  description: Update the columns of the 'fwd_package_code_mapping' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnFwdPackageCodeMappingCreatedAt
+      description: Update the 'created_at' column in the 'fwd_package_code_mapping'
+        collection.
+    - name: id
+      type: UpdateColumnFwdPackageCodeMappingId
+      description: Update the 'id' column in the 'fwd_package_code_mapping' collection.
+    - name: packageCode
+      type: UpdateColumnFwdPackageCodeMappingPackageCode
+      description: Update the 'package_code' column in the 'fwd_package_code_mapping'
+        collection.
+    - name: planCode
+      type: UpdateColumnFwdPackageCodeMappingPlanCode
+      description: Update the 'plan_code' column in the 'fwd_package_code_mapping'
+        collection.
+    - name: ppyPackageCode
+      type: UpdateColumnFwdPackageCodeMappingPpyPackageCode
+      description: Update the 'ppy_package_code' column in the
+        'fwd_package_code_mapping' collection.
+  graphql:
+    typeName: UpdateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeUpdateColumns
+    inputTypeName: UpdateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_package_code_mapping_by_package_code_and_plan_code_and_ppy_package_code_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        packageCode:
+          column:
+            name: package_code
+        planCode:
+          column:
+            name: plan_code
+        ppyPackageCode:
+          column:
+            name: ppy_package_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - packageCode
+          - planCode
+          - ppyPackageCode
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeResponse
+  description: Responses from the
+    'update_fwd_package_code_mapping_by_package_code_and_plan_code_and_ppy_package_code'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdPackageCodeMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeResponse
+    inputTypeName: UpdateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_package_code_mapping_by_package_code_and_plan_code_and_ppy_package_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCode
+  outputType: UpdateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeResponse!
+  arguments:
+    - name: keyPackageCode
+      type: String_1!
+    - name: keyPlanCode
+      type: String_1!
+    - name: keyPpyPackageCode
+      type: String_1!
+    - name: postCheck
+      type: FwdPackageCodeMappingBoolExp
+      description: Update permission post-condition predicate over the
+        'fwd_package_code_mapping' collection
+    - name: preCheck
+      type: FwdPackageCodeMappingBoolExp
+      description: Update permission pre-condition predicate over the
+        'fwd_package_code_mapping' collection
+    - name: updateColumns
+      type: UpdateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_fwd_package_code_mapping_by_package_code_and_plan_code_and_ppy_package_code
+    argumentMapping:
+      keyPackageCode: key_package_code
+      keyPlanCode: key_plan_code
+      keyPpyPackageCode: key_ppy_package_code
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCode
+    rootFieldKind: Mutation
+  description: Update any row on the 'fwd_package_code_mapping' collection using
+    the 'package_code', 'plan_code' and 'ppy_package_code' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

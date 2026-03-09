@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdDisplayClaimCaseStatusesByPpyClaimStatusCodeResponse
+  description: Responses from the
+    'delete_fwd_display_claim_case_statuses_by_ppy_claim_status_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdDisplayClaimCaseStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdDisplayClaimCaseStatusesByPpyClaimStatusCodeResponse
+    inputTypeName: DeleteFwdDisplayClaimCaseStatusesByPpyClaimStatusCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_display_claim_case_statuses_by_ppy_claim_status_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdDisplayClaimCaseStatusesByPpyClaimStatusCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdDisplayClaimCaseStatusesByPpyClaimStatusCode
+  outputType: DeleteFwdDisplayClaimCaseStatusesByPpyClaimStatusCodeResponse!
+  arguments:
+    - name: keyPpyClaimStatusCode
+      type: String_1!
+    - name: preCheck
+      type: FwdDisplayClaimCaseStatusesBoolExp
+      description: Delete permission predicate over the
+        'fwd_display_claim_case_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_display_claim_case_statuses_by_ppy_claim_status_code
+    argumentMapping:
+      keyPpyClaimStatusCode: key_ppy_claim_status_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdDisplayClaimCaseStatusesByPpyClaimStatusCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_display_claim_case_statuses' collection
+    using the 'ppy_claim_status_code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdDisplayClaimCaseStatusesByPpyClaimStatusCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

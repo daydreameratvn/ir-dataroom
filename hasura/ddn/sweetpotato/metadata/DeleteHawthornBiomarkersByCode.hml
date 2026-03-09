@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHawthornBiomarkersByCodeResponse
+  description: Responses from the 'delete_hawthorn_biomarkers_by_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornBiomarkers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHawthornBiomarkersByCodeResponse
+    inputTypeName: DeleteHawthornBiomarkersByCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hawthorn_biomarkers_by_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHawthornBiomarkersByCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHawthornBiomarkersByCode
+  outputType: DeleteHawthornBiomarkersByCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: preCheck
+      type: HawthornBiomarkersBoolExp
+      description: Delete permission predicate over the 'hawthorn_biomarkers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hawthorn_biomarkers_by_code
+    argumentMapping:
+      keyCode: key_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHawthornBiomarkersByCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hawthorn_biomarkers' collection using the 'code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHawthornBiomarkersByCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

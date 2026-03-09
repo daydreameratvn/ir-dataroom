@@ -1,0 +1,145 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimPresentCaseCodesObject
+  fields:
+    - name: claimPresentCaseCodeId
+      type: Uuid
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: decidedAt
+      type: Timestamptz
+    - name: extendedText
+      type: String_1
+    - name: presentCaseId
+      type: Uuid!
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertClaimPresentCaseCodesObject
+    inputTypeName: InsertClaimPresentCaseCodesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_present_case_codes_object
+      fieldMapping:
+        claimPresentCaseCodeId:
+          column:
+            name: claim_present_case_code_id
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        decidedAt:
+          column:
+            name: decided_at
+        extendedText:
+          column:
+            name: extended_text
+        presentCaseId:
+          column:
+            name: present_case_id
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimPresentCaseCodesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimPresentCaseCodeId
+          - code
+          - createdAt
+          - decidedAt
+          - extendedText
+          - presentCaseId
+          - status
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimPresentCaseCodesResponse
+  description: Responses from the 'insert_claim_present_case_codes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimPresentCaseCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimPresentCaseCodesResponse
+    inputTypeName: InsertClaimPresentCaseCodesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_present_case_codes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimPresentCaseCodesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimPresentCaseCodes
+  outputType: InsertClaimPresentCaseCodesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimPresentCaseCodesObject!]!"
+    - name: postCheck
+      type: ClaimPresentCaseCodesBoolExp
+      description: Insert permission predicate over the 'claim_present_case_codes'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_present_case_codes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimPresentCaseCodes
+    rootFieldKind: Mutation
+  description: Insert into the claim_present_case_codes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimPresentCaseCodes
+  permissions:
+    - role: admin
+      allowExecution: true
+

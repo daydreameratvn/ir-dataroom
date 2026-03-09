@@ -1,0 +1,353 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredCertificateHistories
+  description: Lịch sử thay đổi của insured_certificates
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: endDate
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: planId
+      type: Uuid!
+    - name: startDate
+      type: Timestamptz
+    - name: sumAssured
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsuredCertificateHistories
+    inputTypeName: InsuredCertificateHistoriesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_certificate_histories
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        endDate:
+          column:
+            name: end_date
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        planId:
+          column:
+            name: plan_id
+        startDate:
+          column:
+            name: start_date
+        sumAssured:
+          column:
+            name: sum_assured
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredCertificateHistories
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - endDate
+          - id
+          - insuredCertificateId
+          - planId
+          - startDate
+          - sumAssured
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredCertificateHistoriesBoolExp
+  operand:
+    object:
+      type: InsuredCertificateHistories
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: endDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: startDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: sumAssured
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimCaseDetails
+        - relationshipName: identityUser
+        - relationshipName: insuredCertificate
+        - relationshipName: plan
+        - relationshipName: identityUserByUpdatedBy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredCertificateHistoriesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredCertificateHistoriesAggExp
+  operand:
+    object:
+      aggregatedType: InsuredCertificateHistories
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: endDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: startDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: sumAssured
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredCertificateHistoriesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredCertificateHistoriesOrderByExp
+  operand:
+    object:
+      orderedType: InsuredCertificateHistories
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: endDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: startDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: sumAssured
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: insuredCertificate
+        - relationshipName: plan
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: InsuredCertificateHistoriesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredCertificateHistories
+  objectType: InsuredCertificateHistories
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_certificate_histories
+  filterExpressionType: InsuredCertificateHistoriesBoolExp
+  aggregateExpression: InsuredCertificateHistoriesAggExp
+  orderByExpression: InsuredCertificateHistoriesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredCertificateHistories
+      subscription:
+        rootField: insuredCertificateHistories
+    selectUniques:
+      - queryRootField: insuredCertificateHistoriesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: insuredCertificateHistoriesById
+      - queryRootField: insuredCertificateHistoriesByInsuredCertificateHistoriesStartDateInsuredCertificateId
+        uniqueIdentifier:
+          - insuredCertificateId
+          - planId
+          - startDate
+        subscription:
+          rootField: insuredCertificateHistoriesByInsuredCertificateHistoriesStartDateInsuredCertificateId
+    filterInputTypeName: InsuredCertificateHistoriesFilterInput
+    aggregate:
+      queryRootField: insuredCertificateHistoriesAggregate
+      subscription:
+        rootField: insuredCertificateHistoriesAggregate
+  description: Lịch sử thay đổi của insured_certificates
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredCertificateHistories
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseDetails
+  sourceType: InsuredCertificateHistories
+  target:
+    model:
+      name: ClaimCaseDetails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseDetailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: insuredCertificateHistoryId
+  graphql:
+    aggregateFieldName: claimCaseDetailsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: InsuredCertificateHistories
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: InsuredCertificateHistories
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plan
+  sourceType: InsuredCertificateHistories
+  target:
+    model:
+      name: Plans
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: InsuredCertificateHistories
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+

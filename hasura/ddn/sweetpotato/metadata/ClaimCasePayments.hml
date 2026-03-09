@@ -1,0 +1,519 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCasePayments
+  fields:
+    - name: actualPaidAmount
+      type: Bigdecimal
+    - name: appliedPremiumDebtAmount
+      type: Bigdecimal
+    - name: appliedPremiumIncrementAmount
+      type: Bigdecimal
+      description: Số tiền tăng phí bảo hiểm được áp dụng sau khi Re-UW
+    - name: bonusPaymentAmount
+      type: Bigdecimal
+    - name: bonusPaymentRatio
+      type: Bigdecimal
+    - name: bookingAmount
+      type: Bigdecimal
+      description: số tiền dự chi
+    - name: claimCaseId
+      type: Uuid!
+    - name: coPaymentAmount
+      type: Bigdecimal
+    - name: coPaymentRatio
+      type: Bigdecimal
+    - name: coverageAmount
+      type: Bigdecimal
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: customAmount
+      type: Bigdecimal
+    - name: customAmountReason
+      type: String_1
+    - name: deductibleAmount
+      type: Bigdecimal
+    - name: disallowedAmount
+      type: Bigdecimal
+    - name: estimatedPaidAmount
+      type: Bigdecimal
+    - name: id
+      type: Uuid!
+    - name: initialPremiumDebtAmount
+      type: Bigdecimal
+    - name: nationalHealthInsuranceAmount
+      type: Bigdecimal!
+    - name: nationalHealthInsuranceRatio
+      type: Bigdecimal
+    - name: nonPaidAmount
+      type: Bigdecimal
+    - name: premiumDebtAmount
+      type: Bigdecimal
+    - name: remainingPremiumDebtAmount
+      type: Bigdecimal
+    - name: requestedAmount
+      type: Bigdecimal
+    - name: shortfallAmount
+      type: Bigdecimal
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: ClaimCasePayments
+    inputTypeName: ClaimCasePaymentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_payments
+      fieldMapping:
+        actualPaidAmount:
+          column:
+            name: actual_paid_amount
+        appliedPremiumDebtAmount:
+          column:
+            name: applied_premium_debt_amount
+        appliedPremiumIncrementAmount:
+          column:
+            name: applied_premium_increment_amount
+        bonusPaymentAmount:
+          column:
+            name: bonus_payment_amount
+        bonusPaymentRatio:
+          column:
+            name: bonus_payment_ratio
+        bookingAmount:
+          column:
+            name: booking_amount
+        claimCaseId:
+          column:
+            name: claim_case_id
+        coPaymentAmount:
+          column:
+            name: co_payment_amount
+        coPaymentRatio:
+          column:
+            name: co_payment_ratio
+        coverageAmount:
+          column:
+            name: coverage_amount
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        customAmount:
+          column:
+            name: custom_amount
+        customAmountReason:
+          column:
+            name: custom_amount_reason
+        deductibleAmount:
+          column:
+            name: deductible_amount
+        disallowedAmount:
+          column:
+            name: disallowed_amount
+        estimatedPaidAmount:
+          column:
+            name: estimated_paid_amount
+        id:
+          column:
+            name: id
+        initialPremiumDebtAmount:
+          column:
+            name: initial_premium_debt_amount
+        nationalHealthInsuranceAmount:
+          column:
+            name: national_health_insurance_amount
+        nationalHealthInsuranceRatio:
+          column:
+            name: national_health_insurance_ratio
+        nonPaidAmount:
+          column:
+            name: non_paid_amount
+        premiumDebtAmount:
+          column:
+            name: premium_debt_amount
+        remainingPremiumDebtAmount:
+          column:
+            name: remaining_premium_debt_amount
+        requestedAmount:
+          column:
+            name: requested_amount
+        shortfallAmount:
+          column:
+            name: shortfall_amount
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCasePayments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actualPaidAmount
+          - appliedPremiumDebtAmount
+          - appliedPremiumIncrementAmount
+          - bonusPaymentAmount
+          - bonusPaymentRatio
+          - bookingAmount
+          - claimCaseId
+          - coPaymentAmount
+          - coPaymentRatio
+          - coverageAmount
+          - createdAt
+          - createdBy
+          - customAmount
+          - customAmountReason
+          - deductibleAmount
+          - disallowedAmount
+          - estimatedPaidAmount
+          - id
+          - initialPremiumDebtAmount
+          - nationalHealthInsuranceAmount
+          - nationalHealthInsuranceRatio
+          - nonPaidAmount
+          - premiumDebtAmount
+          - remainingPremiumDebtAmount
+          - requestedAmount
+          - shortfallAmount
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCasePaymentsBoolExp
+  operand:
+    object:
+      type: ClaimCasePayments
+      comparableFields:
+        - fieldName: actualPaidAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: appliedPremiumDebtAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: appliedPremiumIncrementAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: bonusPaymentAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: bonusPaymentRatio
+          booleanExpressionType: NumericBoolExp
+        - fieldName: bookingAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: coPaymentAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: coPaymentRatio
+          booleanExpressionType: NumericBoolExp
+        - fieldName: coverageAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: customAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: customAmountReason
+          booleanExpressionType: TextBoolExp
+        - fieldName: deductibleAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: disallowedAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: estimatedPaidAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: initialPremiumDebtAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: nationalHealthInsuranceAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: nationalHealthInsuranceRatio
+          booleanExpressionType: NumericBoolExp
+        - fieldName: nonPaidAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: premiumDebtAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: remainingPremiumDebtAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: requestedAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: shortfallAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: customAmountReasonByCustomAmountReason
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCasePaymentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCasePaymentsAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCasePayments
+      aggregatableFields:
+        - fieldName: actualPaidAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: appliedPremiumDebtAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: appliedPremiumIncrementAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: bonusPaymentAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: bonusPaymentRatio
+          aggregateExpression: NumericAggExp
+        - fieldName: bookingAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: coPaymentAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: coPaymentRatio
+          aggregateExpression: NumericAggExp
+        - fieldName: coverageAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: customAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: customAmountReason
+          aggregateExpression: TextAggExp
+        - fieldName: deductibleAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: disallowedAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: estimatedPaidAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: initialPremiumDebtAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: nationalHealthInsuranceAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: nationalHealthInsuranceRatio
+          aggregateExpression: NumericAggExp
+        - fieldName: nonPaidAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: premiumDebtAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: remainingPremiumDebtAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: requestedAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: shortfallAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCasePaymentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCasePaymentsOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCasePayments
+      orderableFields:
+        - fieldName: actualPaidAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: appliedPremiumDebtAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: appliedPremiumIncrementAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: bonusPaymentAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: bonusPaymentRatio
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: bookingAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: coPaymentAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: coPaymentRatio
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: coverageAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: customAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: customAmountReason
+          orderByExpression: String1OrderByExp
+        - fieldName: deductibleAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: disallowedAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: estimatedPaidAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: initialPremiumDebtAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: nationalHealthInsuranceAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: nationalHealthInsuranceRatio
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: nonPaidAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: premiumDebtAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: remainingPremiumDebtAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: requestedAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: shortfallAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: customAmountReasonByCustomAmountReason
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: ClaimCasePaymentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCasePayments
+  objectType: ClaimCasePayments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_payments
+  filterExpressionType: ClaimCasePaymentsBoolExp
+  aggregateExpression: ClaimCasePaymentsAggExp
+  orderByExpression: ClaimCasePaymentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCasePayments
+      subscription:
+        rootField: claimCasePayments
+    selectUniques:
+      - queryRootField: claimCasePaymentsByClaimCaseId
+        uniqueIdentifier:
+          - claimCaseId
+        subscription:
+          rootField: claimCasePaymentsByClaimCaseId
+    filterInputTypeName: ClaimCasePaymentsFilterInput
+    aggregate:
+      queryRootField: claimCasePaymentsAggregate
+      subscription:
+        rootField: claimCasePaymentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCasePayments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: ClaimCasePayments
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customAmountReasonByCustomAmountReason
+  sourceType: ClaimCasePayments
+  target:
+    model:
+      name: CustomAmountReasons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customAmountReason
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: ClaimCasePayments
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

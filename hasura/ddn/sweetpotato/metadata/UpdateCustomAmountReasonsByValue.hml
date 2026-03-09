@@ -1,0 +1,178 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCustomAmountReasonsComment
+  description: Update the 'comment' column in the 'custom_amount_reasons' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCustomAmountReasonsComment
+    inputTypeName: UpdateColumnCustomAmountReasonsCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_custom_amount_reasons_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCustomAmountReasonsComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCustomAmountReasonsValue
+  description: Update the 'value' column in the 'custom_amount_reasons' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCustomAmountReasonsValue
+    inputTypeName: UpdateColumnCustomAmountReasonsValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_custom_amount_reasons_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCustomAmountReasonsValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCustomAmountReasonsByValueUpdateColumns
+  description: Update the columns of the 'custom_amount_reasons' collection
+  fields:
+    - name: comment
+      type: UpdateColumnCustomAmountReasonsComment
+      description: Update the 'comment' column in the 'custom_amount_reasons' collection.
+    - name: value
+      type: UpdateColumnCustomAmountReasonsValue
+      description: Update the 'value' column in the 'custom_amount_reasons' collection.
+  graphql:
+    typeName: UpdateCustomAmountReasonsByValueUpdateColumns
+    inputTypeName: UpdateCustomAmountReasonsByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_custom_amount_reasons_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCustomAmountReasonsByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCustomAmountReasonsByValueResponse
+  description: Responses from the 'update_custom_amount_reasons_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomAmountReasons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCustomAmountReasonsByValueResponse
+    inputTypeName: UpdateCustomAmountReasonsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_custom_amount_reasons_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCustomAmountReasonsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCustomAmountReasonsByValue
+  outputType: UpdateCustomAmountReasonsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: CustomAmountReasonsBoolExp
+      description: Update permission post-condition predicate over the
+        'custom_amount_reasons' collection
+    - name: preCheck
+      type: CustomAmountReasonsBoolExp
+      description: Update permission pre-condition predicate over the
+        'custom_amount_reasons' collection
+    - name: updateColumns
+      type: UpdateCustomAmountReasonsByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_custom_amount_reasons_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCustomAmountReasonsByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'custom_amount_reasons' collection using the
+    'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCustomAmountReasonsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

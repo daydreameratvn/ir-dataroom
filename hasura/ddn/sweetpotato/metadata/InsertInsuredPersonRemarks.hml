@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsuredPersonRemarksObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: insuredBenefitType
+      type: String_1
+    - name: insuredPersonId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: value
+      type: String_1
+  graphql:
+    typeName: InsertInsuredPersonRemarksObject
+    inputTypeName: InsertInsuredPersonRemarksObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insured_person_remarks_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        insuredBenefitType:
+          column:
+            name: insured_benefit_type
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsuredPersonRemarksObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - description
+          - id
+          - insuredBenefitType
+          - insuredPersonId
+          - tenantId
+          - updatedAt
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsuredPersonRemarksResponse
+  description: Responses from the 'insert_insured_person_remarks' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredPersonRemarks!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertInsuredPersonRemarksResponse
+    inputTypeName: InsertInsuredPersonRemarksResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insured_person_remarks_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsuredPersonRemarksResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertInsuredPersonRemarks
+  outputType: InsertInsuredPersonRemarksResponse!
+  arguments:
+    - name: objects
+      type: "[InsertInsuredPersonRemarksObject!]!"
+    - name: postCheck
+      type: InsuredPersonRemarksBoolExp
+      description: Insert permission predicate over the 'insured_person_remarks' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_insured_person_remarks
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertInsuredPersonRemarks
+    rootFieldKind: Mutation
+  description: Insert into the insured_person_remarks table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertInsuredPersonRemarks
+  permissions:
+    - role: admin
+      allowExecution: true
+

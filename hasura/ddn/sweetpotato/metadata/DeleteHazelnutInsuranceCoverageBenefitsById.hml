@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHazelnutInsuranceCoverageBenefitsByIdResponse
+  description: Responses from the
+    'delete_hazelnut_insurance_coverage_benefits_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutInsuranceCoverageBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHazelnutInsuranceCoverageBenefitsByIdResponse
+    inputTypeName: DeleteHazelnutInsuranceCoverageBenefitsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hazelnut_insurance_coverage_benefits_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHazelnutInsuranceCoverageBenefitsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHazelnutInsuranceCoverageBenefitsById
+  outputType: DeleteHazelnutInsuranceCoverageBenefitsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: HazelnutInsuranceCoverageBenefitsBoolExp
+      description: Delete permission predicate over the
+        'hazelnut_insurance_coverage_benefits' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hazelnut_insurance_coverage_benefits_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHazelnutInsuranceCoverageBenefitsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hazelnut_insurance_coverage_benefits'
+    collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHazelnutInsuranceCoverageBenefitsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

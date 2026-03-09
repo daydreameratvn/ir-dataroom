@@ -1,0 +1,323 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HazelnutInsuranceCoverages
+  fields:
+    - name: basePremium
+      type: Bigdecimal!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: finalPremium
+      type: Bigdecimal!
+    - name: id
+      type: Uuid!
+    - name: package
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: HazelnutInsuranceCoverages
+    inputTypeName: HazelnutInsuranceCoveragesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hazelnut_insurance_coverages
+      fieldMapping:
+        basePremium:
+          column:
+            name: base_premium
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        finalPremium:
+          column:
+            name: final_premium
+        id:
+          column:
+            name: id
+        package:
+          column:
+            name: package
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HazelnutInsuranceCoverages
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - basePremium
+          - createdAt
+          - createdBy
+          - deletedAt
+          - finalPremium
+          - id
+          - package
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HazelnutInsuranceCoveragesBoolExp
+  operand:
+    object:
+      type: HazelnutInsuranceCoverages
+      comparableFields:
+        - fieldName: basePremium
+          booleanExpressionType: NumericBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: finalPremium
+          booleanExpressionType: NumericBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: package
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: hazelnutInsuranceCoverageBenefits
+        - relationshipName: identityUser
+        - relationshipName: hazelnutInsurancePackage
+        - relationshipName: identityUserByUpdatedBy
+        - relationshipName: hazelnutInsuranceRequestsInsuredPersons
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HazelnutInsuranceCoveragesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HazelnutInsuranceCoveragesAggExp
+  operand:
+    object:
+      aggregatedType: HazelnutInsuranceCoverages
+      aggregatableFields:
+        - fieldName: basePremium
+          aggregateExpression: NumericAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: finalPremium
+          aggregateExpression: NumericAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: package
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HazelnutInsuranceCoveragesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HazelnutInsuranceCoveragesOrderByExp
+  operand:
+    object:
+      orderedType: HazelnutInsuranceCoverages
+      orderableFields:
+        - fieldName: basePremium
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: finalPremium
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: package
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: hazelnutInsurancePackage
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: HazelnutInsuranceCoveragesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HazelnutInsuranceCoverages
+  objectType: HazelnutInsuranceCoverages
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hazelnut_insurance_coverages
+  filterExpressionType: HazelnutInsuranceCoveragesBoolExp
+  aggregateExpression: HazelnutInsuranceCoveragesAggExp
+  orderByExpression: HazelnutInsuranceCoveragesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hazelnutInsuranceCoverages
+      subscription:
+        rootField: hazelnutInsuranceCoverages
+    selectUniques:
+      - queryRootField: hazelnutInsuranceCoveragesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hazelnutInsuranceCoveragesById
+    filterInputTypeName: HazelnutInsuranceCoveragesFilterInput
+    aggregate:
+      queryRootField: hazelnutInsuranceCoveragesAggregate
+      subscription:
+        rootField: hazelnutInsuranceCoveragesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HazelnutInsuranceCoverages
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceCoverageBenefits
+  sourceType: HazelnutInsuranceCoverages
+  target:
+    model:
+      name: HazelnutInsuranceCoverageBenefits
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceCoverageBenefitsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: insuranceCoverageId
+  graphql:
+    aggregateFieldName: hazelnutInsuranceCoverageBenefitsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: HazelnutInsuranceCoverages
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsurancePackage
+  sourceType: HazelnutInsuranceCoverages
+  target:
+    model:
+      name: HazelnutInsurancePackages
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: package
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: HazelnutInsuranceCoverages
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequestsInsuredPersons
+  sourceType: HazelnutInsuranceCoverages
+  target:
+    model:
+      name: HazelnutInsuranceRequestsInsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceRequestsInsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: insuranceCoverageId
+  graphql:
+    aggregateFieldName: hazelnutInsuranceRequestsInsuredPersonsAggregate
+

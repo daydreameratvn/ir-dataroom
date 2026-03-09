@@ -1,0 +1,556 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceHistories
+  fields:
+    - name: attachments
+      type: Json
+    - name: autoSend
+      type: Boolean_1!
+    - name: claimCaseId
+      type: Uuid
+    - name: companyCorrespondenceId
+      type: Uuid
+    - name: content
+      type: Json!
+    - name: createdAt
+      type: Timestamptz!
+    - name: destination
+      type: Json!
+    - name: failedReason
+      type: String_1
+    - name: fromEmailAddress
+      type: String_1
+    - name: fromEmailName
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: insuranceRequestId
+      type: Uuid
+    - name: insuredCertificateId
+      type: Uuid
+    - name: message
+      type: String_1
+    - name: messageId
+      type: String_1
+    - name: phone
+      type: String_1
+    - name: policyCorrespondenceId
+      type: Uuid
+    - name: presentCaseId
+      type: Uuid
+    - name: status
+      type: String_1!
+    - name: subject
+      type: String_1
+    - name: templateId
+      type: Uuid
+    - name: userId
+      type: Uuid
+  graphql:
+    typeName: CorrespondenceHistories
+    inputTypeName: CorrespondenceHistoriesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_histories
+      fieldMapping:
+        attachments:
+          column:
+            name: attachments
+        autoSend:
+          column:
+            name: auto_send
+        claimCaseId:
+          column:
+            name: claim_case_id
+        companyCorrespondenceId:
+          column:
+            name: company_correspondence_id
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        destination:
+          column:
+            name: destination
+        failedReason:
+          column:
+            name: failed_reason
+        fromEmailAddress:
+          column:
+            name: from_email_address
+        fromEmailName:
+          column:
+            name: from_email_name
+        id:
+          column:
+            name: id
+        insuranceRequestId:
+          column:
+            name: insurance_request_id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        message:
+          column:
+            name: message
+        messageId:
+          column:
+            name: message_id
+        phone:
+          column:
+            name: phone
+        policyCorrespondenceId:
+          column:
+            name: policy_correspondence_id
+        presentCaseId:
+          column:
+            name: present_case_id
+        status:
+          column:
+            name: status
+        subject:
+          column:
+            name: subject
+        templateId:
+          column:
+            name: template_id
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceHistories
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - attachments
+          - autoSend
+          - claimCaseId
+          - companyCorrespondenceId
+          - content
+          - createdAt
+          - destination
+          - failedReason
+          - fromEmailAddress
+          - fromEmailName
+          - id
+          - insuranceRequestId
+          - insuredCertificateId
+          - message
+          - messageId
+          - phone
+          - policyCorrespondenceId
+          - presentCaseId
+          - status
+          - subject
+          - templateId
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceHistoriesBoolExp
+  operand:
+    object:
+      type: CorrespondenceHistories
+      comparableFields:
+        - fieldName: attachments
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: autoSend
+          booleanExpressionType: BoolBoolExp
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: companyCorrespondenceId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: content
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: destination
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: failedReason
+          booleanExpressionType: TextBoolExp
+        - fieldName: fromEmailAddress
+          booleanExpressionType: TextBoolExp
+        - fieldName: fromEmailName
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuranceRequestId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: message
+          booleanExpressionType: TextBoolExp
+        - fieldName: messageId
+          booleanExpressionType: TextBoolExp
+        - fieldName: phone
+          booleanExpressionType: TextBoolExp
+        - fieldName: policyCorrespondenceId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: presentCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: subject
+          booleanExpressionType: TextBoolExp
+        - fieldName: templateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: companyCorrespondence
+        - relationshipName: hazelnutInsuranceRequest
+        - relationshipName: insuredCertificate
+        - relationshipName: policyCorrespondence
+        - relationshipName: correspondenceHistoryStatus
+        - relationshipName: correspondenceTemplate
+        - relationshipName: identityUser
+        - relationshipName: files
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceHistoriesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceHistoriesAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceHistories
+      aggregatableFields:
+        - fieldName: attachments
+          aggregateExpression: JsonbAggExp
+        - fieldName: autoSend
+          aggregateExpression: BoolAggExp
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: companyCorrespondenceId
+          aggregateExpression: UuidAggExp
+        - fieldName: content
+          aggregateExpression: JsonbAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: destination
+          aggregateExpression: JsonbAggExp
+        - fieldName: failedReason
+          aggregateExpression: TextAggExp
+        - fieldName: fromEmailAddress
+          aggregateExpression: TextAggExp
+        - fieldName: fromEmailName
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuranceRequestId
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: message
+          aggregateExpression: TextAggExp
+        - fieldName: messageId
+          aggregateExpression: TextAggExp
+        - fieldName: phone
+          aggregateExpression: TextAggExp
+        - fieldName: policyCorrespondenceId
+          aggregateExpression: UuidAggExp
+        - fieldName: presentCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: subject
+          aggregateExpression: TextAggExp
+        - fieldName: templateId
+          aggregateExpression: UuidAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceHistoriesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceHistoriesOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceHistories
+      orderableFields:
+        - fieldName: attachments
+          orderByExpression: JsonOrderByExp
+        - fieldName: autoSend
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: companyCorrespondenceId
+          orderByExpression: UuidOrderByExp
+        - fieldName: content
+          orderByExpression: JsonOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: destination
+          orderByExpression: JsonOrderByExp
+        - fieldName: failedReason
+          orderByExpression: String1OrderByExp
+        - fieldName: fromEmailAddress
+          orderByExpression: String1OrderByExp
+        - fieldName: fromEmailName
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuranceRequestId
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: message
+          orderByExpression: String1OrderByExp
+        - fieldName: messageId
+          orderByExpression: String1OrderByExp
+        - fieldName: phone
+          orderByExpression: String1OrderByExp
+        - fieldName: policyCorrespondenceId
+          orderByExpression: UuidOrderByExp
+        - fieldName: presentCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: subject
+          orderByExpression: String1OrderByExp
+        - fieldName: templateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: companyCorrespondence
+        - relationshipName: hazelnutInsuranceRequest
+        - relationshipName: insuredCertificate
+        - relationshipName: policyCorrespondence
+        - relationshipName: correspondenceHistoryStatus
+        - relationshipName: correspondenceTemplate
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: CorrespondenceHistoriesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceHistories
+  objectType: CorrespondenceHistories
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_histories
+  filterExpressionType: CorrespondenceHistoriesBoolExp
+  aggregateExpression: CorrespondenceHistoriesAggExp
+  orderByExpression: CorrespondenceHistoriesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceHistories
+      subscription:
+        rootField: correspondenceHistories
+    selectUniques:
+      - queryRootField: correspondenceHistoriesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: correspondenceHistoriesById
+    filterInputTypeName: CorrespondenceHistoriesFilterInput
+    aggregate:
+      queryRootField: correspondenceHistoriesAggregate
+      subscription:
+        rootField: correspondenceHistoriesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceHistories
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: CorrespondenceHistories
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: companyCorrespondence
+  sourceType: CorrespondenceHistories
+  target:
+    model:
+      name: CompanyCorrespondences
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyCorrespondenceId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequest
+  sourceType: CorrespondenceHistories
+  target:
+    model:
+      name: HazelnutInsuranceRequests
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuranceRequestId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: CorrespondenceHistories
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCorrespondence
+  sourceType: CorrespondenceHistories
+  target:
+    model:
+      name: PolicyCorrespondences
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyCorrespondenceId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceHistoryStatus
+  sourceType: CorrespondenceHistories
+  target:
+    model:
+      name: CorrespondenceHistoryStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceTemplate
+  sourceType: CorrespondenceHistories
+  target:
+    model:
+      name: CorrespondenceTemplates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: templateId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: CorrespondenceHistories
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: files
+  sourceType: CorrespondenceHistories
+  target:
+    model:
+      name: Files
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: correspondenceHistoryId
+  graphql:
+    aggregateFieldName: filesAggregate
+

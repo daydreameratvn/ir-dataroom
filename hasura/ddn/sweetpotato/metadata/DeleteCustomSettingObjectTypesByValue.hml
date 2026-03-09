@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCustomSettingObjectTypesByValueResponse
+  description: Responses from the 'delete_custom_setting_object_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingObjectTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCustomSettingObjectTypesByValueResponse
+    inputTypeName: DeleteCustomSettingObjectTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_custom_setting_object_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCustomSettingObjectTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCustomSettingObjectTypesByValue
+  outputType: DeleteCustomSettingObjectTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: CustomSettingObjectTypesBoolExp
+      description: Delete permission predicate over the 'custom_setting_object_types'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_custom_setting_object_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCustomSettingObjectTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'custom_setting_object_types' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCustomSettingObjectTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

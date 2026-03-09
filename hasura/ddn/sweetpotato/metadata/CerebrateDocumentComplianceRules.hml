@@ -1,0 +1,289 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CerebrateDocumentComplianceRules
+  fields:
+    - name: benefitType
+      type: String_1!
+    - name: confidenceScore
+      type: Bigdecimal
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: insurerId
+      type: Uuid
+    - name: optionalDocuments
+      type: Json
+    - name: requiredDocuments
+      type: Json!
+    - name: source
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+    - name: validationRules
+      type: Json
+  graphql:
+    typeName: CerebrateDocumentComplianceRules
+    inputTypeName: CerebrateDocumentComplianceRulesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: cerebrate_document_compliance_rules
+      fieldMapping:
+        benefitType:
+          column:
+            name: benefit_type
+        confidenceScore:
+          column:
+            name: confidence_score
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        optionalDocuments:
+          column:
+            name: optional_documents
+        requiredDocuments:
+          column:
+            name: required_documents
+        source:
+          column:
+            name: source
+        updatedAt:
+          column:
+            name: updated_at
+        validationRules:
+          column:
+            name: validation_rules
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CerebrateDocumentComplianceRules
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - benefitType
+          - confidenceScore
+          - createdAt
+          - id
+          - insurerId
+          - optionalDocuments
+          - requiredDocuments
+          - source
+          - updatedAt
+          - validationRules
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CerebrateDocumentComplianceRulesBoolExp
+  operand:
+    object:
+      type: CerebrateDocumentComplianceRules
+      comparableFields:
+        - fieldName: benefitType
+          booleanExpressionType: TextBoolExp
+        - fieldName: confidenceScore
+          booleanExpressionType: NumericBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: optionalDocuments
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: requiredDocuments
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: source
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: validationRules
+          booleanExpressionType: JsonbBoolExp
+      comparableRelationships:
+        - relationshipName: insuredBenefitType
+        - relationshipName: company
+        - relationshipName: cerebrateDocumentComplianceSource
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CerebrateDocumentComplianceRulesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CerebrateDocumentComplianceRulesAggExp
+  operand:
+    object:
+      aggregatedType: CerebrateDocumentComplianceRules
+      aggregatableFields:
+        - fieldName: benefitType
+          aggregateExpression: TextAggExp
+        - fieldName: confidenceScore
+          aggregateExpression: NumericAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerId
+          aggregateExpression: UuidAggExp
+        - fieldName: optionalDocuments
+          aggregateExpression: JsonbAggExp
+        - fieldName: requiredDocuments
+          aggregateExpression: JsonbAggExp
+        - fieldName: source
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: validationRules
+          aggregateExpression: JsonbAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CerebrateDocumentComplianceRulesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CerebrateDocumentComplianceRulesOrderByExp
+  operand:
+    object:
+      orderedType: CerebrateDocumentComplianceRules
+      orderableFields:
+        - fieldName: benefitType
+          orderByExpression: String1OrderByExp
+        - fieldName: confidenceScore
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: optionalDocuments
+          orderByExpression: JsonOrderByExp
+        - fieldName: requiredDocuments
+          orderByExpression: JsonOrderByExp
+        - fieldName: source
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: validationRules
+          orderByExpression: JsonOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredBenefitType
+        - relationshipName: company
+        - relationshipName: cerebrateDocumentComplianceSource
+  graphql:
+    expressionTypeName: CerebrateDocumentComplianceRulesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CerebrateDocumentComplianceRules
+  objectType: CerebrateDocumentComplianceRules
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: cerebrate_document_compliance_rules
+  filterExpressionType: CerebrateDocumentComplianceRulesBoolExp
+  aggregateExpression: CerebrateDocumentComplianceRulesAggExp
+  orderByExpression: CerebrateDocumentComplianceRulesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: cerebrateDocumentComplianceRules
+      subscription:
+        rootField: cerebrateDocumentComplianceRules
+    selectUniques:
+      - queryRootField: cerebrateDocumentComplianceRulesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: cerebrateDocumentComplianceRulesById
+    filterInputTypeName: CerebrateDocumentComplianceRulesFilterInput
+    aggregate:
+      queryRootField: cerebrateDocumentComplianceRulesAggregate
+      subscription:
+        rootField: cerebrateDocumentComplianceRulesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CerebrateDocumentComplianceRules
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredBenefitType
+  sourceType: CerebrateDocumentComplianceRules
+  target:
+    model:
+      name: InsuredBenefitTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: benefitType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: CerebrateDocumentComplianceRules
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insurerId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: cerebrateDocumentComplianceSource
+  sourceType: CerebrateDocumentComplianceRules
+  target:
+    model:
+      name: CerebrateDocumentComplianceSources
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: source
+      target:
+        modelField:
+          - fieldName: value
+

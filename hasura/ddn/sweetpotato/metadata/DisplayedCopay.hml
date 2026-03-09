@@ -1,0 +1,303 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DisplayedCopay
+  description: displayed_copay
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: language
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: planId
+      type: Uuid
+    - name: policyId
+      type: Uuid
+    - name: priority
+      type: Int32!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: value
+      type: String_1
+  graphql:
+    typeName: DisplayedCopay
+    inputTypeName: DisplayedCopayInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: displayed_copay
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        language:
+          column:
+            name: language
+        name:
+          column:
+            name: name
+        planId:
+          column:
+            name: plan_id
+        policyId:
+          column:
+            name: policy_id
+        priority:
+          column:
+            name: priority
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DisplayedCopay
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - description
+          - id
+          - language
+          - name
+          - planId
+          - policyId
+          - priority
+          - updatedAt
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: DisplayedCopayBoolExp
+  operand:
+    object:
+      type: DisplayedCopay
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: language
+          booleanExpressionType: TextBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: priority
+          booleanExpressionType: Int4BoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: languageByLanguage
+        - relationshipName: plan
+        - relationshipName: policy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: DisplayedCopayBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: DisplayedCopayAggExp
+  operand:
+    object:
+      aggregatedType: DisplayedCopay
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: language
+          aggregateExpression: TextAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: priority
+          aggregateExpression: Int4AggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: DisplayedCopayAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: DisplayedCopayOrderByExp
+  operand:
+    object:
+      orderedType: DisplayedCopay
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: language
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: priority
+          orderByExpression: Int32OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: languageByLanguage
+        - relationshipName: plan
+        - relationshipName: policy
+  graphql:
+    expressionTypeName: DisplayedCopayOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: DisplayedCopay
+  objectType: DisplayedCopay
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: displayed_copay
+  filterExpressionType: DisplayedCopayBoolExp
+  aggregateExpression: DisplayedCopayAggExp
+  orderByExpression: DisplayedCopayOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: displayedCopay
+      subscription:
+        rootField: displayedCopay
+    selectUniques:
+      - queryRootField: displayedCopayById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: displayedCopayById
+    filterInputTypeName: DisplayedCopayFilterInput
+    aggregate:
+      queryRootField: displayedCopayAggregate
+      subscription:
+        rootField: displayedCopayAggregate
+  description: displayed_copay
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: DisplayedCopay
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: languageByLanguage
+  sourceType: DisplayedCopay
+  target:
+    model:
+      name: Languages
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: language
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plan
+  sourceType: DisplayedCopay
+  target:
+    model:
+      name: Plans
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: DisplayedCopay
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+

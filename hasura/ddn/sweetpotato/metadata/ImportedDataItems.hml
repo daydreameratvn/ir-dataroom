@@ -1,0 +1,321 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ImportedDataItems
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: data
+      type: Json!
+    - name: failedReason
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: importedFileId
+      type: Uuid!
+    - name: insuredCertificateId
+      type: Uuid
+    - name: insuredPersonId
+      type: Uuid
+    - name: sqsMessageId
+      type: Uuid
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: ImportedDataItems
+    inputTypeName: ImportedDataItemsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: imported_data_items
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        data:
+          column:
+            name: data
+        failedReason:
+          column:
+            name: failed_reason
+        id:
+          column:
+            name: id
+        importedFileId:
+          column:
+            name: imported_file_id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        sqsMessageId:
+          column:
+            name: sqs_message_id
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ImportedDataItems
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - data
+          - failedReason
+          - id
+          - importedFileId
+          - insuredCertificateId
+          - insuredPersonId
+          - sqsMessageId
+          - status
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ImportedDataItemsBoolExp
+  operand:
+    object:
+      type: ImportedDataItems
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: data
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: failedReason
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: importedFileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredPersonId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: sqsMessageId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: importedFile
+        - relationshipName: insuredCertificate
+        - relationshipName: insuredPerson
+        - relationshipName: importedDataItemStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ImportedDataItemsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ImportedDataItemsAggExp
+  operand:
+    object:
+      aggregatedType: ImportedDataItems
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: data
+          aggregateExpression: JsonbAggExp
+        - fieldName: failedReason
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: importedFileId
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredPersonId
+          aggregateExpression: UuidAggExp
+        - fieldName: sqsMessageId
+          aggregateExpression: UuidAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ImportedDataItemsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ImportedDataItemsOrderByExp
+  operand:
+    object:
+      orderedType: ImportedDataItems
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: data
+          orderByExpression: JsonOrderByExp
+        - fieldName: failedReason
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: importedFileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredPersonId
+          orderByExpression: UuidOrderByExp
+        - fieldName: sqsMessageId
+          orderByExpression: UuidOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: importedFile
+        - relationshipName: insuredCertificate
+        - relationshipName: insuredPerson
+        - relationshipName: importedDataItemStatus
+  graphql:
+    expressionTypeName: ImportedDataItemsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ImportedDataItems
+  objectType: ImportedDataItems
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: imported_data_items
+  filterExpressionType: ImportedDataItemsBoolExp
+  aggregateExpression: ImportedDataItemsAggExp
+  orderByExpression: ImportedDataItemsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: importedDataItems
+      subscription:
+        rootField: importedDataItems
+    selectUniques:
+      - queryRootField: importedDataItemsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: importedDataItemsById
+    filterInputTypeName: ImportedDataItemsFilterInput
+    aggregate:
+      queryRootField: importedDataItemsAggregate
+      subscription:
+        rootField: importedDataItemsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ImportedDataItems
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: importedFile
+  sourceType: ImportedDataItems
+  target:
+    model:
+      name: ImportedFiles
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: importedFileId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: ImportedDataItems
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPerson
+  sourceType: ImportedDataItems
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: importedDataItemStatus
+  sourceType: ImportedDataItems
+  target:
+    model:
+      name: ImportedDataItemStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+

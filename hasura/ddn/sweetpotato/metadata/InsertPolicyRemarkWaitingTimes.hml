@@ -1,0 +1,164 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyRemarkWaitingTimesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: displayOrder
+      type: Int32
+    - name: id
+      type: Uuid
+    - name: lang
+      type: String_1
+    - name: name
+      type: String_1!
+    - name: policyId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+    - name: value
+      type: Bigdecimal
+      description: percentage
+  graphql:
+    typeName: InsertPolicyRemarkWaitingTimesObject
+    inputTypeName: InsertPolicyRemarkWaitingTimesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_remark_waiting_times_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        lang:
+          column:
+            name: lang
+        name:
+          column:
+            name: name
+        policyId:
+          column:
+            name: policy_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyRemarkWaitingTimesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - description
+          - displayOrder
+          - id
+          - lang
+          - name
+          - policyId
+          - tenantId
+          - updatedAt
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyRemarkWaitingTimesResponse
+  description: Responses from the 'insert_policy_remark_waiting_times' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyRemarkWaitingTimes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyRemarkWaitingTimesResponse
+    inputTypeName: InsertPolicyRemarkWaitingTimesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_remark_waiting_times_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyRemarkWaitingTimesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyRemarkWaitingTimes
+  outputType: InsertPolicyRemarkWaitingTimesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyRemarkWaitingTimesObject!]!"
+    - name: postCheck
+      type: PolicyRemarkWaitingTimesBoolExp
+      description: Insert permission predicate over the 'policy_remark_waiting_times'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_remark_waiting_times
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyRemarkWaitingTimes
+    rootFieldKind: Mutation
+  description: Insert into the policy_remark_waiting_times table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyRemarkWaitingTimes
+  permissions:
+    - role: admin
+      allowExecution: true
+

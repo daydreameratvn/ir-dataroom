@@ -1,0 +1,204 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrMedicalRecordsObject
+  fields:
+    - name: age
+      type: Bigdecimal
+    - name: bhytNumber
+      type: String_1
+    - name: code
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: diagnosis
+      type: String_1
+    - name: dob
+      type: Timestamptz
+    - name: doctorLevel
+      type: String_1
+    - name: doctorName
+      type: String_1
+    - name: examinatedAt
+      type: Timestamptz
+    - name: gender
+      type: String_1
+    - name: hasSignature
+      type: Boolean_1
+    - name: icdCodes
+      type: Json
+    - name: id
+      type: Uuid
+    - name: medicalProviderName
+      type: String_1
+    - name: paperId
+      type: Uuid!
+    - name: patientName
+      type: String_1
+    - name: rawData
+      type: Json
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertOcrMedicalRecordsObject
+    inputTypeName: InsertOcrMedicalRecordsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_medical_records_object
+      fieldMapping:
+        age:
+          column:
+            name: age
+        bhytNumber:
+          column:
+            name: bhyt_number
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        diagnosis:
+          column:
+            name: diagnosis
+        dob:
+          column:
+            name: dob
+        doctorLevel:
+          column:
+            name: doctor_level
+        doctorName:
+          column:
+            name: doctor_name
+        examinatedAt:
+          column:
+            name: examinated_at
+        gender:
+          column:
+            name: gender
+        hasSignature:
+          column:
+            name: has_signature
+        icdCodes:
+          column:
+            name: icd_codes
+        id:
+          column:
+            name: id
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        paperId:
+          column:
+            name: paper_id
+        patientName:
+          column:
+            name: patient_name
+        rawData:
+          column:
+            name: raw_data
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrMedicalRecordsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - age
+          - bhytNumber
+          - code
+          - createdAt
+          - diagnosis
+          - dob
+          - doctorLevel
+          - doctorName
+          - examinatedAt
+          - gender
+          - hasSignature
+          - icdCodes
+          - id
+          - medicalProviderName
+          - paperId
+          - patientName
+          - rawData
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrMedicalRecordsResponse
+  description: Responses from the 'insert_ocr_medical_records' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrMedicalRecords!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOcrMedicalRecordsResponse
+    inputTypeName: InsertOcrMedicalRecordsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_medical_records_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrMedicalRecordsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOcrMedicalRecords
+  outputType: InsertOcrMedicalRecordsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOcrMedicalRecordsObject!]!"
+    - name: postCheck
+      type: OcrMedicalRecordsBoolExp
+      description: Insert permission predicate over the 'ocr_medical_records' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_ocr_medical_records
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOcrMedicalRecords
+    rootFieldKind: Mutation
+  description: Insert into the ocr_medical_records table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOcrMedicalRecords
+  permissions:
+    - role: admin
+      allowExecution: true
+

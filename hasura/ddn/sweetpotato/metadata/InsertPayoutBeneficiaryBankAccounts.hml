@@ -1,0 +1,163 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutBeneficiaryBankAccountsObject
+  fields:
+    - name: accountName
+      type: String_1!
+    - name: accountNumber
+      type: String_1!
+    - name: bankBranchId
+      type: Uuid
+    - name: bankId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: paymentAmount
+      type: Bigdecimal
+    - name: paymentRequestId
+      type: Uuid
+    - name: paymentRequestItemId
+      type: Uuid
+    - name: remark
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPayoutBeneficiaryBankAccountsObject
+    inputTypeName: InsertPayoutBeneficiaryBankAccountsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_beneficiary_bank_accounts_object
+      fieldMapping:
+        accountName:
+          column:
+            name: account_name
+        accountNumber:
+          column:
+            name: account_number
+        bankBranchId:
+          column:
+            name: bank_branch_id
+        bankId:
+          column:
+            name: bank_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        paymentAmount:
+          column:
+            name: payment_amount
+        paymentRequestId:
+          column:
+            name: payment_request_id
+        paymentRequestItemId:
+          column:
+            name: payment_request_item_id
+        remark:
+          column:
+            name: remark
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutBeneficiaryBankAccountsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - accountName
+          - accountNumber
+          - bankBranchId
+          - bankId
+          - createdAt
+          - id
+          - paymentAmount
+          - paymentRequestId
+          - paymentRequestItemId
+          - remark
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutBeneficiaryBankAccountsResponse
+  description: Responses from the 'insert_payout_beneficiary_bank_accounts' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutBeneficiaryBankAccounts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPayoutBeneficiaryBankAccountsResponse
+    inputTypeName: InsertPayoutBeneficiaryBankAccountsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_beneficiary_bank_accounts_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutBeneficiaryBankAccountsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPayoutBeneficiaryBankAccounts
+  outputType: InsertPayoutBeneficiaryBankAccountsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPayoutBeneficiaryBankAccountsObject!]!"
+    - name: postCheck
+      type: PayoutBeneficiaryBankAccountsBoolExp
+      description: Insert permission predicate over the
+        'payout_beneficiary_bank_accounts' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_payout_beneficiary_bank_accounts
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPayoutBeneficiaryBankAccounts
+    rootFieldKind: Mutation
+  description: Insert into the payout_beneficiary_bank_accounts table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPayoutBeneficiaryBankAccounts
+  permissions:
+    - role: admin
+      allowExecution: true
+

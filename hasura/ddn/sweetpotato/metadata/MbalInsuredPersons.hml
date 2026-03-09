@@ -1,0 +1,201 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MbalInsuredPersons
+  fields:
+    - name: address
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: job
+      type: String_1!
+    - name: occupationClass
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: MbalInsuredPersons
+    inputTypeName: MbalInsuredPersonsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mbal_insured_persons
+      fieldMapping:
+        address:
+          column:
+            name: address
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        job:
+          column:
+            name: job
+        occupationClass:
+          column:
+            name: occupation_class
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MbalInsuredPersons
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - address
+          - createdAt
+          - id
+          - job
+          - occupationClass
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MbalInsuredPersonsBoolExp
+  operand:
+    object:
+      type: MbalInsuredPersons
+      comparableFields:
+        - fieldName: address
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: job
+          booleanExpressionType: TextBoolExp
+        - fieldName: occupationClass
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: insuredPerson
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MbalInsuredPersonsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MbalInsuredPersonsAggExp
+  operand:
+    object:
+      aggregatedType: MbalInsuredPersons
+      aggregatableFields:
+        - fieldName: address
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: job
+          aggregateExpression: TextAggExp
+        - fieldName: occupationClass
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MbalInsuredPersonsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MbalInsuredPersonsOrderByExp
+  operand:
+    object:
+      orderedType: MbalInsuredPersons
+      orderableFields:
+        - fieldName: address
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: job
+          orderByExpression: String1OrderByExp
+        - fieldName: occupationClass
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredPerson
+  graphql:
+    expressionTypeName: MbalInsuredPersonsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MbalInsuredPersons
+  objectType: MbalInsuredPersons
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mbal_insured_persons
+  filterExpressionType: MbalInsuredPersonsBoolExp
+  aggregateExpression: MbalInsuredPersonsAggExp
+  orderByExpression: MbalInsuredPersonsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mbalInsuredPersons
+      subscription:
+        rootField: mbalInsuredPersons
+    selectUniques:
+      - queryRootField: mbalInsuredPersonsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: mbalInsuredPersonsById
+    filterInputTypeName: MbalInsuredPersonsFilterInput
+    aggregate:
+      queryRootField: mbalInsuredPersonsAggregate
+      subscription:
+        rootField: mbalInsuredPersonsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MbalInsuredPersons
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPerson
+  sourceType: MbalInsuredPersons
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+

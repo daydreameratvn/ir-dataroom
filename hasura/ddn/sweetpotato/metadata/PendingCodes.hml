@@ -1,0 +1,294 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PendingCodes
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1!
+    - name: documentType
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: internal
+      type: Boolean_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PendingCodes
+    inputTypeName: PendingCodesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: pending_codes
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        documentType:
+          column:
+            name: document_type
+        id:
+          column:
+            name: id
+        internal:
+          column:
+            name: internal
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PendingCodes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - deletedAt
+          - description
+          - documentType
+          - id
+          - internal
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PendingCodesBoolExp
+  operand:
+    object:
+      type: PendingCodes
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: documentType
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: internal
+          booleanExpressionType: BoolBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimPendingCodes
+        - relationshipName: fwdPendingCodes
+        - relationshipName: insurerPendingCodesMappings
+        - relationshipName: claimDocumentType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PendingCodesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PendingCodesAggExp
+  operand:
+    object:
+      aggregatedType: PendingCodes
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: VarcharAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: VarcharAggExp
+        - fieldName: documentType
+          aggregateExpression: VarcharAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: internal
+          aggregateExpression: BoolAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PendingCodesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PendingCodesOrderByExp
+  operand:
+    object:
+      orderedType: PendingCodes
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: documentType
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: internal
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimDocumentType
+  graphql:
+    expressionTypeName: PendingCodesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PendingCodes
+  objectType: PendingCodes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: pending_codes
+  filterExpressionType: PendingCodesBoolExp
+  aggregateExpression: PendingCodesAggExp
+  orderByExpression: PendingCodesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: pendingCodes
+      subscription:
+        rootField: pendingCodes
+    selectUniques:
+      - queryRootField: pendingCodesByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: pendingCodesByCode
+    filterInputTypeName: PendingCodesFilterInput
+    aggregate:
+      queryRootField: pendingCodesAggregate
+      subscription:
+        rootField: pendingCodesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PendingCodes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimPendingCodes
+  sourceType: PendingCodes
+  target:
+    model:
+      name: ClaimPendingCodes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimPendingCodesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: code
+      target:
+        modelField:
+          - fieldName: code
+  graphql:
+    aggregateFieldName: claimPendingCodesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdPendingCodes
+  sourceType: PendingCodes
+  target:
+    model:
+      name: FwdPendingCodes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdPendingCodesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: code
+      target:
+        modelField:
+          - fieldName: ppyPendingCode
+  graphql:
+    aggregateFieldName: fwdPendingCodesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insurerPendingCodesMappings
+  sourceType: PendingCodes
+  target:
+    model:
+      name: InsurerPendingCodesMapping
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsurerPendingCodesMappingAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: code
+      target:
+        modelField:
+          - fieldName: ppyPendingCode
+  graphql:
+    aggregateFieldName: insurerPendingCodesMappingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocumentType
+  sourceType: PendingCodes
+  target:
+    model:
+      name: ClaimDocumentTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: documentType
+      target:
+        modelField:
+          - fieldName: value
+

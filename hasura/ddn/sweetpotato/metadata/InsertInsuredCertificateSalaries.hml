@@ -1,0 +1,145 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsuredCertificateSalariesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: effectiveAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: value
+      type: Bigdecimal!
+  graphql:
+    typeName: InsertInsuredCertificateSalariesObject
+    inputTypeName: InsertInsuredCertificateSalariesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insured_certificate_salaries_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        effectiveAt:
+          column:
+            name: effective_at
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsuredCertificateSalariesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - effectiveAt
+          - id
+          - insuredCertificateId
+          - tenantId
+          - updatedAt
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsuredCertificateSalariesResponse
+  description: Responses from the 'insert_insured_certificate_salaries' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateSalaries!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertInsuredCertificateSalariesResponse
+    inputTypeName: InsertInsuredCertificateSalariesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insured_certificate_salaries_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsuredCertificateSalariesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertInsuredCertificateSalaries
+  outputType: InsertInsuredCertificateSalariesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertInsuredCertificateSalariesObject!]!"
+    - name: postCheck
+      type: InsuredCertificateSalariesBoolExp
+      description: Insert permission predicate over the 'insured_certificate_salaries'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_insured_certificate_salaries
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertInsuredCertificateSalaries
+    rootFieldKind: Mutation
+  description: Insert into the insured_certificate_salaries table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertInsuredCertificateSalaries
+  permissions:
+    - role: admin
+      allowExecution: true
+

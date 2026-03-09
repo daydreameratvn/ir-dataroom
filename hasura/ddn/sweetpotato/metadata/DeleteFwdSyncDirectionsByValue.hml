@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdSyncDirectionsByValueResponse
+  description: Responses from the 'delete_fwd_sync_directions_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdSyncDirections!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdSyncDirectionsByValueResponse
+    inputTypeName: DeleteFwdSyncDirectionsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_sync_directions_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdSyncDirectionsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdSyncDirectionsByValue
+  outputType: DeleteFwdSyncDirectionsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: FwdSyncDirectionsBoolExp
+      description: Delete permission predicate over the 'fwd_sync_directions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_sync_directions_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdSyncDirectionsByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_sync_directions' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdSyncDirectionsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

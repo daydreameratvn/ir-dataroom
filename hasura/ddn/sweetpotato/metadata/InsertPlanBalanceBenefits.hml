@@ -1,0 +1,144 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanBalanceBenefitsObject
+  fields:
+    - name: autoSelected
+      type: Boolean_1
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: planBalanceId
+      type: Uuid!
+    - name: planInsuredBenefitId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPlanBalanceBenefitsObject
+    inputTypeName: InsertPlanBalanceBenefitsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_balance_benefits_object
+      fieldMapping:
+        autoSelected:
+          column:
+            name: auto_selected
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        planBalanceId:
+          column:
+            name: plan_balance_id
+        planInsuredBenefitId:
+          column:
+            name: plan_insured_benefit_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanBalanceBenefitsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoSelected
+          - createdAt
+          - deletedAt
+          - id
+          - planBalanceId
+          - planInsuredBenefitId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanBalanceBenefitsResponse
+  description: Responses from the 'insert_plan_balance_benefits' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanBalanceBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPlanBalanceBenefitsResponse
+    inputTypeName: InsertPlanBalanceBenefitsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_balance_benefits_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanBalanceBenefitsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPlanBalanceBenefits
+  outputType: InsertPlanBalanceBenefitsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPlanBalanceBenefitsObject!]!"
+    - name: postCheck
+      type: PlanBalanceBenefitsBoolExp
+      description: Insert permission predicate over the 'plan_balance_benefits' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_plan_balance_benefits
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPlanBalanceBenefits
+    rootFieldKind: Mutation
+  description: Insert into the plan_balance_benefits table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPlanBalanceBenefits
+  permissions:
+    - role: admin
+      allowExecution: true
+

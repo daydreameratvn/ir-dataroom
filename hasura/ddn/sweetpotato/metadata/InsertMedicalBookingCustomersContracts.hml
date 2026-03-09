@@ -1,0 +1,139 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingCustomersContractsObject
+  fields:
+    - name: contractId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamp
+    - name: customerId
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamp
+    - name: id
+      type: Uuid
+    - name: packageName
+      type: String_1
+    - name: updatedAt
+      type: Timestamp
+  graphql:
+    typeName: InsertMedicalBookingCustomersContractsObject
+    inputTypeName: InsertMedicalBookingCustomersContractsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_customers_contracts_object
+      fieldMapping:
+        contractId:
+          column:
+            name: contract_id
+        createdAt:
+          column:
+            name: created_at
+        customerId:
+          column:
+            name: customer_id
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        packageName:
+          column:
+            name: package_name
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingCustomersContractsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - contractId
+          - createdAt
+          - customerId
+          - deletedAt
+          - id
+          - packageName
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingCustomersContractsResponse
+  description: Responses from the 'insert_medical_booking_customers_contracts' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingCustomersContracts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMedicalBookingCustomersContractsResponse
+    inputTypeName: InsertMedicalBookingCustomersContractsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_customers_contracts_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingCustomersContractsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMedicalBookingCustomersContracts
+  outputType: InsertMedicalBookingCustomersContractsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMedicalBookingCustomersContractsObject!]!"
+    - name: postCheck
+      type: MedicalBookingCustomersContractsBoolExp
+      description: Insert permission predicate over the
+        'medical_booking_customers_contracts' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_medical_booking_customers_contracts
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMedicalBookingCustomersContracts
+    rootFieldKind: Mutation
+  description: Insert into the medical_booking_customers_contracts table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMedicalBookingCustomersContracts
+  permissions:
+    - role: admin
+      allowExecution: true
+

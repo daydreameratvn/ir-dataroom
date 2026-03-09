@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteIdentityPasskeyTransportsByValueResponse
+  description: Responses from the 'delete_identity_passkey_transports_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityPasskeyTransports!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteIdentityPasskeyTransportsByValueResponse
+    inputTypeName: DeleteIdentityPasskeyTransportsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_identity_passkey_transports_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteIdentityPasskeyTransportsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteIdentityPasskeyTransportsByValue
+  outputType: DeleteIdentityPasskeyTransportsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: IdentityPasskeyTransportsBoolExp
+      description: Delete permission predicate over the 'identity_passkey_transports'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_identity_passkey_transports_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteIdentityPasskeyTransportsByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'identity_passkey_transports' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteIdentityPasskeyTransportsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

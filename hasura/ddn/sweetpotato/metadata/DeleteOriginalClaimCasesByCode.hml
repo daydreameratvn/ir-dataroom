@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteOriginalClaimCasesByCodeResponse
+  description: Responses from the 'delete_original_claim_cases_by_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OriginalClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteOriginalClaimCasesByCodeResponse
+    inputTypeName: DeleteOriginalClaimCasesByCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_original_claim_cases_by_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteOriginalClaimCasesByCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteOriginalClaimCasesByCode
+  outputType: DeleteOriginalClaimCasesByCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: preCheck
+      type: OriginalClaimCasesBoolExp
+      description: Delete permission predicate over the 'original_claim_cases' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_original_claim_cases_by_code
+    argumentMapping:
+      keyCode: key_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteOriginalClaimCasesByCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'original_claim_cases' collection using the 'code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteOriginalClaimCasesByCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

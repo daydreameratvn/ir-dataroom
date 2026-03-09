@@ -1,0 +1,317 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CompanyRoles
+  fields:
+    - name: companyId
+      type: Uuid!
+    - name: companyRoleId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: role
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: CompanyRoles
+    inputTypeName: CompanyRolesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: company_roles
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        companyRoleId:
+          column:
+            name: company_role_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        role:
+          column:
+            name: role
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CompanyRoles
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - companyRoleId
+          - createdAt
+          - deletedAt
+          - id
+          - role
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CompanyRolesBoolExp
+  operand:
+    object:
+      type: CompanyRoles
+      comparableFields:
+        - fieldName: companyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: companyRoleId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: role
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: company
+        - relationshipName: tenant
+        - relationshipName: companyRoleType
+        - relationshipName: identityUserRoles
+        - relationshipName: mpMedicalProviders
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CompanyRolesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CompanyRolesAggExp
+  operand:
+    object:
+      aggregatedType: CompanyRoles
+      aggregatableFields:
+        - fieldName: companyId
+          aggregateExpression: UuidAggExp
+        - fieldName: companyRoleId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: role
+          aggregateExpression: VarcharAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CompanyRolesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CompanyRolesOrderByExp
+  operand:
+    object:
+      orderedType: CompanyRoles
+      orderableFields:
+        - fieldName: companyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: companyRoleId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: role
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+        - relationshipName: tenant
+        - relationshipName: companyRoleType
+  graphql:
+    expressionTypeName: CompanyRolesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CompanyRoles
+  objectType: CompanyRoles
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: company_roles
+  filterExpressionType: CompanyRolesBoolExp
+  aggregateExpression: CompanyRolesAggExp
+  orderByExpression: CompanyRolesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: companyRoles
+      subscription:
+        rootField: companyRoles
+    selectUniques:
+      - queryRootField: companyRolesByCompanyRolesCompanyIdRoleKey
+        uniqueIdentifier:
+          - companyId
+          - role
+        subscription:
+          rootField: companyRolesByCompanyRolesCompanyIdRoleKey
+      - queryRootField: companyRolesByCompanyRoleId
+        uniqueIdentifier:
+          - companyRoleId
+        subscription:
+          rootField: companyRolesByCompanyRoleId
+    filterInputTypeName: CompanyRolesFilterInput
+    aggregate:
+      queryRootField: companyRolesAggregate
+      subscription:
+        rootField: companyRolesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CompanyRoles
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: CompanyRoles
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: CompanyRoles
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: companyRoleType
+  sourceType: CompanyRoles
+  target:
+    model:
+      name: CompanyRoleTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: role
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserRoles
+  sourceType: CompanyRoles
+  target:
+    model:
+      name: IdentityUserRole
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityUserRoleAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyRoleId
+      target:
+        modelField:
+          - fieldName: companyRoleId
+  graphql:
+    aggregateFieldName: identityUserRolesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviders
+  sourceType: CompanyRoles
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProvidersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyRoleId
+      target:
+        modelField:
+          - fieldName: companyRoleId
+  graphql:
+    aggregateFieldName: mpMedicalProvidersAggregate
+

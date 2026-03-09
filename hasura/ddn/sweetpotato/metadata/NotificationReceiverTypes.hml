@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: NotificationReceiverTypes
+  description: receiver type enum
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: NotificationReceiverTypes
+    inputTypeName: NotificationReceiverTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: notification_receiver_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: NotificationReceiverTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NotificationReceiverTypesBoolExp
+  operand:
+    object:
+      type: NotificationReceiverTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: notificationNotifications
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NotificationReceiverTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: NotificationReceiverTypesAggExp
+  operand:
+    object:
+      aggregatedType: NotificationReceiverTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: NotificationReceiverTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: NotificationReceiverTypesOrderByExp
+  operand:
+    object:
+      orderedType: NotificationReceiverTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: NotificationReceiverTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: NotificationReceiverTypes
+  objectType: NotificationReceiverTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: notification_receiver_types
+  filterExpressionType: NotificationReceiverTypesBoolExp
+  aggregateExpression: NotificationReceiverTypesAggExp
+  orderByExpression: NotificationReceiverTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: notificationReceiverTypes
+      subscription:
+        rootField: notificationReceiverTypes
+    selectUniques:
+      - queryRootField: notificationReceiverTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: notificationReceiverTypesByValue
+    filterInputTypeName: NotificationReceiverTypesFilterInput
+    aggregate:
+      queryRootField: notificationReceiverTypesAggregate
+      subscription:
+        rootField: notificationReceiverTypesAggregate
+  description: receiver type enum
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: NotificationReceiverTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: notificationNotifications
+  sourceType: NotificationReceiverTypes
+  target:
+    model:
+      name: NotificationNotifications
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: NotificationNotificationsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: receiverType
+  graphql:
+    aggregateFieldName: notificationNotificationsAggregate
+

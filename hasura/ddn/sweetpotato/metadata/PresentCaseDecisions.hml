@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PresentCaseDecisions
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PresentCaseDecisions
+    inputTypeName: PresentCaseDecisionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: present_case_decisions
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PresentCaseDecisions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PresentCaseDecisionsBoolExp
+  operand:
+    object:
+      type: PresentCaseDecisions
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: presentCaseAssessments
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PresentCaseDecisionsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PresentCaseDecisionsAggExp
+  operand:
+    object:
+      aggregatedType: PresentCaseDecisions
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PresentCaseDecisionsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PresentCaseDecisionsOrderByExp
+  operand:
+    object:
+      orderedType: PresentCaseDecisions
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PresentCaseDecisionsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PresentCaseDecisions
+  objectType: PresentCaseDecisions
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: present_case_decisions
+  filterExpressionType: PresentCaseDecisionsBoolExp
+  aggregateExpression: PresentCaseDecisionsAggExp
+  orderByExpression: PresentCaseDecisionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: presentCaseDecisions
+      subscription:
+        rootField: presentCaseDecisions
+    selectUniques:
+      - queryRootField: presentCaseDecisionsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: presentCaseDecisionsByValue
+    filterInputTypeName: PresentCaseDecisionsFilterInput
+    aggregate:
+      queryRootField: presentCaseDecisionsAggregate
+      subscription:
+        rootField: presentCaseDecisionsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PresentCaseDecisions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: presentCaseAssessments
+  sourceType: PresentCaseDecisions
+  target:
+    model:
+      name: PresentCaseAssessments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PresentCaseAssessmentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: decisionCode
+  graphql:
+    aggregateFieldName: presentCaseAssessmentsAggregate
+

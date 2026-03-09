@@ -1,0 +1,276 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCompaniesObject
+  fields:
+    - name: ccSupportEmailsRefId
+      type: Uuid
+    - name: claimSubmissionDeadlineInDaysSinceEventDate
+      type: Bigdecimal
+    - name: companyCode
+      type: String_1!
+    - name: companyId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: customerSupportEmail
+      type: String_1
+    - name: customerSupportPhone
+      type: String_1
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: email
+      type: String_1
+    - name: emailDomain
+      type: String_1
+    - name: faqUrl
+      type: String_1
+    - name: isMainTpa
+      type: Boolean_1
+    - name: logo
+      type: String_1
+    - name: logoUrl
+      type: String_1
+    - name: name
+      type: String_1!
+    - name: parentCompanyId
+      type: Uuid
+    - name: parentId
+      type: Uuid
+    - name: phone
+      type: String_1
+    - name: supportEmail
+      type: Json
+    - name: supportPhone
+      type: Json
+    - name: supportPhonesRefId
+      type: Uuid
+    - name: taxCode
+      type: String_1
+    - name: tenantId
+      type: Uuid
+    - name: toSupportEmailsRefId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: useCertificateCode
+      type: Boolean_1
+    - name: widgetId
+      type: String_1
+  graphql:
+    typeName: InsertCompaniesObject
+    inputTypeName: InsertCompaniesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_companies_object
+      fieldMapping:
+        ccSupportEmailsRefId:
+          column:
+            name: cc_support_emails_ref_id
+        claimSubmissionDeadlineInDaysSinceEventDate:
+          column:
+            name: claim_submission_deadline_in_days_since_event_date
+        companyCode:
+          column:
+            name: company_code
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        customerSupportEmail:
+          column:
+            name: customer_support_email
+        customerSupportPhone:
+          column:
+            name: customer_support_phone
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        email:
+          column:
+            name: email
+        emailDomain:
+          column:
+            name: email_domain
+        faqUrl:
+          column:
+            name: faq_url
+        isMainTpa:
+          column:
+            name: is_main_tpa
+        logo:
+          column:
+            name: logo
+        logoUrl:
+          column:
+            name: logo_url
+        name:
+          column:
+            name: name
+        parentCompanyId:
+          column:
+            name: parent_company_id
+        parentId:
+          column:
+            name: parent_id
+        phone:
+          column:
+            name: phone
+        supportEmail:
+          column:
+            name: support_email
+        supportPhone:
+          column:
+            name: support_phone
+        supportPhonesRefId:
+          column:
+            name: support_phones_ref_id
+        taxCode:
+          column:
+            name: tax_code
+        tenantId:
+          column:
+            name: tenant_id
+        toSupportEmailsRefId:
+          column:
+            name: to_support_emails_ref_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        useCertificateCode:
+          column:
+            name: use_certificate_code
+        widgetId:
+          column:
+            name: widget_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCompaniesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - ccSupportEmailsRefId
+          - claimSubmissionDeadlineInDaysSinceEventDate
+          - companyCode
+          - companyId
+          - createdAt
+          - createdBy
+          - customerSupportEmail
+          - customerSupportPhone
+          - deletedAt
+          - description
+          - email
+          - emailDomain
+          - faqUrl
+          - isMainTpa
+          - logo
+          - logoUrl
+          - name
+          - parentCompanyId
+          - parentId
+          - phone
+          - supportEmail
+          - supportPhone
+          - supportPhonesRefId
+          - taxCode
+          - tenantId
+          - toSupportEmailsRefId
+          - updatedAt
+          - updatedBy
+          - useCertificateCode
+          - widgetId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCompaniesResponse
+  description: Responses from the 'insert_companies' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Companies!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCompaniesResponse
+    inputTypeName: InsertCompaniesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_companies_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCompaniesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCompanies
+  outputType: InsertCompaniesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCompaniesObject!]!"
+    - name: postCheck
+      type: CompaniesBoolExp
+      description: Insert permission predicate over the 'companies' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_companies
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCompanies
+    rootFieldKind: Mutation
+  description: Insert into the companies table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCompanies
+  permissions:
+    - role: admin
+      allowExecution: true
+

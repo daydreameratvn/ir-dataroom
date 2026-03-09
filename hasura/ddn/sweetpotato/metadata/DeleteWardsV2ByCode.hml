@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteWardsV2ByCodeResponse
+  description: Responses from the 'delete_wards_v2_by_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[WardsV2!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteWardsV2ByCodeResponse
+    inputTypeName: DeleteWardsV2ByCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_wards_v2_by_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteWardsV2ByCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteWardsV2ByCode
+  outputType: DeleteWardsV2ByCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: preCheck
+      type: WardsV2BoolExp
+      description: Delete permission predicate over the 'wards_v2' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_wards_v2_by_code
+    argumentMapping:
+      keyCode: key_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteWardsV2ByCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'wards_v2' collection using the 'code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteWardsV2ByCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

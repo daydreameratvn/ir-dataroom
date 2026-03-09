@@ -1,0 +1,245 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyCoPaymentAgeRanges
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: from
+      type: Bigdecimal!
+    - name: policyCoPaymentAgeRangeId
+      type: Uuid!
+    - name: policyCoPaymentId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: to
+      type: Bigdecimal!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PolicyCoPaymentAgeRanges
+    inputTypeName: PolicyCoPaymentAgeRangesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_co_payment_age_ranges
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        from:
+          column:
+            name: from
+        policyCoPaymentAgeRangeId:
+          column:
+            name: policy_co_payment_age_range_id
+        policyCoPaymentId:
+          column:
+            name: policy_co_payment_id
+        tenantId:
+          column:
+            name: tenant_id
+        to:
+          column:
+            name: to
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyCoPaymentAgeRanges
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - from
+          - policyCoPaymentAgeRangeId
+          - policyCoPaymentId
+          - tenantId
+          - to
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyCoPaymentAgeRangesBoolExp
+  operand:
+    object:
+      type: PolicyCoPaymentAgeRanges
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: from
+          booleanExpressionType: NumericBoolExp
+        - fieldName: policyCoPaymentAgeRangeId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyCoPaymentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: to
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: policyCoPayment
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyCoPaymentAgeRangesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyCoPaymentAgeRangesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyCoPaymentAgeRanges
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: from
+          aggregateExpression: NumericAggExp
+        - fieldName: policyCoPaymentAgeRangeId
+          aggregateExpression: UuidAggExp
+        - fieldName: policyCoPaymentId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: to
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyCoPaymentAgeRangesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyCoPaymentAgeRangesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyCoPaymentAgeRanges
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: from
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: policyCoPaymentAgeRangeId
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyCoPaymentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: to
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: policyCoPayment
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: PolicyCoPaymentAgeRangesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyCoPaymentAgeRanges
+  objectType: PolicyCoPaymentAgeRanges
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_co_payment_age_ranges
+  filterExpressionType: PolicyCoPaymentAgeRangesBoolExp
+  aggregateExpression: PolicyCoPaymentAgeRangesAggExp
+  orderByExpression: PolicyCoPaymentAgeRangesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyCoPaymentAgeRanges
+      subscription:
+        rootField: policyCoPaymentAgeRanges
+    selectUniques:
+      - queryRootField: policyCoPaymentAgeRangesByPolicyCoPaymentAgeRangeId
+        uniqueIdentifier:
+          - policyCoPaymentAgeRangeId
+        subscription:
+          rootField: policyCoPaymentAgeRangesByPolicyCoPaymentAgeRangeId
+    filterInputTypeName: PolicyCoPaymentAgeRangesFilterInput
+    aggregate:
+      queryRootField: policyCoPaymentAgeRangesAggregate
+      subscription:
+        rootField: policyCoPaymentAgeRangesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyCoPaymentAgeRanges
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPayment
+  sourceType: PolicyCoPaymentAgeRanges
+  target:
+    model:
+      name: PolicyCoPayments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyCoPaymentId
+      target:
+        modelField:
+          - fieldName: policyCoPaymentId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: PolicyCoPaymentAgeRanges
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

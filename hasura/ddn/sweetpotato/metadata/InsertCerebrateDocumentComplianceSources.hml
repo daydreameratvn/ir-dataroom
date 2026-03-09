@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCerebrateDocumentComplianceSourcesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertCerebrateDocumentComplianceSourcesObject
+    inputTypeName: InsertCerebrateDocumentComplianceSourcesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_cerebrate_document_compliance_sources_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCerebrateDocumentComplianceSourcesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCerebrateDocumentComplianceSourcesResponse
+  description: Responses from the 'insert_cerebrate_document_compliance_sources' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CerebrateDocumentComplianceSources!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCerebrateDocumentComplianceSourcesResponse
+    inputTypeName: InsertCerebrateDocumentComplianceSourcesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_cerebrate_document_compliance_sources_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCerebrateDocumentComplianceSourcesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCerebrateDocumentComplianceSources
+  outputType: InsertCerebrateDocumentComplianceSourcesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCerebrateDocumentComplianceSourcesObject!]!"
+    - name: postCheck
+      type: CerebrateDocumentComplianceSourcesBoolExp
+      description: Insert permission predicate over the
+        'cerebrate_document_compliance_sources' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_cerebrate_document_compliance_sources
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCerebrateDocumentComplianceSources
+    rootFieldKind: Mutation
+  description: Insert into the cerebrate_document_compliance_sources table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCerebrateDocumentComplianceSources
+  permissions:
+    - role: admin
+      allowExecution: true
+

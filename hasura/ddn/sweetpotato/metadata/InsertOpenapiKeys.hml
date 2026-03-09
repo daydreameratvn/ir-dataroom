@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOpenapiKeysObject
+  fields:
+    - name: app
+      type: String_1!
+    - name: callbackSecret
+      type: String_1
+    - name: companyId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: enabled
+      type: Boolean_1
+    - name: id
+      type: Uuid
+    - name: lastUsedAt
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertOpenapiKeysObject
+    inputTypeName: InsertOpenapiKeysObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_openapi_keys_object
+      fieldMapping:
+        app:
+          column:
+            name: app
+        callbackSecret:
+          column:
+            name: callback_secret
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        enabled:
+          column:
+            name: enabled
+        id:
+          column:
+            name: id
+        lastUsedAt:
+          column:
+            name: last_used_at
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOpenapiKeysObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - app
+          - callbackSecret
+          - companyId
+          - createdAt
+          - enabled
+          - id
+          - lastUsedAt
+          - updatedAt
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOpenapiKeysResponse
+  description: Responses from the 'insert_openapi_keys' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OpenapiKeys!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOpenapiKeysResponse
+    inputTypeName: InsertOpenapiKeysResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_openapi_keys_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOpenapiKeysResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOpenapiKeys
+  outputType: InsertOpenapiKeysResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOpenapiKeysObject!]!"
+    - name: postCheck
+      type: OpenapiKeysBoolExp
+      description: Insert permission predicate over the 'openapi_keys' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_openapi_keys
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOpenapiKeys
+    rootFieldKind: Mutation
+  description: Insert into the openapi_keys table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOpenapiKeys
+  permissions:
+    - role: admin
+      allowExecution: true
+

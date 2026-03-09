@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimTreatmentInfoItemsByClaimTreatmentInfoItemIdResponse
+  description: Responses from the
+    'delete_claim_treatment_info_items_by_claim_treatment_info_item_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimTreatmentInfoItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimTreatmentInfoItemsByClaimTreatmentInfoItemIdResponse
+    inputTypeName: DeleteClaimTreatmentInfoItemsByClaimTreatmentInfoItemIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_treatment_info_items_by_claim_treatment_info_item_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimTreatmentInfoItemsByClaimTreatmentInfoItemIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimTreatmentInfoItemsByClaimTreatmentInfoItemId
+  outputType: DeleteClaimTreatmentInfoItemsByClaimTreatmentInfoItemIdResponse!
+  arguments:
+    - name: keyClaimTreatmentInfoItemId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimTreatmentInfoItemsBoolExp
+      description: Delete permission predicate over the 'claim_treatment_info_items'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_treatment_info_items_by_claim_treatment_info_item_id
+    argumentMapping:
+      keyClaimTreatmentInfoItemId: key_claim_treatment_info_item_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimTreatmentInfoItemsByClaimTreatmentInfoItemId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_treatment_info_items' collection using
+    the 'claim_treatment_info_item_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimTreatmentInfoItemsByClaimTreatmentInfoItemId
+  permissions:
+    - role: admin
+      allowExecution: true
+

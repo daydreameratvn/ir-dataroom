@@ -1,0 +1,335 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProviderExtends
+  description: Medical Provider Extended Information
+  fields:
+    - name: code
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: isExcluded
+      type: Boolean_1!
+    - name: medicalProviderExtendId
+      type: Uuid!
+    - name: medicalProviderId
+      type: Uuid!
+    - name: name
+      type: String_1
+    - name: province
+      type: String_1
+    - name: source
+      type: String_1!
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: MpMedicalProviderExtends
+    inputTypeName: MpMedicalProviderExtendsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_provider_extends
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        isExcluded:
+          column:
+            name: is_excluded
+        medicalProviderExtendId:
+          column:
+            name: medical_provider_extend_id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        name:
+          column:
+            name: name
+        province:
+          column:
+            name: province
+        source:
+          column:
+            name: source
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProviderExtends
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - deletedAt
+          - isExcluded
+          - medicalProviderExtendId
+          - medicalProviderId
+          - name
+          - province
+          - source
+          - status
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProviderExtendsBoolExp
+  operand:
+    object:
+      type: MpMedicalProviderExtends
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: isExcluded
+          booleanExpressionType: BoolBoolExp
+        - fieldName: medicalProviderExtendId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: province
+          booleanExpressionType: TextBoolExp
+        - fieldName: source
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: status
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProvider
+        - relationshipName: identityAppSource
+        - relationshipName: mpMedicalProviderWorkingTimeStatus
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProviderExtendsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProviderExtendsAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProviderExtends
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: VarcharAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: isExcluded
+          aggregateExpression: BoolAggExp
+        - fieldName: medicalProviderExtendId
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: province
+          aggregateExpression: TextAggExp
+        - fieldName: source
+          aggregateExpression: VarcharAggExp
+        - fieldName: status
+          aggregateExpression: VarcharAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProviderExtendsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProviderExtendsOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProviderExtends
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: isExcluded
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: medicalProviderExtendId
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: province
+          orderByExpression: String1OrderByExp
+        - fieldName: source
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: mpMedicalProvider
+        - relationshipName: identityAppSource
+        - relationshipName: mpMedicalProviderWorkingTimeStatus
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: MpMedicalProviderExtendsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProviderExtends
+  objectType: MpMedicalProviderExtends
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_provider_extends
+  filterExpressionType: MpMedicalProviderExtendsBoolExp
+  aggregateExpression: MpMedicalProviderExtendsAggExp
+  orderByExpression: MpMedicalProviderExtendsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProviderExtends
+      subscription:
+        rootField: mpMedicalProviderExtends
+    selectUniques:
+      - queryRootField: mpMedicalProviderExtendsByMedicalProviderExtendId
+        uniqueIdentifier:
+          - medicalProviderExtendId
+        subscription:
+          rootField: mpMedicalProviderExtendsByMedicalProviderExtendId
+    filterInputTypeName: MpMedicalProviderExtendsFilterInput
+    aggregate:
+      queryRootField: mpMedicalProviderExtendsAggregate
+      subscription:
+        rootField: mpMedicalProviderExtendsAggregate
+  description: Medical Provider Extended Information
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProviderExtends
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: MpMedicalProviderExtends
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityAppSource
+  sourceType: MpMedicalProviderExtends
+  target:
+    model:
+      name: IdentityAppSources
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: source
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderWorkingTimeStatus
+  sourceType: MpMedicalProviderExtends
+  target:
+    model:
+      name: MpMedicalProviderWorkingTimeStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: MpMedicalProviderExtends
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

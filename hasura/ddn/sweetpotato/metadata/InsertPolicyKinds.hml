@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyKindsObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertPolicyKindsObject
+    inputTypeName: InsertPolicyKindsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_kinds_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyKindsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyKindsResponse
+  description: Responses from the 'insert_policy_kinds' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyKinds!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyKindsResponse
+    inputTypeName: InsertPolicyKindsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_kinds_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyKindsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyKinds
+  outputType: InsertPolicyKindsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyKindsObject!]!"
+    - name: postCheck
+      type: PolicyKindsBoolExp
+      description: Insert permission predicate over the 'policy_kinds' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_kinds
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyKinds
+    rootFieldKind: Mutation
+  description: Insert into the policy_kinds table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyKinds
+  permissions:
+    - role: admin
+      allowExecution: true
+

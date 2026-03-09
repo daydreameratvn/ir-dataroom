@@ -1,0 +1,291 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornDiagnosticTestResults
+  description: Kết quả khám cận lâm sàng (xét nghiệm, chẩn đoán hình ảnh, ...)
+  fields:
+    - name: biomarkerResultId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: diagnosticTestId
+      type: Uuid!
+    - name: documentResultId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1
+    - name: ocrResult
+      type: Json
+    - name: textResult
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: HawthornDiagnosticTestResults
+    inputTypeName: HawthornDiagnosticTestResultsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_diagnostic_test_results
+      fieldMapping:
+        biomarkerResultId:
+          column:
+            name: biomarker_result_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        diagnosticTestId:
+          column:
+            name: diagnostic_test_id
+        documentResultId:
+          column:
+            name: document_result_id
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        ocrResult:
+          column:
+            name: ocr_result
+        textResult:
+          column:
+            name: text_result
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornDiagnosticTestResults
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - biomarkerResultId
+          - createdAt
+          - deletedAt
+          - diagnosticTestId
+          - documentResultId
+          - id
+          - name
+          - ocrResult
+          - textResult
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornDiagnosticTestResultsBoolExp
+  operand:
+    object:
+      type: HawthornDiagnosticTestResults
+      comparableFields:
+        - fieldName: biomarkerResultId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: diagnosticTestId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: documentResultId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: ocrResult
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: textResult
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornBiomarkerResult
+        - relationshipName: hawthornDiagnosticTest
+        - relationshipName: hawthornDocument
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornDiagnosticTestResultsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornDiagnosticTestResultsAggExp
+  operand:
+    object:
+      aggregatedType: HawthornDiagnosticTestResults
+      aggregatableFields:
+        - fieldName: biomarkerResultId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: diagnosticTestId
+          aggregateExpression: UuidAggExp
+        - fieldName: documentResultId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: ocrResult
+          aggregateExpression: JsonbAggExp
+        - fieldName: textResult
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornDiagnosticTestResultsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornDiagnosticTestResultsOrderByExp
+  operand:
+    object:
+      orderedType: HawthornDiagnosticTestResults
+      orderableFields:
+        - fieldName: biomarkerResultId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: diagnosticTestId
+          orderByExpression: UuidOrderByExp
+        - fieldName: documentResultId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: ocrResult
+          orderByExpression: JsonOrderByExp
+        - fieldName: textResult
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: hawthornBiomarkerResult
+        - relationshipName: hawthornDiagnosticTest
+        - relationshipName: hawthornDocument
+  graphql:
+    expressionTypeName: HawthornDiagnosticTestResultsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornDiagnosticTestResults
+  objectType: HawthornDiagnosticTestResults
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_diagnostic_test_results
+  filterExpressionType: HawthornDiagnosticTestResultsBoolExp
+  aggregateExpression: HawthornDiagnosticTestResultsAggExp
+  orderByExpression: HawthornDiagnosticTestResultsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornDiagnosticTestResults
+      subscription:
+        rootField: hawthornDiagnosticTestResults
+    selectUniques:
+      - queryRootField: hawthornDiagnosticTestResultsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hawthornDiagnosticTestResultsById
+    filterInputTypeName: HawthornDiagnosticTestResultsFilterInput
+    aggregate:
+      queryRootField: hawthornDiagnosticTestResultsAggregate
+      subscription:
+        rootField: hawthornDiagnosticTestResultsAggregate
+  description: Kết quả khám cận lâm sàng (xét nghiệm, chẩn đoán hình ảnh, ...)
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornDiagnosticTestResults
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornBiomarkerResult
+  sourceType: HawthornDiagnosticTestResults
+  target:
+    model:
+      name: HawthornBiomarkerResults
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: biomarkerResultId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnosticTest
+  sourceType: HawthornDiagnosticTestResults
+  target:
+    model:
+      name: HawthornDiagnosticTests
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: diagnosticTestId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDocument
+  sourceType: HawthornDiagnosticTestResults
+  target:
+    model:
+      name: HawthornDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: documentResultId
+      target:
+        modelField:
+          - fieldName: id
+

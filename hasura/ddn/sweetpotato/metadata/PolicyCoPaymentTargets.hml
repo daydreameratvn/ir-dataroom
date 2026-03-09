@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyCoPaymentTargets
+  description: Loại đối tượng áp dụng đồng chi trả
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PolicyCoPaymentTargets
+    inputTypeName: PolicyCoPaymentTargetsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_co_payment_targets
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyCoPaymentTargets
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyCoPaymentTargetsBoolExp
+  operand:
+    object:
+      type: PolicyCoPaymentTargets
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policyCoPayments
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyCoPaymentTargetsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyCoPaymentTargetsAggExp
+  operand:
+    object:
+      aggregatedType: PolicyCoPaymentTargets
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyCoPaymentTargetsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyCoPaymentTargetsOrderByExp
+  operand:
+    object:
+      orderedType: PolicyCoPaymentTargets
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicyCoPaymentTargetsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyCoPaymentTargets
+  objectType: PolicyCoPaymentTargets
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_co_payment_targets
+  filterExpressionType: PolicyCoPaymentTargetsBoolExp
+  aggregateExpression: PolicyCoPaymentTargetsAggExp
+  orderByExpression: PolicyCoPaymentTargetsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyCoPaymentTargets
+      subscription:
+        rootField: policyCoPaymentTargets
+    selectUniques:
+      - queryRootField: policyCoPaymentTargetsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: policyCoPaymentTargetsByValue
+    filterInputTypeName: PolicyCoPaymentTargetsFilterInput
+    aggregate:
+      queryRootField: policyCoPaymentTargetsAggregate
+      subscription:
+        rootField: policyCoPaymentTargetsAggregate
+  description: Loại đối tượng áp dụng đồng chi trả
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyCoPaymentTargets
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPayments
+  sourceType: PolicyCoPaymentTargets
+  target:
+    model:
+      name: PolicyCoPayments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyCoPaymentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: target
+  graphql:
+    aggregateFieldName: policyCoPaymentsAggregate
+

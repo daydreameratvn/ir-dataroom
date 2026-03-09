@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteGlobalCountersByTypeResponse
+  description: Responses from the 'delete_global_counters_by_type' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[GlobalCounters!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteGlobalCountersByTypeResponse
+    inputTypeName: DeleteGlobalCountersByTypeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_global_counters_by_type_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteGlobalCountersByTypeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteGlobalCountersByType
+  outputType: DeleteGlobalCountersByTypeResponse!
+  arguments:
+    - name: keyType
+      type: String_1!
+    - name: preCheck
+      type: GlobalCountersBoolExp
+      description: Delete permission predicate over the 'global_counters' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_global_counters_by_type
+    argumentMapping:
+      keyType: key_type
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteGlobalCountersByType
+    rootFieldKind: Mutation
+  description: Delete any row on the 'global_counters' collection using the 'type' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteGlobalCountersByType
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,193 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HdbCatalogEventInvocationLogs
+  fields:
+    - name: createdAt
+      type: Timestamp
+    - name: eventId
+      type: String_1
+    - name: id
+      type: String_1!
+    - name: request
+      type: Json
+    - name: response
+      type: Json
+    - name: status
+      type: Int32
+    - name: triggerName
+      type: String_1
+  graphql:
+    typeName: HdbCatalogEventInvocationLogs
+    inputTypeName: HdbCatalogEventInvocationLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hdb_catalog_event_invocation_logs
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        eventId:
+          column:
+            name: event_id
+        id:
+          column:
+            name: id
+        request:
+          column:
+            name: request
+        response:
+          column:
+            name: response
+        status:
+          column:
+            name: status
+        triggerName:
+          column:
+            name: trigger_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HdbCatalogEventInvocationLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - eventId
+          - id
+          - request
+          - response
+          - status
+          - triggerName
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HdbCatalogEventInvocationLogsBoolExp
+  operand:
+    object:
+      type: HdbCatalogEventInvocationLogs
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: eventId
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: TextBoolExp
+        - fieldName: request
+          booleanExpressionType: JsonBoolExp
+        - fieldName: response
+          booleanExpressionType: JsonBoolExp
+        - fieldName: status
+          booleanExpressionType: Int4BoolExp
+        - fieldName: triggerName
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HdbCatalogEventInvocationLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HdbCatalogEventInvocationLogsAggExp
+  operand:
+    object:
+      aggregatedType: HdbCatalogEventInvocationLogs
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: eventId
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: TextAggExp
+        - fieldName: request
+          aggregateExpression: JsonAggExp
+        - fieldName: response
+          aggregateExpression: JsonAggExp
+        - fieldName: status
+          aggregateExpression: Int4AggExp
+        - fieldName: triggerName
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HdbCatalogEventInvocationLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HdbCatalogEventInvocationLogsOrderByExp
+  operand:
+    object:
+      orderedType: HdbCatalogEventInvocationLogs
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestampOrderByExp
+        - fieldName: eventId
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: String1OrderByExp
+        - fieldName: request
+          orderByExpression: JsonOrderByExp
+        - fieldName: response
+          orderByExpression: JsonOrderByExp
+        - fieldName: status
+          orderByExpression: Int32OrderByExp
+        - fieldName: triggerName
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HdbCatalogEventInvocationLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HdbCatalogEventInvocationLogs
+  objectType: HdbCatalogEventInvocationLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hdb_catalog_event_invocation_logs
+  filterExpressionType: HdbCatalogEventInvocationLogsBoolExp
+  aggregateExpression: HdbCatalogEventInvocationLogsAggExp
+  orderByExpression: HdbCatalogEventInvocationLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hdbCatalogEventInvocationLogs
+      subscription:
+        rootField: hdbCatalogEventInvocationLogs
+    selectUniques:
+      - queryRootField: hdbCatalogEventInvocationLogsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hdbCatalogEventInvocationLogsById
+    filterInputTypeName: HdbCatalogEventInvocationLogsFilterInput
+    aggregate:
+      queryRootField: hdbCatalogEventInvocationLogsAggregate
+      subscription:
+        rootField: hdbCatalogEventInvocationLogsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HdbCatalogEventInvocationLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

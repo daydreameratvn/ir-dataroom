@@ -1,0 +1,78 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMpMedicalProviderTpaByCompanyIdAndMedicalProviderIdResponse
+  description: Responses from the
+    'delete_mp_medical_provider_tpa_by_company_id_and_medical_provider_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderTpa!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMpMedicalProviderTpaByCompanyIdAndMedicalProviderIdResponse
+    inputTypeName: DeleteMpMedicalProviderTpaByCompanyIdAndMedicalProviderIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mp_medical_provider_tpa_by_company_id_and_medical_provider_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMpMedicalProviderTpaByCompanyIdAndMedicalProviderIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMpMedicalProviderTpaByCompanyIdAndMedicalProviderId
+  outputType: DeleteMpMedicalProviderTpaByCompanyIdAndMedicalProviderIdResponse!
+  arguments:
+    - name: keyCompanyId
+      type: Uuid
+    - name: keyMedicalProviderId
+      type: Uuid
+    - name: preCheck
+      type: MpMedicalProviderTpaBoolExp
+      description: Delete permission predicate over the 'mp_medical_provider_tpa' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mp_medical_provider_tpa_by_company_id_and_medical_provider_id
+    argumentMapping:
+      keyCompanyId: key_company_id
+      keyMedicalProviderId: key_medical_provider_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMpMedicalProviderTpaByCompanyIdAndMedicalProviderId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mp_medical_provider_tpa' collection using
+    the 'company_id' and 'medical_provider_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMpMedicalProviderTpaByCompanyIdAndMedicalProviderId
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeclineCodes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: DeclineCodes
+    inputTypeName: DeclineCodesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: decline_codes
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeclineCodes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: DeclineCodesBoolExp
+  operand:
+    object:
+      type: DeclineCodes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimCaseDeclineHistories
+        - relationshipName: insurerDeclineCodesMappings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: DeclineCodesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: DeclineCodesAggExp
+  operand:
+    object:
+      aggregatedType: DeclineCodes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: DeclineCodesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: DeclineCodesOrderByExp
+  operand:
+    object:
+      orderedType: DeclineCodes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: DeclineCodesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: DeclineCodes
+  objectType: DeclineCodes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: decline_codes
+  filterExpressionType: DeclineCodesBoolExp
+  aggregateExpression: DeclineCodesAggExp
+  orderByExpression: DeclineCodesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: declineCodes
+      subscription:
+        rootField: declineCodes
+    selectUniques:
+      - queryRootField: declineCodesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: declineCodesByValue
+    filterInputTypeName: DeclineCodesFilterInput
+    aggregate:
+      queryRootField: declineCodesAggregate
+      subscription:
+        rootField: declineCodesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: DeclineCodes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseDeclineHistories
+  sourceType: DeclineCodes
+  target:
+    model:
+      name: ClaimCaseDeclineHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseDeclineHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: declineCode
+  graphql:
+    aggregateFieldName: claimCaseDeclineHistoriesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insurerDeclineCodesMappings
+  sourceType: DeclineCodes
+  target:
+    model:
+      name: InsurerDeclineCodesMapping
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsurerDeclineCodesMappingAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: ppyDeclineCode
+  graphql:
+    aggregateFieldName: insurerDeclineCodesMappingsAggregate
+

@@ -1,0 +1,416 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OcrInvoices
+  fields:
+    - name: buyerAddress
+      type: String_1
+    - name: buyerName
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: invoiceNumber
+      type: String_1
+    - name: issuedAt
+      type: Timestamptz
+    - name: medicalProviderName
+      type: String_1
+    - name: paperId
+      type: Uuid!
+    - name: rawData
+      type: Json
+    - name: sellerName
+      type: String_1
+    - name: sellerTaxCode
+      type: String_1
+    - name: serialNumber
+      type: String_1
+    - name: signedAt
+      type: Timestamptz
+    - name: totalAmount
+      type: Bigdecimal
+    - name: totalAmountAfterVat
+      type: Bigdecimal
+    - name: totalAmountBeforeVat
+      type: Bigdecimal
+    - name: totalDiscountAmount
+      type: Bigdecimal
+    - name: totalExtraAmount
+      type: Bigdecimal
+    - name: totalPaymentAmount
+      type: Bigdecimal
+    - name: totalVatAmount
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz!
+    - name: vatPercentage
+      type: Bigdecimal
+  graphql:
+    typeName: OcrInvoices
+    inputTypeName: OcrInvoicesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: ocr_invoices
+      fieldMapping:
+        buyerAddress:
+          column:
+            name: buyer_address
+        buyerName:
+          column:
+            name: buyer_name
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        invoiceNumber:
+          column:
+            name: invoice_number
+        issuedAt:
+          column:
+            name: issued_at
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        paperId:
+          column:
+            name: paper_id
+        rawData:
+          column:
+            name: raw_data
+        sellerName:
+          column:
+            name: seller_name
+        sellerTaxCode:
+          column:
+            name: seller_tax_code
+        serialNumber:
+          column:
+            name: serial_number
+        signedAt:
+          column:
+            name: signed_at
+        totalAmount:
+          column:
+            name: total_amount
+        totalAmountAfterVat:
+          column:
+            name: total_amount_after_vat
+        totalAmountBeforeVat:
+          column:
+            name: total_amount_before_vat
+        totalDiscountAmount:
+          column:
+            name: total_discount_amount
+        totalExtraAmount:
+          column:
+            name: total_extra_amount
+        totalPaymentAmount:
+          column:
+            name: total_payment_amount
+        totalVatAmount:
+          column:
+            name: total_vat_amount
+        updatedAt:
+          column:
+            name: updated_at
+        vatPercentage:
+          column:
+            name: vat_percentage
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OcrInvoices
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - buyerAddress
+          - buyerName
+          - createdAt
+          - id
+          - invoiceNumber
+          - issuedAt
+          - medicalProviderName
+          - paperId
+          - rawData
+          - sellerName
+          - sellerTaxCode
+          - serialNumber
+          - signedAt
+          - totalAmount
+          - totalAmountAfterVat
+          - totalAmountBeforeVat
+          - totalDiscountAmount
+          - totalExtraAmount
+          - totalPaymentAmount
+          - totalVatAmount
+          - updatedAt
+          - vatPercentage
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OcrInvoicesBoolExp
+  operand:
+    object:
+      type: OcrInvoices
+      comparableFields:
+        - fieldName: buyerAddress
+          booleanExpressionType: TextBoolExp
+        - fieldName: buyerName
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: invoiceNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: issuedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: medicalProviderName
+          booleanExpressionType: TextBoolExp
+        - fieldName: paperId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: rawData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: sellerName
+          booleanExpressionType: TextBoolExp
+        - fieldName: sellerTaxCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: serialNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: signedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: totalAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: totalAmountAfterVat
+          booleanExpressionType: NumericBoolExp
+        - fieldName: totalAmountBeforeVat
+          booleanExpressionType: NumericBoolExp
+        - fieldName: totalDiscountAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: totalExtraAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: totalPaymentAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: totalVatAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: vatPercentage
+          booleanExpressionType: NumericBoolExp
+      comparableRelationships:
+        - relationshipName: ocrInvoiceItems
+        - relationshipName: ocrPaper
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OcrInvoicesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OcrInvoicesAggExp
+  operand:
+    object:
+      aggregatedType: OcrInvoices
+      aggregatableFields:
+        - fieldName: buyerAddress
+          aggregateExpression: TextAggExp
+        - fieldName: buyerName
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: invoiceNumber
+          aggregateExpression: TextAggExp
+        - fieldName: issuedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: medicalProviderName
+          aggregateExpression: TextAggExp
+        - fieldName: paperId
+          aggregateExpression: UuidAggExp
+        - fieldName: rawData
+          aggregateExpression: JsonbAggExp
+        - fieldName: sellerName
+          aggregateExpression: TextAggExp
+        - fieldName: sellerTaxCode
+          aggregateExpression: TextAggExp
+        - fieldName: serialNumber
+          aggregateExpression: TextAggExp
+        - fieldName: signedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: totalAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: totalAmountAfterVat
+          aggregateExpression: NumericAggExp
+        - fieldName: totalAmountBeforeVat
+          aggregateExpression: NumericAggExp
+        - fieldName: totalDiscountAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: totalExtraAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: totalPaymentAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: totalVatAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: vatPercentage
+          aggregateExpression: NumericAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OcrInvoicesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OcrInvoicesOrderByExp
+  operand:
+    object:
+      orderedType: OcrInvoices
+      orderableFields:
+        - fieldName: buyerAddress
+          orderByExpression: String1OrderByExp
+        - fieldName: buyerName
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: invoiceNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: issuedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: medicalProviderName
+          orderByExpression: String1OrderByExp
+        - fieldName: paperId
+          orderByExpression: UuidOrderByExp
+        - fieldName: rawData
+          orderByExpression: JsonOrderByExp
+        - fieldName: sellerName
+          orderByExpression: String1OrderByExp
+        - fieldName: sellerTaxCode
+          orderByExpression: String1OrderByExp
+        - fieldName: serialNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: signedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: totalAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: totalAmountAfterVat
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: totalAmountBeforeVat
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: totalDiscountAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: totalExtraAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: totalPaymentAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: totalVatAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: vatPercentage
+          orderByExpression: BigdecimalOrderByExp
+      orderableRelationships:
+        - relationshipName: ocrPaper
+  graphql:
+    expressionTypeName: OcrInvoicesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OcrInvoices
+  objectType: OcrInvoices
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: ocr_invoices
+  filterExpressionType: OcrInvoicesBoolExp
+  aggregateExpression: OcrInvoicesAggExp
+  orderByExpression: OcrInvoicesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: ocrInvoices
+      subscription:
+        rootField: ocrInvoices
+    selectUniques:
+      - queryRootField: ocrInvoicesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: ocrInvoicesById
+    filterInputTypeName: OcrInvoicesFilterInput
+    aggregate:
+      queryRootField: ocrInvoicesAggregate
+      subscription:
+        rootField: ocrInvoicesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OcrInvoices
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrInvoiceItems
+  sourceType: OcrInvoices
+  target:
+    model:
+      name: OcrInvoiceItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrInvoiceItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: invoiceId
+  graphql:
+    aggregateFieldName: ocrInvoiceItemsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPaper
+  sourceType: OcrInvoices
+  target:
+    model:
+      name: OcrPapers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paperId
+      target:
+        modelField:
+          - fieldName: id
+

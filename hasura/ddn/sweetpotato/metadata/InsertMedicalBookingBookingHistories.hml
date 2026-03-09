@@ -1,0 +1,163 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingBookingHistoriesObject
+  fields:
+    - name: action
+      type: String_1
+    - name: actorId
+      type: Uuid
+    - name: bookingId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: dob
+      type: Timestamptz
+    - name: gender
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: medicalProviderId
+      type: Uuid
+    - name: name
+      type: String_1
+    - name: note
+      type: String_1
+    - name: status
+      type: String_1
+  graphql:
+    typeName: InsertMedicalBookingBookingHistoriesObject
+    inputTypeName: InsertMedicalBookingBookingHistoriesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_booking_histories_object
+      fieldMapping:
+        action:
+          column:
+            name: action
+        actorId:
+          column:
+            name: actor_id
+        bookingId:
+          column:
+            name: booking_id
+        createdAt:
+          column:
+            name: created_at
+        dob:
+          column:
+            name: dob
+        gender:
+          column:
+            name: gender
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        name:
+          column:
+            name: name
+        note:
+          column:
+            name: note
+        status:
+          column:
+            name: status
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingBookingHistoriesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - actorId
+          - bookingId
+          - createdAt
+          - dob
+          - gender
+          - id
+          - medicalProviderId
+          - name
+          - note
+          - status
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingBookingHistoriesResponse
+  description: Responses from the 'insert_medical_booking_booking_histories' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingBookingHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMedicalBookingBookingHistoriesResponse
+    inputTypeName: InsertMedicalBookingBookingHistoriesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_booking_histories_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingBookingHistoriesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMedicalBookingBookingHistories
+  outputType: InsertMedicalBookingBookingHistoriesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMedicalBookingBookingHistoriesObject!]!"
+    - name: postCheck
+      type: MedicalBookingBookingHistoriesBoolExp
+      description: Insert permission predicate over the
+        'medical_booking_booking_histories' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_medical_booking_booking_histories
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMedicalBookingBookingHistories
+    rootFieldKind: Mutation
+  description: Insert into the medical_booking_booking_histories table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMedicalBookingBookingHistories
+  permissions:
+    - role: admin
+      allowExecution: true
+

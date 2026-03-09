@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanBalanceTypes
+  description: Loại hạn mức bảo hiểm
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PlanBalanceTypes
+    inputTypeName: PlanBalanceTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_balance_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanBalanceTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanBalanceTypesBoolExp
+  operand:
+    object:
+      type: PlanBalanceTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: planBalances
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanBalanceTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanBalanceTypesAggExp
+  operand:
+    object:
+      aggregatedType: PlanBalanceTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanBalanceTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanBalanceTypesOrderByExp
+  operand:
+    object:
+      orderedType: PlanBalanceTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PlanBalanceTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanBalanceTypes
+  objectType: PlanBalanceTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_balance_types
+  filterExpressionType: PlanBalanceTypesBoolExp
+  aggregateExpression: PlanBalanceTypesAggExp
+  orderByExpression: PlanBalanceTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planBalanceTypes
+      subscription:
+        rootField: planBalanceTypes
+    selectUniques:
+      - queryRootField: planBalanceTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: planBalanceTypesByValue
+    filterInputTypeName: PlanBalanceTypesFilterInput
+    aggregate:
+      queryRootField: planBalanceTypesAggregate
+      subscription:
+        rootField: planBalanceTypesAggregate
+  description: Loại hạn mức bảo hiểm
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanBalanceTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalances
+  sourceType: PlanBalanceTypes
+  target:
+    model:
+      name: PlanBalances
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanBalancesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: planBalancesAggregate
+

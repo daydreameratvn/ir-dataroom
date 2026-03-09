@@ -1,0 +1,178 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnIdentityAuthProvidersComment
+  description: Update the 'comment' column in the 'identity_auth_providers' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnIdentityAuthProvidersComment
+    inputTypeName: UpdateColumnIdentityAuthProvidersCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_identity_auth_providers_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnIdentityAuthProvidersComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnIdentityAuthProvidersValue
+  description: Update the 'value' column in the 'identity_auth_providers' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnIdentityAuthProvidersValue
+    inputTypeName: UpdateColumnIdentityAuthProvidersValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_identity_auth_providers_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnIdentityAuthProvidersValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityAuthProvidersByValueUpdateColumns
+  description: Update the columns of the 'identity_auth_providers' collection
+  fields:
+    - name: comment
+      type: UpdateColumnIdentityAuthProvidersComment
+      description: Update the 'comment' column in the 'identity_auth_providers' collection.
+    - name: value
+      type: UpdateColumnIdentityAuthProvidersValue
+      description: Update the 'value' column in the 'identity_auth_providers' collection.
+  graphql:
+    typeName: UpdateIdentityAuthProvidersByValueUpdateColumns
+    inputTypeName: UpdateIdentityAuthProvidersByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_auth_providers_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityAuthProvidersByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityAuthProvidersByValueResponse
+  description: Responses from the 'update_identity_auth_providers_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityAuthProviders!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateIdentityAuthProvidersByValueResponse
+    inputTypeName: UpdateIdentityAuthProvidersByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_auth_providers_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityAuthProvidersByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateIdentityAuthProvidersByValue
+  outputType: UpdateIdentityAuthProvidersByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: IdentityAuthProvidersBoolExp
+      description: Update permission post-condition predicate over the
+        'identity_auth_providers' collection
+    - name: preCheck
+      type: IdentityAuthProvidersBoolExp
+      description: Update permission pre-condition predicate over the
+        'identity_auth_providers' collection
+    - name: updateColumns
+      type: UpdateIdentityAuthProvidersByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_identity_auth_providers_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateIdentityAuthProvidersByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'identity_auth_providers' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateIdentityAuthProvidersByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

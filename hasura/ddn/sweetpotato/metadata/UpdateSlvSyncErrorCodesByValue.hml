@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnSlvSyncErrorCodesComment
+  description: Update the 'comment' column in the 'slv_sync_error_codes' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnSlvSyncErrorCodesComment
+    inputTypeName: UpdateColumnSlvSyncErrorCodesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_slv_sync_error_codes_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnSlvSyncErrorCodesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnSlvSyncErrorCodesValue
+  description: Update the 'value' column in the 'slv_sync_error_codes' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnSlvSyncErrorCodesValue
+    inputTypeName: UpdateColumnSlvSyncErrorCodesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_slv_sync_error_codes_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnSlvSyncErrorCodesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateSlvSyncErrorCodesByValueUpdateColumns
+  description: Update the columns of the 'slv_sync_error_codes' collection
+  fields:
+    - name: comment
+      type: UpdateColumnSlvSyncErrorCodesComment
+      description: Update the 'comment' column in the 'slv_sync_error_codes' collection.
+    - name: value
+      type: UpdateColumnSlvSyncErrorCodesValue
+      description: Update the 'value' column in the 'slv_sync_error_codes' collection.
+  graphql:
+    typeName: UpdateSlvSyncErrorCodesByValueUpdateColumns
+    inputTypeName: UpdateSlvSyncErrorCodesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_slv_sync_error_codes_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateSlvSyncErrorCodesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateSlvSyncErrorCodesByValueResponse
+  description: Responses from the 'update_slv_sync_error_codes_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvSyncErrorCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateSlvSyncErrorCodesByValueResponse
+    inputTypeName: UpdateSlvSyncErrorCodesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_slv_sync_error_codes_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateSlvSyncErrorCodesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateSlvSyncErrorCodesByValue
+  outputType: UpdateSlvSyncErrorCodesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: SlvSyncErrorCodesBoolExp
+      description: Update permission post-condition predicate over the
+        'slv_sync_error_codes' collection
+    - name: preCheck
+      type: SlvSyncErrorCodesBoolExp
+      description: Update permission pre-condition predicate over the
+        'slv_sync_error_codes' collection
+    - name: updateColumns
+      type: UpdateSlvSyncErrorCodesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_slv_sync_error_codes_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateSlvSyncErrorCodesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'slv_sync_error_codes' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateSlvSyncErrorCodesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

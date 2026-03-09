@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyStatuses
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PolicyStatuses_1
+    inputTypeName: PolicyStatusesInput_1
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyStatusesBoolExp
+  operand:
+    object:
+      type: PolicyStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policies
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyStatusesBoolExp_1
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyStatusesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyStatusesAggExp_1
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyStatusesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicyStatusesOrderByExp_1
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyStatuses
+  objectType: PolicyStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_statuses
+  filterExpressionType: PolicyStatusesBoolExp
+  aggregateExpression: PolicyStatusesAggExp
+  orderByExpression: PolicyStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyStatuses_1
+      subscription:
+        rootField: policyStatuses_1
+    selectUniques:
+      - queryRootField: policyStatusesByValue_1
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: policyStatusesByValue_1
+    filterInputTypeName: PolicyStatusesFilterInput_1
+    aggregate:
+      queryRootField: policyStatusesAggregate_1
+      subscription:
+        rootField: policyStatusesAggregate_1
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: PolicyStatuses
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: policiesAggregate
+

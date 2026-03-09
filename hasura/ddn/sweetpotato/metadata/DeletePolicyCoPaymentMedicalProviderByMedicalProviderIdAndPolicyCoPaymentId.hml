@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicyCoPaymentMedicalProviderByMedicalProviderIdAndPolicyCoPaymentIdResponse
+  description: Responses from the
+    'delete_policy_co_payment_medical_provider_by_medical_provider_id_and_policy_co_payment_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyCoPaymentMedicalProvider!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicyCoPaymentMedicalProviderByMedicalProviderIdAndPolicyCoPaymentIdResponse
+    inputTypeName: DeletePolicyCoPaymentMedicalProviderByMedicalProviderIdAndPolicyCoPaymentIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_co_payment_medical_provider_by_medical_provider_id_and_policy_co_payment_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicyCoPaymentMedicalProviderByMedicalProviderIdAndPolicyCoPaymentIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicyCoPaymentMedicalProviderByMedicalProviderIdAndPolicyCoPaymentId
+  outputType: DeletePolicyCoPaymentMedicalProviderByMedicalProviderIdAndPolicyCoPaymentIdResponse!
+  arguments:
+    - name: keyMedicalProviderId
+      type: Uuid!
+    - name: keyPolicyCoPaymentId
+      type: Uuid!
+    - name: preCheck
+      type: PolicyCoPaymentMedicalProviderBoolExp
+      description: Delete permission predicate over the
+        'policy_co_payment_medical_provider' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_co_payment_medical_provider_by_medical_provider_id_and_policy_co_payment_id
+    argumentMapping:
+      keyMedicalProviderId: key_medical_provider_id
+      keyPolicyCoPaymentId: key_policy_co_payment_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicyCoPaymentMedicalProviderByMedicalProviderIdAndPolicyCoPaymentId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_co_payment_medical_provider'
+    collection using the 'medical_provider_id' and 'policy_co_payment_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicyCoPaymentMedicalProviderByMedicalProviderIdAndPolicyCoPaymentId
+  permissions:
+    - role: admin
+      allowExecution: true
+

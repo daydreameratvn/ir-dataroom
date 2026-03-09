@@ -1,0 +1,216 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrInvoiceItemsObject
+  fields:
+    - name: amount
+      type: Bigdecimal
+    - name: amountAfterVat
+      type: Bigdecimal
+    - name: amountBeforeVat
+      type: Bigdecimal
+    - name: batchNumber
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: discountAmount
+      type: Bigdecimal
+    - name: expriedAt
+      type: Timestamptz
+    - name: extraAmount
+      type: Bigdecimal
+    - name: id
+      type: Uuid
+    - name: invoiceId
+      type: Uuid!
+    - name: itemName
+      type: String_1
+    - name: lineNumber
+      type: Bigdecimal
+    - name: paymentAmount
+      type: Bigdecimal
+    - name: quantity
+      type: Bigdecimal
+    - name: rawData
+      type: Json
+    - name: unit
+      type: String_1
+    - name: unitPrice
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz
+    - name: vatAmount
+      type: Bigdecimal
+    - name: vatPercentage
+      type: Bigdecimal
+  graphql:
+    typeName: InsertOcrInvoiceItemsObject
+    inputTypeName: InsertOcrInvoiceItemsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_invoice_items_object
+      fieldMapping:
+        amount:
+          column:
+            name: amount
+        amountAfterVat:
+          column:
+            name: amount_after_vat
+        amountBeforeVat:
+          column:
+            name: amount_before_vat
+        batchNumber:
+          column:
+            name: batch_number
+        createdAt:
+          column:
+            name: created_at
+        discountAmount:
+          column:
+            name: discount_amount
+        expriedAt:
+          column:
+            name: expried_at
+        extraAmount:
+          column:
+            name: extra_amount
+        id:
+          column:
+            name: id
+        invoiceId:
+          column:
+            name: invoice_id
+        itemName:
+          column:
+            name: item_name
+        lineNumber:
+          column:
+            name: line_number
+        paymentAmount:
+          column:
+            name: payment_amount
+        quantity:
+          column:
+            name: quantity
+        rawData:
+          column:
+            name: raw_data
+        unit:
+          column:
+            name: unit
+        unitPrice:
+          column:
+            name: unit_price
+        updatedAt:
+          column:
+            name: updated_at
+        vatAmount:
+          column:
+            name: vat_amount
+        vatPercentage:
+          column:
+            name: vat_percentage
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrInvoiceItemsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - amount
+          - amountAfterVat
+          - amountBeforeVat
+          - batchNumber
+          - createdAt
+          - discountAmount
+          - expriedAt
+          - extraAmount
+          - id
+          - invoiceId
+          - itemName
+          - lineNumber
+          - paymentAmount
+          - quantity
+          - rawData
+          - unit
+          - unitPrice
+          - updatedAt
+          - vatAmount
+          - vatPercentage
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrInvoiceItemsResponse
+  description: Responses from the 'insert_ocr_invoice_items' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrInvoiceItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOcrInvoiceItemsResponse
+    inputTypeName: InsertOcrInvoiceItemsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_invoice_items_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrInvoiceItemsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOcrInvoiceItems
+  outputType: InsertOcrInvoiceItemsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOcrInvoiceItemsObject!]!"
+    - name: postCheck
+      type: OcrInvoiceItemsBoolExp
+      description: Insert permission predicate over the 'ocr_invoice_items' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_ocr_invoice_items
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOcrInvoiceItems
+    rootFieldKind: Mutation
+  description: Insert into the ocr_invoice_items table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOcrInvoiceItems
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimCaseAssessedDiagnosesByIdResponse
+  description: Responses from the 'delete_claim_case_assessed_diagnoses_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseAssessedDiagnoses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimCaseAssessedDiagnosesByIdResponse
+    inputTypeName: DeleteClaimCaseAssessedDiagnosesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_case_assessed_diagnoses_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimCaseAssessedDiagnosesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimCaseAssessedDiagnosesById
+  outputType: DeleteClaimCaseAssessedDiagnosesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimCaseAssessedDiagnosesBoolExp
+      description: Delete permission predicate over the
+        'claim_case_assessed_diagnoses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_case_assessed_diagnoses_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimCaseAssessedDiagnosesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_case_assessed_diagnoses' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimCaseAssessedDiagnosesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

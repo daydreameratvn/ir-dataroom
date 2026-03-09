@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsuredPersonStatusesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertInsuredPersonStatusesObject
+    inputTypeName: InsertInsuredPersonStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insured_person_statuses_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsuredPersonStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsuredPersonStatusesResponse
+  description: Responses from the 'insert_insured_person_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredPersonStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertInsuredPersonStatusesResponse
+    inputTypeName: InsertInsuredPersonStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insured_person_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsuredPersonStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertInsuredPersonStatuses
+  outputType: InsertInsuredPersonStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertInsuredPersonStatusesObject!]!"
+    - name: postCheck
+      type: InsuredPersonStatusesBoolExp
+      description: Insert permission predicate over the 'insured_person_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_insured_person_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertInsuredPersonStatuses
+    rootFieldKind: Mutation
+  description: Insert into the insured_person_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertInsuredPersonStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

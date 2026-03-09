@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutInsuranceCoveragesObject
+  fields:
+    - name: basePremium
+      type: Bigdecimal!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: finalPremium
+      type: Bigdecimal!
+    - name: id
+      type: Uuid
+    - name: package
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertHazelnutInsuranceCoveragesObject
+    inputTypeName: InsertHazelnutInsuranceCoveragesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_insurance_coverages_object
+      fieldMapping:
+        basePremium:
+          column:
+            name: base_premium
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        finalPremium:
+          column:
+            name: final_premium
+        id:
+          column:
+            name: id
+        package:
+          column:
+            name: package
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutInsuranceCoveragesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - basePremium
+          - createdAt
+          - createdBy
+          - deletedAt
+          - finalPremium
+          - id
+          - package
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutInsuranceCoveragesResponse
+  description: Responses from the 'insert_hazelnut_insurance_coverages' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutInsuranceCoverages!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHazelnutInsuranceCoveragesResponse
+    inputTypeName: InsertHazelnutInsuranceCoveragesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_insurance_coverages_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutInsuranceCoveragesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHazelnutInsuranceCoverages
+  outputType: InsertHazelnutInsuranceCoveragesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHazelnutInsuranceCoveragesObject!]!"
+    - name: postCheck
+      type: HazelnutInsuranceCoveragesBoolExp
+      description: Insert permission predicate over the 'hazelnut_insurance_coverages'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hazelnut_insurance_coverages
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHazelnutInsuranceCoverages
+    rootFieldKind: Mutation
+  description: Insert into the hazelnut_insurance_coverages table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHazelnutInsuranceCoverages
+  permissions:
+    - role: admin
+      allowExecution: true
+

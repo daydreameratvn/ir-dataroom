@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityAppSources
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: IdentityAppSources
+    inputTypeName: IdentityAppSourcesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_app_sources
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityAppSources
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityAppSourcesBoolExp
+  operand:
+    object:
+      type: IdentityAppSources
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProviderExtends
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityAppSourcesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityAppSourcesAggExp
+  operand:
+    object:
+      aggregatedType: IdentityAppSources
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityAppSourcesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityAppSourcesOrderByExp
+  operand:
+    object:
+      orderedType: IdentityAppSources
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: IdentityAppSourcesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityAppSources
+  objectType: IdentityAppSources
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_app_sources
+  filterExpressionType: IdentityAppSourcesBoolExp
+  aggregateExpression: IdentityAppSourcesAggExp
+  orderByExpression: IdentityAppSourcesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityAppSources
+      subscription:
+        rootField: identityAppSources
+    selectUniques:
+      - queryRootField: identityAppSourcesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: identityAppSourcesByValue
+    filterInputTypeName: IdentityAppSourcesFilterInput
+    aggregate:
+      queryRootField: identityAppSourcesAggregate
+      subscription:
+        rootField: identityAppSourcesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityAppSources
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderExtends
+  sourceType: IdentityAppSources
+  target:
+    model:
+      name: MpMedicalProviderExtends
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProviderExtendsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: source
+  graphql:
+    aggregateFieldName: mpMedicalProviderExtendsAggregate
+

@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteServiceLevelsByValueResponse
+  description: Responses from the 'delete_service_levels_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ServiceLevels!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteServiceLevelsByValueResponse
+    inputTypeName: DeleteServiceLevelsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_service_levels_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteServiceLevelsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteServiceLevelsByValue
+  outputType: DeleteServiceLevelsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: ServiceLevelsBoolExp
+      description: Delete permission predicate over the 'service_levels' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_service_levels_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteServiceLevelsByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'service_levels' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteServiceLevelsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

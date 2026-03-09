@@ -1,0 +1,109 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdInsuredCertificateStatusMappingObject
+  fields:
+    - name: insuredCertificateStatusCode
+      type: String_1!
+    - name: policyStatusCode
+      type: String_1!
+  graphql:
+    typeName: InsertFwdInsuredCertificateStatusMappingObject
+    inputTypeName: InsertFwdInsuredCertificateStatusMappingObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_insured_certificate_status_mapping_object
+      fieldMapping:
+        insuredCertificateStatusCode:
+          column:
+            name: insured_certificate_status_code
+        policyStatusCode:
+          column:
+            name: policy_status_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdInsuredCertificateStatusMappingObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - insuredCertificateStatusCode
+          - policyStatusCode
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdInsuredCertificateStatusMappingResponse
+  description: Responses from the 'insert_fwd_insured_certificate_status_mapping' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdInsuredCertificateStatusMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdInsuredCertificateStatusMappingResponse
+    inputTypeName: InsertFwdInsuredCertificateStatusMappingResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_insured_certificate_status_mapping_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdInsuredCertificateStatusMappingResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdInsuredCertificateStatusMapping
+  outputType: InsertFwdInsuredCertificateStatusMappingResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdInsuredCertificateStatusMappingObject!]!"
+    - name: postCheck
+      type: FwdInsuredCertificateStatusMappingBoolExp
+      description: Insert permission predicate over the
+        'fwd_insured_certificate_status_mapping' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_insured_certificate_status_mapping
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdInsuredCertificateStatusMapping
+    rootFieldKind: Mutation
+  description: Insert into the fwd_insured_certificate_status_mapping table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdInsuredCertificateStatusMapping
+  permissions:
+    - role: admin
+      allowExecution: true
+

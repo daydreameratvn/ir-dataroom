@@ -1,0 +1,162 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertImportedDataItemsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: data
+      type: Json!
+    - name: failedReason
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: importedFileId
+      type: Uuid!
+    - name: insuredCertificateId
+      type: Uuid
+    - name: insuredPersonId
+      type: Uuid
+    - name: sqsMessageId
+      type: Uuid
+    - name: status
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertImportedDataItemsObject
+    inputTypeName: InsertImportedDataItemsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_imported_data_items_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        data:
+          column:
+            name: data
+        failedReason:
+          column:
+            name: failed_reason
+        id:
+          column:
+            name: id
+        importedFileId:
+          column:
+            name: imported_file_id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        sqsMessageId:
+          column:
+            name: sqs_message_id
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertImportedDataItemsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - data
+          - failedReason
+          - id
+          - importedFileId
+          - insuredCertificateId
+          - insuredPersonId
+          - sqsMessageId
+          - status
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertImportedDataItemsResponse
+  description: Responses from the 'insert_imported_data_items' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ImportedDataItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertImportedDataItemsResponse
+    inputTypeName: InsertImportedDataItemsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_imported_data_items_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertImportedDataItemsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertImportedDataItems
+  outputType: InsertImportedDataItemsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertImportedDataItemsObject!]!"
+    - name: postCheck
+      type: ImportedDataItemsBoolExp
+      description: Insert permission predicate over the 'imported_data_items' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_imported_data_items
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertImportedDataItems
+    rootFieldKind: Mutation
+  description: Insert into the imported_data_items table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertImportedDataItems
+  permissions:
+    - role: admin
+      allowExecution: true
+

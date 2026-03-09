@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMpMedicalProviderBenefitsByBenefitTypeAndMedicalProviderIdResponse
+  description: Responses from the
+    'delete_mp_medical_provider_benefits_by_benefit_type_and_medical_provider_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMpMedicalProviderBenefitsByBenefitTypeAndMedicalProviderIdResponse
+    inputTypeName: DeleteMpMedicalProviderBenefitsByBenefitTypeAndMedicalProviderIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mp_medical_provider_benefits_by_benefit_type_and_medical_provider_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMpMedicalProviderBenefitsByBenefitTypeAndMedicalProviderIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMpMedicalProviderBenefitsByBenefitTypeAndMedicalProviderId
+  outputType: DeleteMpMedicalProviderBenefitsByBenefitTypeAndMedicalProviderIdResponse!
+  arguments:
+    - name: keyBenefitType
+      type: String_1!
+    - name: keyMedicalProviderId
+      type: Uuid!
+    - name: preCheck
+      type: MpMedicalProviderBenefitsBoolExp
+      description: Delete permission predicate over the 'mp_medical_provider_benefits'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mp_medical_provider_benefits_by_benefit_type_and_medical_provider_id
+    argumentMapping:
+      keyBenefitType: key_benefit_type
+      keyMedicalProviderId: key_medical_provider_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMpMedicalProviderBenefitsByBenefitTypeAndMedicalProviderId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mp_medical_provider_benefits' collection
+    using the 'benefit_type' and 'medical_provider_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMpMedicalProviderBenefitsByBenefitTypeAndMedicalProviderId
+  permissions:
+    - role: admin
+      allowExecution: true
+

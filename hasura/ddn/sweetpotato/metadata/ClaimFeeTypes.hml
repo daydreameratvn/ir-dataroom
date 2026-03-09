@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimFeeTypes
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimFeeTypes
+    inputTypeName: ClaimFeeTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_fee_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimFeeTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimFeeTypesBoolExp
+  operand:
+    object:
+      type: ClaimFeeTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimFeeItems
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimFeeTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimFeeTypesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimFeeTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimFeeTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimFeeTypesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimFeeTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimFeeTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimFeeTypes
+  objectType: ClaimFeeTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_fee_types
+  filterExpressionType: ClaimFeeTypesBoolExp
+  aggregateExpression: ClaimFeeTypesAggExp
+  orderByExpression: ClaimFeeTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimFeeTypes
+      subscription:
+        rootField: claimFeeTypes
+    selectUniques:
+      - queryRootField: claimFeeTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimFeeTypesByValue
+    filterInputTypeName: ClaimFeeTypesFilterInput
+    aggregate:
+      queryRootField: claimFeeTypesAggregate
+      subscription:
+        rootField: claimFeeTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimFeeTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimFeeItems
+  sourceType: ClaimFeeTypes
+  target:
+    model:
+      name: ClaimFeeItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimFeeItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: claimFeeItemsAggregate
+

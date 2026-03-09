@@ -1,0 +1,225 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdBenefitTypesCode
+  description: Update the 'code' column in the 'fwd_benefit_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdBenefitTypesCode
+    inputTypeName: UpdateColumnFwdBenefitTypesCodeInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_benefit_types_code
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdBenefitTypesCode
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdBenefitTypesName
+  description: Update the 'name' column in the 'fwd_benefit_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdBenefitTypesName
+    inputTypeName: UpdateColumnFwdBenefitTypesNameInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_benefit_types_name
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdBenefitTypesName
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnFwdBenefitTypesPpyBenefitTypeCode
+  description: Update the 'ppy_benefit_type_code' column in the
+    'fwd_benefit_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnFwdBenefitTypesPpyBenefitTypeCode
+    inputTypeName: UpdateColumnFwdBenefitTypesPpyBenefitTypeCodeInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_fwd_benefit_types_ppy_benefit_type_code
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnFwdBenefitTypesPpyBenefitTypeCode
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdBenefitTypesByCodeUpdateColumns
+  description: Update the columns of the 'fwd_benefit_types' collection
+  fields:
+    - name: code
+      type: UpdateColumnFwdBenefitTypesCode
+      description: Update the 'code' column in the 'fwd_benefit_types' collection.
+    - name: name
+      type: UpdateColumnFwdBenefitTypesName
+      description: Update the 'name' column in the 'fwd_benefit_types' collection.
+    - name: ppyBenefitTypeCode
+      type: UpdateColumnFwdBenefitTypesPpyBenefitTypeCode
+      description: Update the 'ppy_benefit_type_code' column in the
+        'fwd_benefit_types' collection.
+  graphql:
+    typeName: UpdateFwdBenefitTypesByCodeUpdateColumns
+    inputTypeName: UpdateFwdBenefitTypesByCodeUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_benefit_types_by_code_update_columns
+      fieldMapping:
+        code:
+          column:
+            name: code
+        name:
+          column:
+            name: name
+        ppyBenefitTypeCode:
+          column:
+            name: ppy_benefit_type_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdBenefitTypesByCodeUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - name
+          - ppyBenefitTypeCode
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateFwdBenefitTypesByCodeResponse
+  description: Responses from the 'update_fwd_benefit_types_by_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdBenefitTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateFwdBenefitTypesByCodeResponse
+    inputTypeName: UpdateFwdBenefitTypesByCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_fwd_benefit_types_by_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateFwdBenefitTypesByCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateFwdBenefitTypesByCode
+  outputType: UpdateFwdBenefitTypesByCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: postCheck
+      type: FwdBenefitTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'fwd_benefit_types' collection
+    - name: preCheck
+      type: FwdBenefitTypesBoolExp
+      description: Update permission pre-condition predicate over the
+        'fwd_benefit_types' collection
+    - name: updateColumns
+      type: UpdateFwdBenefitTypesByCodeUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_fwd_benefit_types_by_code
+    argumentMapping:
+      keyCode: key_code
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateFwdBenefitTypesByCode
+    rootFieldKind: Mutation
+  description: Update any row on the 'fwd_benefit_types' collection using the 'code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateFwdBenefitTypesByCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

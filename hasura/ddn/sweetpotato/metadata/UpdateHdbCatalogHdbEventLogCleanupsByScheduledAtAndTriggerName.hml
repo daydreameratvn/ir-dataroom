@@ -1,0 +1,160 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameUpdateColumns
+  description: Update the columns of the 'hdb_catalog_hdb_event_log_cleanups' collection
+  fields:
+    - name: deletedEventInvocationLogs
+      type: UpdateColumnHdbCatalogHdbEventLogCleanupsDeletedEventInvocationLogs
+      description: Update the 'deleted_event_invocation_logs' column in the
+        'hdb_catalog_hdb_event_log_cleanups' collection.
+    - name: deletedEventLogs
+      type: UpdateColumnHdbCatalogHdbEventLogCleanupsDeletedEventLogs
+      description: Update the 'deleted_event_logs' column in the
+        'hdb_catalog_hdb_event_log_cleanups' collection.
+    - name: id
+      type: UpdateColumnHdbCatalogHdbEventLogCleanupsId
+      description: Update the 'id' column in the 'hdb_catalog_hdb_event_log_cleanups'
+        collection.
+    - name: scheduledAt
+      type: UpdateColumnHdbCatalogHdbEventLogCleanupsScheduledAt
+      description: Update the 'scheduled_at' column in the
+        'hdb_catalog_hdb_event_log_cleanups' collection.
+    - name: status
+      type: UpdateColumnHdbCatalogHdbEventLogCleanupsStatus
+      description: Update the 'status' column in the
+        'hdb_catalog_hdb_event_log_cleanups' collection.
+    - name: triggerName
+      type: UpdateColumnHdbCatalogHdbEventLogCleanupsTriggerName
+      description: Update the 'trigger_name' column in the
+        'hdb_catalog_hdb_event_log_cleanups' collection.
+  graphql:
+    typeName: UpdateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameUpdateColumns
+    inputTypeName: UpdateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_hdb_catalog_hdb_event_log_cleanups_by_scheduled_at_and_trigger_name_update_columns
+      fieldMapping:
+        deletedEventInvocationLogs:
+          column:
+            name: deleted_event_invocation_logs
+        deletedEventLogs:
+          column:
+            name: deleted_event_logs
+        id:
+          column:
+            name: id
+        scheduledAt:
+          column:
+            name: scheduled_at
+        status:
+          column:
+            name: status
+        triggerName:
+          column:
+            name: trigger_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - deletedEventInvocationLogs
+          - deletedEventLogs
+          - id
+          - scheduledAt
+          - status
+          - triggerName
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameResponse
+  description: Responses from the
+    'update_hdb_catalog_hdb_event_log_cleanups_by_scheduled_at_and_trigger_name'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HdbCatalogHdbEventLogCleanups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameResponse
+    inputTypeName: UpdateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_hdb_catalog_hdb_event_log_cleanups_by_scheduled_at_and_trigger_name_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerName
+  outputType: UpdateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameResponse!
+  arguments:
+    - name: keyScheduledAt
+      type: Timestamp!
+    - name: keyTriggerName
+      type: String_1!
+    - name: postCheck
+      type: HdbCatalogHdbEventLogCleanupsBoolExp
+      description: Update permission post-condition predicate over the
+        'hdb_catalog_hdb_event_log_cleanups' collection
+    - name: preCheck
+      type: HdbCatalogHdbEventLogCleanupsBoolExp
+      description: Update permission pre-condition predicate over the
+        'hdb_catalog_hdb_event_log_cleanups' collection
+    - name: updateColumns
+      type: UpdateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerNameUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_hdb_catalog_hdb_event_log_cleanups_by_scheduled_at_and_trigger_name
+    argumentMapping:
+      keyScheduledAt: key_scheduled_at
+      keyTriggerName: key_trigger_name
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerName
+    rootFieldKind: Mutation
+  description: Update any row on the 'hdb_catalog_hdb_event_log_cleanups'
+    collection using the 'scheduled_at' and 'trigger_name' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateHdbCatalogHdbEventLogCleanupsByScheduledAtAndTriggerName
+  permissions:
+    - role: admin
+      allowExecution: true
+

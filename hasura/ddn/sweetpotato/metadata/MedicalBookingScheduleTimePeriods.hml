@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MedicalBookingScheduleTimePeriods
+  description: schedule_time_periods
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MedicalBookingScheduleTimePeriods
+    inputTypeName: MedicalBookingScheduleTimePeriodsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: medical_booking_schedule_time_periods
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MedicalBookingScheduleTimePeriods
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MedicalBookingScheduleTimePeriodsBoolExp
+  operand:
+    object:
+      type: MedicalBookingScheduleTimePeriods
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: medicalBookingSchedules
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MedicalBookingScheduleTimePeriodsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MedicalBookingScheduleTimePeriodsAggExp
+  operand:
+    object:
+      aggregatedType: MedicalBookingScheduleTimePeriods
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MedicalBookingScheduleTimePeriodsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MedicalBookingScheduleTimePeriodsOrderByExp
+  operand:
+    object:
+      orderedType: MedicalBookingScheduleTimePeriods
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MedicalBookingScheduleTimePeriodsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MedicalBookingScheduleTimePeriods
+  objectType: MedicalBookingScheduleTimePeriods
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: medical_booking_schedule_time_periods
+  filterExpressionType: MedicalBookingScheduleTimePeriodsBoolExp
+  aggregateExpression: MedicalBookingScheduleTimePeriodsAggExp
+  orderByExpression: MedicalBookingScheduleTimePeriodsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: medicalBookingScheduleTimePeriods
+      subscription:
+        rootField: medicalBookingScheduleTimePeriods
+    selectUniques:
+      - queryRootField: medicalBookingScheduleTimePeriodsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: medicalBookingScheduleTimePeriodsByValue
+    filterInputTypeName: MedicalBookingScheduleTimePeriodsFilterInput
+    aggregate:
+      queryRootField: medicalBookingScheduleTimePeriodsAggregate
+      subscription:
+        rootField: medicalBookingScheduleTimePeriodsAggregate
+  description: schedule_time_periods
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MedicalBookingScheduleTimePeriods
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingSchedules
+  sourceType: MedicalBookingScheduleTimePeriods
+  target:
+    model:
+      name: MedicalBookingSchedules
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingSchedulesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: timePeriod
+  graphql:
+    aggregateFieldName: medicalBookingSchedulesAggregate
+

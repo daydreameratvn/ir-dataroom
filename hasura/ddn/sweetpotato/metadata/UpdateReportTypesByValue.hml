@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnReportTypesComment
+  description: Update the 'comment' column in the 'report_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnReportTypesComment
+    inputTypeName: UpdateColumnReportTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_report_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnReportTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnReportTypesValue
+  description: Update the 'value' column in the 'report_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnReportTypesValue
+    inputTypeName: UpdateColumnReportTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_report_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnReportTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateReportTypesByValueUpdateColumns
+  description: Update the columns of the 'report_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnReportTypesComment
+      description: Update the 'comment' column in the 'report_types' collection.
+    - name: value
+      type: UpdateColumnReportTypesValue
+      description: Update the 'value' column in the 'report_types' collection.
+  graphql:
+    typeName: UpdateReportTypesByValueUpdateColumns
+    inputTypeName: UpdateReportTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_report_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateReportTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateReportTypesByValueResponse
+  description: Responses from the 'update_report_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ReportTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateReportTypesByValueResponse
+    inputTypeName: UpdateReportTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_report_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateReportTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateReportTypesByValue
+  outputType: UpdateReportTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: ReportTypesBoolExp
+      description: Update permission post-condition predicate over the 'report_types'
+        collection
+    - name: preCheck
+      type: ReportTypesBoolExp
+      description: Update permission pre-condition predicate over the 'report_types'
+        collection
+    - name: updateColumns
+      type: UpdateReportTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_report_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateReportTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'report_types' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateReportTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

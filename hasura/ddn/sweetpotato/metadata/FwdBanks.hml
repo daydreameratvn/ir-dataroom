@@ -1,0 +1,165 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdBanks
+  fields:
+    - name: code
+      type: String_1!
+    - name: name
+      type: String_1
+    - name: ppyBankId
+      type: Uuid
+  graphql:
+    typeName: FwdBanks
+    inputTypeName: FwdBanksInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_banks
+      fieldMapping:
+        code:
+          column:
+            name: code
+        name:
+          column:
+            name: name
+        ppyBankId:
+          column:
+            name: ppy_bank_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdBanks
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - name
+          - ppyBankId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdBanksBoolExp
+  operand:
+    object:
+      type: FwdBanks
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: ppyBankId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: bank
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdBanksBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdBanksAggExp
+  operand:
+    object:
+      aggregatedType: FwdBanks
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: ppyBankId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdBanksAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdBanksOrderByExp
+  operand:
+    object:
+      orderedType: FwdBanks
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: ppyBankId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: bank
+  graphql:
+    expressionTypeName: FwdBanksOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdBanks
+  objectType: FwdBanks
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_banks
+  filterExpressionType: FwdBanksBoolExp
+  aggregateExpression: FwdBanksAggExp
+  orderByExpression: FwdBanksOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdBanks
+      subscription:
+        rootField: fwdBanks
+    selectUniques:
+      - queryRootField: fwdBanksByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: fwdBanksByCode
+    filterInputTypeName: FwdBanksFilterInput
+    aggregate:
+      queryRootField: fwdBanksAggregate
+      subscription:
+        rootField: fwdBanksAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdBanks
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bank
+  sourceType: FwdBanks
+  target:
+    model:
+      name: Banks
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ppyBankId
+      target:
+        modelField:
+          - fieldName: id
+

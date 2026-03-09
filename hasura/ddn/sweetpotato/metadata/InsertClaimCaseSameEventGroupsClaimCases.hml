@@ -1,0 +1,140 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseSameEventGroupsClaimCasesObject
+  fields:
+    - name: claimCaseGroupId
+      type: Uuid!
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: excludeFromCorrespondence
+      type: Boolean_1
+    - name: id
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertClaimCaseSameEventGroupsClaimCasesObject
+    inputTypeName: InsertClaimCaseSameEventGroupsClaimCasesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_same_event_groups_claim_cases_object
+      fieldMapping:
+        claimCaseGroupId:
+          column:
+            name: claim_case_group_id
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        excludeFromCorrespondence:
+          column:
+            name: exclude_from_correspondence
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseSameEventGroupsClaimCasesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseGroupId
+          - claimCaseId
+          - createdAt
+          - deletedAt
+          - excludeFromCorrespondence
+          - id
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseSameEventGroupsClaimCasesResponse
+  description: Responses from the
+    'insert_claim_case_same_event_groups_claim_cases' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseSameEventGroupsClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCaseSameEventGroupsClaimCasesResponse
+    inputTypeName: InsertClaimCaseSameEventGroupsClaimCasesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_same_event_groups_claim_cases_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseSameEventGroupsClaimCasesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCaseSameEventGroupsClaimCases
+  outputType: InsertClaimCaseSameEventGroupsClaimCasesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCaseSameEventGroupsClaimCasesObject!]!"
+    - name: postCheck
+      type: ClaimCaseSameEventGroupsClaimCasesBoolExp
+      description: Insert permission predicate over the
+        'claim_case_same_event_groups_claim_cases' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_case_same_event_groups_claim_cases
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCaseSameEventGroupsClaimCases
+    rootFieldKind: Mutation
+  description: Insert into the claim_case_same_event_groups_claim_cases table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCaseSameEventGroupsClaimCases
+  permissions:
+    - role: admin
+      allowExecution: true
+

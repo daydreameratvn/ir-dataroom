@@ -1,0 +1,218 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutPaymentMethods
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PayoutPaymentMethods
+    inputTypeName: PayoutPaymentMethodsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_payment_methods
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutPaymentMethods
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutPaymentMethodsBoolExp
+  operand:
+    object:
+      type: PayoutPaymentMethods
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimCaseBeneficiaries
+        - relationshipName: fwdPaymentMethods
+        - relationshipName: payoutPaymentRequestItems
+        - relationshipName: payoutPaymentRequests
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutPaymentMethodsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutPaymentMethodsAggExp
+  operand:
+    object:
+      aggregatedType: PayoutPaymentMethods
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutPaymentMethodsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutPaymentMethodsOrderByExp
+  operand:
+    object:
+      orderedType: PayoutPaymentMethods
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PayoutPaymentMethodsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutPaymentMethods
+  objectType: PayoutPaymentMethods
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_payment_methods
+  filterExpressionType: PayoutPaymentMethodsBoolExp
+  aggregateExpression: PayoutPaymentMethodsAggExp
+  orderByExpression: PayoutPaymentMethodsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutPaymentMethods
+      subscription:
+        rootField: payoutPaymentMethods
+    selectUniques:
+      - queryRootField: payoutPaymentMethodsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: payoutPaymentMethodsByValue
+    filterInputTypeName: PayoutPaymentMethodsFilterInput
+    aggregate:
+      queryRootField: payoutPaymentMethodsAggregate
+      subscription:
+        rootField: payoutPaymentMethodsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutPaymentMethods
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseBeneficiaries
+  sourceType: PayoutPaymentMethods
+  target:
+    model:
+      name: ClaimCaseBeneficiaries
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseBeneficiariesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: paymentMethod
+  graphql:
+    aggregateFieldName: claimCaseBeneficiariesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdPaymentMethods
+  sourceType: PayoutPaymentMethods
+  target:
+    model:
+      name: FwdPaymentMethods
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdPaymentMethodsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: ppyPaymentMethodCode
+  graphql:
+    aggregateFieldName: fwdPaymentMethodsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestItems
+  sourceType: PayoutPaymentMethods
+  target:
+    model:
+      name: PayoutPaymentRequestItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPaymentRequestItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: paymentMethod
+  graphql:
+    aggregateFieldName: payoutPaymentRequestItemsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequests
+  sourceType: PayoutPaymentMethods
+  target:
+    model:
+      name: PayoutPaymentRequests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPaymentRequestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: paymentMethod
+  graphql:
+    aggregateFieldName: payoutPaymentRequestsAggregate
+

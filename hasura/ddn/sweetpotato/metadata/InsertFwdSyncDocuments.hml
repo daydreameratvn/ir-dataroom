@@ -1,0 +1,168 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdSyncDocumentsObject
+  fields:
+    - name: bucket
+      type: String_1!
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: fileId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: key
+      type: String_1!
+    - name: mimeType
+      type: String_1
+    - name: syncTimes
+      type: Int32
+    - name: syncedAt
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz
+    - name: url
+      type: String_1
+  graphql:
+    typeName: InsertFwdSyncDocumentsObject
+    inputTypeName: InsertFwdSyncDocumentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_sync_documents_object
+      fieldMapping:
+        bucket:
+          column:
+            name: bucket
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        key:
+          column:
+            name: key
+        mimeType:
+          column:
+            name: mime_type
+        syncTimes:
+          column:
+            name: sync_times
+        syncedAt:
+          column:
+            name: synced_at
+        updatedAt:
+          column:
+            name: updated_at
+        url:
+          column:
+            name: url
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdSyncDocumentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bucket
+          - claimCaseId
+          - createdAt
+          - deletedAt
+          - fileId
+          - id
+          - key
+          - mimeType
+          - syncTimes
+          - syncedAt
+          - updatedAt
+          - url
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdSyncDocumentsResponse
+  description: Responses from the 'insert_fwd_sync_documents' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdSyncDocuments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdSyncDocumentsResponse
+    inputTypeName: InsertFwdSyncDocumentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_sync_documents_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdSyncDocumentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdSyncDocuments
+  outputType: InsertFwdSyncDocumentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdSyncDocumentsObject!]!"
+    - name: postCheck
+      type: FwdSyncDocumentsBoolExp
+      description: Insert permission predicate over the 'fwd_sync_documents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_sync_documents
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdSyncDocuments
+    rootFieldKind: Mutation
+  description: Insert into the fwd_sync_documents table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdSyncDocuments
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHazelnutInsurancePackagesByValueResponse
+  description: Responses from the 'delete_hazelnut_insurance_packages_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutInsurancePackages!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHazelnutInsurancePackagesByValueResponse
+    inputTypeName: DeleteHazelnutInsurancePackagesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hazelnut_insurance_packages_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHazelnutInsurancePackagesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHazelnutInsurancePackagesByValue
+  outputType: DeleteHazelnutInsurancePackagesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: HazelnutInsurancePackagesBoolExp
+      description: Delete permission predicate over the 'hazelnut_insurance_packages'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hazelnut_insurance_packages_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHazelnutInsurancePackagesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hazelnut_insurance_packages' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHazelnutInsurancePackagesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

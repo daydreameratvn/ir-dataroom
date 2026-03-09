@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHawthornBloodTypesByValueResponse
+  description: Responses from the 'delete_hawthorn_blood_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornBloodTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHawthornBloodTypesByValueResponse
+    inputTypeName: DeleteHawthornBloodTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hawthorn_blood_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHawthornBloodTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHawthornBloodTypesByValue
+  outputType: DeleteHawthornBloodTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: HawthornBloodTypesBoolExp
+      description: Delete permission predicate over the 'hawthorn_blood_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hawthorn_blood_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHawthornBloodTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hawthorn_blood_types' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHawthornBloodTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

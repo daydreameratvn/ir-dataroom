@@ -1,0 +1,145 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornHealthcareAppointmentsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: endedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: medicalProviderId
+      type: Uuid
+    - name: patientId
+      type: Uuid!
+    - name: startedAt
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertHawthornHealthcareAppointmentsObject
+    inputTypeName: InsertHawthornHealthcareAppointmentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_healthcare_appointments_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        endedAt:
+          column:
+            name: ended_at
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        patientId:
+          column:
+            name: patient_id
+        startedAt:
+          column:
+            name: started_at
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornHealthcareAppointmentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - endedAt
+          - id
+          - medicalProviderId
+          - patientId
+          - startedAt
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornHealthcareAppointmentsResponse
+  description: Responses from the 'insert_hawthorn_healthcare_appointments' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornHealthcareAppointments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornHealthcareAppointmentsResponse
+    inputTypeName: InsertHawthornHealthcareAppointmentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_healthcare_appointments_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornHealthcareAppointmentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornHealthcareAppointments
+  outputType: InsertHawthornHealthcareAppointmentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornHealthcareAppointmentsObject!]!"
+    - name: postCheck
+      type: HawthornHealthcareAppointmentsBoolExp
+      description: Insert permission predicate over the
+        'hawthorn_healthcare_appointments' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_healthcare_appointments
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornHealthcareAppointments
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_healthcare_appointments table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornHealthcareAppointments
+  permissions:
+    - role: admin
+      allowExecution: true
+

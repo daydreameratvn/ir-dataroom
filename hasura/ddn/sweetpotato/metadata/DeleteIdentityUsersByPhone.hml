@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteIdentityUsersByPhoneResponse
+  description: Responses from the 'delete_identity_users_by_phone' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityUsers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteIdentityUsersByPhoneResponse
+    inputTypeName: DeleteIdentityUsersByPhoneResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_identity_users_by_phone_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteIdentityUsersByPhoneResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteIdentityUsersByPhone
+  outputType: DeleteIdentityUsersByPhoneResponse!
+  arguments:
+    - name: keyPhone
+      type: String_1
+    - name: preCheck
+      type: IdentityUsersBoolExp
+      description: Delete permission predicate over the 'identity_users' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_identity_users_by_phone
+    argumentMapping:
+      keyPhone: key_phone
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteIdentityUsersByPhone
+    rootFieldKind: Mutation
+  description: Delete any row on the 'identity_users' collection using the 'phone' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteIdentityUsersByPhone
+  permissions:
+    - role: admin
+      allowExecution: true
+

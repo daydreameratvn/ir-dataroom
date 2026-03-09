@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPayoutPayoutTypesComment
+  description: Update the 'comment' column in the 'payout_payout_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPayoutPayoutTypesComment
+    inputTypeName: UpdateColumnPayoutPayoutTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_payout_payout_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPayoutPayoutTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPayoutPayoutTypesValue
+  description: Update the 'value' column in the 'payout_payout_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPayoutPayoutTypesValue
+    inputTypeName: UpdateColumnPayoutPayoutTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_payout_payout_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPayoutPayoutTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutPayoutTypesByValueUpdateColumns
+  description: Update the columns of the 'payout_payout_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnPayoutPayoutTypesComment
+      description: Update the 'comment' column in the 'payout_payout_types' collection.
+    - name: value
+      type: UpdateColumnPayoutPayoutTypesValue
+      description: Update the 'value' column in the 'payout_payout_types' collection.
+  graphql:
+    typeName: UpdatePayoutPayoutTypesByValueUpdateColumns
+    inputTypeName: UpdatePayoutPayoutTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_payout_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutPayoutTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutPayoutTypesByValueResponse
+  description: Responses from the 'update_payout_payout_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPayoutTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePayoutPayoutTypesByValueResponse
+    inputTypeName: UpdatePayoutPayoutTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_payout_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutPayoutTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePayoutPayoutTypesByValue
+  outputType: UpdatePayoutPayoutTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: PayoutPayoutTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'payout_payout_types' collection
+    - name: preCheck
+      type: PayoutPayoutTypesBoolExp
+      description: Update permission pre-condition predicate over the
+        'payout_payout_types' collection
+    - name: updateColumns
+      type: UpdatePayoutPayoutTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_payout_payout_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePayoutPayoutTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'payout_payout_types' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePayoutPayoutTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

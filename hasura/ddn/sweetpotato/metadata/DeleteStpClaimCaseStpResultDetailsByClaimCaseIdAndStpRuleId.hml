@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteStpClaimCaseStpResultDetailsByClaimCaseIdAndStpRuleIdResponse
+  description: Responses from the
+    'delete_stp_claim_case_stp_result_details_by_claim_case_id_and_stp_rule_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpClaimCaseStpResultDetails!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteStpClaimCaseStpResultDetailsByClaimCaseIdAndStpRuleIdResponse
+    inputTypeName: DeleteStpClaimCaseStpResultDetailsByClaimCaseIdAndStpRuleIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_stp_claim_case_stp_result_details_by_claim_case_id_and_stp_rule_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteStpClaimCaseStpResultDetailsByClaimCaseIdAndStpRuleIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteStpClaimCaseStpResultDetailsByClaimCaseIdAndStpRuleId
+  outputType: DeleteStpClaimCaseStpResultDetailsByClaimCaseIdAndStpRuleIdResponse!
+  arguments:
+    - name: keyClaimCaseId
+      type: Uuid!
+    - name: keyStpRuleId
+      type: Uuid!
+    - name: preCheck
+      type: StpClaimCaseStpResultDetailsBoolExp
+      description: Delete permission predicate over the
+        'stp_claim_case_stp_result_details' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_stp_claim_case_stp_result_details_by_claim_case_id_and_stp_rule_id
+    argumentMapping:
+      keyClaimCaseId: key_claim_case_id
+      keyStpRuleId: key_stp_rule_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteStpClaimCaseStpResultDetailsByClaimCaseIdAndStpRuleId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'stp_claim_case_stp_result_details'
+    collection using the 'claim_case_id' and 'stp_rule_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteStpClaimCaseStpResultDetailsByClaimCaseIdAndStpRuleId
+  permissions:
+    - role: admin
+      allowExecution: true
+

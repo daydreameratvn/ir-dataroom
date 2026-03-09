@@ -1,0 +1,153 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateReportsPoliciesByPolicyIdAndReportIdUpdateColumns
+  description: Update the columns of the 'reports_policies' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnReportsPoliciesCreatedAt
+      description: Update the 'created_at' column in the 'reports_policies' collection.
+    - name: deletedAt
+      type: UpdateColumnReportsPoliciesDeletedAt
+      description: Update the 'deleted_at' column in the 'reports_policies' collection.
+    - name: id
+      type: UpdateColumnReportsPoliciesId
+      description: Update the 'id' column in the 'reports_policies' collection.
+    - name: policyId
+      type: UpdateColumnReportsPoliciesPolicyId
+      description: Update the 'policy_id' column in the 'reports_policies' collection.
+    - name: reportId
+      type: UpdateColumnReportsPoliciesReportId
+      description: Update the 'report_id' column in the 'reports_policies' collection.
+    - name: updatedAt
+      type: UpdateColumnReportsPoliciesUpdatedAt
+      description: Update the 'updated_at' column in the 'reports_policies' collection.
+  graphql:
+    typeName: UpdateReportsPoliciesByPolicyIdAndReportIdUpdateColumns
+    inputTypeName: UpdateReportsPoliciesByPolicyIdAndReportIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_reports_policies_by_policy_id_and_report_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        reportId:
+          column:
+            name: report_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateReportsPoliciesByPolicyIdAndReportIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - policyId
+          - reportId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateReportsPoliciesByPolicyIdAndReportIdResponse
+  description: Responses from the
+    'update_reports_policies_by_policy_id_and_report_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ReportsPolicies!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateReportsPoliciesByPolicyIdAndReportIdResponse
+    inputTypeName: UpdateReportsPoliciesByPolicyIdAndReportIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_reports_policies_by_policy_id_and_report_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateReportsPoliciesByPolicyIdAndReportIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateReportsPoliciesByPolicyIdAndReportId
+  outputType: UpdateReportsPoliciesByPolicyIdAndReportIdResponse!
+  arguments:
+    - name: keyPolicyId
+      type: Uuid!
+    - name: keyReportId
+      type: Uuid!
+    - name: postCheck
+      type: ReportsPoliciesBoolExp
+      description: Update permission post-condition predicate over the
+        'reports_policies' collection
+    - name: preCheck
+      type: ReportsPoliciesBoolExp
+      description: Update permission pre-condition predicate over the
+        'reports_policies' collection
+    - name: updateColumns
+      type: UpdateReportsPoliciesByPolicyIdAndReportIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_reports_policies_by_policy_id_and_report_id
+    argumentMapping:
+      keyPolicyId: key_policy_id
+      keyReportId: key_report_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateReportsPoliciesByPolicyIdAndReportId
+    rootFieldKind: Mutation
+  description: Update any row on the 'reports_policies' collection using the
+    'policy_id' and 'report_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateReportsPoliciesByPolicyIdAndReportId
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,253 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MetricPlaygroundNpsScores
+  fields:
+    - name: comment
+      type: String_1
+    - name: companyName
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deviceId
+      type: Uuid!
+    - name: id
+      type: Uuid!
+    - name: presetId
+      type: Uuid
+    - name: score
+      type: Int32!
+    - name: title
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: MetricPlaygroundNpsScores
+    inputTypeName: MetricPlaygroundNpsScoresInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: metric_playground_nps_scores
+      fieldMapping:
+        comment:
+          column:
+            name: comment
+        companyName:
+          column:
+            name: company_name
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deviceId:
+          column:
+            name: device_id
+        id:
+          column:
+            name: id
+        presetId:
+          column:
+            name: preset_id
+        score:
+          column:
+            name: score
+        title:
+          column:
+            name: title
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MetricPlaygroundNpsScores
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - companyName
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deviceId
+          - id
+          - presetId
+          - score
+          - title
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MetricPlaygroundNpsScoresBoolExp
+  operand:
+    object:
+      type: MetricPlaygroundNpsScores
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: companyName
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deviceId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: presetId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: score
+          booleanExpressionType: Int4BoolExp
+        - fieldName: title
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MetricPlaygroundNpsScoresBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MetricPlaygroundNpsScoresAggExp
+  operand:
+    object:
+      aggregatedType: MetricPlaygroundNpsScores
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: companyName
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deviceId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: presetId
+          aggregateExpression: UuidAggExp
+        - fieldName: score
+          aggregateExpression: Int4AggExp
+        - fieldName: title
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MetricPlaygroundNpsScoresAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MetricPlaygroundNpsScoresOrderByExp
+  operand:
+    object:
+      orderedType: MetricPlaygroundNpsScores
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: companyName
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deviceId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: presetId
+          orderByExpression: UuidOrderByExp
+        - fieldName: score
+          orderByExpression: Int32OrderByExp
+        - fieldName: title
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MetricPlaygroundNpsScoresOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MetricPlaygroundNpsScores
+  objectType: MetricPlaygroundNpsScores
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: metric_playground_nps_scores
+  filterExpressionType: MetricPlaygroundNpsScoresBoolExp
+  aggregateExpression: MetricPlaygroundNpsScoresAggExp
+  orderByExpression: MetricPlaygroundNpsScoresOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: metricPlaygroundNpsScores
+      subscription:
+        rootField: metricPlaygroundNpsScores
+    selectUniques:
+      - queryRootField: metricPlaygroundNpsScoresById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: metricPlaygroundNpsScoresById
+    filterInputTypeName: MetricPlaygroundNpsScoresFilterInput
+    aggregate:
+      queryRootField: metricPlaygroundNpsScoresAggregate
+      subscription:
+        rootField: metricPlaygroundNpsScoresAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MetricPlaygroundNpsScores
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceTemplateReceivers
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CorrespondenceTemplateReceivers
+    inputTypeName: CorrespondenceTemplateReceiversInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_template_receivers
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceTemplateReceivers
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceTemplateReceiversBoolExp
+  operand:
+    object:
+      type: CorrespondenceTemplateReceivers
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: metaReferences
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceTemplateReceiversBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceTemplateReceiversAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceTemplateReceivers
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceTemplateReceiversAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceTemplateReceiversOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceTemplateReceivers
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CorrespondenceTemplateReceiversOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceTemplateReceivers
+  objectType: CorrespondenceTemplateReceivers
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_template_receivers
+  filterExpressionType: CorrespondenceTemplateReceiversBoolExp
+  aggregateExpression: CorrespondenceTemplateReceiversAggExp
+  orderByExpression: CorrespondenceTemplateReceiversOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceTemplateReceivers
+      subscription:
+        rootField: correspondenceTemplateReceivers
+    selectUniques:
+      - queryRootField: correspondenceTemplateReceiversByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: correspondenceTemplateReceiversByValue
+    filterInputTypeName: CorrespondenceTemplateReceiversFilterInput
+    aggregate:
+      queryRootField: correspondenceTemplateReceiversAggregate
+      subscription:
+        rootField: correspondenceTemplateReceiversAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceTemplateReceivers
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: metaReferences
+  sourceType: CorrespondenceTemplateReceivers
+  target:
+    model:
+      name: MetaReferences
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MetaReferencesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: correspondenceTemplateReceiverValue
+  graphql:
+    aggregateFieldName: metaReferencesAggregate
+

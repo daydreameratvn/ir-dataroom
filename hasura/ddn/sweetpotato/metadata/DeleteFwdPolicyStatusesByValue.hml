@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdPolicyStatusesByValueResponse
+  description: Responses from the 'delete_fwd_policy_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdPolicyStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdPolicyStatusesByValueResponse
+    inputTypeName: DeleteFwdPolicyStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_policy_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdPolicyStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdPolicyStatusesByValue
+  outputType: DeleteFwdPolicyStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: FwdPolicyStatusesBoolExp
+      description: Delete permission predicate over the 'fwd_policy_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_policy_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdPolicyStatusesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_policy_statuses' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdPolicyStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

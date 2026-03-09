@@ -1,0 +1,162 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityRolePermissionsByIdUpdateColumns
+  description: Update the columns of the 'identity_role_permissions' collection
+  fields:
+    - name: accessPermissionId
+      type: UpdateColumnIdentityRolePermissionsAccessPermissionId
+      description: Update the 'access_permission_id' column in the
+        'identity_role_permissions' collection.
+    - name: createdAt
+      type: UpdateColumnIdentityRolePermissionsCreatedAt
+      description: Update the 'created_at' column in the 'identity_role_permissions'
+        collection.
+    - name: deletedAt
+      type: UpdateColumnIdentityRolePermissionsDeletedAt
+      description: Update the 'deleted_at' column in the 'identity_role_permissions'
+        collection.
+    - name: id
+      type: UpdateColumnIdentityRolePermissionsId
+      description: Update the 'id' column in the 'identity_role_permissions' collection.
+    - name: roleName
+      type: UpdateColumnIdentityRolePermissionsRoleName
+      description: Update the 'role_name' column in the 'identity_role_permissions'
+        collection.
+    - name: tenantId
+      type: UpdateColumnIdentityRolePermissionsTenantId
+      description: Update the 'tenant_id' column in the 'identity_role_permissions'
+        collection.
+    - name: updatedAt
+      type: UpdateColumnIdentityRolePermissionsUpdatedAt
+      description: Update the 'updated_at' column in the 'identity_role_permissions'
+        collection.
+  graphql:
+    typeName: UpdateIdentityRolePermissionsByIdUpdateColumns
+    inputTypeName: UpdateIdentityRolePermissionsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_role_permissions_by_id_update_columns
+      fieldMapping:
+        accessPermissionId:
+          column:
+            name: access_permission_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        roleName:
+          column:
+            name: role_name
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityRolePermissionsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - accessPermissionId
+          - createdAt
+          - deletedAt
+          - id
+          - roleName
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityRolePermissionsByIdResponse
+  description: Responses from the 'update_identity_role_permissions_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityRolePermissions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateIdentityRolePermissionsByIdResponse
+    inputTypeName: UpdateIdentityRolePermissionsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_role_permissions_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityRolePermissionsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateIdentityRolePermissionsById
+  outputType: UpdateIdentityRolePermissionsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: IdentityRolePermissionsBoolExp
+      description: Update permission post-condition predicate over the
+        'identity_role_permissions' collection
+    - name: preCheck
+      type: IdentityRolePermissionsBoolExp
+      description: Update permission pre-condition predicate over the
+        'identity_role_permissions' collection
+    - name: updateColumns
+      type: UpdateIdentityRolePermissionsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_identity_role_permissions_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateIdentityRolePermissionsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'identity_role_permissions' collection using
+    the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateIdentityRolePermissionsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHazelnutInsuranceRequestsInsuredPersonsByInsuranceRequestIdAndInsuredPersonIdResponse
+  description: Responses from the
+    'delete_hazelnut_insurance_requests_insured_persons_by_insurance_request_id_and_insured_person_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutInsuranceRequestsInsuredPersons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHazelnutInsuranceRequestsInsuredPersonsByInsuranceRequestIdAndInsuredPersonIdResponse
+    inputTypeName: DeleteHazelnutInsuranceRequestsInsuredPersonsByInsuranceRequestIdAndInsuredPersonIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hazelnut_insurance_requests_insured_persons_by_insurance_request_id_and_insured_person_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHazelnutInsuranceRequestsInsuredPersonsByInsuranceRequestIdAndInsuredPersonIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHazelnutInsuranceRequestsInsuredPersonsByInsuranceRequestIdAndInsuredPersonId
+  outputType: DeleteHazelnutInsuranceRequestsInsuredPersonsByInsuranceRequestIdAndInsuredPersonIdResponse!
+  arguments:
+    - name: keyInsuranceRequestId
+      type: Uuid!
+    - name: keyInsuredPersonId
+      type: Uuid!
+    - name: preCheck
+      type: HazelnutInsuranceRequestsInsuredPersonsBoolExp
+      description: Delete permission predicate over the
+        'hazelnut_insurance_requests_insured_persons' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hazelnut_insurance_requests_insured_persons_by_insurance_request_id_and_insured_person_id
+    argumentMapping:
+      keyInsuranceRequestId: key_insurance_request_id
+      keyInsuredPersonId: key_insured_person_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHazelnutInsuranceRequestsInsuredPersonsByInsuranceRequestIdAndInsuredPersonId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hazelnut_insurance_requests_insured_persons'
+    collection using the 'insurance_request_id' and 'insured_person_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHazelnutInsuranceRequestsInsuredPersonsByInsuranceRequestIdAndInsuredPersonId
+  permissions:
+    - role: admin
+      allowExecution: true
+

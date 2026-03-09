@@ -1,0 +1,227 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredCertificateUnderwritingNotes
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: note
+      type: String_1!
+    - name: noteHash
+      type: String_1!
+    - name: type
+      type: String_1
+  graphql:
+    typeName: InsuredCertificateUnderwritingNotes
+    inputTypeName: InsuredCertificateUnderwritingNotesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_certificate_underwriting_notes
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        note:
+          column:
+            name: note
+        noteHash:
+          column:
+            name: note_hash
+        type:
+          column:
+            name: type
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredCertificateUnderwritingNotes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - insuredCertificateId
+          - note
+          - noteHash
+          - type
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredCertificateUnderwritingNotesBoolExp
+  operand:
+    object:
+      type: InsuredCertificateUnderwritingNotes
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: note
+          booleanExpressionType: TextBoolExp
+        - fieldName: noteHash
+          booleanExpressionType: TextBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: insuredCertificate
+        - relationshipName: insuredCertificateUnderwritingNoteType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredCertificateUnderwritingNotesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredCertificateUnderwritingNotesAggExp
+  operand:
+    object:
+      aggregatedType: InsuredCertificateUnderwritingNotes
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: note
+          aggregateExpression: TextAggExp
+        - fieldName: noteHash
+          aggregateExpression: TextAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredCertificateUnderwritingNotesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredCertificateUnderwritingNotesOrderByExp
+  operand:
+    object:
+      orderedType: InsuredCertificateUnderwritingNotes
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: note
+          orderByExpression: String1OrderByExp
+        - fieldName: noteHash
+          orderByExpression: String1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: insuredCertificate
+        - relationshipName: insuredCertificateUnderwritingNoteType
+  graphql:
+    expressionTypeName: InsuredCertificateUnderwritingNotesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredCertificateUnderwritingNotes
+  objectType: InsuredCertificateUnderwritingNotes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_certificate_underwriting_notes
+  filterExpressionType: InsuredCertificateUnderwritingNotesBoolExp
+  aggregateExpression: InsuredCertificateUnderwritingNotesAggExp
+  orderByExpression: InsuredCertificateUnderwritingNotesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredCertificateUnderwritingNotes
+      subscription:
+        rootField: insuredCertificateUnderwritingNotes
+    selectUniques:
+      - queryRootField: insuredCertificateUnderwritingNotesByInsuredCertificateUnderwritNoteHashInsuredCertificateKey
+        uniqueIdentifier:
+          - insuredCertificateId
+          - noteHash
+        subscription:
+          rootField: insuredCertificateUnderwritingNotesByInsuredCertificateUnderwritNoteHashInsuredCertificateKey
+      - queryRootField: insuredCertificateUnderwritingNotesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: insuredCertificateUnderwritingNotesById
+    filterInputTypeName: InsuredCertificateUnderwritingNotesFilterInput
+    aggregate:
+      queryRootField: insuredCertificateUnderwritingNotesAggregate
+      subscription:
+        rootField: insuredCertificateUnderwritingNotesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredCertificateUnderwritingNotes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: InsuredCertificateUnderwritingNotes
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateUnderwritingNoteType
+  sourceType: InsuredCertificateUnderwritingNotes
+  target:
+    model:
+      name: InsuredCertificateUnderwritingNoteTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

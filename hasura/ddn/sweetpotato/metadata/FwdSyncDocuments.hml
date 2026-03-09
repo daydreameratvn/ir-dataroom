@@ -1,0 +1,316 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdSyncDocuments
+  fields:
+    - name: bucket
+      type: String_1!
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: fileId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: key
+      type: String_1!
+    - name: mimeType
+      type: String_1!
+    - name: syncTimes
+      type: Int32!
+    - name: syncedAt
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz!
+    - name: url
+      type: String_1
+  graphql:
+    typeName: FwdSyncDocuments
+    inputTypeName: FwdSyncDocumentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_sync_documents
+      fieldMapping:
+        bucket:
+          column:
+            name: bucket
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        key:
+          column:
+            name: key
+        mimeType:
+          column:
+            name: mime_type
+        syncTimes:
+          column:
+            name: sync_times
+        syncedAt:
+          column:
+            name: synced_at
+        updatedAt:
+          column:
+            name: updated_at
+        url:
+          column:
+            name: url
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdSyncDocuments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bucket
+          - claimCaseId
+          - createdAt
+          - deletedAt
+          - fileId
+          - id
+          - key
+          - mimeType
+          - syncTimes
+          - syncedAt
+          - updatedAt
+          - url
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdSyncDocumentsBoolExp
+  operand:
+    object:
+      type: FwdSyncDocuments
+      comparableFields:
+        - fieldName: bucket
+          booleanExpressionType: TextBoolExp
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: key
+          booleanExpressionType: TextBoolExp
+        - fieldName: mimeType
+          booleanExpressionType: TextBoolExp
+        - fieldName: syncTimes
+          booleanExpressionType: Int4BoolExp
+        - fieldName: syncedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: url
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: fwdSyncDocumentPages
+        - relationshipName: fwdClaimCase
+        - relationshipName: file
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdSyncDocumentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdSyncDocumentsAggExp
+  operand:
+    object:
+      aggregatedType: FwdSyncDocuments
+      aggregatableFields:
+        - fieldName: bucket
+          aggregateExpression: TextAggExp
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fileId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: key
+          aggregateExpression: TextAggExp
+        - fieldName: mimeType
+          aggregateExpression: TextAggExp
+        - fieldName: syncTimes
+          aggregateExpression: Int4AggExp
+        - fieldName: syncedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: url
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdSyncDocumentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdSyncDocumentsOrderByExp
+  operand:
+    object:
+      orderedType: FwdSyncDocuments
+      orderableFields:
+        - fieldName: bucket
+          orderByExpression: String1OrderByExp
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: key
+          orderByExpression: String1OrderByExp
+        - fieldName: mimeType
+          orderByExpression: String1OrderByExp
+        - fieldName: syncTimes
+          orderByExpression: Int32OrderByExp
+        - fieldName: syncedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: url
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: fwdClaimCase
+        - relationshipName: file
+  graphql:
+    expressionTypeName: FwdSyncDocumentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdSyncDocuments
+  objectType: FwdSyncDocuments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_sync_documents
+  filterExpressionType: FwdSyncDocumentsBoolExp
+  aggregateExpression: FwdSyncDocumentsAggExp
+  orderByExpression: FwdSyncDocumentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdSyncDocuments
+      subscription:
+        rootField: fwdSyncDocuments
+    selectUniques:
+      - queryRootField: fwdSyncDocumentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: fwdSyncDocumentsById
+    filterInputTypeName: FwdSyncDocumentsFilterInput
+    aggregate:
+      queryRootField: fwdSyncDocumentsAggregate
+      subscription:
+        rootField: fwdSyncDocumentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdSyncDocuments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdSyncDocumentPages
+  sourceType: FwdSyncDocuments
+  target:
+    model:
+      name: FwdSyncDocumentPages
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdSyncDocumentPagesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: syncDocumentId
+  graphql:
+    aggregateFieldName: fwdSyncDocumentPagesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdClaimCase
+  sourceType: FwdSyncDocuments
+  target:
+    model:
+      name: FwdClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: file
+  sourceType: FwdSyncDocuments
+  target:
+    model:
+      name: Files
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+

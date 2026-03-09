@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteIdentityPresencesByUserIdResponse
+  description: Responses from the 'delete_identity_presences_by_user_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityPresences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteIdentityPresencesByUserIdResponse
+    inputTypeName: DeleteIdentityPresencesByUserIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_identity_presences_by_user_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteIdentityPresencesByUserIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteIdentityPresencesByUserId
+  outputType: DeleteIdentityPresencesByUserIdResponse!
+  arguments:
+    - name: keyUserId
+      type: Uuid!
+    - name: preCheck
+      type: IdentityPresencesBoolExp
+      description: Delete permission predicate over the 'identity_presences' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_identity_presences_by_user_id
+    argumentMapping:
+      keyUserId: key_user_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteIdentityPresencesByUserId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'identity_presences' collection using the 'user_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteIdentityPresencesByUserId
+  permissions:
+    - role: admin
+      allowExecution: true
+

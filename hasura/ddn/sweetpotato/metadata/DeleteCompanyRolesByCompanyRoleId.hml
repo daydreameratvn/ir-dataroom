@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCompanyRolesByCompanyRoleIdResponse
+  description: Responses from the 'delete_company_roles_by_company_role_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanyRoles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCompanyRolesByCompanyRoleIdResponse
+    inputTypeName: DeleteCompanyRolesByCompanyRoleIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_company_roles_by_company_role_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCompanyRolesByCompanyRoleIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCompanyRolesByCompanyRoleId
+  outputType: DeleteCompanyRolesByCompanyRoleIdResponse!
+  arguments:
+    - name: keyCompanyRoleId
+      type: Uuid!
+    - name: preCheck
+      type: CompanyRolesBoolExp
+      description: Delete permission predicate over the 'company_roles' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_company_roles_by_company_role_id
+    argumentMapping:
+      keyCompanyRoleId: key_company_role_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCompanyRolesByCompanyRoleId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'company_roles' collection using the
+    'company_role_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCompanyRolesByCompanyRoleId
+  permissions:
+    - role: admin
+      allowExecution: true
+

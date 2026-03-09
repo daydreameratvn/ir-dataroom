@@ -1,0 +1,263 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseFeedbacks
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: comment
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: rating
+      type: Bigdecimal!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: ClaimCaseFeedbacks
+    inputTypeName: ClaimCaseFeedbacksInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_feedbacks
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        comment:
+          column:
+            name: comment
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        rating:
+          column:
+            name: rating
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseFeedbacks
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - comment
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - rating
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseFeedbacksBoolExp
+  operand:
+    object:
+      type: ClaimCaseFeedbacks
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: rating
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseFeedbacksBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseFeedbacksAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseFeedbacks
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: rating
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseFeedbacksAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseFeedbacksOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseFeedbacks
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: rating
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: ClaimCaseFeedbacksOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseFeedbacks
+  objectType: ClaimCaseFeedbacks
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_feedbacks
+  filterExpressionType: ClaimCaseFeedbacksBoolExp
+  aggregateExpression: ClaimCaseFeedbacksAggExp
+  orderByExpression: ClaimCaseFeedbacksOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseFeedbacks
+      subscription:
+        rootField: claimCaseFeedbacks
+    selectUniques:
+      - queryRootField: claimCaseFeedbacksByClaimCaseFeedbacksClaimCaseIdDeletedAtKey
+        uniqueIdentifier:
+          - claimCaseId
+          - deletedAt
+        subscription:
+          rootField: claimCaseFeedbacksByClaimCaseFeedbacksClaimCaseIdDeletedAtKey
+      - queryRootField: claimCaseFeedbacksById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimCaseFeedbacksById
+    filterInputTypeName: ClaimCaseFeedbacksFilterInput
+    aggregate:
+      queryRootField: claimCaseFeedbacksAggregate
+      subscription:
+        rootField: claimCaseFeedbacksAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseFeedbacks
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: ClaimCaseFeedbacks
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: ClaimCaseFeedbacks
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+

@@ -1,0 +1,139 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanBalanceClaimCaseDetailsObject
+  fields:
+    - name: claimCaseDetailId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: planBalanceClaimCaseDetailId
+      type: Uuid
+    - name: planBalanceId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPlanBalanceClaimCaseDetailsObject
+    inputTypeName: InsertPlanBalanceClaimCaseDetailsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_balance_claim_case_details_object
+      fieldMapping:
+        claimCaseDetailId:
+          column:
+            name: claim_case_detail_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        planBalanceClaimCaseDetailId:
+          column:
+            name: plan_balance_claim_case_detail_id
+        planBalanceId:
+          column:
+            name: plan_balance_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanBalanceClaimCaseDetailsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseDetailId
+          - createdAt
+          - deletedAt
+          - planBalanceClaimCaseDetailId
+          - planBalanceId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanBalanceClaimCaseDetailsResponse
+  description: Responses from the 'insert_plan_balance_claim_case_details' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanBalanceClaimCaseDetails!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPlanBalanceClaimCaseDetailsResponse
+    inputTypeName: InsertPlanBalanceClaimCaseDetailsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_balance_claim_case_details_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanBalanceClaimCaseDetailsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPlanBalanceClaimCaseDetails
+  outputType: InsertPlanBalanceClaimCaseDetailsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPlanBalanceClaimCaseDetailsObject!]!"
+    - name: postCheck
+      type: PlanBalanceClaimCaseDetailsBoolExp
+      description: Insert permission predicate over the
+        'plan_balance_claim_case_details' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_plan_balance_claim_case_details
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPlanBalanceClaimCaseDetails
+    rootFieldKind: Mutation
+  description: Insert into the plan_balance_claim_case_details table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPlanBalanceClaimCaseDetails
+  permissions:
+    - role: admin
+      allowExecution: true
+

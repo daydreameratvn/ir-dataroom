@@ -1,0 +1,145 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuditLogsRecordStatusChangesObject
+  fields:
+    - name: actorId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: newValue
+      type: String_1
+    - name: oldValue
+      type: String_1
+    - name: recordId
+      type: Uuid!
+    - name: tableName
+      type: String_1!
+    - name: tenantId
+      type: Uuid
+  graphql:
+    typeName: InsertAuditLogsRecordStatusChangesObject
+    inputTypeName: InsertAuditLogsRecordStatusChangesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_audit_logs_record_status_changes_object
+      fieldMapping:
+        actorId:
+          column:
+            name: actor_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        newValue:
+          column:
+            name: new_value
+        oldValue:
+          column:
+            name: old_value
+        recordId:
+          column:
+            name: record_id
+        tableName:
+          column:
+            name: table_name
+        tenantId:
+          column:
+            name: tenant_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuditLogsRecordStatusChangesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actorId
+          - createdAt
+          - id
+          - newValue
+          - oldValue
+          - recordId
+          - tableName
+          - tenantId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuditLogsRecordStatusChangesResponse
+  description: Responses from the 'insert_audit_logs_record_status_changes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuditLogsRecordStatusChanges!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertAuditLogsRecordStatusChangesResponse
+    inputTypeName: InsertAuditLogsRecordStatusChangesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_audit_logs_record_status_changes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuditLogsRecordStatusChangesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertAuditLogsRecordStatusChanges
+  outputType: InsertAuditLogsRecordStatusChangesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertAuditLogsRecordStatusChangesObject!]!"
+    - name: postCheck
+      type: AuditLogsRecordStatusChangesBoolExp
+      description: Insert permission predicate over the
+        'audit_logs_record_status_changes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_audit_logs_record_status_changes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertAuditLogsRecordStatusChanges
+    rootFieldKind: Mutation
+  description: Insert into the audit_logs_record_status_changes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertAuditLogsRecordStatusChanges
+  permissions:
+    - role: admin
+      allowExecution: true
+

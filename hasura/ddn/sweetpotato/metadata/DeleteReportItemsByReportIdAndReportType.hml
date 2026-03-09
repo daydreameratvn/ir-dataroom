@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteReportItemsByReportIdAndReportTypeResponse
+  description: Responses from the
+    'delete_report_items_by_report_id_and_report_type' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ReportItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteReportItemsByReportIdAndReportTypeResponse
+    inputTypeName: DeleteReportItemsByReportIdAndReportTypeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_report_items_by_report_id_and_report_type_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteReportItemsByReportIdAndReportTypeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteReportItemsByReportIdAndReportType
+  outputType: DeleteReportItemsByReportIdAndReportTypeResponse!
+  arguments:
+    - name: keyReportId
+      type: Uuid!
+    - name: keyReportType
+      type: String_1!
+    - name: preCheck
+      type: ReportItemsBoolExp
+      description: Delete permission predicate over the 'report_items' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_report_items_by_report_id_and_report_type
+    argumentMapping:
+      keyReportId: key_report_id
+      keyReportType: key_report_type
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteReportItemsByReportIdAndReportType
+    rootFieldKind: Mutation
+  description: Delete any row on the 'report_items' collection using the
+    'report_id' and 'report_type' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteReportItemsByReportIdAndReportType
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,226 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornBodyParts
+  description: Bộ phận cơ thể
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: hierarchyLevel
+      type: Int32!
+    - name: name
+      type: String_1!
+    - name: parentCode
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: HawthornBodyParts
+    inputTypeName: HawthornBodyPartsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_body_parts
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        hierarchyLevel:
+          column:
+            name: hierarchy_level
+        name:
+          column:
+            name: name
+        parentCode:
+          column:
+            name: parent_code
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornBodyParts
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - hierarchyLevel
+          - name
+          - parentCode
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornBodyPartsBoolExp
+  operand:
+    object:
+      type: HawthornBodyParts
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: hierarchyLevel
+          booleanExpressionType: Int4BoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: parentCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornBodyPart
+        - relationshipName: hawthornBodyParts
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornBodyPartsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornBodyPartsAggExp
+  operand:
+    object:
+      aggregatedType: HawthornBodyParts
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: hierarchyLevel
+          aggregateExpression: Int4AggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: parentCode
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornBodyPartsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornBodyPartsOrderByExp
+  operand:
+    object:
+      orderedType: HawthornBodyParts
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: hierarchyLevel
+          orderByExpression: Int32OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: parentCode
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: hawthornBodyPart
+  graphql:
+    expressionTypeName: HawthornBodyPartsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornBodyParts
+  objectType: HawthornBodyParts
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_body_parts
+  filterExpressionType: HawthornBodyPartsBoolExp
+  aggregateExpression: HawthornBodyPartsAggExp
+  orderByExpression: HawthornBodyPartsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornBodyParts
+      subscription:
+        rootField: hawthornBodyParts
+    selectUniques:
+      - queryRootField: hawthornBodyPartsByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: hawthornBodyPartsByCode
+    filterInputTypeName: HawthornBodyPartsFilterInput
+    aggregate:
+      queryRootField: hawthornBodyPartsAggregate
+      subscription:
+        rootField: hawthornBodyPartsAggregate
+  description: Bộ phận cơ thể
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornBodyParts
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornBodyPart
+  sourceType: HawthornBodyParts
+  target:
+    model:
+      name: HawthornBodyParts
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: parentCode
+      target:
+        modelField:
+          - fieldName: code
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornBodyParts
+  sourceType: HawthornBodyParts
+  target:
+    model:
+      name: HawthornBodyParts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornBodyPartsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: code
+      target:
+        modelField:
+          - fieldName: parentCode
+  graphql:
+    aggregateFieldName: hawthornBodyPartsAggregate
+

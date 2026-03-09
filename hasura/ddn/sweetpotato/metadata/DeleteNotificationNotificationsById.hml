@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteNotificationNotificationsByIdResponse
+  description: Responses from the 'delete_notification_notifications_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[NotificationNotifications!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteNotificationNotificationsByIdResponse
+    inputTypeName: DeleteNotificationNotificationsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_notification_notifications_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteNotificationNotificationsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteNotificationNotificationsById
+  outputType: DeleteNotificationNotificationsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: NotificationNotificationsBoolExp
+      description: Delete permission predicate over the 'notification_notifications'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_notification_notifications_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteNotificationNotificationsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'notification_notifications' collection using
+    the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteNotificationNotificationsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

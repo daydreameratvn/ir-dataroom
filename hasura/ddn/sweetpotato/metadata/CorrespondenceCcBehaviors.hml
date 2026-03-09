@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceCcBehaviors
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CorrespondenceCcBehaviors
+    inputTypeName: CorrespondenceCcBehaviorsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_cc_behaviors
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceCcBehaviors
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceCcBehaviorsBoolExp
+  operand:
+    object:
+      type: CorrespondenceCcBehaviors
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policySettings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceCcBehaviorsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceCcBehaviorsAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceCcBehaviors
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceCcBehaviorsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceCcBehaviorsOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceCcBehaviors
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CorrespondenceCcBehaviorsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceCcBehaviors
+  objectType: CorrespondenceCcBehaviors
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_cc_behaviors
+  filterExpressionType: CorrespondenceCcBehaviorsBoolExp
+  aggregateExpression: CorrespondenceCcBehaviorsAggExp
+  orderByExpression: CorrespondenceCcBehaviorsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceCcBehaviors
+      subscription:
+        rootField: correspondenceCcBehaviors
+    selectUniques:
+      - queryRootField: correspondenceCcBehaviorsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: correspondenceCcBehaviorsByValue
+    filterInputTypeName: CorrespondenceCcBehaviorsFilterInput
+    aggregate:
+      queryRootField: correspondenceCcBehaviorsAggregate
+      subscription:
+        rootField: correspondenceCcBehaviorsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceCcBehaviors
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policySettings
+  sourceType: CorrespondenceCcBehaviors
+  target:
+    model:
+      name: PolicySettings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicySettingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: ccBehavior
+  graphql:
+    aggregateFieldName: policySettingsAggregate
+

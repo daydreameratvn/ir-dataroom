@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHazelnutUnderwritingNotesByIdResponse
+  description: Responses from the 'delete_hazelnut_underwriting_notes_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutUnderwritingNotes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHazelnutUnderwritingNotesByIdResponse
+    inputTypeName: DeleteHazelnutUnderwritingNotesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hazelnut_underwriting_notes_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHazelnutUnderwritingNotesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHazelnutUnderwritingNotesById
+  outputType: DeleteHazelnutUnderwritingNotesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: HazelnutUnderwritingNotesBoolExp
+      description: Delete permission predicate over the 'hazelnut_underwriting_notes'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hazelnut_underwriting_notes_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHazelnutUnderwritingNotesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hazelnut_underwriting_notes' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHazelnutUnderwritingNotesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

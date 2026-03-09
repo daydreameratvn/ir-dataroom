@@ -1,0 +1,250 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StpStpRuleSets
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: rules
+      type: Json
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: StpStpRuleSets
+    inputTypeName: StpStpRuleSetsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: stp_stp_rule_sets
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        rules:
+          column:
+            name: rules
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StpStpRuleSets
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - description
+          - id
+          - name
+          - rules
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StpStpRuleSetsBoolExp
+  operand:
+    object:
+      type: StpStpRuleSets
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: rules
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: plans
+        - relationshipName: stpClaimCaseStpResults
+        - relationshipName: stpStpRules
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StpStpRuleSetsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: StpStpRuleSetsAggExp
+  operand:
+    object:
+      aggregatedType: StpStpRuleSets
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: rules
+          aggregateExpression: JsonbAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: StpStpRuleSetsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: StpStpRuleSetsOrderByExp
+  operand:
+    object:
+      orderedType: StpStpRuleSets
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: rules
+          orderByExpression: JsonOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: StpStpRuleSetsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: StpStpRuleSets
+  objectType: StpStpRuleSets
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: stp_stp_rule_sets
+  filterExpressionType: StpStpRuleSetsBoolExp
+  aggregateExpression: StpStpRuleSetsAggExp
+  orderByExpression: StpStpRuleSetsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: stpStpRuleSets
+      subscription:
+        rootField: stpStpRuleSets
+    selectUniques:
+      - queryRootField: stpStpRuleSetsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: stpStpRuleSetsById
+    filterInputTypeName: StpStpRuleSetsFilterInput
+    aggregate:
+      queryRootField: stpStpRuleSetsAggregate
+      subscription:
+        rootField: stpStpRuleSetsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: StpStpRuleSets
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plans
+  sourceType: StpStpRuleSets
+  target:
+    model:
+      name: Plans
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlansAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: stpRuleSetId
+  graphql:
+    aggregateFieldName: plansAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpClaimCaseStpResults
+  sourceType: StpStpRuleSets
+  target:
+    model:
+      name: StpClaimCaseStpResults
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: StpClaimCaseStpResultsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: stpRuleSetId
+  graphql:
+    aggregateFieldName: stpClaimCaseStpResultsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpStpRules
+  sourceType: StpStpRuleSets
+  target:
+    model:
+      name: StpStpRules
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: StpStpRulesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: stpRuleSetId
+  graphql:
+    aggregateFieldName: stpStpRulesAggregate
+

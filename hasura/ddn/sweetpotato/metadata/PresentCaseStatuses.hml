@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PresentCaseStatuses
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PresentCaseStatuses
+    inputTypeName: PresentCaseStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: present_case_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PresentCaseStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PresentCaseStatusesBoolExp
+  operand:
+    object:
+      type: PresentCaseStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: presentCaseStatus
+        - relationshipName: presentCases
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PresentCaseStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PresentCaseStatusesAggExp
+  operand:
+    object:
+      aggregatedType: PresentCaseStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PresentCaseStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PresentCaseStatusesOrderByExp
+  operand:
+    object:
+      orderedType: PresentCaseStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: presentCaseStatus
+  graphql:
+    expressionTypeName: PresentCaseStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PresentCaseStatuses
+  objectType: PresentCaseStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: present_case_statuses
+  filterExpressionType: PresentCaseStatusesBoolExp
+  aggregateExpression: PresentCaseStatusesAggExp
+  orderByExpression: PresentCaseStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: presentCaseStatuses
+      subscription:
+        rootField: presentCaseStatuses
+    selectUniques:
+      - queryRootField: presentCaseStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: presentCaseStatusesByValue
+    filterInputTypeName: PresentCaseStatusesFilterInput
+    aggregate:
+      queryRootField: presentCaseStatusesAggregate
+      subscription:
+        rootField: presentCaseStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PresentCaseStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: presentCaseStatus
+  sourceType: PresentCaseStatuses
+  target:
+    model:
+      name: PresentCaseStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: presentCases
+  sourceType: PresentCaseStatuses
+  target:
+    model:
+      name: PresentCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PresentCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: presentCasesAggregate
+

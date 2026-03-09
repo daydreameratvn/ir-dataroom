@@ -1,0 +1,289 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: WatchList
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insurerId
+      type: Uuid!
+    - name: targetCode
+      type: String_1
+    - name: targetId
+      type: Uuid
+    - name: targetType
+      type: String_1!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: warningLevel
+      type: Int32!
+  graphql:
+    typeName: WatchList
+    inputTypeName: WatchListInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: watch_list
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        targetCode:
+          column:
+            name: target_code
+        targetId:
+          column:
+            name: target_id
+        targetType:
+          column:
+            name: target_type
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        warningLevel:
+          column:
+            name: warning_level
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: WatchList
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - insurerId
+          - targetCode
+          - targetId
+          - targetType
+          - type
+          - updatedAt
+          - warningLevel
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: WatchListBoolExp
+  operand:
+    object:
+      type: WatchList
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: targetCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: targetId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: targetType
+          booleanExpressionType: TextBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: warningLevel
+          booleanExpressionType: Int4BoolExp
+      comparableRelationships:
+        - relationshipName: company
+        - relationshipName: watchListTargetType
+        - relationshipName: watchListType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: WatchListBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: WatchListAggExp
+  operand:
+    object:
+      aggregatedType: WatchList
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerId
+          aggregateExpression: UuidAggExp
+        - fieldName: targetCode
+          aggregateExpression: TextAggExp
+        - fieldName: targetId
+          aggregateExpression: UuidAggExp
+        - fieldName: targetType
+          aggregateExpression: TextAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: warningLevel
+          aggregateExpression: Int4AggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: WatchListAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: WatchListOrderByExp
+  operand:
+    object:
+      orderedType: WatchList
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: targetCode
+          orderByExpression: String1OrderByExp
+        - fieldName: targetId
+          orderByExpression: UuidOrderByExp
+        - fieldName: targetType
+          orderByExpression: String1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: warningLevel
+          orderByExpression: Int32OrderByExp
+      orderableRelationships:
+        - relationshipName: company
+        - relationshipName: watchListTargetType
+        - relationshipName: watchListType
+  graphql:
+    expressionTypeName: WatchListOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: WatchList
+  objectType: WatchList
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: watch_list
+  filterExpressionType: WatchListBoolExp
+  aggregateExpression: WatchListAggExp
+  orderByExpression: WatchListOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: watchList
+      subscription:
+        rootField: watchList
+    selectUniques:
+      - queryRootField: watchListById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: watchListById
+    filterInputTypeName: WatchListFilterInput
+    aggregate:
+      queryRootField: watchListAggregate
+      subscription:
+        rootField: watchListAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: WatchList
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: WatchList
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insurerId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: watchListTargetType
+  sourceType: WatchList
+  target:
+    model:
+      name: WatchListTargetTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: targetType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: watchListType
+  sourceType: WatchList
+  target:
+    model:
+      name: WatchListTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

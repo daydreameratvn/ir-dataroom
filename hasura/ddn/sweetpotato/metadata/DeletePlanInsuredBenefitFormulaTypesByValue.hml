@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePlanInsuredBenefitFormulaTypesByValueResponse
+  description: Responses from the
+    'delete_plan_insured_benefit_formula_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanInsuredBenefitFormulaTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePlanInsuredBenefitFormulaTypesByValueResponse
+    inputTypeName: DeletePlanInsuredBenefitFormulaTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_plan_insured_benefit_formula_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePlanInsuredBenefitFormulaTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePlanInsuredBenefitFormulaTypesByValue
+  outputType: DeletePlanInsuredBenefitFormulaTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: PlanInsuredBenefitFormulaTypesBoolExp
+      description: Delete permission predicate over the
+        'plan_insured_benefit_formula_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_plan_insured_benefit_formula_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePlanInsuredBenefitFormulaTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'plan_insured_benefit_formula_types'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePlanInsuredBenefitFormulaTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

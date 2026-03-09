@@ -1,0 +1,234 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrQcInvoicesObject
+  fields:
+    - name: buyerName
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: hasInpatientKeywords
+      type: Boolean_1
+    - name: hasSurgeryKeywords
+      type: Boolean_1
+    - name: id
+      type: Uuid
+    - name: invoiceNumber
+      type: String_1
+    - name: issuedAt
+      type: Timestamptz
+    - name: medicalProviderId
+      type: Uuid
+    - name: medicalProviderName
+      type: String_1
+    - name: paperId
+      type: Uuid!
+    - name: sellerName
+      type: String_1
+    - name: sellerTaxCode
+      type: String_1
+    - name: serialNumber
+      type: String_1
+    - name: signedAt
+      type: Timestamptz
+    - name: totalAmount
+      type: Bigdecimal
+    - name: totalAmountAfterVat
+      type: Bigdecimal
+    - name: totalAmountBeforeVat
+      type: Bigdecimal
+    - name: totalDiscountAmount
+      type: Bigdecimal
+    - name: totalExtraAmount
+      type: Bigdecimal
+    - name: totalPaymentAmount
+      type: Bigdecimal
+    - name: totalVatAmount
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz
+    - name: vatPercentage
+      type: Bigdecimal
+  graphql:
+    typeName: InsertOcrQcInvoicesObject
+    inputTypeName: InsertOcrQcInvoicesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_qc_invoices_object
+      fieldMapping:
+        buyerName:
+          column:
+            name: buyer_name
+        createdAt:
+          column:
+            name: created_at
+        hasInpatientKeywords:
+          column:
+            name: has_inpatient_keywords
+        hasSurgeryKeywords:
+          column:
+            name: has_surgery_keywords
+        id:
+          column:
+            name: id
+        invoiceNumber:
+          column:
+            name: invoice_number
+        issuedAt:
+          column:
+            name: issued_at
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        paperId:
+          column:
+            name: paper_id
+        sellerName:
+          column:
+            name: seller_name
+        sellerTaxCode:
+          column:
+            name: seller_tax_code
+        serialNumber:
+          column:
+            name: serial_number
+        signedAt:
+          column:
+            name: signed_at
+        totalAmount:
+          column:
+            name: total_amount
+        totalAmountAfterVat:
+          column:
+            name: total_amount_after_vat
+        totalAmountBeforeVat:
+          column:
+            name: total_amount_before_vat
+        totalDiscountAmount:
+          column:
+            name: total_discount_amount
+        totalExtraAmount:
+          column:
+            name: total_extra_amount
+        totalPaymentAmount:
+          column:
+            name: total_payment_amount
+        totalVatAmount:
+          column:
+            name: total_vat_amount
+        updatedAt:
+          column:
+            name: updated_at
+        vatPercentage:
+          column:
+            name: vat_percentage
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrQcInvoicesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - buyerName
+          - createdAt
+          - hasInpatientKeywords
+          - hasSurgeryKeywords
+          - id
+          - invoiceNumber
+          - issuedAt
+          - medicalProviderId
+          - medicalProviderName
+          - paperId
+          - sellerName
+          - sellerTaxCode
+          - serialNumber
+          - signedAt
+          - totalAmount
+          - totalAmountAfterVat
+          - totalAmountBeforeVat
+          - totalDiscountAmount
+          - totalExtraAmount
+          - totalPaymentAmount
+          - totalVatAmount
+          - updatedAt
+          - vatPercentage
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrQcInvoicesResponse
+  description: Responses from the 'insert_ocr_qc_invoices' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrQcInvoices!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOcrQcInvoicesResponse
+    inputTypeName: InsertOcrQcInvoicesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_qc_invoices_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrQcInvoicesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOcrQcInvoices
+  outputType: InsertOcrQcInvoicesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOcrQcInvoicesObject!]!"
+    - name: postCheck
+      type: OcrQcInvoicesBoolExp
+      description: Insert permission predicate over the 'ocr_qc_invoices' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_ocr_qc_invoices
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOcrQcInvoices
+    rootFieldKind: Mutation
+  description: Insert into the ocr_qc_invoices table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOcrQcInvoices
+  permissions:
+    - role: admin
+      allowExecution: true
+

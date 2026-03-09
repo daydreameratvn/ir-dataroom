@@ -1,0 +1,165 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdPaymentMethods
+  fields:
+    - name: code
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: ppyPaymentMethodCode
+      type: String_1!
+  graphql:
+    typeName: FwdPaymentMethods
+    inputTypeName: FwdPaymentMethodsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_payment_methods
+      fieldMapping:
+        code:
+          column:
+            name: code
+        name:
+          column:
+            name: name
+        ppyPaymentMethodCode:
+          column:
+            name: ppy_payment_method_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdPaymentMethods
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - name
+          - ppyPaymentMethodCode
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdPaymentMethodsBoolExp
+  operand:
+    object:
+      type: FwdPaymentMethods
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: ppyPaymentMethodCode
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: payoutPaymentMethod
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdPaymentMethodsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdPaymentMethodsAggExp
+  operand:
+    object:
+      aggregatedType: FwdPaymentMethods
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: ppyPaymentMethodCode
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdPaymentMethodsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdPaymentMethodsOrderByExp
+  operand:
+    object:
+      orderedType: FwdPaymentMethods
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: ppyPaymentMethodCode
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: payoutPaymentMethod
+  graphql:
+    expressionTypeName: FwdPaymentMethodsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdPaymentMethods
+  objectType: FwdPaymentMethods
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_payment_methods
+  filterExpressionType: FwdPaymentMethodsBoolExp
+  aggregateExpression: FwdPaymentMethodsAggExp
+  orderByExpression: FwdPaymentMethodsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdPaymentMethods
+      subscription:
+        rootField: fwdPaymentMethods
+    selectUniques:
+      - queryRootField: fwdPaymentMethodsByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: fwdPaymentMethodsByCode
+    filterInputTypeName: FwdPaymentMethodsFilterInput
+    aggregate:
+      queryRootField: fwdPaymentMethodsAggregate
+      subscription:
+        rootField: fwdPaymentMethodsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdPaymentMethods
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentMethod
+  sourceType: FwdPaymentMethods
+  target:
+    model:
+      name: PayoutPaymentMethods
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ppyPaymentMethodCode
+      target:
+        modelField:
+          - fieldName: value
+

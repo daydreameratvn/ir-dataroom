@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCitiesByIdResponse
+  description: Responses from the 'delete_cities_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Cities!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCitiesByIdResponse
+    inputTypeName: DeleteCitiesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_cities_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCitiesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCitiesById
+  outputType: DeleteCitiesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Int32!
+      description: Citad code
+    - name: preCheck
+      type: CitiesBoolExp
+      description: Delete permission predicate over the 'cities' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_cities_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCitiesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'cities' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCitiesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

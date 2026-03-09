@@ -1,0 +1,197 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutBeneficiaryBankAccountsByPaymentRequestItemIdUpdateColumns
+  description: Update the columns of the 'payout_beneficiary_bank_accounts' collection
+  fields:
+    - name: accountName
+      type: UpdateColumnPayoutBeneficiaryBankAccountsAccountName
+      description: Update the 'account_name' column in the
+        'payout_beneficiary_bank_accounts' collection.
+    - name: accountNumber
+      type: UpdateColumnPayoutBeneficiaryBankAccountsAccountNumber
+      description: Update the 'account_number' column in the
+        'payout_beneficiary_bank_accounts' collection.
+    - name: bankBranchId
+      type: UpdateColumnPayoutBeneficiaryBankAccountsBankBranchId
+      description: Update the 'bank_branch_id' column in the
+        'payout_beneficiary_bank_accounts' collection.
+    - name: bankId
+      type: UpdateColumnPayoutBeneficiaryBankAccountsBankId
+      description: Update the 'bank_id' column in the
+        'payout_beneficiary_bank_accounts' collection.
+    - name: createdAt
+      type: UpdateColumnPayoutBeneficiaryBankAccountsCreatedAt
+      description: Update the 'created_at' column in the
+        'payout_beneficiary_bank_accounts' collection.
+    - name: id
+      type: UpdateColumnPayoutBeneficiaryBankAccountsId
+      description: Update the 'id' column in the 'payout_beneficiary_bank_accounts'
+        collection.
+    - name: paymentAmount
+      type: UpdateColumnPayoutBeneficiaryBankAccountsPaymentAmount
+      description: Update the 'payment_amount' column in the
+        'payout_beneficiary_bank_accounts' collection.
+    - name: paymentRequestId
+      type: UpdateColumnPayoutBeneficiaryBankAccountsPaymentRequestId
+      description: Update the 'payment_request_id' column in the
+        'payout_beneficiary_bank_accounts' collection.
+    - name: paymentRequestItemId
+      type: UpdateColumnPayoutBeneficiaryBankAccountsPaymentRequestItemId
+      description: Update the 'payment_request_item_id' column in the
+        'payout_beneficiary_bank_accounts' collection.
+    - name: remark
+      type: UpdateColumnPayoutBeneficiaryBankAccountsRemark
+      description: Update the 'remark' column in the
+        'payout_beneficiary_bank_accounts' collection.
+    - name: updatedAt
+      type: UpdateColumnPayoutBeneficiaryBankAccountsUpdatedAt
+      description: Update the 'updated_at' column in the
+        'payout_beneficiary_bank_accounts' collection.
+  graphql:
+    typeName: UpdatePayoutBeneficiaryBankAccountsByPaymentRequestItemIdUpdateColumns
+    inputTypeName: UpdatePayoutBeneficiaryBankAccountsByPaymentRequestItemIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_beneficiary_bank_accounts_by_payment_request_item_id_update_columns
+      fieldMapping:
+        accountName:
+          column:
+            name: account_name
+        accountNumber:
+          column:
+            name: account_number
+        bankBranchId:
+          column:
+            name: bank_branch_id
+        bankId:
+          column:
+            name: bank_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        paymentAmount:
+          column:
+            name: payment_amount
+        paymentRequestId:
+          column:
+            name: payment_request_id
+        paymentRequestItemId:
+          column:
+            name: payment_request_item_id
+        remark:
+          column:
+            name: remark
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutBeneficiaryBankAccountsByPaymentRequestItemIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - accountName
+          - accountNumber
+          - bankBranchId
+          - bankId
+          - createdAt
+          - id
+          - paymentAmount
+          - paymentRequestId
+          - paymentRequestItemId
+          - remark
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutBeneficiaryBankAccountsByPaymentRequestItemIdResponse
+  description: Responses from the
+    'update_payout_beneficiary_bank_accounts_by_payment_request_item_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutBeneficiaryBankAccounts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePayoutBeneficiaryBankAccountsByPaymentRequestItemIdResponse
+    inputTypeName: UpdatePayoutBeneficiaryBankAccountsByPaymentRequestItemIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_beneficiary_bank_accounts_by_payment_request_item_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutBeneficiaryBankAccountsByPaymentRequestItemIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePayoutBeneficiaryBankAccountsByPaymentRequestItemId
+  outputType: UpdatePayoutBeneficiaryBankAccountsByPaymentRequestItemIdResponse!
+  arguments:
+    - name: keyPaymentRequestItemId
+      type: Uuid
+    - name: postCheck
+      type: PayoutBeneficiaryBankAccountsBoolExp
+      description: Update permission post-condition predicate over the
+        'payout_beneficiary_bank_accounts' collection
+    - name: preCheck
+      type: PayoutBeneficiaryBankAccountsBoolExp
+      description: Update permission pre-condition predicate over the
+        'payout_beneficiary_bank_accounts' collection
+    - name: updateColumns
+      type: UpdatePayoutBeneficiaryBankAccountsByPaymentRequestItemIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_payout_beneficiary_bank_accounts_by_payment_request_item_id
+    argumentMapping:
+      keyPaymentRequestItemId: key_payment_request_item_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePayoutBeneficiaryBankAccountsByPaymentRequestItemId
+    rootFieldKind: Mutation
+  description: Update any row on the 'payout_beneficiary_bank_accounts' collection
+    using the 'payment_request_item_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePayoutBeneficiaryBankAccountsByPaymentRequestItemId
+  permissions:
+    - role: admin
+      allowExecution: true
+

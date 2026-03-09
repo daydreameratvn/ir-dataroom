@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimCaseSameEventGroupsByCodeResponse
+  description: Responses from the 'delete_claim_case_same_event_groups_by_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseSameEventGroups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimCaseSameEventGroupsByCodeResponse
+    inputTypeName: DeleteClaimCaseSameEventGroupsByCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_case_same_event_groups_by_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimCaseSameEventGroupsByCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimCaseSameEventGroupsByCode
+  outputType: DeleteClaimCaseSameEventGroupsByCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: preCheck
+      type: ClaimCaseSameEventGroupsBoolExp
+      description: Delete permission predicate over the 'claim_case_same_event_groups'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_case_same_event_groups_by_code
+    argumentMapping:
+      keyCode: key_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimCaseSameEventGroupsByCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_case_same_event_groups' collection
+    using the 'code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimCaseSameEventGroupsByCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

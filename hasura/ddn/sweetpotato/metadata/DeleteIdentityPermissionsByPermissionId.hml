@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteIdentityPermissionsByPermissionIdResponse
+  description: Responses from the 'delete_identity_permissions_by_permission_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityPermissions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteIdentityPermissionsByPermissionIdResponse
+    inputTypeName: DeleteIdentityPermissionsByPermissionIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_identity_permissions_by_permission_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteIdentityPermissionsByPermissionIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteIdentityPermissionsByPermissionId
+  outputType: DeleteIdentityPermissionsByPermissionIdResponse!
+  arguments:
+    - name: keyPermissionId
+      type: Uuid!
+    - name: preCheck
+      type: IdentityPermissionsBoolExp
+      description: Delete permission predicate over the 'identity_permissions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_identity_permissions_by_permission_id
+    argumentMapping:
+      keyPermissionId: key_permission_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteIdentityPermissionsByPermissionId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'identity_permissions' collection using the
+    'permission_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteIdentityPermissionsByPermissionId
+  permissions:
+    - role: admin
+      allowExecution: true
+

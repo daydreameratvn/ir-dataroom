@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdSyncTypes
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: FwdSyncTypes
+    inputTypeName: FwdSyncTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_sync_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdSyncTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdSyncTypesBoolExp
+  operand:
+    object:
+      type: FwdSyncTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: fwdSyncLogs
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdSyncTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdSyncTypesAggExp
+  operand:
+    object:
+      aggregatedType: FwdSyncTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdSyncTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdSyncTypesOrderByExp
+  operand:
+    object:
+      orderedType: FwdSyncTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: FwdSyncTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdSyncTypes
+  objectType: FwdSyncTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_sync_types
+  filterExpressionType: FwdSyncTypesBoolExp
+  aggregateExpression: FwdSyncTypesAggExp
+  orderByExpression: FwdSyncTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdSyncTypes
+      subscription:
+        rootField: fwdSyncTypes
+    selectUniques:
+      - queryRootField: fwdSyncTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: fwdSyncTypesByValue
+    filterInputTypeName: FwdSyncTypesFilterInput
+    aggregate:
+      queryRootField: fwdSyncTypesAggregate
+      subscription:
+        rootField: fwdSyncTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdSyncTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdSyncLogs
+  sourceType: FwdSyncTypes
+  target:
+    model:
+      name: FwdSyncLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdSyncLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: fwdSyncLogsAggregate
+

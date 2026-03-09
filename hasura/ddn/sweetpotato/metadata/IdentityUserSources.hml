@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityUserSources
+  description: Facebook/Google/Phone/Microsoft
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: IdentityUserSources
+    inputTypeName: IdentityUserSourcesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_user_sources
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityUserSources
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityUserSourcesBoolExp
+  operand:
+    object:
+      type: IdentityUserSources
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: identityUsers
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityUserSourcesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityUserSourcesAggExp
+  operand:
+    object:
+      aggregatedType: IdentityUserSources
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityUserSourcesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityUserSourcesOrderByExp
+  operand:
+    object:
+      orderedType: IdentityUserSources
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: IdentityUserSourcesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityUserSources
+  objectType: IdentityUserSources
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_user_sources
+  filterExpressionType: IdentityUserSourcesBoolExp
+  aggregateExpression: IdentityUserSourcesAggExp
+  orderByExpression: IdentityUserSourcesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityUserSources
+      subscription:
+        rootField: identityUserSources
+    selectUniques:
+      - queryRootField: identityUserSourcesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: identityUserSourcesByValue
+    filterInputTypeName: IdentityUserSourcesFilterInput
+    aggregate:
+      queryRootField: identityUserSourcesAggregate
+      subscription:
+        rootField: identityUserSourcesAggregate
+  description: Facebook/Google/Phone/Microsoft
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityUserSources
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUsers
+  sourceType: IdentityUserSources
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityUsersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: source
+  graphql:
+    aggregateFieldName: identityUsersAggregate
+

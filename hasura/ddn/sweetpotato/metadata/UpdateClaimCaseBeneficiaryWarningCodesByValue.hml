@@ -1,0 +1,183 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnClaimCaseBeneficiaryWarningCodesComment
+  description: Update the 'comment' column in the
+    'claim_case_beneficiary_warning_codes' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnClaimCaseBeneficiaryWarningCodesComment
+    inputTypeName: UpdateColumnClaimCaseBeneficiaryWarningCodesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_claim_case_beneficiary_warning_codes_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnClaimCaseBeneficiaryWarningCodesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnClaimCaseBeneficiaryWarningCodesValue
+  description: Update the 'value' column in the
+    'claim_case_beneficiary_warning_codes' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnClaimCaseBeneficiaryWarningCodesValue
+    inputTypeName: UpdateColumnClaimCaseBeneficiaryWarningCodesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_claim_case_beneficiary_warning_codes_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnClaimCaseBeneficiaryWarningCodesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseBeneficiaryWarningCodesByValueUpdateColumns
+  description: Update the columns of the 'claim_case_beneficiary_warning_codes' collection
+  fields:
+    - name: comment
+      type: UpdateColumnClaimCaseBeneficiaryWarningCodesComment
+      description: Update the 'comment' column in the
+        'claim_case_beneficiary_warning_codes' collection.
+    - name: value
+      type: UpdateColumnClaimCaseBeneficiaryWarningCodesValue
+      description: Update the 'value' column in the
+        'claim_case_beneficiary_warning_codes' collection.
+  graphql:
+    typeName: UpdateClaimCaseBeneficiaryWarningCodesByValueUpdateColumns
+    inputTypeName: UpdateClaimCaseBeneficiaryWarningCodesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_beneficiary_warning_codes_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseBeneficiaryWarningCodesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseBeneficiaryWarningCodesByValueResponse
+  description: Responses from the
+    'update_claim_case_beneficiary_warning_codes_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseBeneficiaryWarningCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateClaimCaseBeneficiaryWarningCodesByValueResponse
+    inputTypeName: UpdateClaimCaseBeneficiaryWarningCodesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_beneficiary_warning_codes_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseBeneficiaryWarningCodesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateClaimCaseBeneficiaryWarningCodesByValue
+  outputType: UpdateClaimCaseBeneficiaryWarningCodesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: ClaimCaseBeneficiaryWarningCodesBoolExp
+      description: Update permission post-condition predicate over the
+        'claim_case_beneficiary_warning_codes' collection
+    - name: preCheck
+      type: ClaimCaseBeneficiaryWarningCodesBoolExp
+      description: Update permission pre-condition predicate over the
+        'claim_case_beneficiary_warning_codes' collection
+    - name: updateColumns
+      type: UpdateClaimCaseBeneficiaryWarningCodesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_claim_case_beneficiary_warning_codes_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateClaimCaseBeneficiaryWarningCodesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'claim_case_beneficiary_warning_codes'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateClaimCaseBeneficiaryWarningCodesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

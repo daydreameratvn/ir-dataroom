@@ -1,0 +1,158 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingBookingsSchedulesHistoriesObject
+  fields:
+    - name: action
+      type: String_1!
+    - name: actorId
+      type: Uuid
+    - name: bookingId
+      type: Uuid!
+    - name: bookingScheduleId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: priority
+      type: Int32
+    - name: scheduleAt
+      type: Timestamptz!
+    - name: scheduleId
+      type: Uuid!
+    - name: status
+      type: String_1
+  graphql:
+    typeName: InsertMedicalBookingBookingsSchedulesHistoriesObject
+    inputTypeName: InsertMedicalBookingBookingsSchedulesHistoriesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_bookings_schedules_histories_object
+      fieldMapping:
+        action:
+          column:
+            name: action
+        actorId:
+          column:
+            name: actor_id
+        bookingId:
+          column:
+            name: booking_id
+        bookingScheduleId:
+          column:
+            name: booking_schedule_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        priority:
+          column:
+            name: priority
+        scheduleAt:
+          column:
+            name: schedule_at
+        scheduleId:
+          column:
+            name: schedule_id
+        status:
+          column:
+            name: status
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingBookingsSchedulesHistoriesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - actorId
+          - bookingId
+          - bookingScheduleId
+          - createdAt
+          - id
+          - priority
+          - scheduleAt
+          - scheduleId
+          - status
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingBookingsSchedulesHistoriesResponse
+  description: Responses from the
+    'insert_medical_booking_bookings_schedules_histories' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingBookingsSchedulesHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMedicalBookingBookingsSchedulesHistoriesResponse
+    inputTypeName: InsertMedicalBookingBookingsSchedulesHistoriesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_bookings_schedules_histories_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingBookingsSchedulesHistoriesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMedicalBookingBookingsSchedulesHistories
+  outputType: InsertMedicalBookingBookingsSchedulesHistoriesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMedicalBookingBookingsSchedulesHistoriesObject!]!"
+    - name: postCheck
+      type: MedicalBookingBookingsSchedulesHistoriesBoolExp
+      description: Insert permission predicate over the
+        'medical_booking_bookings_schedules_histories' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_medical_booking_bookings_schedules_histories
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMedicalBookingBookingsSchedulesHistories
+    rootFieldKind: Mutation
+  description: Insert into the medical_booking_bookings_schedules_histories table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMedicalBookingBookingsSchedulesHistories
+  permissions:
+    - role: admin
+      allowExecution: true
+

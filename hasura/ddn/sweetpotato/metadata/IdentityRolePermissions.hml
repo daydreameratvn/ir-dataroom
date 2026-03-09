@@ -1,0 +1,259 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityRolePermissions
+  fields:
+    - name: accessPermissionId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: roleName
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: IdentityRolePermissions
+    inputTypeName: IdentityRolePermissionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_role_permissions
+      fieldMapping:
+        accessPermissionId:
+          column:
+            name: access_permission_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        roleName:
+          column:
+            name: role_name
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityRolePermissions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - accessPermissionId
+          - createdAt
+          - deletedAt
+          - id
+          - roleName
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityRolePermissionsBoolExp
+  operand:
+    object:
+      type: IdentityRolePermissions
+      comparableFields:
+        - fieldName: accessPermissionId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: roleName
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: identityPermissionHierarchy
+        - relationshipName: identityRole
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityRolePermissionsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityRolePermissionsAggExp
+  operand:
+    object:
+      aggregatedType: IdentityRolePermissions
+      aggregatableFields:
+        - fieldName: accessPermissionId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: roleName
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityRolePermissionsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityRolePermissionsOrderByExp
+  operand:
+    object:
+      orderedType: IdentityRolePermissions
+      orderableFields:
+        - fieldName: accessPermissionId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: roleName
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: identityPermissionHierarchy
+        - relationshipName: identityRole
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: IdentityRolePermissionsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityRolePermissions
+  objectType: IdentityRolePermissions
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_role_permissions
+  filterExpressionType: IdentityRolePermissionsBoolExp
+  aggregateExpression: IdentityRolePermissionsAggExp
+  orderByExpression: IdentityRolePermissionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityRolePermissions
+      subscription:
+        rootField: identityRolePermissions
+    selectUniques:
+      - queryRootField: identityRolePermissionsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: identityRolePermissionsById
+      - queryRootField: identityRolePermissionsByRolePermissionsRoleNameAccessPermissionIdKey
+        uniqueIdentifier:
+          - accessPermissionId
+          - roleName
+        subscription:
+          rootField: identityRolePermissionsByRolePermissionsRoleNameAccessPermissionIdKey
+    filterInputTypeName: IdentityRolePermissionsFilterInput
+    aggregate:
+      queryRootField: identityRolePermissionsAggregate
+      subscription:
+        rootField: identityRolePermissionsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityRolePermissions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityPermissionHierarchy
+  sourceType: IdentityRolePermissions
+  target:
+    model:
+      name: IdentityPermissionHierarchies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: accessPermissionId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityRole
+  sourceType: IdentityRolePermissions
+  target:
+    model:
+      name: IdentityRoles
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: roleName
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: IdentityRolePermissions
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

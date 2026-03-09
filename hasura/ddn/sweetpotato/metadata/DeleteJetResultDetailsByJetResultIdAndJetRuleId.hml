@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteJetResultDetailsByJetResultIdAndJetRuleIdResponse
+  description: Responses from the
+    'delete_jet_result_details_by_jet_result_id_and_jet_rule_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[JetResultDetails!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteJetResultDetailsByJetResultIdAndJetRuleIdResponse
+    inputTypeName: DeleteJetResultDetailsByJetResultIdAndJetRuleIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_jet_result_details_by_jet_result_id_and_jet_rule_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteJetResultDetailsByJetResultIdAndJetRuleIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteJetResultDetailsByJetResultIdAndJetRuleId
+  outputType: DeleteJetResultDetailsByJetResultIdAndJetRuleIdResponse!
+  arguments:
+    - name: keyJetResultId
+      type: Uuid!
+    - name: keyJetRuleId
+      type: Uuid
+    - name: preCheck
+      type: JetResultDetailsBoolExp
+      description: Delete permission predicate over the 'jet_result_details' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_jet_result_details_by_jet_result_id_and_jet_rule_id
+    argumentMapping:
+      keyJetResultId: key_jet_result_id
+      keyJetRuleId: key_jet_rule_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteJetResultDetailsByJetResultIdAndJetRuleId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'jet_result_details' collection using the
+    'jet_result_id' and 'jet_rule_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteJetResultDetailsByJetResultIdAndJetRuleId
+  permissions:
+    - role: admin
+      allowExecution: true
+

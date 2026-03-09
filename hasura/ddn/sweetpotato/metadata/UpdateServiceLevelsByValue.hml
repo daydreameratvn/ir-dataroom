@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnServiceLevelsComment
+  description: Update the 'comment' column in the 'service_levels' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnServiceLevelsComment
+    inputTypeName: UpdateColumnServiceLevelsCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_service_levels_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnServiceLevelsComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnServiceLevelsValue
+  description: Update the 'value' column in the 'service_levels' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnServiceLevelsValue
+    inputTypeName: UpdateColumnServiceLevelsValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_service_levels_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnServiceLevelsValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateServiceLevelsByValueUpdateColumns
+  description: Update the columns of the 'service_levels' collection
+  fields:
+    - name: comment
+      type: UpdateColumnServiceLevelsComment
+      description: Update the 'comment' column in the 'service_levels' collection.
+    - name: value
+      type: UpdateColumnServiceLevelsValue
+      description: Update the 'value' column in the 'service_levels' collection.
+  graphql:
+    typeName: UpdateServiceLevelsByValueUpdateColumns
+    inputTypeName: UpdateServiceLevelsByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_service_levels_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateServiceLevelsByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateServiceLevelsByValueResponse
+  description: Responses from the 'update_service_levels_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ServiceLevels!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateServiceLevelsByValueResponse
+    inputTypeName: UpdateServiceLevelsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_service_levels_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateServiceLevelsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateServiceLevelsByValue
+  outputType: UpdateServiceLevelsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: ServiceLevelsBoolExp
+      description: Update permission post-condition predicate over the
+        'service_levels' collection
+    - name: preCheck
+      type: ServiceLevelsBoolExp
+      description: Update permission pre-condition predicate over the 'service_levels'
+        collection
+    - name: updateColumns
+      type: UpdateServiceLevelsByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_service_levels_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateServiceLevelsByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'service_levels' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateServiceLevelsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

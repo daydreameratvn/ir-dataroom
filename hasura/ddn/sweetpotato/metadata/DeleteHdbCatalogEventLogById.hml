@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHdbCatalogEventLogByIdResponse
+  description: Responses from the 'delete_hdb_catalog_event_log_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HdbCatalogEventLog!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHdbCatalogEventLogByIdResponse
+    inputTypeName: DeleteHdbCatalogEventLogByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hdb_catalog_event_log_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHdbCatalogEventLogByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHdbCatalogEventLogById
+  outputType: DeleteHdbCatalogEventLogByIdResponse!
+  arguments:
+    - name: keyId
+      type: String_1!
+    - name: preCheck
+      type: HdbCatalogEventLogBoolExp
+      description: Delete permission predicate over the 'hdb_catalog_event_log' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hdb_catalog_event_log_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHdbCatalogEventLogById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hdb_catalog_event_log' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHdbCatalogEventLogById
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,364 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdClaimCases
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: claimSequenceNo
+      type: String_1!
+    - name: claimType
+      type: String_1
+    - name: declineCodeValue
+      type: String_1
+    - name: declineDescription
+      type: String_1
+    - name: exclusionInfo
+      type: String_1
+    - name: icuAdmissionDate
+      type: Timestamptz
+    - name: icuDischargeDate
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: isSurgery
+      type: Boolean_1!
+    - name: policyNote
+      type: String_1
+    - name: receivedAt
+      type: Timestamptz
+    - name: relatedToAccident
+      type: Boolean_1!
+    - name: syncedDecisionAt
+      type: Timestamptz
+    - name: syncedDocumentAt
+      type: Timestamptz
+    - name: syncedPaymentDateAt
+      type: Timestamptz
+  graphql:
+    typeName: FwdClaimCases
+    inputTypeName: FwdClaimCasesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_claim_cases
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        claimSequenceNo:
+          column:
+            name: claim_sequence_no
+        claimType:
+          column:
+            name: claim_type
+        declineCodeValue:
+          column:
+            name: decline_code_value
+        declineDescription:
+          column:
+            name: decline_description
+        exclusionInfo:
+          column:
+            name: exclusion_info
+        icuAdmissionDate:
+          column:
+            name: icu_admission_date
+        icuDischargeDate:
+          column:
+            name: icu_discharge_date
+        id:
+          column:
+            name: id
+        isSurgery:
+          column:
+            name: is_surgery
+        policyNote:
+          column:
+            name: policy_note
+        receivedAt:
+          column:
+            name: received_at
+        relatedToAccident:
+          column:
+            name: related_to_accident
+        syncedDecisionAt:
+          column:
+            name: synced_decision_at
+        syncedDocumentAt:
+          column:
+            name: synced_document_at
+        syncedPaymentDateAt:
+          column:
+            name: synced_payment_date_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdClaimCases
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - claimSequenceNo
+          - claimType
+          - declineCodeValue
+          - declineDescription
+          - exclusionInfo
+          - icuAdmissionDate
+          - icuDischargeDate
+          - id
+          - isSurgery
+          - policyNote
+          - receivedAt
+          - relatedToAccident
+          - syncedDecisionAt
+          - syncedDocumentAt
+          - syncedPaymentDateAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdClaimCasesBoolExp
+  operand:
+    object:
+      type: FwdClaimCases
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimSequenceNo
+          booleanExpressionType: TextBoolExp
+        - fieldName: claimType
+          booleanExpressionType: TextBoolExp
+        - fieldName: declineCodeValue
+          booleanExpressionType: TextBoolExp
+        - fieldName: declineDescription
+          booleanExpressionType: TextBoolExp
+        - fieldName: exclusionInfo
+          booleanExpressionType: TextBoolExp
+        - fieldName: icuAdmissionDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: icuDischargeDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isSurgery
+          booleanExpressionType: BoolBoolExp
+        - fieldName: policyNote
+          booleanExpressionType: TextBoolExp
+        - fieldName: receivedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: relatedToAccident
+          booleanExpressionType: BoolBoolExp
+        - fieldName: syncedDecisionAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: syncedDocumentAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: syncedPaymentDateAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: fwdDeclineCode
+        - relationshipName: fwdSyncDocuments
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdClaimCasesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdClaimCasesAggExp
+  operand:
+    object:
+      aggregatedType: FwdClaimCases
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimSequenceNo
+          aggregateExpression: TextAggExp
+        - fieldName: claimType
+          aggregateExpression: TextAggExp
+        - fieldName: declineCodeValue
+          aggregateExpression: TextAggExp
+        - fieldName: declineDescription
+          aggregateExpression: TextAggExp
+        - fieldName: exclusionInfo
+          aggregateExpression: TextAggExp
+        - fieldName: icuAdmissionDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: icuDischargeDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isSurgery
+          aggregateExpression: BoolAggExp
+        - fieldName: policyNote
+          aggregateExpression: TextAggExp
+        - fieldName: receivedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: relatedToAccident
+          aggregateExpression: BoolAggExp
+        - fieldName: syncedDecisionAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: syncedDocumentAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: syncedPaymentDateAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdClaimCasesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdClaimCasesOrderByExp
+  operand:
+    object:
+      orderedType: FwdClaimCases
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimSequenceNo
+          orderByExpression: String1OrderByExp
+        - fieldName: claimType
+          orderByExpression: String1OrderByExp
+        - fieldName: declineCodeValue
+          orderByExpression: String1OrderByExp
+        - fieldName: declineDescription
+          orderByExpression: String1OrderByExp
+        - fieldName: exclusionInfo
+          orderByExpression: String1OrderByExp
+        - fieldName: icuAdmissionDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: icuDischargeDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isSurgery
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: policyNote
+          orderByExpression: String1OrderByExp
+        - fieldName: receivedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: relatedToAccident
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: syncedDecisionAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: syncedDocumentAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: syncedPaymentDateAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: fwdDeclineCode
+  graphql:
+    expressionTypeName: FwdClaimCasesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdClaimCases
+  objectType: FwdClaimCases
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_claim_cases
+  filterExpressionType: FwdClaimCasesBoolExp
+  aggregateExpression: FwdClaimCasesAggExp
+  orderByExpression: FwdClaimCasesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdClaimCases
+      subscription:
+        rootField: fwdClaimCases
+    selectUniques:
+      - queryRootField: fwdClaimCasesByClaimCaseId
+        uniqueIdentifier:
+          - claimCaseId
+        subscription:
+          rootField: fwdClaimCasesByClaimCaseId
+    filterInputTypeName: FwdClaimCasesFilterInput
+    aggregate:
+      queryRootField: fwdClaimCasesAggregate
+      subscription:
+        rootField: fwdClaimCasesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdClaimCases
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: FwdClaimCases
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdDeclineCode
+  sourceType: FwdClaimCases
+  target:
+    model:
+      name: FwdDeclineCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: declineCodeValue
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdSyncDocuments
+  sourceType: FwdClaimCases
+  target:
+    model:
+      name: FwdSyncDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdSyncDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+  graphql:
+    aggregateFieldName: fwdSyncDocumentsAggregate
+

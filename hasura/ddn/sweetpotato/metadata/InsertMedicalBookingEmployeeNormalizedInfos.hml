@@ -1,0 +1,128 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingEmployeeNormalizedInfosObject
+  fields:
+    - name: dob
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: normalizedName
+      type: String_1
+    - name: upperCaseName
+      type: String_1
+    - name: yob
+      type: Bigdecimal
+  graphql:
+    typeName: InsertMedicalBookingEmployeeNormalizedInfosObject
+    inputTypeName: InsertMedicalBookingEmployeeNormalizedInfosObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_employee_normalized_infos_object
+      fieldMapping:
+        dob:
+          column:
+            name: dob
+        id:
+          column:
+            name: id
+        normalizedName:
+          column:
+            name: normalized_name
+        upperCaseName:
+          column:
+            name: upper_case_name
+        yob:
+          column:
+            name: yob
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingEmployeeNormalizedInfosObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - dob
+          - id
+          - normalizedName
+          - upperCaseName
+          - yob
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingEmployeeNormalizedInfosResponse
+  description: Responses from the
+    'insert_medical_booking_employee_normalized_infos' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingEmployeeNormalizedInfos!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMedicalBookingEmployeeNormalizedInfosResponse
+    inputTypeName: InsertMedicalBookingEmployeeNormalizedInfosResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_employee_normalized_infos_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingEmployeeNormalizedInfosResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMedicalBookingEmployeeNormalizedInfos
+  outputType: InsertMedicalBookingEmployeeNormalizedInfosResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMedicalBookingEmployeeNormalizedInfosObject!]!"
+    - name: postCheck
+      type: MedicalBookingEmployeeNormalizedInfosBoolExp
+      description: Insert permission predicate over the
+        'medical_booking_employee_normalized_infos' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_medical_booking_employee_normalized_infos
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMedicalBookingEmployeeNormalizedInfos
+    rootFieldKind: Mutation
+  description: Insert into the medical_booking_employee_normalized_infos table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMedicalBookingEmployeeNormalizedInfos
+  permissions:
+    - role: admin
+      allowExecution: true
+

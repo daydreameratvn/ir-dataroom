@@ -1,0 +1,195 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutAntiMoneyLaunderingsByPaymentRequestItemIdUpdateColumns
+  description: Update the columns of the 'payout_anti_money_launderings' collection
+  fields:
+    - name: checkedAt
+      type: UpdateColumnPayoutAntiMoneyLaunderingsCheckedAt
+      description: Update the 'checked_at' column in the
+        'payout_anti_money_launderings' collection.
+    - name: checkedBy
+      type: UpdateColumnPayoutAntiMoneyLaunderingsCheckedBy
+      description: Update the 'checked_by' column in the
+        'payout_anti_money_launderings' collection.
+    - name: checkerRemark
+      type: UpdateColumnPayoutAntiMoneyLaunderingsCheckerRemark
+      description: Update the 'checker_remark' column in the
+        'payout_anti_money_launderings' collection.
+    - name: createdAt
+      type: UpdateColumnPayoutAntiMoneyLaunderingsCreatedAt
+      description: Update the 'created_at' column in the
+        'payout_anti_money_launderings' collection.
+    - name: deletedAt
+      type: UpdateColumnPayoutAntiMoneyLaunderingsDeletedAt
+      description: Update the 'deleted_at' column in the
+        'payout_anti_money_launderings' collection.
+    - name: histories
+      type: UpdateColumnPayoutAntiMoneyLaunderingsHistories
+      description: Update the 'histories' column in the
+        'payout_anti_money_launderings' collection.
+    - name: id
+      type: UpdateColumnPayoutAntiMoneyLaunderingsId
+      description: Update the 'id' column in the 'payout_anti_money_launderings' collection.
+    - name: moneyLaunderingSuspectId
+      type: UpdateColumnPayoutAntiMoneyLaunderingsMoneyLaunderingSuspectId
+      description: Update the 'money_laundering_suspect_id' column in the
+        'payout_anti_money_launderings' collection.
+    - name: paymentRequestItemId
+      type: UpdateColumnPayoutAntiMoneyLaunderingsPaymentRequestItemId
+      description: Update the 'payment_request_item_id' column in the
+        'payout_anti_money_launderings' collection.
+    - name: status
+      type: UpdateColumnPayoutAntiMoneyLaunderingsStatus
+      description: Update the 'status' column in the 'payout_anti_money_launderings'
+        collection.
+    - name: updatedAt
+      type: UpdateColumnPayoutAntiMoneyLaunderingsUpdatedAt
+      description: Update the 'updated_at' column in the
+        'payout_anti_money_launderings' collection.
+  graphql:
+    typeName: UpdatePayoutAntiMoneyLaunderingsByPaymentRequestItemIdUpdateColumns
+    inputTypeName: UpdatePayoutAntiMoneyLaunderingsByPaymentRequestItemIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_anti_money_launderings_by_payment_request_item_id_update_columns
+      fieldMapping:
+        checkedAt:
+          column:
+            name: checked_at
+        checkedBy:
+          column:
+            name: checked_by
+        checkerRemark:
+          column:
+            name: checker_remark
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        histories:
+          column:
+            name: histories
+        id:
+          column:
+            name: id
+        moneyLaunderingSuspectId:
+          column:
+            name: money_laundering_suspect_id
+        paymentRequestItemId:
+          column:
+            name: payment_request_item_id
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutAntiMoneyLaunderingsByPaymentRequestItemIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - checkedAt
+          - checkedBy
+          - checkerRemark
+          - createdAt
+          - deletedAt
+          - histories
+          - id
+          - moneyLaunderingSuspectId
+          - paymentRequestItemId
+          - status
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutAntiMoneyLaunderingsByPaymentRequestItemIdResponse
+  description: Responses from the
+    'update_payout_anti_money_launderings_by_payment_request_item_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutAntiMoneyLaunderings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePayoutAntiMoneyLaunderingsByPaymentRequestItemIdResponse
+    inputTypeName: UpdatePayoutAntiMoneyLaunderingsByPaymentRequestItemIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_anti_money_launderings_by_payment_request_item_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutAntiMoneyLaunderingsByPaymentRequestItemIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePayoutAntiMoneyLaunderingsByPaymentRequestItemId
+  outputType: UpdatePayoutAntiMoneyLaunderingsByPaymentRequestItemIdResponse!
+  arguments:
+    - name: keyPaymentRequestItemId
+      type: Uuid
+    - name: postCheck
+      type: PayoutAntiMoneyLaunderingsBoolExp
+      description: Update permission post-condition predicate over the
+        'payout_anti_money_launderings' collection
+    - name: preCheck
+      type: PayoutAntiMoneyLaunderingsBoolExp
+      description: Update permission pre-condition predicate over the
+        'payout_anti_money_launderings' collection
+    - name: updateColumns
+      type: UpdatePayoutAntiMoneyLaunderingsByPaymentRequestItemIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_payout_anti_money_launderings_by_payment_request_item_id
+    argumentMapping:
+      keyPaymentRequestItemId: key_payment_request_item_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePayoutAntiMoneyLaunderingsByPaymentRequestItemId
+    rootFieldKind: Mutation
+  description: Update any row on the 'payout_anti_money_launderings' collection
+    using the 'payment_request_item_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePayoutAntiMoneyLaunderingsByPaymentRequestItemId
+  permissions:
+    - role: admin
+      allowExecution: true
+

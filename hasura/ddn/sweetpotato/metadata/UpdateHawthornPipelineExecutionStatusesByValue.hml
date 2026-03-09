@@ -1,0 +1,183 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnHawthornPipelineExecutionStatusesComment
+  description: Update the 'comment' column in the
+    'hawthorn_pipeline_execution_statuses' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnHawthornPipelineExecutionStatusesComment
+    inputTypeName: UpdateColumnHawthornPipelineExecutionStatusesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_hawthorn_pipeline_execution_statuses_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnHawthornPipelineExecutionStatusesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnHawthornPipelineExecutionStatusesValue
+  description: Update the 'value' column in the
+    'hawthorn_pipeline_execution_statuses' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnHawthornPipelineExecutionStatusesValue
+    inputTypeName: UpdateColumnHawthornPipelineExecutionStatusesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_hawthorn_pipeline_execution_statuses_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnHawthornPipelineExecutionStatusesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateHawthornPipelineExecutionStatusesByValueUpdateColumns
+  description: Update the columns of the 'hawthorn_pipeline_execution_statuses' collection
+  fields:
+    - name: comment
+      type: UpdateColumnHawthornPipelineExecutionStatusesComment
+      description: Update the 'comment' column in the
+        'hawthorn_pipeline_execution_statuses' collection.
+    - name: value
+      type: UpdateColumnHawthornPipelineExecutionStatusesValue
+      description: Update the 'value' column in the
+        'hawthorn_pipeline_execution_statuses' collection.
+  graphql:
+    typeName: UpdateHawthornPipelineExecutionStatusesByValueUpdateColumns
+    inputTypeName: UpdateHawthornPipelineExecutionStatusesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_hawthorn_pipeline_execution_statuses_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateHawthornPipelineExecutionStatusesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateHawthornPipelineExecutionStatusesByValueResponse
+  description: Responses from the
+    'update_hawthorn_pipeline_execution_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornPipelineExecutionStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateHawthornPipelineExecutionStatusesByValueResponse
+    inputTypeName: UpdateHawthornPipelineExecutionStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_hawthorn_pipeline_execution_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateHawthornPipelineExecutionStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateHawthornPipelineExecutionStatusesByValue
+  outputType: UpdateHawthornPipelineExecutionStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: HawthornPipelineExecutionStatusesBoolExp
+      description: Update permission post-condition predicate over the
+        'hawthorn_pipeline_execution_statuses' collection
+    - name: preCheck
+      type: HawthornPipelineExecutionStatusesBoolExp
+      description: Update permission pre-condition predicate over the
+        'hawthorn_pipeline_execution_statuses' collection
+    - name: updateColumns
+      type: UpdateHawthornPipelineExecutionStatusesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_hawthorn_pipeline_execution_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateHawthornPipelineExecutionStatusesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'hawthorn_pipeline_execution_statuses'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateHawthornPipelineExecutionStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

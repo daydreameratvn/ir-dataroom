@@ -1,0 +1,204 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrPrescriptionItemsObject
+  fields:
+    - name: administrationRoute
+      type: String_1
+    - name: brandName
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: dosageRegimen
+      type: String_1
+    - name: efficacyReasoning
+      type: String_1
+    - name: efficacyTargetedIcdCode
+      type: String_1
+    - name: efficacyType
+      type: String_1
+    - name: genericName
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: itemName
+      type: String_1
+    - name: lineNumber
+      type: Bigdecimal
+    - name: note
+      type: String_1
+    - name: prescriptionId
+      type: Uuid!
+    - name: quantity
+      type: Bigdecimal
+    - name: rawData
+      type: Json
+    - name: registrationCode
+      type: String_1
+    - name: unit
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertOcrPrescriptionItemsObject
+    inputTypeName: InsertOcrPrescriptionItemsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_prescription_items_object
+      fieldMapping:
+        administrationRoute:
+          column:
+            name: administration_route
+        brandName:
+          column:
+            name: brand_name
+        createdAt:
+          column:
+            name: created_at
+        dosageRegimen:
+          column:
+            name: dosage_regimen
+        efficacyReasoning:
+          column:
+            name: efficacy_reasoning
+        efficacyTargetedIcdCode:
+          column:
+            name: efficacy_targeted_icd_code
+        efficacyType:
+          column:
+            name: efficacy_type
+        genericName:
+          column:
+            name: generic_name
+        id:
+          column:
+            name: id
+        itemName:
+          column:
+            name: item_name
+        lineNumber:
+          column:
+            name: line_number
+        note:
+          column:
+            name: note
+        prescriptionId:
+          column:
+            name: prescription_id
+        quantity:
+          column:
+            name: quantity
+        rawData:
+          column:
+            name: raw_data
+        registrationCode:
+          column:
+            name: registration_code
+        unit:
+          column:
+            name: unit
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrPrescriptionItemsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - administrationRoute
+          - brandName
+          - createdAt
+          - dosageRegimen
+          - efficacyReasoning
+          - efficacyTargetedIcdCode
+          - efficacyType
+          - genericName
+          - id
+          - itemName
+          - lineNumber
+          - note
+          - prescriptionId
+          - quantity
+          - rawData
+          - registrationCode
+          - unit
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrPrescriptionItemsResponse
+  description: Responses from the 'insert_ocr_prescription_items' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrPrescriptionItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOcrPrescriptionItemsResponse
+    inputTypeName: InsertOcrPrescriptionItemsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_prescription_items_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrPrescriptionItemsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOcrPrescriptionItems
+  outputType: InsertOcrPrescriptionItemsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOcrPrescriptionItemsObject!]!"
+    - name: postCheck
+      type: OcrPrescriptionItemsBoolExp
+      description: Insert permission predicate over the 'ocr_prescription_items' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_ocr_prescription_items
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOcrPrescriptionItems
+    rootFieldKind: Mutation
+  description: Insert into the ocr_prescription_items table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOcrPrescriptionItems
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePresentCaseCodeStatusesByValueResponse
+  description: Responses from the 'delete_present_case_code_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PresentCaseCodeStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePresentCaseCodeStatusesByValueResponse
+    inputTypeName: DeletePresentCaseCodeStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_present_case_code_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePresentCaseCodeStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePresentCaseCodeStatusesByValue
+  outputType: DeletePresentCaseCodeStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: PresentCaseCodeStatusesBoolExp
+      description: Delete permission predicate over the 'present_case_code_statuses'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_present_case_code_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePresentCaseCodeStatusesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'present_case_code_statuses' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePresentCaseCodeStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

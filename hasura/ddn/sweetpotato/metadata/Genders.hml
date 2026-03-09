@@ -1,0 +1,381 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Genders
+  description: Giới tính
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: Genders
+    inputTypeName: GendersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: genders
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Genders
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: GendersBoolExp
+  operand:
+    object:
+      type: Genders
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornPatients
+        - relationshipName: identityUsers
+        - relationshipName: medicalBookingBookingHistories
+        - relationshipName: medicalBookingCustomers
+        - relationshipName: ocrDischargePapers
+        - relationshipName: ocrMedicalRecords
+        - relationshipName: ocrPrescriptions
+        - relationshipName: ocrQcDischargePapers
+        - relationshipName: ocrQcMedicalRecords
+        - relationshipName: ocrQcPrescriptions
+        - relationshipName: slvClaimCaseSameEventGroups
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: GendersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: GendersAggExp
+  operand:
+    object:
+      aggregatedType: Genders
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: GendersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: GendersOrderByExp
+  operand:
+    object:
+      orderedType: Genders
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: GendersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Genders
+  objectType: Genders
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: genders
+  filterExpressionType: GendersBoolExp
+  aggregateExpression: GendersAggExp
+  orderByExpression: GendersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: genders
+      subscription:
+        rootField: genders
+    selectUniques:
+      - queryRootField: gendersByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: gendersByValue
+    filterInputTypeName: GendersFilterInput
+    aggregate:
+      queryRootField: gendersAggregate
+      subscription:
+        rootField: gendersAggregate
+  description: Giới tính
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Genders
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPatients
+  sourceType: Genders
+  target:
+    model:
+      name: HawthornPatients
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornPatientsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: gender
+  graphql:
+    aggregateFieldName: hawthornPatientsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUsers
+  sourceType: Genders
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityUsersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: gender
+  graphql:
+    aggregateFieldName: identityUsersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingBookingHistories
+  sourceType: Genders
+  target:
+    model:
+      name: MedicalBookingBookingHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingBookingHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: gender
+  graphql:
+    aggregateFieldName: medicalBookingBookingHistoriesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingCustomers
+  sourceType: Genders
+  target:
+    model:
+      name: MedicalBookingCustomers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingCustomersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: gender
+  graphql:
+    aggregateFieldName: medicalBookingCustomersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrDischargePapers
+  sourceType: Genders
+  target:
+    model:
+      name: OcrDischargePapers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrDischargePapersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: gender
+  graphql:
+    aggregateFieldName: ocrDischargePapersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrMedicalRecords
+  sourceType: Genders
+  target:
+    model:
+      name: OcrMedicalRecords
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrMedicalRecordsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: gender
+  graphql:
+    aggregateFieldName: ocrMedicalRecordsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPrescriptions
+  sourceType: Genders
+  target:
+    model:
+      name: OcrPrescriptions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrPrescriptionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: gender
+  graphql:
+    aggregateFieldName: ocrPrescriptionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrQcDischargePapers
+  sourceType: Genders
+  target:
+    model:
+      name: OcrQcDischargePapers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrQcDischargePapersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: gender
+  graphql:
+    aggregateFieldName: ocrQcDischargePapersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrQcMedicalRecords
+  sourceType: Genders
+  target:
+    model:
+      name: OcrQcMedicalRecords
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrQcMedicalRecordsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: gender
+  graphql:
+    aggregateFieldName: ocrQcMedicalRecordsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrQcPrescriptions
+  sourceType: Genders
+  target:
+    model:
+      name: OcrQcPrescriptions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrQcPrescriptionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: gender
+  graphql:
+    aggregateFieldName: ocrQcPrescriptionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvClaimCaseSameEventGroups
+  sourceType: Genders
+  target:
+    model:
+      name: SlvClaimCaseSameEventGroups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvClaimCaseSameEventGroupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: claimantGender
+  graphql:
+    aggregateFieldName: slvClaimCaseSameEventGroupsAggregate
+

@@ -1,0 +1,80 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeResponse
+  description: Responses from the
+    'delete_fwd_insured_certificate_status_mapping_by_insured_certificate_status_code_and_policy_status_code'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdInsuredCertificateStatusMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeResponse
+    inputTypeName: DeleteFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_insured_certificate_status_mapping_by_insured_certificate_status_code_and_policy_status_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCode
+  outputType: DeleteFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCodeResponse!
+  arguments:
+    - name: keyInsuredCertificateStatusCode
+      type: String_1!
+    - name: keyPolicyStatusCode
+      type: String_1!
+    - name: preCheck
+      type: FwdInsuredCertificateStatusMappingBoolExp
+      description: Delete permission predicate over the
+        'fwd_insured_certificate_status_mapping' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_insured_certificate_status_mapping_by_insured_certificate_status_code_and_policy_status_code
+    argumentMapping:
+      keyInsuredCertificateStatusCode: key_insured_certificate_status_code
+      keyPolicyStatusCode: key_policy_status_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_insured_certificate_status_mapping'
+    collection using the 'insured_certificate_status_code' and
+    'policy_status_code' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdInsuredCertificateStatusMappingByInsuredCertificateStatusCodeAndPolicyStatusCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

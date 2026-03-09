@@ -1,0 +1,332 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyCorrespondences
+  fields:
+    - name: autoSend
+      type: Boolean_1!
+    - name: conditions
+      type: Json
+    - name: correspondenceTemplateId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: policyId
+      type: Uuid!
+    - name: sendWhen
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: PolicyCorrespondences
+    inputTypeName: PolicyCorrespondencesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_correspondences
+      fieldMapping:
+        autoSend:
+          column:
+            name: auto_send
+        conditions:
+          column:
+            name: conditions
+        correspondenceTemplateId:
+          column:
+            name: correspondence_template_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        sendWhen:
+          column:
+            name: send_when
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyCorrespondences
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoSend
+          - conditions
+          - correspondenceTemplateId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - policyId
+          - sendWhen
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyCorrespondencesBoolExp
+  operand:
+    object:
+      type: PolicyCorrespondences
+      comparableFields:
+        - fieldName: autoSend
+          booleanExpressionType: BoolBoolExp
+        - fieldName: conditions
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: correspondenceTemplateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: sendWhen
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: correspondenceHistories
+        - relationshipName: correspondenceTemplate
+        - relationshipName: policySetting
+        - relationshipName: correspondenceSendWhen
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyCorrespondencesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyCorrespondencesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyCorrespondences
+      aggregatableFields:
+        - fieldName: autoSend
+          aggregateExpression: BoolAggExp
+        - fieldName: conditions
+          aggregateExpression: JsonbAggExp
+        - fieldName: correspondenceTemplateId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: sendWhen
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyCorrespondencesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyCorrespondencesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyCorrespondences
+      orderableFields:
+        - fieldName: autoSend
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: conditions
+          orderByExpression: JsonOrderByExp
+        - fieldName: correspondenceTemplateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: sendWhen
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: correspondenceTemplate
+        - relationshipName: policySetting
+        - relationshipName: correspondenceSendWhen
+  graphql:
+    expressionTypeName: PolicyCorrespondencesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyCorrespondences
+  objectType: PolicyCorrespondences
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_correspondences
+  filterExpressionType: PolicyCorrespondencesBoolExp
+  aggregateExpression: PolicyCorrespondencesAggExp
+  orderByExpression: PolicyCorrespondencesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyCorrespondences
+      subscription:
+        rootField: policyCorrespondences
+    selectUniques:
+      - queryRootField: policyCorrespondencesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: policyCorrespondencesById
+      - queryRootField: policyCorrespondencesByPolicyIdSendWhenCorrespondenceTemplateIdDeletedAtKey
+        uniqueIdentifier:
+          - correspondenceTemplateId
+          - deletedAt
+          - policyId
+          - sendWhen
+        subscription:
+          rootField: policyCorrespondencesByPolicyIdSendWhenCorrespondenceTemplateIdDeletedAtKey
+    filterInputTypeName: PolicyCorrespondencesFilterInput
+    aggregate:
+      queryRootField: policyCorrespondencesAggregate
+      subscription:
+        rootField: policyCorrespondencesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyCorrespondences
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceHistories
+  sourceType: PolicyCorrespondences
+  target:
+    model:
+      name: CorrespondenceHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: policyCorrespondenceId
+  graphql:
+    aggregateFieldName: correspondenceHistoriesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceTemplate
+  sourceType: PolicyCorrespondences
+  target:
+    model:
+      name: CorrespondenceTemplates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: correspondenceTemplateId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policySetting
+  sourceType: PolicyCorrespondences
+  target:
+    model:
+      name: PolicySettings
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceSendWhen
+  sourceType: PolicyCorrespondences
+  target:
+    model:
+      name: CorrespondenceSendWhen
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: sendWhen
+      target:
+        modelField:
+          - fieldName: value
+

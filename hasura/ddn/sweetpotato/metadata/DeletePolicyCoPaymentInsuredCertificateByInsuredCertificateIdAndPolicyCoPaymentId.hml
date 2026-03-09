@@ -1,0 +1,80 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicyCoPaymentInsuredCertificateByInsuredCertificateIdAndPolicyCoPaymentIdResponse
+  description: Responses from the
+    'delete_policy_co_payment_insured_certificate_by_insured_certificate_id_and_policy_co_payment_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyCoPaymentInsuredCertificate!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicyCoPaymentInsuredCertificateByInsuredCertificateIdAndPolicyCoPaymentIdResponse
+    inputTypeName: DeletePolicyCoPaymentInsuredCertificateByInsuredCertificateIdAndPolicyCoPaymentIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_co_payment_insured_certificate_by_insured_certificate_id_and_policy_co_payment_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicyCoPaymentInsuredCertificateByInsuredCertificateIdAndPolicyCoPaymentIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicyCoPaymentInsuredCertificateByInsuredCertificateIdAndPolicyCoPaymentId
+  outputType: DeletePolicyCoPaymentInsuredCertificateByInsuredCertificateIdAndPolicyCoPaymentIdResponse!
+  arguments:
+    - name: keyInsuredCertificateId
+      type: Uuid!
+    - name: keyPolicyCoPaymentId
+      type: Uuid!
+    - name: preCheck
+      type: PolicyCoPaymentInsuredCertificateBoolExp
+      description: Delete permission predicate over the
+        'policy_co_payment_insured_certificate' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_co_payment_insured_certificate_by_insured_certificate_id_and_policy_co_payment_id
+    argumentMapping:
+      keyInsuredCertificateId: key_insured_certificate_id
+      keyPolicyCoPaymentId: key_policy_co_payment_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicyCoPaymentInsuredCertificateByInsuredCertificateIdAndPolicyCoPaymentId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_co_payment_insured_certificate'
+    collection using the 'insured_certificate_id' and 'policy_co_payment_id'
+    keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicyCoPaymentInsuredCertificateByInsuredCertificateIdAndPolicyCoPaymentId
+  permissions:
+    - role: admin
+      allowExecution: true
+

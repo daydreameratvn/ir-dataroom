@@ -1,0 +1,114 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdBanksObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: name
+      type: String_1
+    - name: ppyBankId
+      type: Uuid
+  graphql:
+    typeName: InsertFwdBanksObject
+    inputTypeName: InsertFwdBanksObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_banks_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        name:
+          column:
+            name: name
+        ppyBankId:
+          column:
+            name: ppy_bank_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdBanksObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - name
+          - ppyBankId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdBanksResponse
+  description: Responses from the 'insert_fwd_banks' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdBanks!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdBanksResponse
+    inputTypeName: InsertFwdBanksResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_banks_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdBanksResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdBanks
+  outputType: InsertFwdBanksResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdBanksObject!]!"
+    - name: postCheck
+      type: FwdBanksBoolExp
+      description: Insert permission predicate over the 'fwd_banks' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_banks
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdBanks
+    rootFieldKind: Mutation
+  description: Insert into the fwd_banks table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdBanks
+  permissions:
+    - role: admin
+      allowExecution: true
+

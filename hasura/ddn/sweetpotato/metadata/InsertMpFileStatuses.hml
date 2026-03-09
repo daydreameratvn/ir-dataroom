@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpFileStatusesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertMpFileStatusesObject
+    inputTypeName: InsertMpFileStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_file_statuses_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpFileStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpFileStatusesResponse
+  description: Responses from the 'insert_mp_file_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpFileStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMpFileStatusesResponse
+    inputTypeName: InsertMpFileStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_file_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpFileStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMpFileStatuses
+  outputType: InsertMpFileStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMpFileStatusesObject!]!"
+    - name: postCheck
+      type: MpFileStatusesBoolExp
+      description: Insert permission predicate over the 'mp_file_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_mp_file_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMpFileStatuses
+    rootFieldKind: Mutation
+  description: Insert into the mp_file_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMpFileStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

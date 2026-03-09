@@ -1,0 +1,183 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCorrespondenceSupportedMailboxesComment
+  description: Update the 'comment' column in the
+    'correspondence_supported_mailboxes' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCorrespondenceSupportedMailboxesComment
+    inputTypeName: UpdateColumnCorrespondenceSupportedMailboxesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_correspondence_supported_mailboxes_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCorrespondenceSupportedMailboxesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCorrespondenceSupportedMailboxesValue
+  description: Update the 'value' column in the
+    'correspondence_supported_mailboxes' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCorrespondenceSupportedMailboxesValue
+    inputTypeName: UpdateColumnCorrespondenceSupportedMailboxesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_correspondence_supported_mailboxes_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCorrespondenceSupportedMailboxesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorrespondenceSupportedMailboxesByValueUpdateColumns
+  description: Update the columns of the 'correspondence_supported_mailboxes' collection
+  fields:
+    - name: comment
+      type: UpdateColumnCorrespondenceSupportedMailboxesComment
+      description: Update the 'comment' column in the
+        'correspondence_supported_mailboxes' collection.
+    - name: value
+      type: UpdateColumnCorrespondenceSupportedMailboxesValue
+      description: Update the 'value' column in the
+        'correspondence_supported_mailboxes' collection.
+  graphql:
+    typeName: UpdateCorrespondenceSupportedMailboxesByValueUpdateColumns
+    inputTypeName: UpdateCorrespondenceSupportedMailboxesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_correspondence_supported_mailboxes_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorrespondenceSupportedMailboxesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorrespondenceSupportedMailboxesByValueResponse
+  description: Responses from the
+    'update_correspondence_supported_mailboxes_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceSupportedMailboxes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCorrespondenceSupportedMailboxesByValueResponse
+    inputTypeName: UpdateCorrespondenceSupportedMailboxesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_correspondence_supported_mailboxes_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorrespondenceSupportedMailboxesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCorrespondenceSupportedMailboxesByValue
+  outputType: UpdateCorrespondenceSupportedMailboxesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: CorrespondenceSupportedMailboxesBoolExp
+      description: Update permission post-condition predicate over the
+        'correspondence_supported_mailboxes' collection
+    - name: preCheck
+      type: CorrespondenceSupportedMailboxesBoolExp
+      description: Update permission pre-condition predicate over the
+        'correspondence_supported_mailboxes' collection
+    - name: updateColumns
+      type: UpdateCorrespondenceSupportedMailboxesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_correspondence_supported_mailboxes_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCorrespondenceSupportedMailboxesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'correspondence_supported_mailboxes'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCorrespondenceSupportedMailboxesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

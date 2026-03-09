@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseFeedbacksObject
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: comment
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: rating
+      type: Bigdecimal!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertClaimCaseFeedbacksObject
+    inputTypeName: InsertClaimCaseFeedbacksObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_feedbacks_object
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        comment:
+          column:
+            name: comment
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        rating:
+          column:
+            name: rating
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseFeedbacksObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - comment
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - rating
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseFeedbacksResponse
+  description: Responses from the 'insert_claim_case_feedbacks' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseFeedbacks!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCaseFeedbacksResponse
+    inputTypeName: InsertClaimCaseFeedbacksResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_feedbacks_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseFeedbacksResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCaseFeedbacks
+  outputType: InsertClaimCaseFeedbacksResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCaseFeedbacksObject!]!"
+    - name: postCheck
+      type: ClaimCaseFeedbacksBoolExp
+      description: Insert permission predicate over the 'claim_case_feedbacks' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_case_feedbacks
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCaseFeedbacks
+    rootFieldKind: Mutation
+  description: Insert into the claim_case_feedbacks table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCaseFeedbacks
+  permissions:
+    - role: admin
+      allowExecution: true
+

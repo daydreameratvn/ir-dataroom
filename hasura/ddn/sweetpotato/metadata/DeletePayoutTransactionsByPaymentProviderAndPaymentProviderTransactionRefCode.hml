@@ -1,0 +1,78 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutTransactionsByPaymentProviderAndPaymentProviderTransactionRefCodeResponse
+  description: Responses from the
+    'delete_payout_transactions_by_payment_provider_and_payment_provider_transaction_ref_code'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutTransactions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutTransactionsByPaymentProviderAndPaymentProviderTransactionRefCodeResponse
+    inputTypeName: DeletePayoutTransactionsByPaymentProviderAndPaymentProviderTransactionRefCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_transactions_by_payment_provider_and_payment_provider_transaction_ref_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutTransactionsByPaymentProviderAndPaymentProviderTransactionRefCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutTransactionsByPaymentProviderAndPaymentProviderTransactionRefCode
+  outputType: DeletePayoutTransactionsByPaymentProviderAndPaymentProviderTransactionRefCodeResponse!
+  arguments:
+    - name: keyPaymentProvider
+      type: String_1!
+    - name: keyPaymentProviderTransactionRefCode
+      type: String_1
+    - name: preCheck
+      type: PayoutTransactionsBoolExp
+      description: Delete permission predicate over the 'payout_transactions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_transactions_by_payment_provider_and_payment_provider_transaction_ref_code
+    argumentMapping:
+      keyPaymentProvider: key_payment_provider
+      keyPaymentProviderTransactionRefCode: key_payment_provider_transaction_ref_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutTransactionsByPaymentProviderAndPaymentProviderTransactionRefCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_transactions' collection using the
+    'payment_provider' and 'payment_provider_transaction_ref_code' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutTransactionsByPaymentProviderAndPaymentProviderTransactionRefCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

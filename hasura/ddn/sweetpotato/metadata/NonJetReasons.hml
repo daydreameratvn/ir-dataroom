@@ -1,0 +1,255 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: NonJetReasons
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insurerId
+      type: Uuid!
+    - name: needExplanation
+      type: Boolean_1!
+    - name: planId
+      type: Uuid
+    - name: reason
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: NonJetReasons
+    inputTypeName: NonJetReasonsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: non_jet_reasons
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        needExplanation:
+          column:
+            name: need_explanation
+        planId:
+          column:
+            name: plan_id
+        reason:
+          column:
+            name: reason
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: NonJetReasons
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - insurerId
+          - needExplanation
+          - planId
+          - reason
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: NonJetReasonsBoolExp
+  operand:
+    object:
+      type: NonJetReasons
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: needExplanation
+          booleanExpressionType: BoolBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: reason
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: jetResultDetails
+        - relationshipName: company
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: NonJetReasonsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: NonJetReasonsAggExp
+  operand:
+    object:
+      aggregatedType: NonJetReasons
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerId
+          aggregateExpression: UuidAggExp
+        - fieldName: needExplanation
+          aggregateExpression: BoolAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: reason
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: NonJetReasonsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: NonJetReasonsOrderByExp
+  operand:
+    object:
+      orderedType: NonJetReasons
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: needExplanation
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: reason
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+  graphql:
+    expressionTypeName: NonJetReasonsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: NonJetReasons
+  objectType: NonJetReasons
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: non_jet_reasons
+  filterExpressionType: NonJetReasonsBoolExp
+  aggregateExpression: NonJetReasonsAggExp
+  orderByExpression: NonJetReasonsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: nonJetReasons
+      subscription:
+        rootField: nonJetReasons
+    selectUniques:
+      - queryRootField: nonJetReasonsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: nonJetReasonsById
+      - queryRootField: nonJetReasonsByNonJetReasonsReasonInsurerIdPlanIdKey
+        uniqueIdentifier:
+          - insurerId
+          - planId
+          - reason
+        subscription:
+          rootField: nonJetReasonsByNonJetReasonsReasonInsurerIdPlanIdKey
+    filterInputTypeName: NonJetReasonsFilterInput
+    aggregate:
+      queryRootField: nonJetReasonsAggregate
+      subscription:
+        rootField: nonJetReasonsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: NonJetReasons
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: jetResultDetails
+  sourceType: NonJetReasons
+  target:
+    model:
+      name: JetResultDetails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: JetResultDetailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: nonJetReasonId
+  graphql:
+    aggregateFieldName: jetResultDetailsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: NonJetReasons
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insurerId
+      target:
+        modelField:
+          - fieldName: companyId
+

@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteSlvServingAgentsByAgentCodeResponse
+  description: Responses from the 'delete_slv_serving_agents_by_agent_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvServingAgents!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteSlvServingAgentsByAgentCodeResponse
+    inputTypeName: DeleteSlvServingAgentsByAgentCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_slv_serving_agents_by_agent_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteSlvServingAgentsByAgentCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteSlvServingAgentsByAgentCode
+  outputType: DeleteSlvServingAgentsByAgentCodeResponse!
+  arguments:
+    - name: keyAgentCode
+      type: String_1!
+    - name: preCheck
+      type: SlvServingAgentsBoolExp
+      description: Delete permission predicate over the 'slv_serving_agents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_slv_serving_agents_by_agent_code
+    argumentMapping:
+      keyAgentCode: key_agent_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteSlvServingAgentsByAgentCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'slv_serving_agents' collection using the
+    'agent_code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteSlvServingAgentsByAgentCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,157 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornDiagnosticTestResultsObject
+  fields:
+    - name: biomarkerResultId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: diagnosticTestId
+      type: Uuid!
+    - name: documentResultId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: name
+      type: String_1
+    - name: ocrResult
+      type: Json
+    - name: textResult
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertHawthornDiagnosticTestResultsObject
+    inputTypeName: InsertHawthornDiagnosticTestResultsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_diagnostic_test_results_object
+      fieldMapping:
+        biomarkerResultId:
+          column:
+            name: biomarker_result_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        diagnosticTestId:
+          column:
+            name: diagnostic_test_id
+        documentResultId:
+          column:
+            name: document_result_id
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        ocrResult:
+          column:
+            name: ocr_result
+        textResult:
+          column:
+            name: text_result
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornDiagnosticTestResultsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - biomarkerResultId
+          - createdAt
+          - deletedAt
+          - diagnosticTestId
+          - documentResultId
+          - id
+          - name
+          - ocrResult
+          - textResult
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornDiagnosticTestResultsResponse
+  description: Responses from the 'insert_hawthorn_diagnostic_test_results' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornDiagnosticTestResults!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornDiagnosticTestResultsResponse
+    inputTypeName: InsertHawthornDiagnosticTestResultsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_diagnostic_test_results_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornDiagnosticTestResultsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornDiagnosticTestResults
+  outputType: InsertHawthornDiagnosticTestResultsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornDiagnosticTestResultsObject!]!"
+    - name: postCheck
+      type: HawthornDiagnosticTestResultsBoolExp
+      description: Insert permission predicate over the
+        'hawthorn_diagnostic_test_results' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_diagnostic_test_results
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornDiagnosticTestResults
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_diagnostic_test_results table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornDiagnosticTestResults
+  permissions:
+    - role: admin
+      allowExecution: true
+

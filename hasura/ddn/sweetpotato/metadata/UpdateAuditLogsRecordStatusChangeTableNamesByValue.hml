@@ -1,0 +1,184 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnAuditLogsRecordStatusChangeTableNamesComment
+  description: Update the 'comment' column in the
+    'audit_logs_record_status_change_table_names' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnAuditLogsRecordStatusChangeTableNamesComment
+    inputTypeName: UpdateColumnAuditLogsRecordStatusChangeTableNamesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_audit_logs_record_status_change_table_names_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnAuditLogsRecordStatusChangeTableNamesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnAuditLogsRecordStatusChangeTableNamesValue
+  description: Update the 'value' column in the
+    'audit_logs_record_status_change_table_names' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnAuditLogsRecordStatusChangeTableNamesValue
+    inputTypeName: UpdateColumnAuditLogsRecordStatusChangeTableNamesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_audit_logs_record_status_change_table_names_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnAuditLogsRecordStatusChangeTableNamesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateAuditLogsRecordStatusChangeTableNamesByValueUpdateColumns
+  description: Update the columns of the
+    'audit_logs_record_status_change_table_names' collection
+  fields:
+    - name: comment
+      type: UpdateColumnAuditLogsRecordStatusChangeTableNamesComment
+      description: Update the 'comment' column in the
+        'audit_logs_record_status_change_table_names' collection.
+    - name: value
+      type: UpdateColumnAuditLogsRecordStatusChangeTableNamesValue
+      description: Update the 'value' column in the
+        'audit_logs_record_status_change_table_names' collection.
+  graphql:
+    typeName: UpdateAuditLogsRecordStatusChangeTableNamesByValueUpdateColumns
+    inputTypeName: UpdateAuditLogsRecordStatusChangeTableNamesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_audit_logs_record_status_change_table_names_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateAuditLogsRecordStatusChangeTableNamesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateAuditLogsRecordStatusChangeTableNamesByValueResponse
+  description: Responses from the
+    'update_audit_logs_record_status_change_table_names_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuditLogsRecordStatusChangeTableNames!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateAuditLogsRecordStatusChangeTableNamesByValueResponse
+    inputTypeName: UpdateAuditLogsRecordStatusChangeTableNamesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_audit_logs_record_status_change_table_names_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateAuditLogsRecordStatusChangeTableNamesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateAuditLogsRecordStatusChangeTableNamesByValue
+  outputType: UpdateAuditLogsRecordStatusChangeTableNamesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: AuditLogsRecordStatusChangeTableNamesBoolExp
+      description: Update permission post-condition predicate over the
+        'audit_logs_record_status_change_table_names' collection
+    - name: preCheck
+      type: AuditLogsRecordStatusChangeTableNamesBoolExp
+      description: Update permission pre-condition predicate over the
+        'audit_logs_record_status_change_table_names' collection
+    - name: updateColumns
+      type: UpdateAuditLogsRecordStatusChangeTableNamesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_audit_logs_record_status_change_table_names_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateAuditLogsRecordStatusChangeTableNamesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'audit_logs_record_status_change_table_names'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateAuditLogsRecordStatusChangeTableNamesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

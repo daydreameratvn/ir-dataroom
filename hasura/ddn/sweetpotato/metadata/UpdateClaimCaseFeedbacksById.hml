@@ -1,0 +1,170 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseFeedbacksByIdUpdateColumns
+  description: Update the columns of the 'claim_case_feedbacks' collection
+  fields:
+    - name: claimCaseId
+      type: UpdateColumnClaimCaseFeedbacksClaimCaseId
+      description: Update the 'claim_case_id' column in the 'claim_case_feedbacks'
+        collection.
+    - name: comment
+      type: UpdateColumnClaimCaseFeedbacksComment
+      description: Update the 'comment' column in the 'claim_case_feedbacks' collection.
+    - name: createdAt
+      type: UpdateColumnClaimCaseFeedbacksCreatedAt
+      description: Update the 'created_at' column in the 'claim_case_feedbacks' collection.
+    - name: createdBy
+      type: UpdateColumnClaimCaseFeedbacksCreatedBy
+      description: Update the 'created_by' column in the 'claim_case_feedbacks' collection.
+    - name: deletedAt
+      type: UpdateColumnClaimCaseFeedbacksDeletedAt
+      description: Update the 'deleted_at' column in the 'claim_case_feedbacks' collection.
+    - name: id
+      type: UpdateColumnClaimCaseFeedbacksId
+      description: Update the 'id' column in the 'claim_case_feedbacks' collection.
+    - name: rating
+      type: UpdateColumnClaimCaseFeedbacksRating
+      description: Update the 'rating' column in the 'claim_case_feedbacks' collection.
+    - name: updatedAt
+      type: UpdateColumnClaimCaseFeedbacksUpdatedAt
+      description: Update the 'updated_at' column in the 'claim_case_feedbacks' collection.
+    - name: updatedBy
+      type: UpdateColumnClaimCaseFeedbacksUpdatedBy
+      description: Update the 'updated_by' column in the 'claim_case_feedbacks' collection.
+  graphql:
+    typeName: UpdateClaimCaseFeedbacksByIdUpdateColumns
+    inputTypeName: UpdateClaimCaseFeedbacksByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_feedbacks_by_id_update_columns
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        comment:
+          column:
+            name: comment
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        rating:
+          column:
+            name: rating
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseFeedbacksByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - comment
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - rating
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseFeedbacksByIdResponse
+  description: Responses from the 'update_claim_case_feedbacks_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseFeedbacks!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateClaimCaseFeedbacksByIdResponse
+    inputTypeName: UpdateClaimCaseFeedbacksByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_feedbacks_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseFeedbacksByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateClaimCaseFeedbacksById
+  outputType: UpdateClaimCaseFeedbacksByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: ClaimCaseFeedbacksBoolExp
+      description: Update permission post-condition predicate over the
+        'claim_case_feedbacks' collection
+    - name: preCheck
+      type: ClaimCaseFeedbacksBoolExp
+      description: Update permission pre-condition predicate over the
+        'claim_case_feedbacks' collection
+    - name: updateColumns
+      type: UpdateClaimCaseFeedbacksByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_claim_case_feedbacks_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateClaimCaseFeedbacksById
+    rootFieldKind: Mutation
+  description: Update any row on the 'claim_case_feedbacks' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateClaimCaseFeedbacksById
+  permissions:
+    - role: admin
+      allowExecution: true
+

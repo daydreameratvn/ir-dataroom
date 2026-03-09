@@ -1,0 +1,120 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorporatesByCorporateIdUpdateColumns
+  description: Update the columns of the 'corporates' collection
+  fields:
+    - name: companyId
+      type: UpdateColumnCorporatesCompanyId
+      description: Update the 'company_id' column in the 'corporates' collection.
+    - name: corporateId
+      type: UpdateColumnCorporatesCorporateId
+      description: Update the 'corporate_id' column in the 'corporates' collection.
+  graphql:
+    typeName: UpdateCorporatesByCorporateIdUpdateColumns
+    inputTypeName: UpdateCorporatesByCorporateIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_corporates_by_corporate_id_update_columns
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        corporateId:
+          column:
+            name: corporate_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorporatesByCorporateIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - corporateId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorporatesByCorporateIdResponse
+  description: Responses from the 'update_corporates_by_corporate_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Corporates!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCorporatesByCorporateIdResponse
+    inputTypeName: UpdateCorporatesByCorporateIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_corporates_by_corporate_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorporatesByCorporateIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCorporatesByCorporateId
+  outputType: UpdateCorporatesByCorporateIdResponse!
+  arguments:
+    - name: keyCorporateId
+      type: Uuid!
+    - name: postCheck
+      type: CorporatesBoolExp
+      description: Update permission post-condition predicate over the 'corporates'
+        collection
+    - name: preCheck
+      type: CorporatesBoolExp
+      description: Update permission pre-condition predicate over the 'corporates'
+        collection
+    - name: updateColumns
+      type: UpdateCorporatesByCorporateIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_corporates_by_corporate_id
+    argumentMapping:
+      keyCorporateId: key_corporate_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCorporatesByCorporateId
+    rootFieldKind: Mutation
+  description: Update any row on the 'corporates' collection using the 'corporate_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCorporatesByCorporateId
+  permissions:
+    - role: admin
+      allowExecution: true
+

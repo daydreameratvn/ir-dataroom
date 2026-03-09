@@ -1,0 +1,244 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ImportedFiles
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: fileId
+      type: Uuid!
+    - name: id
+      type: Uuid!
+    - name: policyId
+      type: Uuid
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: ImportedFiles
+    inputTypeName: ImportedFilesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: imported_files
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ImportedFiles
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - fileId
+          - id
+          - policyId
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ImportedFilesBoolExp
+  operand:
+    object:
+      type: ImportedFiles
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: importedDataItems
+        - relationshipName: file
+        - relationshipName: policy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ImportedFilesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ImportedFilesAggExp
+  operand:
+    object:
+      aggregatedType: ImportedFiles
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fileId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ImportedFilesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ImportedFilesOrderByExp
+  operand:
+    object:
+      orderedType: ImportedFiles
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: file
+        - relationshipName: policy
+  graphql:
+    expressionTypeName: ImportedFilesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ImportedFiles
+  objectType: ImportedFiles
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: imported_files
+  filterExpressionType: ImportedFilesBoolExp
+  aggregateExpression: ImportedFilesAggExp
+  orderByExpression: ImportedFilesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: importedFiles
+      subscription:
+        rootField: importedFiles
+    selectUniques:
+      - queryRootField: importedFilesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: importedFilesById
+    filterInputTypeName: ImportedFilesFilterInput
+    aggregate:
+      queryRootField: importedFilesAggregate
+      subscription:
+        rootField: importedFilesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ImportedFiles
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: importedDataItems
+  sourceType: ImportedFiles
+  target:
+    model:
+      name: ImportedDataItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ImportedDataItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: importedFileId
+  graphql:
+    aggregateFieldName: importedDataItemsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: file
+  sourceType: ImportedFiles
+  target:
+    model:
+      name: Files
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: ImportedFiles
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+

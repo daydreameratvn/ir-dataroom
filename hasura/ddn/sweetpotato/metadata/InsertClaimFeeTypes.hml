@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimFeeTypesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertClaimFeeTypesObject
+    inputTypeName: InsertClaimFeeTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_fee_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimFeeTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimFeeTypesResponse
+  description: Responses from the 'insert_claim_fee_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimFeeTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimFeeTypesResponse
+    inputTypeName: InsertClaimFeeTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_fee_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimFeeTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimFeeTypes
+  outputType: InsertClaimFeeTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimFeeTypesObject!]!"
+    - name: postCheck
+      type: ClaimFeeTypesBoolExp
+      description: Insert permission predicate over the 'claim_fee_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_fee_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimFeeTypes
+    rootFieldKind: Mutation
+  description: Insert into the claim_fee_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimFeeTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

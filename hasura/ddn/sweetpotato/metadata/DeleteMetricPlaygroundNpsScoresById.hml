@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMetricPlaygroundNpsScoresByIdResponse
+  description: Responses from the 'delete_metric_playground_nps_scores_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetricPlaygroundNpsScores!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMetricPlaygroundNpsScoresByIdResponse
+    inputTypeName: DeleteMetricPlaygroundNpsScoresByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_metric_playground_nps_scores_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMetricPlaygroundNpsScoresByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMetricPlaygroundNpsScoresById
+  outputType: DeleteMetricPlaygroundNpsScoresByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: MetricPlaygroundNpsScoresBoolExp
+      description: Delete permission predicate over the 'metric_playground_nps_scores'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_metric_playground_nps_scores_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMetricPlaygroundNpsScoresById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'metric_playground_nps_scores' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMetricPlaygroundNpsScoresById
+  permissions:
+    - role: admin
+      allowExecution: true
+

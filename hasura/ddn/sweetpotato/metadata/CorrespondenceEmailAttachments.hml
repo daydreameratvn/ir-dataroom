@@ -1,0 +1,301 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceEmailAttachments
+  fields:
+    - name: checksum
+      type: String_1!
+    - name: claimDocumentId
+      type: Uuid
+    - name: contentDisposition
+      type: String_1!
+    - name: contentType
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: emailId
+      type: Uuid!
+    - name: fileId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1
+    - name: size
+      type: Bigdecimal!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: CorrespondenceEmailAttachments
+    inputTypeName: CorrespondenceEmailAttachmentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_email_attachments
+      fieldMapping:
+        checksum:
+          column:
+            name: checksum
+        claimDocumentId:
+          column:
+            name: claim_document_id
+        contentDisposition:
+          column:
+            name: content_disposition
+        contentType:
+          column:
+            name: content_type
+        createdAt:
+          column:
+            name: created_at
+        emailId:
+          column:
+            name: email_id
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        size:
+          column:
+            name: size
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceEmailAttachments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - checksum
+          - claimDocumentId
+          - contentDisposition
+          - contentType
+          - createdAt
+          - emailId
+          - fileId
+          - id
+          - name
+          - size
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceEmailAttachmentsBoolExp
+  operand:
+    object:
+      type: CorrespondenceEmailAttachments
+      comparableFields:
+        - fieldName: checksum
+          booleanExpressionType: TextBoolExp
+        - fieldName: claimDocumentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: contentDisposition
+          booleanExpressionType: TextBoolExp
+        - fieldName: contentType
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: emailId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: fileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: size
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimDocument
+        - relationshipName: correspondenceEmail
+        - relationshipName: file
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceEmailAttachmentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceEmailAttachmentsAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceEmailAttachments
+      aggregatableFields:
+        - fieldName: checksum
+          aggregateExpression: TextAggExp
+        - fieldName: claimDocumentId
+          aggregateExpression: UuidAggExp
+        - fieldName: contentDisposition
+          aggregateExpression: TextAggExp
+        - fieldName: contentType
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: emailId
+          aggregateExpression: UuidAggExp
+        - fieldName: fileId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: size
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceEmailAttachmentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceEmailAttachmentsOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceEmailAttachments
+      orderableFields:
+        - fieldName: checksum
+          orderByExpression: String1OrderByExp
+        - fieldName: claimDocumentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: contentDisposition
+          orderByExpression: String1OrderByExp
+        - fieldName: contentType
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: emailId
+          orderByExpression: UuidOrderByExp
+        - fieldName: fileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: size
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimDocument
+        - relationshipName: correspondenceEmail
+        - relationshipName: file
+  graphql:
+    expressionTypeName: CorrespondenceEmailAttachmentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceEmailAttachments
+  objectType: CorrespondenceEmailAttachments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_email_attachments
+  filterExpressionType: CorrespondenceEmailAttachmentsBoolExp
+  aggregateExpression: CorrespondenceEmailAttachmentsAggExp
+  orderByExpression: CorrespondenceEmailAttachmentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceEmailAttachments
+      subscription:
+        rootField: correspondenceEmailAttachments
+    selectUniques:
+      - queryRootField: correspondenceEmailAttachmentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: correspondenceEmailAttachmentsById
+    filterInputTypeName: CorrespondenceEmailAttachmentsFilterInput
+    aggregate:
+      queryRootField: correspondenceEmailAttachmentsAggregate
+      subscription:
+        rootField: correspondenceEmailAttachmentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceEmailAttachments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocument
+  sourceType: CorrespondenceEmailAttachments
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentId
+      target:
+        modelField:
+          - fieldName: claimDocumentId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmail
+  sourceType: CorrespondenceEmailAttachments
+  target:
+    model:
+      name: CorrespondenceEmails
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: emailId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: file
+  sourceType: CorrespondenceEmailAttachments
+  target:
+    model:
+      name: Files
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+

@@ -1,0 +1,109 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorporatesObject
+  fields:
+    - name: companyId
+      type: Uuid
+      description: Quan hệ 1-1 với companies
+    - name: corporateId
+      type: Uuid
+  graphql:
+    typeName: InsertCorporatesObject
+    inputTypeName: InsertCorporatesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_corporates_object
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        corporateId:
+          column:
+            name: corporate_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorporatesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - corporateId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorporatesResponse
+  description: Responses from the 'insert_corporates' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Corporates!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCorporatesResponse
+    inputTypeName: InsertCorporatesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_corporates_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorporatesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCorporates
+  outputType: InsertCorporatesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCorporatesObject!]!"
+    - name: postCheck
+      type: CorporatesBoolExp
+      description: Insert permission predicate over the 'corporates' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_corporates
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCorporates
+    rootFieldKind: Mutation
+  description: Insert into the corporates table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCorporates
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredBenefitsByCodeAndTypeResponse
+  description: Responses from the 'delete_insured_benefits_by_code_and_type' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredBenefitsByCodeAndTypeResponse
+    inputTypeName: DeleteInsuredBenefitsByCodeAndTypeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_benefits_by_code_and_type_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredBenefitsByCodeAndTypeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredBenefitsByCodeAndType
+  outputType: DeleteInsuredBenefitsByCodeAndTypeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: keyType
+      type: String_1!
+    - name: preCheck
+      type: InsuredBenefitsBoolExp
+      description: Delete permission predicate over the 'insured_benefits' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_benefits_by_code_and_type
+    argumentMapping:
+      keyCode: key_code
+      keyType: key_type
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredBenefitsByCodeAndType
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_benefits' collection using the
+    'code' and 'type' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredBenefitsByCodeAndType
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHawthornHealthCheckupStatusesByValueResponse
+  description: Responses from the
+    'delete_hawthorn_health_checkup_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornHealthCheckupStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHawthornHealthCheckupStatusesByValueResponse
+    inputTypeName: DeleteHawthornHealthCheckupStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hawthorn_health_checkup_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHawthornHealthCheckupStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHawthornHealthCheckupStatusesByValue
+  outputType: DeleteHawthornHealthCheckupStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: HawthornHealthCheckupStatusesBoolExp
+      description: Delete permission predicate over the
+        'hawthorn_health_checkup_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hawthorn_health_checkup_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHawthornHealthCheckupStatusesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hawthorn_health_checkup_statuses' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHawthornHealthCheckupStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

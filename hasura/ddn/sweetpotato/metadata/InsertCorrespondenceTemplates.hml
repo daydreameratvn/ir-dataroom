@@ -1,0 +1,175 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceTemplatesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamp
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: mainReceiver
+      type: String_1
+    - name: medium
+      type: String_1!
+    - name: name
+      type: String_1
+    - name: sendWhen
+      type: String_1!
+    - name: templateReceiverRefId
+      type: Uuid
+    - name: type
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertCorrespondenceTemplatesObject
+    inputTypeName: InsertCorrespondenceTemplatesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_templates_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        mainReceiver:
+          column:
+            name: main_receiver
+        medium:
+          column:
+            name: medium
+        name:
+          column:
+            name: name
+        sendWhen:
+          column:
+            name: send_when
+        templateReceiverRefId:
+          column:
+            name: template_receiver_ref_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceTemplatesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - id
+          - mainReceiver
+          - medium
+          - name
+          - sendWhen
+          - templateReceiverRefId
+          - type
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceTemplatesResponse
+  description: Responses from the 'insert_correspondence_templates' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceTemplates!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCorrespondenceTemplatesResponse
+    inputTypeName: InsertCorrespondenceTemplatesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_templates_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceTemplatesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCorrespondenceTemplates
+  outputType: InsertCorrespondenceTemplatesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCorrespondenceTemplatesObject!]!"
+    - name: postCheck
+      type: CorrespondenceTemplatesBoolExp
+      description: Insert permission predicate over the 'correspondence_templates'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_correspondence_templates
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCorrespondenceTemplates
+    rootFieldKind: Mutation
+  description: Insert into the correspondence_templates table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCorrespondenceTemplates
+  permissions:
+    - role: admin
+      allowExecution: true
+

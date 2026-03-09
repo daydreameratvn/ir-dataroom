@@ -1,0 +1,182 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: TclClaimCases
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: TclClaimCases
+    inputTypeName: TclClaimCasesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: tcl_claim_cases
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: TclClaimCases
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - id
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: TclClaimCasesBoolExp
+  operand:
+    object:
+      type: TclClaimCases
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: TclClaimCasesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: TclClaimCasesAggExp
+  operand:
+    object:
+      aggregatedType: TclClaimCases
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: TclClaimCasesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: TclClaimCasesOrderByExp
+  operand:
+    object:
+      orderedType: TclClaimCases
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+  graphql:
+    expressionTypeName: TclClaimCasesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: TclClaimCases
+  objectType: TclClaimCases
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: tcl_claim_cases
+  filterExpressionType: TclClaimCasesBoolExp
+  aggregateExpression: TclClaimCasesAggExp
+  orderByExpression: TclClaimCasesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: tclClaimCases
+      subscription:
+        rootField: tclClaimCases
+    selectUniques:
+      - queryRootField: tclClaimCasesByClaimCaseId
+        uniqueIdentifier:
+          - claimCaseId
+        subscription:
+          rootField: tclClaimCasesByClaimCaseId
+      - queryRootField: tclClaimCasesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: tclClaimCasesById
+    filterInputTypeName: TclClaimCasesFilterInput
+    aggregate:
+      queryRootField: tclClaimCasesAggregate
+      subscription:
+        rootField: tclClaimCasesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: TclClaimCases
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: TclClaimCases
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+

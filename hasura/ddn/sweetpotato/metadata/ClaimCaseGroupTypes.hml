@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseGroupTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimCaseGroupTypes
+    inputTypeName: ClaimCaseGroupTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_group_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseGroupTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseGroupTypesBoolExp
+  operand:
+    object:
+      type: ClaimCaseGroupTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimCaseGroups
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseGroupTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseGroupTypesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseGroupTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseGroupTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseGroupTypesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseGroupTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimCaseGroupTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseGroupTypes
+  objectType: ClaimCaseGroupTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_group_types
+  filterExpressionType: ClaimCaseGroupTypesBoolExp
+  aggregateExpression: ClaimCaseGroupTypesAggExp
+  orderByExpression: ClaimCaseGroupTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseGroupTypes
+      subscription:
+        rootField: claimCaseGroupTypes
+    selectUniques:
+      - queryRootField: claimCaseGroupTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimCaseGroupTypesByValue
+    filterInputTypeName: ClaimCaseGroupTypesFilterInput
+    aggregate:
+      queryRootField: claimCaseGroupTypesAggregate
+      subscription:
+        rootField: claimCaseGroupTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseGroupTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseGroups
+  sourceType: ClaimCaseGroupTypes
+  target:
+    model:
+      name: ClaimCaseGroups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseGroupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: claimCaseGroupsAggregate
+

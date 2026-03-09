@@ -1,0 +1,229 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AccessControls
+  description: Rule query, được assign cho insurer_role, field resource thể hiện
+    table của câu query.
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insurerRoleId
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: resource
+      type: String_1!
+    - name: rule
+      type: Json!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: AccessControls
+    inputTypeName: AccessControlsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: access_controls
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insurerRoleId:
+          column:
+            name: insurer_role_id
+        name:
+          column:
+            name: name
+        resource:
+          column:
+            name: resource
+        rule:
+          column:
+            name: rule
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AccessControls
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - insurerRoleId
+          - name
+          - resource
+          - rule
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AccessControlsBoolExp
+  operand:
+    object:
+      type: AccessControls
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerRoleId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: resource
+          booleanExpressionType: TextBoolExp
+        - fieldName: rule
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: insurerRole
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AccessControlsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AccessControlsAggExp
+  operand:
+    object:
+      aggregatedType: AccessControls
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerRoleId
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: resource
+          aggregateExpression: TextAggExp
+        - fieldName: rule
+          aggregateExpression: JsonbAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AccessControlsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AccessControlsOrderByExp
+  operand:
+    object:
+      orderedType: AccessControls
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerRoleId
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: resource
+          orderByExpression: String1OrderByExp
+        - fieldName: rule
+          orderByExpression: JsonOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: insurerRole
+  graphql:
+    expressionTypeName: AccessControlsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AccessControls
+  objectType: AccessControls
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: access_controls
+  filterExpressionType: AccessControlsBoolExp
+  aggregateExpression: AccessControlsAggExp
+  orderByExpression: AccessControlsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: accessControls
+      subscription:
+        rootField: accessControls
+    selectUniques:
+      - queryRootField: accessControlsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: accessControlsById
+    filterInputTypeName: AccessControlsFilterInput
+    aggregate:
+      queryRootField: accessControlsAggregate
+      subscription:
+        rootField: accessControlsAggregate
+  description: Rule query, được assign cho insurer_role, field resource thể hiện
+    table của câu query.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AccessControls
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insurerRole
+  sourceType: AccessControls
+  target:
+    model:
+      name: InsurerRoles
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insurerRoleId
+      target:
+        modelField:
+          - fieldName: id
+

@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePoliciesByPolicyNumberResponse
+  description: Responses from the 'delete_policies_by_policy_number' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Policies!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePoliciesByPolicyNumberResponse
+    inputTypeName: DeletePoliciesByPolicyNumberResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policies_by_policy_number_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePoliciesByPolicyNumberResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePoliciesByPolicyNumber
+  outputType: DeletePoliciesByPolicyNumberResponse!
+  arguments:
+    - name: keyPolicyNumber
+      type: String_1!
+    - name: preCheck
+      type: PoliciesBoolExp
+      description: Delete permission predicate over the 'policies' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policies_by_policy_number
+    argumentMapping:
+      keyPolicyNumber: key_policy_number
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePoliciesByPolicyNumber
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policies' collection using the 'policy_number' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePoliciesByPolicyNumber
+  permissions:
+    - role: admin
+      allowExecution: true
+

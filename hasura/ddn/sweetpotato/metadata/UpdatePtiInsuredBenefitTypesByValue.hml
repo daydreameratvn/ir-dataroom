@@ -1,0 +1,179 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPtiInsuredBenefitTypesComment
+  description: Update the 'comment' column in the 'pti_insured_benefit_types' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPtiInsuredBenefitTypesComment
+    inputTypeName: UpdateColumnPtiInsuredBenefitTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_pti_insured_benefit_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPtiInsuredBenefitTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPtiInsuredBenefitTypesValue
+  description: Update the 'value' column in the 'pti_insured_benefit_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPtiInsuredBenefitTypesValue
+    inputTypeName: UpdateColumnPtiInsuredBenefitTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_pti_insured_benefit_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPtiInsuredBenefitTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePtiInsuredBenefitTypesByValueUpdateColumns
+  description: Update the columns of the 'pti_insured_benefit_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnPtiInsuredBenefitTypesComment
+      description: Update the 'comment' column in the 'pti_insured_benefit_types'
+        collection.
+    - name: value
+      type: UpdateColumnPtiInsuredBenefitTypesValue
+      description: Update the 'value' column in the 'pti_insured_benefit_types' collection.
+  graphql:
+    typeName: UpdatePtiInsuredBenefitTypesByValueUpdateColumns
+    inputTypeName: UpdatePtiInsuredBenefitTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_pti_insured_benefit_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePtiInsuredBenefitTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePtiInsuredBenefitTypesByValueResponse
+  description: Responses from the 'update_pti_insured_benefit_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PtiInsuredBenefitTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePtiInsuredBenefitTypesByValueResponse
+    inputTypeName: UpdatePtiInsuredBenefitTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_pti_insured_benefit_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePtiInsuredBenefitTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePtiInsuredBenefitTypesByValue
+  outputType: UpdatePtiInsuredBenefitTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: PtiInsuredBenefitTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'pti_insured_benefit_types' collection
+    - name: preCheck
+      type: PtiInsuredBenefitTypesBoolExp
+      description: Update permission pre-condition predicate over the
+        'pti_insured_benefit_types' collection
+    - name: updateColumns
+      type: UpdatePtiInsuredBenefitTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_pti_insured_benefit_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePtiInsuredBenefitTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'pti_insured_benefit_types' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePtiInsuredBenefitTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

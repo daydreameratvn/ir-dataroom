@@ -1,0 +1,133 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyCoPaymentMedicalProviderObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: medicalProviderId
+      type: Uuid!
+    - name: policyCoPaymentId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPolicyCoPaymentMedicalProviderObject
+    inputTypeName: InsertPolicyCoPaymentMedicalProviderObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_co_payment_medical_provider_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        policyCoPaymentId:
+          column:
+            name: policy_co_payment_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyCoPaymentMedicalProviderObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - medicalProviderId
+          - policyCoPaymentId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyCoPaymentMedicalProviderResponse
+  description: Responses from the 'insert_policy_co_payment_medical_provider' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyCoPaymentMedicalProvider!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyCoPaymentMedicalProviderResponse
+    inputTypeName: InsertPolicyCoPaymentMedicalProviderResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_co_payment_medical_provider_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyCoPaymentMedicalProviderResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyCoPaymentMedicalProvider
+  outputType: InsertPolicyCoPaymentMedicalProviderResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyCoPaymentMedicalProviderObject!]!"
+    - name: postCheck
+      type: PolicyCoPaymentMedicalProviderBoolExp
+      description: Insert permission predicate over the
+        'policy_co_payment_medical_provider' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_co_payment_medical_provider
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyCoPaymentMedicalProvider
+    rootFieldKind: Mutation
+  description: Insert into the policy_co_payment_medical_provider table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyCoPaymentMedicalProvider
+  permissions:
+    - role: admin
+      allowExecution: true
+

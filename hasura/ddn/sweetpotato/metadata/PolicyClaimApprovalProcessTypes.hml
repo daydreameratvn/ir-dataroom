@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyClaimApprovalProcessTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PolicyClaimApprovalProcessTypes
+    inputTypeName: PolicyClaimApprovalProcessTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_claim_approval_process_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyClaimApprovalProcessTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyClaimApprovalProcessTypesBoolExp
+  operand:
+    object:
+      type: PolicyClaimApprovalProcessTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policySettings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyClaimApprovalProcessTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyClaimApprovalProcessTypesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyClaimApprovalProcessTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyClaimApprovalProcessTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyClaimApprovalProcessTypesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyClaimApprovalProcessTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicyClaimApprovalProcessTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyClaimApprovalProcessTypes
+  objectType: PolicyClaimApprovalProcessTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_claim_approval_process_types
+  filterExpressionType: PolicyClaimApprovalProcessTypesBoolExp
+  aggregateExpression: PolicyClaimApprovalProcessTypesAggExp
+  orderByExpression: PolicyClaimApprovalProcessTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyClaimApprovalProcessTypes
+      subscription:
+        rootField: policyClaimApprovalProcessTypes
+    selectUniques:
+      - queryRootField: policyClaimApprovalProcessTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: policyClaimApprovalProcessTypesByValue
+    filterInputTypeName: PolicyClaimApprovalProcessTypesFilterInput
+    aggregate:
+      queryRootField: policyClaimApprovalProcessTypesAggregate
+      subscription:
+        rootField: policyClaimApprovalProcessTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyClaimApprovalProcessTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policySettings
+  sourceType: PolicyClaimApprovalProcessTypes
+  target:
+    model:
+      name: PolicySettings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicySettingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: claimApprovalProcessType
+  graphql:
+    aggregateFieldName: policySettingsAggregate
+

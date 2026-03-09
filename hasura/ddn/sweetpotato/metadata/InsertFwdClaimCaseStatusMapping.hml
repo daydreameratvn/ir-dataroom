@@ -1,0 +1,115 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdClaimCaseStatusMappingObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: fwdStatusCode
+      type: String_1!
+    - name: ppyStatusCode
+      type: String_1!
+  graphql:
+    typeName: InsertFwdClaimCaseStatusMappingObject
+    inputTypeName: InsertFwdClaimCaseStatusMappingObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_claim_case_status_mapping_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        fwdStatusCode:
+          column:
+            name: fwd_status_code
+        ppyStatusCode:
+          column:
+            name: ppy_status_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdClaimCaseStatusMappingObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - fwdStatusCode
+          - ppyStatusCode
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdClaimCaseStatusMappingResponse
+  description: Responses from the 'insert_fwd_claim_case_status_mapping' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdClaimCaseStatusMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdClaimCaseStatusMappingResponse
+    inputTypeName: InsertFwdClaimCaseStatusMappingResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_claim_case_status_mapping_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdClaimCaseStatusMappingResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdClaimCaseStatusMapping
+  outputType: InsertFwdClaimCaseStatusMappingResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdClaimCaseStatusMappingObject!]!"
+    - name: postCheck
+      type: FwdClaimCaseStatusMappingBoolExp
+      description: Insert permission predicate over the
+        'fwd_claim_case_status_mapping' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_claim_case_status_mapping
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdClaimCaseStatusMapping
+    rootFieldKind: Mutation
+  description: Insert into the fwd_claim_case_status_mapping table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdClaimCaseStatusMapping
+  permissions:
+    - role: admin
+      allowExecution: true
+

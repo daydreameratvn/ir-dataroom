@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCompanyCorrespondencesByIdResponse
+  description: Responses from the 'delete_company_correspondences_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanyCorrespondences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCompanyCorrespondencesByIdResponse
+    inputTypeName: DeleteCompanyCorrespondencesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_company_correspondences_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCompanyCorrespondencesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCompanyCorrespondencesById
+  outputType: DeleteCompanyCorrespondencesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: CompanyCorrespondencesBoolExp
+      description: Delete permission predicate over the 'company_correspondences' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_company_correspondences_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCompanyCorrespondencesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'company_correspondences' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCompanyCorrespondencesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

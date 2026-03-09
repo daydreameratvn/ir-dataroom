@@ -1,0 +1,252 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutPayoutBankAccountActionLogs
+  fields:
+    - name: action
+      type: String_1!
+    - name: amount
+      type: Bigdecimal
+    - name: createdAt
+      type: Timestamptz!
+    - name: customData
+      type: Json
+    - name: happenedAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: payoutBankAccountId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: PayoutPayoutBankAccountActionLogs
+    inputTypeName: PayoutPayoutBankAccountActionLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_payout_bank_account_action_logs
+      fieldMapping:
+        action:
+          column:
+            name: action
+        amount:
+          column:
+            name: amount
+        createdAt:
+          column:
+            name: created_at
+        customData:
+          column:
+            name: custom_data
+        happenedAt:
+          column:
+            name: happened_at
+        id:
+          column:
+            name: id
+        payoutBankAccountId:
+          column:
+            name: payout_bank_account_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutPayoutBankAccountActionLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - amount
+          - createdAt
+          - customData
+          - happenedAt
+          - id
+          - payoutBankAccountId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutPayoutBankAccountActionLogsBoolExp
+  operand:
+    object:
+      type: PayoutPayoutBankAccountActionLogs
+      comparableFields:
+        - fieldName: action
+          booleanExpressionType: TextBoolExp
+        - fieldName: amount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: customData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: happenedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: payoutBankAccountId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: payoutPayoutBankAccountAction
+        - relationshipName: payoutPayoutBankAccount
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutPayoutBankAccountActionLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutPayoutBankAccountActionLogsAggExp
+  operand:
+    object:
+      aggregatedType: PayoutPayoutBankAccountActionLogs
+      aggregatableFields:
+        - fieldName: action
+          aggregateExpression: TextAggExp
+        - fieldName: amount
+          aggregateExpression: NumericAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: customData
+          aggregateExpression: JsonbAggExp
+        - fieldName: happenedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: payoutBankAccountId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutPayoutBankAccountActionLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutPayoutBankAccountActionLogsOrderByExp
+  operand:
+    object:
+      orderedType: PayoutPayoutBankAccountActionLogs
+      orderableFields:
+        - fieldName: action
+          orderByExpression: String1OrderByExp
+        - fieldName: amount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: customData
+          orderByExpression: JsonOrderByExp
+        - fieldName: happenedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: payoutBankAccountId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: payoutPayoutBankAccountAction
+        - relationshipName: payoutPayoutBankAccount
+  graphql:
+    expressionTypeName: PayoutPayoutBankAccountActionLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutPayoutBankAccountActionLogs
+  objectType: PayoutPayoutBankAccountActionLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_payout_bank_account_action_logs
+  filterExpressionType: PayoutPayoutBankAccountActionLogsBoolExp
+  aggregateExpression: PayoutPayoutBankAccountActionLogsAggExp
+  orderByExpression: PayoutPayoutBankAccountActionLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutPayoutBankAccountActionLogs
+      subscription:
+        rootField: payoutPayoutBankAccountActionLogs
+    selectUniques:
+      - queryRootField: payoutPayoutBankAccountActionLogsByPayoutBankAccountActionLogsActionPayoutBankAccountIdH
+        uniqueIdentifier:
+          - action
+          - happenedAt
+          - payoutBankAccountId
+        subscription:
+          rootField: payoutPayoutBankAccountActionLogsByPayoutBankAccountActionLogsActionPayoutBankAccountIdH
+      - queryRootField: payoutPayoutBankAccountActionLogsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: payoutPayoutBankAccountActionLogsById
+    filterInputTypeName: PayoutPayoutBankAccountActionLogsFilterInput
+    aggregate:
+      queryRootField: payoutPayoutBankAccountActionLogsAggregate
+      subscription:
+        rootField: payoutPayoutBankAccountActionLogsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutPayoutBankAccountActionLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPayoutBankAccountAction
+  sourceType: PayoutPayoutBankAccountActionLogs
+  target:
+    model:
+      name: PayoutPayoutBankAccountActions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: action
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPayoutBankAccount
+  sourceType: PayoutPayoutBankAccountActionLogs
+  target:
+    model:
+      name: PayoutPayoutBankAccounts
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: payoutBankAccountId
+      target:
+        modelField:
+          - fieldName: id
+

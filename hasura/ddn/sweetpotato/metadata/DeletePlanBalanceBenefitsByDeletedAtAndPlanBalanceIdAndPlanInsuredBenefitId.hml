@@ -1,0 +1,81 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePlanBalanceBenefitsByDeletedAtAndPlanBalanceIdAndPlanInsuredBenefitIdResponse
+  description: Responses from the
+    'delete_plan_balance_benefits_by_deleted_at_and_plan_balance_id_and_plan_insured_benefit_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanBalanceBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePlanBalanceBenefitsByDeletedAtAndPlanBalanceIdAndPlanInsuredBenefitIdResponse
+    inputTypeName: DeletePlanBalanceBenefitsByDeletedAtAndPlanBalanceIdAndPlanInsuredBenefitIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_plan_balance_benefits_by_deleted_at_and_plan_balance_id_and_plan_insured_benefit_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePlanBalanceBenefitsByDeletedAtAndPlanBalanceIdAndPlanInsuredBenefitIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePlanBalanceBenefitsByDeletedAtAndPlanBalanceIdAndPlanInsuredBenefitId
+  outputType: DeletePlanBalanceBenefitsByDeletedAtAndPlanBalanceIdAndPlanInsuredBenefitIdResponse!
+  arguments:
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyPlanBalanceId
+      type: Uuid!
+    - name: keyPlanInsuredBenefitId
+      type: Uuid!
+    - name: preCheck
+      type: PlanBalanceBenefitsBoolExp
+      description: Delete permission predicate over the 'plan_balance_benefits' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_plan_balance_benefits_by_deleted_at_and_plan_balance_id_and_plan_insured_benefit_id
+    argumentMapping:
+      keyDeletedAt: key_deleted_at
+      keyPlanBalanceId: key_plan_balance_id
+      keyPlanInsuredBenefitId: key_plan_insured_benefit_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePlanBalanceBenefitsByDeletedAtAndPlanBalanceIdAndPlanInsuredBenefitId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'plan_balance_benefits' collection using the
+    'deleted_at', 'plan_balance_id' and 'plan_insured_benefit_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePlanBalanceBenefitsByDeletedAtAndPlanBalanceIdAndPlanInsuredBenefitId
+  permissions:
+    - role: admin
+      allowExecution: true
+

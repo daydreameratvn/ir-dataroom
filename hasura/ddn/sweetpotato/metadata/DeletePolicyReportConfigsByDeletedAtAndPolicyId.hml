@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicyReportConfigsByDeletedAtAndPolicyIdResponse
+  description: Responses from the
+    'delete_policy_report_configs_by_deleted_at_and_policy_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyReportConfigs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicyReportConfigsByDeletedAtAndPolicyIdResponse
+    inputTypeName: DeletePolicyReportConfigsByDeletedAtAndPolicyIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_report_configs_by_deleted_at_and_policy_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicyReportConfigsByDeletedAtAndPolicyIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicyReportConfigsByDeletedAtAndPolicyId
+  outputType: DeletePolicyReportConfigsByDeletedAtAndPolicyIdResponse!
+  arguments:
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyPolicyId
+      type: Uuid!
+    - name: preCheck
+      type: PolicyReportConfigsBoolExp
+      description: Delete permission predicate over the 'policy_report_configs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_report_configs_by_deleted_at_and_policy_id
+    argumentMapping:
+      keyDeletedAt: key_deleted_at
+      keyPolicyId: key_policy_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicyReportConfigsByDeletedAtAndPolicyId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_report_configs' collection using the
+    'deleted_at' and 'policy_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicyReportConfigsByDeletedAtAndPolicyId
+  permissions:
+    - role: admin
+      allowExecution: true
+

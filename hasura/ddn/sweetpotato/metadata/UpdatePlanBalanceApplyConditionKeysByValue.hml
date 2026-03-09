@@ -1,0 +1,183 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPlanBalanceApplyConditionKeysComment
+  description: Update the 'comment' column in the
+    'plan_balance_apply_condition_keys' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPlanBalanceApplyConditionKeysComment
+    inputTypeName: UpdateColumnPlanBalanceApplyConditionKeysCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_plan_balance_apply_condition_keys_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPlanBalanceApplyConditionKeysComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPlanBalanceApplyConditionKeysValue
+  description: Update the 'value' column in the
+    'plan_balance_apply_condition_keys' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPlanBalanceApplyConditionKeysValue
+    inputTypeName: UpdateColumnPlanBalanceApplyConditionKeysValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_plan_balance_apply_condition_keys_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPlanBalanceApplyConditionKeysValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePlanBalanceApplyConditionKeysByValueUpdateColumns
+  description: Update the columns of the 'plan_balance_apply_condition_keys' collection
+  fields:
+    - name: comment
+      type: UpdateColumnPlanBalanceApplyConditionKeysComment
+      description: Update the 'comment' column in the
+        'plan_balance_apply_condition_keys' collection.
+    - name: value
+      type: UpdateColumnPlanBalanceApplyConditionKeysValue
+      description: Update the 'value' column in the
+        'plan_balance_apply_condition_keys' collection.
+  graphql:
+    typeName: UpdatePlanBalanceApplyConditionKeysByValueUpdateColumns
+    inputTypeName: UpdatePlanBalanceApplyConditionKeysByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_plan_balance_apply_condition_keys_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePlanBalanceApplyConditionKeysByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePlanBalanceApplyConditionKeysByValueResponse
+  description: Responses from the
+    'update_plan_balance_apply_condition_keys_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanBalanceApplyConditionKeys!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePlanBalanceApplyConditionKeysByValueResponse
+    inputTypeName: UpdatePlanBalanceApplyConditionKeysByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_plan_balance_apply_condition_keys_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePlanBalanceApplyConditionKeysByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePlanBalanceApplyConditionKeysByValue
+  outputType: UpdatePlanBalanceApplyConditionKeysByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: PlanBalanceApplyConditionKeysBoolExp
+      description: Update permission post-condition predicate over the
+        'plan_balance_apply_condition_keys' collection
+    - name: preCheck
+      type: PlanBalanceApplyConditionKeysBoolExp
+      description: Update permission pre-condition predicate over the
+        'plan_balance_apply_condition_keys' collection
+    - name: updateColumns
+      type: UpdatePlanBalanceApplyConditionKeysByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_plan_balance_apply_condition_keys_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePlanBalanceApplyConditionKeysByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'plan_balance_apply_condition_keys'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePlanBalanceApplyConditionKeysByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

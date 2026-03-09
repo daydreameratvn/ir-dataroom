@@ -1,0 +1,388 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyTerms
+  description: For special/inclusion/exclusion terms
+  fields:
+    - name: benefitType
+      type: String_1
+    - name: content
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: displayOrder
+      type: Bigdecimal!
+    - name: id
+      type: Uuid!
+    - name: note
+      type: String_1
+    - name: parentId
+      type: Uuid
+    - name: parentInsurerId
+      type: Uuid
+    - name: planId
+      type: Uuid
+    - name: planIds
+      type: "[Uuid]"
+    - name: policyId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: PolicyTerms
+    inputTypeName: PolicyTermsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_terms
+      fieldMapping:
+        benefitType:
+          column:
+            name: benefit_type
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        note:
+          column:
+            name: note
+        parentId:
+          column:
+            name: parent_id
+        parentInsurerId:
+          column:
+            name: parent_insurer_id
+        planId:
+          column:
+            name: plan_id
+        planIds:
+          column:
+            name: plan_ids
+        policyId:
+          column:
+            name: policy_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyTerms
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - benefitType
+          - content
+          - createdAt
+          - createdBy
+          - deletedAt
+          - displayOrder
+          - id
+          - note
+          - parentId
+          - parentInsurerId
+          - planId
+          - planIds
+          - policyId
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyTermsBoolExp
+  operand:
+    object:
+      type: PolicyTerms
+      comparableFields:
+        - fieldName: benefitType
+          booleanExpressionType: TextBoolExp
+        - fieldName: content
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: displayOrder
+          booleanExpressionType: NumericBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: note
+          booleanExpressionType: TextBoolExp
+        - fieldName: parentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: parentInsurerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: insuredBenefitType
+        - relationshipName: policyTerm
+        - relationshipName: policyTerms
+        - relationshipName: plan
+        - relationshipName: policy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyTermsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyTermsAggExp
+  operand:
+    object:
+      aggregatedType: PolicyTerms
+      aggregatableFields:
+        - fieldName: benefitType
+          aggregateExpression: TextAggExp
+        - fieldName: content
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: displayOrder
+          aggregateExpression: NumericAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: note
+          aggregateExpression: TextAggExp
+        - fieldName: parentId
+          aggregateExpression: UuidAggExp
+        - fieldName: parentInsurerId
+          aggregateExpression: UuidAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyTermsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyTermsOrderByExp
+  operand:
+    object:
+      orderedType: PolicyTerms
+      orderableFields:
+        - fieldName: benefitType
+          orderByExpression: String1OrderByExp
+        - fieldName: content
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: displayOrder
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: note
+          orderByExpression: String1OrderByExp
+        - fieldName: parentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: parentInsurerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredBenefitType
+        - relationshipName: policyTerm
+        - relationshipName: plan
+        - relationshipName: policy
+  graphql:
+    expressionTypeName: PolicyTermsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyTerms
+  objectType: PolicyTerms
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_terms
+  filterExpressionType: PolicyTermsBoolExp
+  aggregateExpression: PolicyTermsAggExp
+  orderByExpression: PolicyTermsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyTerms
+      subscription:
+        rootField: policyTerms
+    selectUniques:
+      - queryRootField: policyTermsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: policyTermsById
+    filterInputTypeName: PolicyTermsFilterInput
+    aggregate:
+      queryRootField: policyTermsAggregate
+      subscription:
+        rootField: policyTermsAggregate
+  description: For special/inclusion/exclusion terms
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyTerms
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredBenefitType
+  sourceType: PolicyTerms
+  target:
+    model:
+      name: InsuredBenefitTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: benefitType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyTerm
+  sourceType: PolicyTerms
+  target:
+    model:
+      name: PolicyTerms
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: parentId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyTerms
+  sourceType: PolicyTerms
+  target:
+    model:
+      name: PolicyTerms
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyTermsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: parentId
+  graphql:
+    aggregateFieldName: policyTermsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plan
+  sourceType: PolicyTerms
+  target:
+    model:
+      name: Plans
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: PolicyTerms
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+

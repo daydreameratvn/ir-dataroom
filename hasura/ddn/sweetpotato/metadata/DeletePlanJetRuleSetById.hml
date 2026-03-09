@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePlanJetRuleSetByIdResponse
+  description: Responses from the 'delete_plan_jet_rule_set_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanJetRuleSet!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePlanJetRuleSetByIdResponse
+    inputTypeName: DeletePlanJetRuleSetByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_plan_jet_rule_set_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePlanJetRuleSetByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePlanJetRuleSetById
+  outputType: DeletePlanJetRuleSetByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: PlanJetRuleSetBoolExp
+      description: Delete permission predicate over the 'plan_jet_rule_set' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_plan_jet_rule_set_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePlanJetRuleSetById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'plan_jet_rule_set' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePlanJetRuleSetById
+  permissions:
+    - role: admin
+      allowExecution: true
+

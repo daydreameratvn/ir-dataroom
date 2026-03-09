@@ -1,0 +1,210 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePlanInsuredBenefitsByIdUpdateColumns
+  description: Update the columns of the 'plan_insured_benefits' collection
+  fields:
+    - name: applyCopay
+      type: UpdateColumnPlanInsuredBenefitsApplyCopay
+      description: Update the 'apply_copay' column in the 'plan_insured_benefits'
+        collection.
+    - name: applyToDependents
+      type: UpdateColumnPlanInsuredBenefitsApplyToDependents
+      description: Update the 'apply_to_dependents' column in the
+        'plan_insured_benefits' collection.
+    - name: coefficient
+      type: UpdateColumnPlanInsuredBenefitsCoefficient
+      description: Update the 'coefficient' column in the 'plan_insured_benefits'
+        collection.
+    - name: createdAt
+      type: UpdateColumnPlanInsuredBenefitsCreatedAt
+      description: Update the 'created_at' column in the 'plan_insured_benefits' collection.
+    - name: createdBy
+      type: UpdateColumnPlanInsuredBenefitsCreatedBy
+      description: Update the 'created_by' column in the 'plan_insured_benefits' collection.
+    - name: deletedAt
+      type: UpdateColumnPlanInsuredBenefitsDeletedAt
+      description: Update the 'deleted_at' column in the 'plan_insured_benefits' collection.
+    - name: formulaType
+      type: UpdateColumnPlanInsuredBenefitsFormulaType
+      description: Update the 'formula_type' column in the 'plan_insured_benefits'
+        collection.
+    - name: id
+      type: UpdateColumnPlanInsuredBenefitsId
+      description: Update the 'id' column in the 'plan_insured_benefits' collection.
+    - name: insuredBenefitId
+      type: UpdateColumnPlanInsuredBenefitsInsuredBenefitId
+      description: Update the 'insured_benefit_id' column in the
+        'plan_insured_benefits' collection.
+    - name: isDirectBilling
+      type: UpdateColumnPlanInsuredBenefitsIsDirectBilling
+      description: Update the 'is_direct_billing' column in the
+        'plan_insured_benefits' collection.
+    - name: planId
+      type: UpdateColumnPlanInsuredBenefitsPlanId
+      description: Update the 'plan_id' column in the 'plan_insured_benefits' collection.
+    - name: tenantId
+      type: UpdateColumnPlanInsuredBenefitsTenantId
+      description: Update the 'tenant_id' column in the 'plan_insured_benefits' collection.
+    - name: updatedAt
+      type: UpdateColumnPlanInsuredBenefitsUpdatedAt
+      description: Update the 'updated_at' column in the 'plan_insured_benefits' collection.
+    - name: updatedBy
+      type: UpdateColumnPlanInsuredBenefitsUpdatedBy
+      description: Update the 'updated_by' column in the 'plan_insured_benefits' collection.
+  graphql:
+    typeName: UpdatePlanInsuredBenefitsByIdUpdateColumns
+    inputTypeName: UpdatePlanInsuredBenefitsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_plan_insured_benefits_by_id_update_columns
+      fieldMapping:
+        applyCopay:
+          column:
+            name: apply_copay
+        applyToDependents:
+          column:
+            name: apply_to_dependents
+        coefficient:
+          column:
+            name: coefficient
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        formulaType:
+          column:
+            name: formula_type
+        id:
+          column:
+            name: id
+        insuredBenefitId:
+          column:
+            name: insured_benefit_id
+        isDirectBilling:
+          column:
+            name: is_direct_billing
+        planId:
+          column:
+            name: plan_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePlanInsuredBenefitsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - applyCopay
+          - applyToDependents
+          - coefficient
+          - createdAt
+          - createdBy
+          - deletedAt
+          - formulaType
+          - id
+          - insuredBenefitId
+          - isDirectBilling
+          - planId
+          - tenantId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePlanInsuredBenefitsByIdResponse
+  description: Responses from the 'update_plan_insured_benefits_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanInsuredBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePlanInsuredBenefitsByIdResponse
+    inputTypeName: UpdatePlanInsuredBenefitsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_plan_insured_benefits_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePlanInsuredBenefitsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePlanInsuredBenefitsById
+  outputType: UpdatePlanInsuredBenefitsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: PlanInsuredBenefitsBoolExp
+      description: Update permission post-condition predicate over the
+        'plan_insured_benefits' collection
+    - name: preCheck
+      type: PlanInsuredBenefitsBoolExp
+      description: Update permission pre-condition predicate over the
+        'plan_insured_benefits' collection
+    - name: updateColumns
+      type: UpdatePlanInsuredBenefitsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_plan_insured_benefits_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePlanInsuredBenefitsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'plan_insured_benefits' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePlanInsuredBenefitsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

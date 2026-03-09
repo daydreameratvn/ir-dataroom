@@ -1,0 +1,179 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCustomSettingValueTypesComment
+  description: Update the 'comment' column in the 'custom_setting_value_types' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCustomSettingValueTypesComment
+    inputTypeName: UpdateColumnCustomSettingValueTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_custom_setting_value_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCustomSettingValueTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCustomSettingValueTypesValue
+  description: Update the 'value' column in the 'custom_setting_value_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCustomSettingValueTypesValue
+    inputTypeName: UpdateColumnCustomSettingValueTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_custom_setting_value_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCustomSettingValueTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCustomSettingValueTypesByValueUpdateColumns
+  description: Update the columns of the 'custom_setting_value_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnCustomSettingValueTypesComment
+      description: Update the 'comment' column in the 'custom_setting_value_types'
+        collection.
+    - name: value
+      type: UpdateColumnCustomSettingValueTypesValue
+      description: Update the 'value' column in the 'custom_setting_value_types' collection.
+  graphql:
+    typeName: UpdateCustomSettingValueTypesByValueUpdateColumns
+    inputTypeName: UpdateCustomSettingValueTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_custom_setting_value_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCustomSettingValueTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCustomSettingValueTypesByValueResponse
+  description: Responses from the 'update_custom_setting_value_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingValueTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCustomSettingValueTypesByValueResponse
+    inputTypeName: UpdateCustomSettingValueTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_custom_setting_value_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCustomSettingValueTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCustomSettingValueTypesByValue
+  outputType: UpdateCustomSettingValueTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: CustomSettingValueTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'custom_setting_value_types' collection
+    - name: preCheck
+      type: CustomSettingValueTypesBoolExp
+      description: Update permission pre-condition predicate over the
+        'custom_setting_value_types' collection
+    - name: updateColumns
+      type: UpdateCustomSettingValueTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_custom_setting_value_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCustomSettingValueTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'custom_setting_value_types' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCustomSettingValueTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

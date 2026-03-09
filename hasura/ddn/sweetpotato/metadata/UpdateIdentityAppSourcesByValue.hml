@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnIdentityAppSourcesComment
+  description: Update the 'comment' column in the 'identity_app_sources' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnIdentityAppSourcesComment
+    inputTypeName: UpdateColumnIdentityAppSourcesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_identity_app_sources_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnIdentityAppSourcesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnIdentityAppSourcesValue
+  description: Update the 'value' column in the 'identity_app_sources' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnIdentityAppSourcesValue
+    inputTypeName: UpdateColumnIdentityAppSourcesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_identity_app_sources_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnIdentityAppSourcesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityAppSourcesByValueUpdateColumns
+  description: Update the columns of the 'identity_app_sources' collection
+  fields:
+    - name: comment
+      type: UpdateColumnIdentityAppSourcesComment
+      description: Update the 'comment' column in the 'identity_app_sources' collection.
+    - name: value
+      type: UpdateColumnIdentityAppSourcesValue
+      description: Update the 'value' column in the 'identity_app_sources' collection.
+  graphql:
+    typeName: UpdateIdentityAppSourcesByValueUpdateColumns
+    inputTypeName: UpdateIdentityAppSourcesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_app_sources_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityAppSourcesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityAppSourcesByValueResponse
+  description: Responses from the 'update_identity_app_sources_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityAppSources!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateIdentityAppSourcesByValueResponse
+    inputTypeName: UpdateIdentityAppSourcesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_app_sources_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityAppSourcesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateIdentityAppSourcesByValue
+  outputType: UpdateIdentityAppSourcesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: IdentityAppSourcesBoolExp
+      description: Update permission post-condition predicate over the
+        'identity_app_sources' collection
+    - name: preCheck
+      type: IdentityAppSourcesBoolExp
+      description: Update permission pre-condition predicate over the
+        'identity_app_sources' collection
+    - name: updateColumns
+      type: UpdateIdentityAppSourcesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_identity_app_sources_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateIdentityAppSourcesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'identity_app_sources' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateIdentityAppSourcesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

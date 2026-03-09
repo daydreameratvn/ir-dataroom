@@ -1,0 +1,213 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanRemarks
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: planId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PlanRemarks
+    inputTypeName: PlanRemarksInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_remarks
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        planId:
+          column:
+            name: plan_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanRemarks
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - description
+          - id
+          - planId
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanRemarksBoolExp
+  operand:
+    object:
+      type: PlanRemarks
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: plan
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanRemarksBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanRemarksAggExp
+  operand:
+    object:
+      aggregatedType: PlanRemarks
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: VarcharAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanRemarksAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanRemarksOrderByExp
+  operand:
+    object:
+      orderedType: PlanRemarks
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: plan
+  graphql:
+    expressionTypeName: PlanRemarksOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanRemarks
+  objectType: PlanRemarks
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_remarks
+  filterExpressionType: PlanRemarksBoolExp
+  aggregateExpression: PlanRemarksAggExp
+  orderByExpression: PlanRemarksOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planRemarks
+      subscription:
+        rootField: planRemarks
+    selectUniques:
+      - queryRootField: planRemarksById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: planRemarksById
+    filterInputTypeName: PlanRemarksFilterInput
+    aggregate:
+      queryRootField: planRemarksAggregate
+      subscription:
+        rootField: planRemarksAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanRemarks
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plan
+  sourceType: PlanRemarks
+  target:
+    model:
+      name: Plans
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+

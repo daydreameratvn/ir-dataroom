@@ -1,0 +1,156 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityUserBanksByIdUpdateColumns
+  description: Update the columns of the 'identity_user_banks' collection
+  fields:
+    - name: accountName
+      type: UpdateColumnIdentityUserBanksAccountName
+      description: Update the 'account_name' column in the 'identity_user_banks' collection.
+    - name: accountNumber
+      type: UpdateColumnIdentityUserBanksAccountNumber
+      description: Update the 'account_number' column in the 'identity_user_banks'
+        collection.
+    - name: bankId
+      type: UpdateColumnIdentityUserBanksBankId
+      description: Update the 'bank_id' column in the 'identity_user_banks' collection.
+    - name: createdAt
+      type: UpdateColumnIdentityUserBanksCreatedAt
+      description: Update the 'created_at' column in the 'identity_user_banks' collection.
+    - name: id
+      type: UpdateColumnIdentityUserBanksId
+      description: Update the 'id' column in the 'identity_user_banks' collection.
+    - name: updatedAt
+      type: UpdateColumnIdentityUserBanksUpdatedAt
+      description: Update the 'updated_at' column in the 'identity_user_banks' collection.
+    - name: userId
+      type: UpdateColumnIdentityUserBanksUserId
+      description: Update the 'user_id' column in the 'identity_user_banks' collection.
+  graphql:
+    typeName: UpdateIdentityUserBanksByIdUpdateColumns
+    inputTypeName: UpdateIdentityUserBanksByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_user_banks_by_id_update_columns
+      fieldMapping:
+        accountName:
+          column:
+            name: account_name
+        accountNumber:
+          column:
+            name: account_number
+        bankId:
+          column:
+            name: bank_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityUserBanksByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - accountName
+          - accountNumber
+          - bankId
+          - createdAt
+          - id
+          - updatedAt
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityUserBanksByIdResponse
+  description: Responses from the 'update_identity_user_banks_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityUserBanks!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateIdentityUserBanksByIdResponse
+    inputTypeName: UpdateIdentityUserBanksByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_user_banks_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityUserBanksByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateIdentityUserBanksById
+  outputType: UpdateIdentityUserBanksByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: IdentityUserBanksBoolExp
+      description: Update permission post-condition predicate over the
+        'identity_user_banks' collection
+    - name: preCheck
+      type: IdentityUserBanksBoolExp
+      description: Update permission pre-condition predicate over the
+        'identity_user_banks' collection
+    - name: updateColumns
+      type: UpdateIdentityUserBanksByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_identity_user_banks_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateIdentityUserBanksById
+    rootFieldKind: Mutation
+  description: Update any row on the 'identity_user_banks' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateIdentityUserBanksById
+  permissions:
+    - role: admin
+      allowExecution: true
+

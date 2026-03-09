@@ -1,0 +1,157 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornPhysicalExaminationResultsObject
+  fields:
+    - name: biomarkerResultId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: documentResultId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: name
+      type: String_1
+    - name: ocrResult
+      type: Json
+    - name: physicalExaminationId
+      type: Uuid!
+    - name: textResult
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertHawthornPhysicalExaminationResultsObject
+    inputTypeName: InsertHawthornPhysicalExaminationResultsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_physical_examination_results_object
+      fieldMapping:
+        biomarkerResultId:
+          column:
+            name: biomarker_result_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        documentResultId:
+          column:
+            name: document_result_id
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        ocrResult:
+          column:
+            name: ocr_result
+        physicalExaminationId:
+          column:
+            name: physical_examination_id
+        textResult:
+          column:
+            name: text_result
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornPhysicalExaminationResultsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - biomarkerResultId
+          - createdAt
+          - deletedAt
+          - documentResultId
+          - id
+          - name
+          - ocrResult
+          - physicalExaminationId
+          - textResult
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornPhysicalExaminationResultsResponse
+  description: Responses from the 'insert_hawthorn_physical_examination_results' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornPhysicalExaminationResults!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornPhysicalExaminationResultsResponse
+    inputTypeName: InsertHawthornPhysicalExaminationResultsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_physical_examination_results_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornPhysicalExaminationResultsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornPhysicalExaminationResults
+  outputType: InsertHawthornPhysicalExaminationResultsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornPhysicalExaminationResultsObject!]!"
+    - name: postCheck
+      type: HawthornPhysicalExaminationResultsBoolExp
+      description: Insert permission predicate over the
+        'hawthorn_physical_examination_results' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_physical_examination_results
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornPhysicalExaminationResults
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_physical_examination_results table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornPhysicalExaminationResults
+  permissions:
+    - role: admin
+      allowExecution: true
+

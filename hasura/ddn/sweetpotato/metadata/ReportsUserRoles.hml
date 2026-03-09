@@ -1,0 +1,227 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ReportsUserRoles
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: reportId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: userRoleId
+      type: Uuid!
+  graphql:
+    typeName: ReportsUserRoles
+    inputTypeName: ReportsUserRolesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: reports_user_roles
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        reportId:
+          column:
+            name: report_id
+        updatedAt:
+          column:
+            name: updated_at
+        userRoleId:
+          column:
+            name: user_role_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ReportsUserRoles
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - reportId
+          - updatedAt
+          - userRoleId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ReportsUserRolesBoolExp
+  operand:
+    object:
+      type: ReportsUserRoles
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: reportId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: userRoleId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: report
+        - relationshipName: identityUserRole
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ReportsUserRolesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ReportsUserRolesAggExp
+  operand:
+    object:
+      aggregatedType: ReportsUserRoles
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: reportId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: userRoleId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ReportsUserRolesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ReportsUserRolesOrderByExp
+  operand:
+    object:
+      orderedType: ReportsUserRoles
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: reportId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: userRoleId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: report
+        - relationshipName: identityUserRole
+  graphql:
+    expressionTypeName: ReportsUserRolesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ReportsUserRoles
+  objectType: ReportsUserRoles
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: reports_user_roles
+  filterExpressionType: ReportsUserRolesBoolExp
+  aggregateExpression: ReportsUserRolesAggExp
+  orderByExpression: ReportsUserRolesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: reportsUserRoles
+      subscription:
+        rootField: reportsUserRoles
+    selectUniques:
+      - queryRootField: reportsUserRolesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: reportsUserRolesById
+      - queryRootField: reportsUserRolesByReportsUserRolesReportIdUserRoleIdKey
+        uniqueIdentifier:
+          - reportId
+          - userRoleId
+        subscription:
+          rootField: reportsUserRolesByReportsUserRolesReportIdUserRoleIdKey
+    filterInputTypeName: ReportsUserRolesFilterInput
+    aggregate:
+      queryRootField: reportsUserRolesAggregate
+      subscription:
+        rootField: reportsUserRolesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ReportsUserRoles
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: report
+  sourceType: ReportsUserRoles
+  target:
+    model:
+      name: Reports
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: reportId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserRole
+  sourceType: ReportsUserRoles
+  target:
+    model:
+      name: IdentityUserRole
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userRoleId
+      target:
+        modelField:
+          - fieldName: userRoleId
+

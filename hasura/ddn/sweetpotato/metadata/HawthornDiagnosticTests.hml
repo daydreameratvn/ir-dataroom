@@ -1,0 +1,405 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornDiagnosticTests
+  description: "Khám cận lâm sàng: bao gồm các thể loại xét nghiệm, chẩn đoán hình
+    ảnh, siêu âm, ..."
+  fields:
+    - name: content
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: documentId
+      type: Uuid
+    - name: healthCheckupId
+      type: Uuid!
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: patientId
+      type: Uuid!
+    - name: techniqueCode
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: HawthornDiagnosticTests
+    inputTypeName: HawthornDiagnosticTestsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_diagnostic_tests
+      fieldMapping:
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        documentId:
+          column:
+            name: document_id
+        healthCheckupId:
+          column:
+            name: health_checkup_id
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        patientId:
+          column:
+            name: patient_id
+        techniqueCode:
+          column:
+            name: technique_code
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornDiagnosticTests
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - content
+          - createdAt
+          - deletedAt
+          - documentId
+          - healthCheckupId
+          - id
+          - name
+          - patientId
+          - techniqueCode
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornDiagnosticTestsBoolExp
+  operand:
+    object:
+      type: HawthornDiagnosticTests
+      comparableFields:
+        - fieldName: content
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: documentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: healthCheckupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: patientId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: techniqueCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornConclusions
+        - relationshipName: hawthornDiagnoses
+        - relationshipName: hawthornDiagnosticTestResults
+        - relationshipName: hawthornDocument
+        - relationshipName: hawthornHealthCheckup
+        - relationshipName: hawthornPatient
+        - relationshipName: hawthornDiagnosticTestTechnique
+        - relationshipName: hawthornSuggestions
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornDiagnosticTestsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornDiagnosticTestsAggExp
+  operand:
+    object:
+      aggregatedType: HawthornDiagnosticTests
+      aggregatableFields:
+        - fieldName: content
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: documentId
+          aggregateExpression: UuidAggExp
+        - fieldName: healthCheckupId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: patientId
+          aggregateExpression: UuidAggExp
+        - fieldName: techniqueCode
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornDiagnosticTestsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornDiagnosticTestsOrderByExp
+  operand:
+    object:
+      orderedType: HawthornDiagnosticTests
+      orderableFields:
+        - fieldName: content
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: documentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: healthCheckupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: patientId
+          orderByExpression: UuidOrderByExp
+        - fieldName: techniqueCode
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: hawthornDocument
+        - relationshipName: hawthornHealthCheckup
+        - relationshipName: hawthornPatient
+        - relationshipName: hawthornDiagnosticTestTechnique
+  graphql:
+    expressionTypeName: HawthornDiagnosticTestsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornDiagnosticTests
+  objectType: HawthornDiagnosticTests
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_diagnostic_tests
+  filterExpressionType: HawthornDiagnosticTestsBoolExp
+  aggregateExpression: HawthornDiagnosticTestsAggExp
+  orderByExpression: HawthornDiagnosticTestsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornDiagnosticTests
+      subscription:
+        rootField: hawthornDiagnosticTests
+    selectUniques:
+      - queryRootField: hawthornDiagnosticTestsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hawthornDiagnosticTestsById
+    filterInputTypeName: HawthornDiagnosticTestsFilterInput
+    aggregate:
+      queryRootField: hawthornDiagnosticTestsAggregate
+      subscription:
+        rootField: hawthornDiagnosticTestsAggregate
+  description: "Khám cận lâm sàng: bao gồm các thể loại xét nghiệm, chẩn đoán hình
+    ảnh, siêu âm, ..."
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornDiagnosticTests
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornConclusions
+  sourceType: HawthornDiagnosticTests
+  target:
+    model:
+      name: HawthornConclusions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornConclusionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: diagnosticTestId
+  graphql:
+    aggregateFieldName: hawthornConclusionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnoses
+  sourceType: HawthornDiagnosticTests
+  target:
+    model:
+      name: HawthornDiagnoses
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornDiagnosesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: diagnosticTestId
+  graphql:
+    aggregateFieldName: hawthornDiagnosesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnosticTestResults
+  sourceType: HawthornDiagnosticTests
+  target:
+    model:
+      name: HawthornDiagnosticTestResults
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornDiagnosticTestResultsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: diagnosticTestId
+  graphql:
+    aggregateFieldName: hawthornDiagnosticTestResultsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDocument
+  sourceType: HawthornDiagnosticTests
+  target:
+    model:
+      name: HawthornDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: documentId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornHealthCheckup
+  sourceType: HawthornDiagnosticTests
+  target:
+    model:
+      name: HawthornHealthCheckups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: healthCheckupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPatient
+  sourceType: HawthornDiagnosticTests
+  target:
+    model:
+      name: HawthornPatients
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: patientId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnosticTestTechnique
+  sourceType: HawthornDiagnosticTests
+  target:
+    model:
+      name: HawthornDiagnosticTestTechniques
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: techniqueCode
+      target:
+        modelField:
+          - fieldName: code
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornSuggestions
+  sourceType: HawthornDiagnosticTests
+  target:
+    model:
+      name: HawthornSuggestions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornSuggestionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: diagnosticTestId
+  graphql:
+    aggregateFieldName: hawthornSuggestionsAggregate
+

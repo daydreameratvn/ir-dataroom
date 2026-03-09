@@ -1,0 +1,208 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: BhvInsuredPersons
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insuredId
+      type: String_1!
+    - name: insuredPersonId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: BhvInsuredPersons
+    inputTypeName: BhvInsuredPersonsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: bhv_insured_persons
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredId:
+          column:
+            name: insured_id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: BhvInsuredPersons
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - insuredId
+          - insuredPersonId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: BhvInsuredPersonsBoolExp
+  operand:
+    object:
+      type: BhvInsuredPersons
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredId
+          booleanExpressionType: TextBoolExp
+        - fieldName: insuredPersonId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: insuredPerson
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: BhvInsuredPersonsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: BhvInsuredPersonsAggExp
+  operand:
+    object:
+      aggregatedType: BhvInsuredPersons
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredId
+          aggregateExpression: TextAggExp
+        - fieldName: insuredPersonId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: BhvInsuredPersonsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: BhvInsuredPersonsOrderByExp
+  operand:
+    object:
+      orderedType: BhvInsuredPersons
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredId
+          orderByExpression: String1OrderByExp
+        - fieldName: insuredPersonId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredPerson
+  graphql:
+    expressionTypeName: BhvInsuredPersonsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: BhvInsuredPersons
+  objectType: BhvInsuredPersons
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: bhv_insured_persons
+  filterExpressionType: BhvInsuredPersonsBoolExp
+  aggregateExpression: BhvInsuredPersonsAggExp
+  orderByExpression: BhvInsuredPersonsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: bhvInsuredPersons
+      subscription:
+        rootField: bhvInsuredPersons
+    selectUniques:
+      - queryRootField: bhvInsuredPersonsByInsuredPersonsInsuredPersonIdInsuredIdDeletedAtKey
+        uniqueIdentifier:
+          - deletedAt
+          - insuredId
+          - insuredPersonId
+        subscription:
+          rootField: bhvInsuredPersonsByInsuredPersonsInsuredPersonIdInsuredIdDeletedAtKey
+      - queryRootField: bhvInsuredPersonsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: bhvInsuredPersonsById
+    filterInputTypeName: BhvInsuredPersonsFilterInput
+    aggregate:
+      queryRootField: bhvInsuredPersonsAggregate
+      subscription:
+        rootField: bhvInsuredPersonsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: BhvInsuredPersons
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPerson
+  sourceType: BhvInsuredPersons
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+

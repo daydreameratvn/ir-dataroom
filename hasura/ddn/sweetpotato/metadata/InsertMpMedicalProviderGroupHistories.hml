@@ -1,0 +1,147 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpMedicalProviderGroupHistoriesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: endDate
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: isAppliedWhenPolicyEffectiveAfterGroupHistoryStartDate
+      type: Boolean_1
+      description: This rule is applied for policies that has effective date greater
+        than start date of group history
+    - name: medicalProviderGroupId
+      type: Uuid
+    - name: startDate
+      type: Timestamptz!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertMpMedicalProviderGroupHistoriesObject
+    inputTypeName: InsertMpMedicalProviderGroupHistoriesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_medical_provider_group_histories_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        endDate:
+          column:
+            name: end_date
+        id:
+          column:
+            name: id
+        isAppliedWhenPolicyEffectiveAfterGroupHistoryStartDate:
+          column:
+            name: is_applied_when_policy_effective_after_group_history_start_date
+        medicalProviderGroupId:
+          column:
+            name: medical_provider_group_id
+        startDate:
+          column:
+            name: start_date
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpMedicalProviderGroupHistoriesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - endDate
+          - id
+          - isAppliedWhenPolicyEffectiveAfterGroupHistoryStartDate
+          - medicalProviderGroupId
+          - startDate
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpMedicalProviderGroupHistoriesResponse
+  description: Responses from the 'insert_mp_medical_provider_group_histories' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderGroupHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMpMedicalProviderGroupHistoriesResponse
+    inputTypeName: InsertMpMedicalProviderGroupHistoriesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_medical_provider_group_histories_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpMedicalProviderGroupHistoriesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMpMedicalProviderGroupHistories
+  outputType: InsertMpMedicalProviderGroupHistoriesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMpMedicalProviderGroupHistoriesObject!]!"
+    - name: postCheck
+      type: MpMedicalProviderGroupHistoriesBoolExp
+      description: Insert permission predicate over the
+        'mp_medical_provider_group_histories' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_mp_medical_provider_group_histories
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMpMedicalProviderGroupHistories
+    rootFieldKind: Mutation
+  description: Insert into the mp_medical_provider_group_histories table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMpMedicalProviderGroupHistories
+  permissions:
+    - role: admin
+      allowExecution: true
+

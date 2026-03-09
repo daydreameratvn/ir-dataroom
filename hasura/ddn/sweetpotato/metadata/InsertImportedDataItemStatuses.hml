@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertImportedDataItemStatusesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertImportedDataItemStatusesObject
+    inputTypeName: InsertImportedDataItemStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_imported_data_item_statuses_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertImportedDataItemStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertImportedDataItemStatusesResponse
+  description: Responses from the 'insert_imported_data_item_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ImportedDataItemStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertImportedDataItemStatusesResponse
+    inputTypeName: InsertImportedDataItemStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_imported_data_item_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertImportedDataItemStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertImportedDataItemStatuses
+  outputType: InsertImportedDataItemStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertImportedDataItemStatusesObject!]!"
+    - name: postCheck
+      type: ImportedDataItemStatusesBoolExp
+      description: Insert permission predicate over the 'imported_data_item_statuses'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_imported_data_item_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertImportedDataItemStatuses
+    rootFieldKind: Mutation
+  description: Insert into the imported_data_item_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertImportedDataItemStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

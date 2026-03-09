@@ -1,0 +1,266 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredCertificateCourses
+  description: Quá trình của thẻ bảo hiểm với các thẻ khác trên nhiều HĐ khác nhau
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: fromInsuredCertificateId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: ordinalNumber
+      type: String_1
+    - name: toInsuredCertificateId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsuredCertificateCourses
+    inputTypeName: InsuredCertificateCoursesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_certificate_courses
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        fromInsuredCertificateId:
+          column:
+            name: from_insured_certificate_id
+        id:
+          column:
+            name: id
+        ordinalNumber:
+          column:
+            name: ordinal_number
+        toInsuredCertificateId:
+          column:
+            name: to_insured_certificate_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredCertificateCourses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - fromInsuredCertificateId
+          - id
+          - ordinalNumber
+          - toInsuredCertificateId
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredCertificateCoursesBoolExp
+  operand:
+    object:
+      type: InsuredCertificateCourses
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fromInsuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: ordinalNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: toInsuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: insuredCertificate
+        - relationshipName: insuredCertificateByToInsuredCertificateId
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredCertificateCoursesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredCertificateCoursesAggExp
+  operand:
+    object:
+      aggregatedType: InsuredCertificateCourses
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fromInsuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: ordinalNumber
+          aggregateExpression: TextAggExp
+        - fieldName: toInsuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredCertificateCoursesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredCertificateCoursesOrderByExp
+  operand:
+    object:
+      orderedType: InsuredCertificateCourses
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fromInsuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: ordinalNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: toInsuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredCertificate
+        - relationshipName: insuredCertificateByToInsuredCertificateId
+  graphql:
+    expressionTypeName: InsuredCertificateCoursesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredCertificateCourses
+  objectType: InsuredCertificateCourses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_certificate_courses
+  filterExpressionType: InsuredCertificateCoursesBoolExp
+  aggregateExpression: InsuredCertificateCoursesAggExp
+  orderByExpression: InsuredCertificateCoursesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredCertificateCourses
+      subscription:
+        rootField: insuredCertificateCourses
+    selectUniques:
+      - queryRootField: insuredCertificateCoursesByFromInsuredCertificateIdToInsuredCertificateIdDeletedA
+        uniqueIdentifier:
+          - deletedAt
+          - fromInsuredCertificateId
+          - toInsuredCertificateId
+        subscription:
+          rootField: insuredCertificateCoursesByFromInsuredCertificateIdToInsuredCertificateIdDeletedA
+      - queryRootField: insuredCertificateCoursesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: insuredCertificateCoursesById
+    filterInputTypeName: InsuredCertificateCoursesFilterInput
+    aggregate:
+      queryRootField: insuredCertificateCoursesAggregate
+      subscription:
+        rootField: insuredCertificateCoursesAggregate
+  description: Quá trình của thẻ bảo hiểm với các thẻ khác trên nhiều HĐ khác nhau
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredCertificateCourses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: InsuredCertificateCourses
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fromInsuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificateByToInsuredCertificateId
+  sourceType: InsuredCertificateCourses
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: toInsuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+

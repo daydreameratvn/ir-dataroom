@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdResponse
+  description: Responses from the
+    'delete_plan_co_payments_by_plan_id_and_policy_co_payment_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanCoPayments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdResponse
+    inputTypeName: DeletePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_plan_co_payments_by_plan_id_and_policy_co_payment_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePlanCoPaymentsByPlanIdAndPolicyCoPaymentId
+  outputType: DeletePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdResponse!
+  arguments:
+    - name: keyPlanId
+      type: Uuid!
+    - name: keyPolicyCoPaymentId
+      type: Uuid!
+    - name: preCheck
+      type: PlanCoPaymentsBoolExp
+      description: Delete permission predicate over the 'plan_co_payments' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_plan_co_payments_by_plan_id_and_policy_co_payment_id
+    argumentMapping:
+      keyPlanId: key_plan_id
+      keyPolicyCoPaymentId: key_policy_co_payment_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePlanCoPaymentsByPlanIdAndPolicyCoPaymentId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'plan_co_payments' collection using the
+    'plan_id' and 'policy_co_payment_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePlanCoPaymentsByPlanIdAndPolicyCoPaymentId
+  permissions:
+    - role: admin
+      allowExecution: true
+

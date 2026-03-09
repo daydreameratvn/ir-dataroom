@@ -1,0 +1,187 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpMedicalProviderWorkingTimesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: date
+      type: Date
+    - name: dayOfMonth
+      type: Int32
+    - name: dayOfWeek
+      type: Int32
+    - name: deletedAt
+      type: Timestamptz
+    - name: fromTime
+      type: String_1!
+    - name: medicalProviderId
+      type: Uuid!
+    - name: medicalProviderWorkingTimeId
+      type: Uuid
+    - name: monthOfYear
+      type: Int32
+    - name: status
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: timePeriod
+      type: String_1!
+    - name: toTime
+      type: String_1!
+    - name: type
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertMpMedicalProviderWorkingTimesObject
+    inputTypeName: InsertMpMedicalProviderWorkingTimesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_medical_provider_working_times_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        date:
+          column:
+            name: date
+        dayOfMonth:
+          column:
+            name: day_of_month
+        dayOfWeek:
+          column:
+            name: day_of_week
+        deletedAt:
+          column:
+            name: deleted_at
+        fromTime:
+          column:
+            name: from_time
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        medicalProviderWorkingTimeId:
+          column:
+            name: medical_provider_working_time_id
+        monthOfYear:
+          column:
+            name: month_of_year
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        timePeriod:
+          column:
+            name: time_period
+        toTime:
+          column:
+            name: to_time
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpMedicalProviderWorkingTimesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - date
+          - dayOfMonth
+          - dayOfWeek
+          - deletedAt
+          - fromTime
+          - medicalProviderId
+          - medicalProviderWorkingTimeId
+          - monthOfYear
+          - status
+          - tenantId
+          - timePeriod
+          - toTime
+          - type
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpMedicalProviderWorkingTimesResponse
+  description: Responses from the 'insert_mp_medical_provider_working_times' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderWorkingTimes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMpMedicalProviderWorkingTimesResponse
+    inputTypeName: InsertMpMedicalProviderWorkingTimesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_medical_provider_working_times_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpMedicalProviderWorkingTimesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMpMedicalProviderWorkingTimes
+  outputType: InsertMpMedicalProviderWorkingTimesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMpMedicalProviderWorkingTimesObject!]!"
+    - name: postCheck
+      type: MpMedicalProviderWorkingTimesBoolExp
+      description: Insert permission predicate over the
+        'mp_medical_provider_working_times' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_mp_medical_provider_working_times
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMpMedicalProviderWorkingTimes
+    rootFieldKind: Mutation
+  description: Insert into the mp_medical_provider_working_times table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMpMedicalProviderWorkingTimes
+  permissions:
+    - role: admin
+      allowExecution: true
+

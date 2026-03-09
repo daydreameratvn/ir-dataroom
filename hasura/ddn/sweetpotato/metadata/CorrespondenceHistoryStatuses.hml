@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceHistoryStatuses
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CorrespondenceHistoryStatuses
+    inputTypeName: CorrespondenceHistoryStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_history_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceHistoryStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceHistoryStatusesBoolExp
+  operand:
+    object:
+      type: CorrespondenceHistoryStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: correspondenceHistories
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceHistoryStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceHistoryStatusesAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceHistoryStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceHistoryStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceHistoryStatusesOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceHistoryStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CorrespondenceHistoryStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceHistoryStatuses
+  objectType: CorrespondenceHistoryStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_history_statuses
+  filterExpressionType: CorrespondenceHistoryStatusesBoolExp
+  aggregateExpression: CorrespondenceHistoryStatusesAggExp
+  orderByExpression: CorrespondenceHistoryStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceHistoryStatuses
+      subscription:
+        rootField: correspondenceHistoryStatuses
+    selectUniques:
+      - queryRootField: correspondenceHistoryStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: correspondenceHistoryStatusesByValue
+    filterInputTypeName: CorrespondenceHistoryStatusesFilterInput
+    aggregate:
+      queryRootField: correspondenceHistoryStatusesAggregate
+      subscription:
+        rootField: correspondenceHistoryStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceHistoryStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceHistories
+  sourceType: CorrespondenceHistoryStatuses
+  target:
+    model:
+      name: CorrespondenceHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: correspondenceHistoriesAggregate
+

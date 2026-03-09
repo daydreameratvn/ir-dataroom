@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutPaymentRequestTypesByValueResponse
+  description: Responses from the 'delete_payout_payment_request_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPaymentRequestTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutPaymentRequestTypesByValueResponse
+    inputTypeName: DeletePayoutPaymentRequestTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_payment_request_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutPaymentRequestTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutPaymentRequestTypesByValue
+  outputType: DeletePayoutPaymentRequestTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: PayoutPaymentRequestTypesBoolExp
+      description: Delete permission predicate over the 'payout_payment_request_types'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_payment_request_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutPaymentRequestTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_payment_request_types' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutPaymentRequestTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

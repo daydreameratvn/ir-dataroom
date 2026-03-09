@@ -1,0 +1,249 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornDiagnosticTestTechniques
+  description: Các loại kỹ thuật khám cận lâm sàng
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: hierarchyLevel
+      type: Int32!
+    - name: name
+      type: String_1!
+    - name: parentCode
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: HawthornDiagnosticTestTechniques
+    inputTypeName: HawthornDiagnosticTestTechniquesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_diagnostic_test_techniques
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        hierarchyLevel:
+          column:
+            name: hierarchy_level
+        name:
+          column:
+            name: name
+        parentCode:
+          column:
+            name: parent_code
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornDiagnosticTestTechniques
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - hierarchyLevel
+          - name
+          - parentCode
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornDiagnosticTestTechniquesBoolExp
+  operand:
+    object:
+      type: HawthornDiagnosticTestTechniques
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: hierarchyLevel
+          booleanExpressionType: Int4BoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: parentCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornDiagnosticTestTechnique
+        - relationshipName: hawthornDiagnosticTestTechniques
+        - relationshipName: hawthornDiagnosticTests
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornDiagnosticTestTechniquesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornDiagnosticTestTechniquesAggExp
+  operand:
+    object:
+      aggregatedType: HawthornDiagnosticTestTechniques
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: hierarchyLevel
+          aggregateExpression: Int4AggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: parentCode
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornDiagnosticTestTechniquesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornDiagnosticTestTechniquesOrderByExp
+  operand:
+    object:
+      orderedType: HawthornDiagnosticTestTechniques
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: hierarchyLevel
+          orderByExpression: Int32OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: parentCode
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: hawthornDiagnosticTestTechnique
+  graphql:
+    expressionTypeName: HawthornDiagnosticTestTechniquesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornDiagnosticTestTechniques
+  objectType: HawthornDiagnosticTestTechniques
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_diagnostic_test_techniques
+  filterExpressionType: HawthornDiagnosticTestTechniquesBoolExp
+  aggregateExpression: HawthornDiagnosticTestTechniquesAggExp
+  orderByExpression: HawthornDiagnosticTestTechniquesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornDiagnosticTestTechniques
+      subscription:
+        rootField: hawthornDiagnosticTestTechniques
+    selectUniques:
+      - queryRootField: hawthornDiagnosticTestTechniquesByCode
+        uniqueIdentifier:
+          - code
+        subscription:
+          rootField: hawthornDiagnosticTestTechniquesByCode
+    filterInputTypeName: HawthornDiagnosticTestTechniquesFilterInput
+    aggregate:
+      queryRootField: hawthornDiagnosticTestTechniquesAggregate
+      subscription:
+        rootField: hawthornDiagnosticTestTechniquesAggregate
+  description: Các loại kỹ thuật khám cận lâm sàng
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornDiagnosticTestTechniques
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnosticTestTechnique
+  sourceType: HawthornDiagnosticTestTechniques
+  target:
+    model:
+      name: HawthornDiagnosticTestTechniques
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: parentCode
+      target:
+        modelField:
+          - fieldName: code
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnosticTestTechniques
+  sourceType: HawthornDiagnosticTestTechniques
+  target:
+    model:
+      name: HawthornDiagnosticTestTechniques
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornDiagnosticTestTechniquesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: code
+      target:
+        modelField:
+          - fieldName: parentCode
+  graphql:
+    aggregateFieldName: hawthornDiagnosticTestTechniquesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnosticTests
+  sourceType: HawthornDiagnosticTestTechniques
+  target:
+    model:
+      name: HawthornDiagnosticTests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornDiagnosticTestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: code
+      target:
+        modelField:
+          - fieldName: techniqueCode
+  graphql:
+    aggregateFieldName: hawthornDiagnosticTestsAggregate
+

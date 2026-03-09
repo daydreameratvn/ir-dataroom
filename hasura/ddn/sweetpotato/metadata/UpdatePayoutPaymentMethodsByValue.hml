@@ -1,0 +1,178 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPayoutPaymentMethodsComment
+  description: Update the 'comment' column in the 'payout_payment_methods' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPayoutPaymentMethodsComment
+    inputTypeName: UpdateColumnPayoutPaymentMethodsCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_payout_payment_methods_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPayoutPaymentMethodsComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPayoutPaymentMethodsValue
+  description: Update the 'value' column in the 'payout_payment_methods' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPayoutPaymentMethodsValue
+    inputTypeName: UpdateColumnPayoutPaymentMethodsValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_payout_payment_methods_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPayoutPaymentMethodsValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutPaymentMethodsByValueUpdateColumns
+  description: Update the columns of the 'payout_payment_methods' collection
+  fields:
+    - name: comment
+      type: UpdateColumnPayoutPaymentMethodsComment
+      description: Update the 'comment' column in the 'payout_payment_methods' collection.
+    - name: value
+      type: UpdateColumnPayoutPaymentMethodsValue
+      description: Update the 'value' column in the 'payout_payment_methods' collection.
+  graphql:
+    typeName: UpdatePayoutPaymentMethodsByValueUpdateColumns
+    inputTypeName: UpdatePayoutPaymentMethodsByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_payment_methods_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutPaymentMethodsByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutPaymentMethodsByValueResponse
+  description: Responses from the 'update_payout_payment_methods_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPaymentMethods!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePayoutPaymentMethodsByValueResponse
+    inputTypeName: UpdatePayoutPaymentMethodsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_payment_methods_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutPaymentMethodsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePayoutPaymentMethodsByValue
+  outputType: UpdatePayoutPaymentMethodsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: PayoutPaymentMethodsBoolExp
+      description: Update permission post-condition predicate over the
+        'payout_payment_methods' collection
+    - name: preCheck
+      type: PayoutPaymentMethodsBoolExp
+      description: Update permission pre-condition predicate over the
+        'payout_payment_methods' collection
+    - name: updateColumns
+      type: UpdatePayoutPaymentMethodsByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_payout_payment_methods_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePayoutPaymentMethodsByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'payout_payment_methods' collection using the
+    'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePayoutPaymentMethodsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

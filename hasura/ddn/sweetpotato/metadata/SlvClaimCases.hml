@@ -1,0 +1,267 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SlvClaimCases
+  description: Claim Record in SLV
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: diseaseGroupId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: relatedToAccident
+      type: Boolean_1!
+    - name: sumAssured
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: SlvClaimCases
+    inputTypeName: SlvClaimCasesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: slv_claim_cases
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        diseaseGroupId:
+          column:
+            name: disease_group_id
+        id:
+          column:
+            name: id
+        relatedToAccident:
+          column:
+            name: related_to_accident
+        sumAssured:
+          column:
+            name: sum_assured
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SlvClaimCases
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - diseaseGroupId
+          - id
+          - relatedToAccident
+          - sumAssured
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SlvClaimCasesBoolExp
+  operand:
+    object:
+      type: SlvClaimCases
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: diseaseGroupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: relatedToAccident
+          booleanExpressionType: BoolBoolExp
+        - fieldName: sumAssured
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: diseaseGroup
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SlvClaimCasesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SlvClaimCasesAggExp
+  operand:
+    object:
+      aggregatedType: SlvClaimCases
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: diseaseGroupId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: relatedToAccident
+          aggregateExpression: BoolAggExp
+        - fieldName: sumAssured
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SlvClaimCasesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SlvClaimCasesOrderByExp
+  operand:
+    object:
+      orderedType: SlvClaimCases
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: diseaseGroupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: relatedToAccident
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: sumAssured
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: diseaseGroup
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: SlvClaimCasesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SlvClaimCases
+  objectType: SlvClaimCases
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: slv_claim_cases
+  filterExpressionType: SlvClaimCasesBoolExp
+  aggregateExpression: SlvClaimCasesAggExp
+  orderByExpression: SlvClaimCasesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: slvClaimCases
+      subscription:
+        rootField: slvClaimCases
+    selectUniques:
+      - queryRootField: slvClaimCasesByClaimCaseId
+        uniqueIdentifier:
+          - claimCaseId
+        subscription:
+          rootField: slvClaimCasesByClaimCaseId
+    filterInputTypeName: SlvClaimCasesFilterInput
+    aggregate:
+      queryRootField: slvClaimCasesAggregate
+      subscription:
+        rootField: slvClaimCasesAggregate
+  description: Claim Record in SLV
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SlvClaimCases
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: SlvClaimCases
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: diseaseGroup
+  sourceType: SlvClaimCases
+  target:
+    model:
+      name: DiseaseGroups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: diseaseGroupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: SlvClaimCases
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+

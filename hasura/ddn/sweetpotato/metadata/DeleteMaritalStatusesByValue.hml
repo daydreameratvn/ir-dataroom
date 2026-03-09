@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMaritalStatusesByValueResponse
+  description: Responses from the 'delete_marital_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MaritalStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMaritalStatusesByValueResponse
+    inputTypeName: DeleteMaritalStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_marital_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMaritalStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMaritalStatusesByValue
+  outputType: DeleteMaritalStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: MaritalStatusesBoolExp
+      description: Delete permission predicate over the 'marital_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_marital_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMaritalStatusesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'marital_statuses' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMaritalStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

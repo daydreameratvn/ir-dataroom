@@ -1,0 +1,186 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdClaimCaseStatusMapping
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: fwdStatusCode
+      type: String_1!
+    - name: ppyStatusCode
+      type: String_1!
+  graphql:
+    typeName: FwdClaimCaseStatusMapping
+    inputTypeName: FwdClaimCaseStatusMappingInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_claim_case_status_mapping
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        fwdStatusCode:
+          column:
+            name: fwd_status_code
+        ppyStatusCode:
+          column:
+            name: ppy_status_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdClaimCaseStatusMapping
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - fwdStatusCode
+          - ppyStatusCode
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdClaimCaseStatusMappingBoolExp
+  operand:
+    object:
+      type: FwdClaimCaseStatusMapping
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fwdStatusCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: ppyStatusCode
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: fwdClaimCaseStatus
+        - relationshipName: claimCaseStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdClaimCaseStatusMappingBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdClaimCaseStatusMappingAggExp
+  operand:
+    object:
+      aggregatedType: FwdClaimCaseStatusMapping
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fwdStatusCode
+          aggregateExpression: TextAggExp
+        - fieldName: ppyStatusCode
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdClaimCaseStatusMappingAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdClaimCaseStatusMappingOrderByExp
+  operand:
+    object:
+      orderedType: FwdClaimCaseStatusMapping
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fwdStatusCode
+          orderByExpression: String1OrderByExp
+        - fieldName: ppyStatusCode
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: fwdClaimCaseStatus
+        - relationshipName: claimCaseStatus
+  graphql:
+    expressionTypeName: FwdClaimCaseStatusMappingOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdClaimCaseStatusMapping
+  objectType: FwdClaimCaseStatusMapping
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_claim_case_status_mapping
+  filterExpressionType: FwdClaimCaseStatusMappingBoolExp
+  aggregateExpression: FwdClaimCaseStatusMappingAggExp
+  orderByExpression: FwdClaimCaseStatusMappingOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdClaimCaseStatusMapping
+      subscription:
+        rootField: fwdClaimCaseStatusMapping
+    selectUniques:
+      - queryRootField: fwdClaimCaseStatusMappingByClaimCaseStatusMappingPkey
+        uniqueIdentifier:
+          - fwdStatusCode
+          - ppyStatusCode
+        subscription:
+          rootField: fwdClaimCaseStatusMappingByClaimCaseStatusMappingPkey
+    filterInputTypeName: FwdClaimCaseStatusMappingFilterInput
+    aggregate:
+      queryRootField: fwdClaimCaseStatusMappingAggregate
+      subscription:
+        rootField: fwdClaimCaseStatusMappingAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdClaimCaseStatusMapping
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdClaimCaseStatus
+  sourceType: FwdClaimCaseStatusMapping
+  target:
+    model:
+      name: FwdClaimCaseStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fwdStatusCode
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseStatus
+  sourceType: FwdClaimCaseStatusMapping
+  target:
+    model:
+      name: ClaimCaseStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ppyStatusCode
+      target:
+        modelField:
+          - fieldName: value
+

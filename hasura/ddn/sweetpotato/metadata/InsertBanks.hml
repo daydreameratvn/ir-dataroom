@@ -1,0 +1,163 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertBanksObject
+  fields:
+    - name: bankCode
+      type: Int32!
+      description: Citad code
+    - name: cardLength
+      type: Int32
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: displayOrder
+      type: Int32
+    - name: enName
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: napasSupported
+      type: Boolean_1!
+    - name: shortName
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: vnName
+      type: String_1!
+  graphql:
+    typeName: InsertBanksObject
+    inputTypeName: InsertBanksObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_banks_object
+      fieldMapping:
+        bankCode:
+          column:
+            name: bank_code
+        cardLength:
+          column:
+            name: card_length
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        displayOrder:
+          column:
+            name: display_order
+        enName:
+          column:
+            name: en_name
+        id:
+          column:
+            name: id
+        napasSupported:
+          column:
+            name: napas_supported
+        shortName:
+          column:
+            name: short_name
+        updatedAt:
+          column:
+            name: updated_at
+        vnName:
+          column:
+            name: vn_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertBanksObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankCode
+          - cardLength
+          - createdAt
+          - deletedAt
+          - displayOrder
+          - enName
+          - id
+          - napasSupported
+          - shortName
+          - updatedAt
+          - vnName
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertBanksResponse
+  description: Responses from the 'insert_banks' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Banks!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertBanksResponse
+    inputTypeName: InsertBanksResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_banks_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertBanksResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertBanks
+  outputType: InsertBanksResponse!
+  arguments:
+    - name: objects
+      type: "[InsertBanksObject!]!"
+    - name: postCheck
+      type: BanksBoolExp
+      description: Insert permission predicate over the 'banks' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_banks
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertBanks
+    rootFieldKind: Mutation
+  description: Insert into the banks table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertBanks
+  permissions:
+    - role: admin
+      allowExecution: true
+

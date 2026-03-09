@@ -1,0 +1,184 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpMedicalProviderMappingByIdUpdateColumns
+  description: Update the columns of the 'mp_medical_provider_mapping' collection
+  fields:
+    - name: code
+      type: UpdateColumnMpMedicalProviderMappingCode
+      description: Update the 'code' column in the 'mp_medical_provider_mapping' collection.
+    - name: companyId
+      type: UpdateColumnMpMedicalProviderMappingCompanyId
+      description: Update the 'company_id' column in the 'mp_medical_provider_mapping'
+        collection.
+    - name: createdAt
+      type: UpdateColumnMpMedicalProviderMappingCreatedAt
+      description: Update the 'created_at' column in the 'mp_medical_provider_mapping'
+        collection.
+    - name: createdBy
+      type: UpdateColumnMpMedicalProviderMappingCreatedBy
+      description: Update the 'created_by' column in the 'mp_medical_provider_mapping'
+        collection.
+    - name: deletedAt
+      type: UpdateColumnMpMedicalProviderMappingDeletedAt
+      description: Update the 'deleted_at' column in the 'mp_medical_provider_mapping'
+        collection.
+    - name: id
+      type: UpdateColumnMpMedicalProviderMappingId
+      description: Update the 'id' column in the 'mp_medical_provider_mapping' collection.
+    - name: name
+      type: UpdateColumnMpMedicalProviderMappingName
+      description: Update the 'name' column in the 'mp_medical_provider_mapping' collection.
+    - name: ppyMedicalProviderId
+      type: UpdateColumnMpMedicalProviderMappingPpyMedicalProviderId
+      description: Update the 'ppy_medical_provider_id' column in the
+        'mp_medical_provider_mapping' collection.
+    - name: updatedAt
+      type: UpdateColumnMpMedicalProviderMappingUpdatedAt
+      description: Update the 'updated_at' column in the 'mp_medical_provider_mapping'
+        collection.
+    - name: updatedBy
+      type: UpdateColumnMpMedicalProviderMappingUpdatedBy
+      description: Update the 'updated_by' column in the 'mp_medical_provider_mapping'
+        collection.
+  graphql:
+    typeName: UpdateMpMedicalProviderMappingByIdUpdateColumns
+    inputTypeName: UpdateMpMedicalProviderMappingByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_medical_provider_mapping_by_id_update_columns
+      fieldMapping:
+        code:
+          column:
+            name: code
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        ppyMedicalProviderId:
+          column:
+            name: ppy_medical_provider_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpMedicalProviderMappingByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - companyId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - name
+          - ppyMedicalProviderId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpMedicalProviderMappingByIdResponse
+  description: Responses from the 'update_mp_medical_provider_mapping_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateMpMedicalProviderMappingByIdResponse
+    inputTypeName: UpdateMpMedicalProviderMappingByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_medical_provider_mapping_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpMedicalProviderMappingByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateMpMedicalProviderMappingById
+  outputType: UpdateMpMedicalProviderMappingByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: MpMedicalProviderMappingBoolExp
+      description: Update permission post-condition predicate over the
+        'mp_medical_provider_mapping' collection
+    - name: preCheck
+      type: MpMedicalProviderMappingBoolExp
+      description: Update permission pre-condition predicate over the
+        'mp_medical_provider_mapping' collection
+    - name: updateColumns
+      type: UpdateMpMedicalProviderMappingByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_mp_medical_provider_mapping_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateMpMedicalProviderMappingById
+    rootFieldKind: Mutation
+  description: Update any row on the 'mp_medical_provider_mapping' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateMpMedicalProviderMappingById
+  permissions:
+    - role: admin
+      allowExecution: true
+

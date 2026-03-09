@@ -1,0 +1,82 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutPaymentRequestItemsByRefCodeAndSourceAndTypeResponse
+  description: Responses from the
+    'delete_payout_payment_request_items_by_ref_code_and_source_and_type'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPaymentRequestItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutPaymentRequestItemsByRefCodeAndSourceAndTypeResponse
+    inputTypeName: DeletePayoutPaymentRequestItemsByRefCodeAndSourceAndTypeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_payment_request_items_by_ref_code_and_source_and_type_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutPaymentRequestItemsByRefCodeAndSourceAndTypeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutPaymentRequestItemsByRefCodeAndSourceAndType
+  outputType: DeletePayoutPaymentRequestItemsByRefCodeAndSourceAndTypeResponse!
+  arguments:
+    - name: keyRefCode
+      type: String_1!
+    - name: keySource
+      type: String_1!
+    - name: keyType
+      type: String_1!
+    - name: preCheck
+      type: PayoutPaymentRequestItemsBoolExp
+      description: Delete permission predicate over the 'payout_payment_request_items'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_payment_request_items_by_ref_code_and_source_and_type
+    argumentMapping:
+      keyRefCode: key_ref_code
+      keySource: key_source
+      keyType: key_type
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutPaymentRequestItemsByRefCodeAndSourceAndType
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_payment_request_items' collection
+    using the 'ref_code', 'source' and 'type' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutPaymentRequestItemsByRefCodeAndSourceAndType
+  permissions:
+    - role: admin
+      allowExecution: true
+

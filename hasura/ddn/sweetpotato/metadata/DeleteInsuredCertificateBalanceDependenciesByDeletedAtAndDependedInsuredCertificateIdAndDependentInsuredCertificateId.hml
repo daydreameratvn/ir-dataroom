@@ -1,0 +1,83 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredCertificateBalanceDependenciesByDeletedAtAndDependedInsuredCertificateIdAndDependentInsuredCertificateIdResponse
+  description: Responses from the
+    'delete_insured_certificate_balance_dependencies_by_deleted_at_and_depended_insured_certificate_id_and_dependent_insured_certificate_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateBalanceDependencies!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredCertificateBalanceDependenciesByDeletedAtAndDependedInsuredCertificateIdAndDependentInsuredCertificateIdResponse
+    inputTypeName: DeleteInsuredCertificateBalanceDependenciesByDeletedAtAndDependedInsuredCertificateIdAndDependentInsuredCertificateIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_certificate_balance_dependencies_by_deleted_at_and_depended_insured_certificate_id_and_dependent_insured_certificate_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredCertificateBalanceDependenciesByDeletedAtAndDependedInsuredCertificateIdAndDependentInsuredCertificateIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredCertificateBalanceDependenciesByDeletedAtAndDependedInsuredCertificateIdAndDependentInsuredCertificateId
+  outputType: DeleteInsuredCertificateBalanceDependenciesByDeletedAtAndDependedInsuredCertificateIdAndDependentInsuredCertificateIdResponse!
+  arguments:
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyDependedInsuredCertificateId
+      type: Uuid!
+    - name: keyDependentInsuredCertificateId
+      type: Uuid!
+    - name: preCheck
+      type: InsuredCertificateBalanceDependenciesBoolExp
+      description: Delete permission predicate over the
+        'insured_certificate_balance_dependencies' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_certificate_balance_dependencies_by_deleted_at_and_depended_insured_certificate_id_and_dependent_insured_certificate_id
+    argumentMapping:
+      keyDeletedAt: key_deleted_at
+      keyDependedInsuredCertificateId: key_depended_insured_certificate_id
+      keyDependentInsuredCertificateId: key_dependent_insured_certificate_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredCertificateBalanceDependenciesByDeletedAtAndDependedInsuredCertificateIdAndDependentInsuredCertificateId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_certificate_balance_dependencies'
+    collection using the 'deleted_at', 'depended_insured_certificate_id' and
+    'dependent_insured_certificate_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredCertificateBalanceDependenciesByDeletedAtAndDependedInsuredCertificateIdAndDependentInsuredCertificateId
+  permissions:
+    - role: admin
+      allowExecution: true
+

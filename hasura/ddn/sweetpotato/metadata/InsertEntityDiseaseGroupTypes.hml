@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertEntityDiseaseGroupTypesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertEntityDiseaseGroupTypesObject
+    inputTypeName: InsertEntityDiseaseGroupTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_entity_disease_group_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertEntityDiseaseGroupTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertEntityDiseaseGroupTypesResponse
+  description: Responses from the 'insert_entity_disease_group_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[EntityDiseaseGroupTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertEntityDiseaseGroupTypesResponse
+    inputTypeName: InsertEntityDiseaseGroupTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_entity_disease_group_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertEntityDiseaseGroupTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertEntityDiseaseGroupTypes
+  outputType: InsertEntityDiseaseGroupTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertEntityDiseaseGroupTypesObject!]!"
+    - name: postCheck
+      type: EntityDiseaseGroupTypesBoolExp
+      description: Insert permission predicate over the 'entity_disease_group_types'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_entity_disease_group_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertEntityDiseaseGroupTypes
+    rootFieldKind: Mutation
+  description: Insert into the entity_disease_group_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertEntityDiseaseGroupTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

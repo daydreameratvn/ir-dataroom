@@ -1,0 +1,109 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHdbCatalogHdbSourceCatalogVersionObject
+  fields:
+    - name: upgradedOn
+      type: Timestamptz!
+    - name: version
+      type: String_1!
+  graphql:
+    typeName: InsertHdbCatalogHdbSourceCatalogVersionObject
+    inputTypeName: InsertHdbCatalogHdbSourceCatalogVersionObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hdb_catalog_hdb_source_catalog_version_object
+      fieldMapping:
+        upgradedOn:
+          column:
+            name: upgraded_on
+        version:
+          column:
+            name: version
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHdbCatalogHdbSourceCatalogVersionObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - upgradedOn
+          - version
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHdbCatalogHdbSourceCatalogVersionResponse
+  description: Responses from the 'insert_hdb_catalog_hdb_source_catalog_version' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HdbCatalogHdbSourceCatalogVersion!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHdbCatalogHdbSourceCatalogVersionResponse
+    inputTypeName: InsertHdbCatalogHdbSourceCatalogVersionResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hdb_catalog_hdb_source_catalog_version_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHdbCatalogHdbSourceCatalogVersionResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHdbCatalogHdbSourceCatalogVersion
+  outputType: InsertHdbCatalogHdbSourceCatalogVersionResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHdbCatalogHdbSourceCatalogVersionObject!]!"
+    - name: postCheck
+      type: HdbCatalogHdbSourceCatalogVersionBoolExp
+      description: Insert permission predicate over the
+        'hdb_catalog_hdb_source_catalog_version' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hdb_catalog_hdb_source_catalog_version
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHdbCatalogHdbSourceCatalogVersion
+    rootFieldKind: Mutation
+  description: Insert into the hdb_catalog_hdb_source_catalog_version table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHdbCatalogHdbSourceCatalogVersion
+  permissions:
+    - role: admin
+      allowExecution: true
+

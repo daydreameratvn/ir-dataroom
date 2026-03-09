@@ -1,0 +1,83 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredCertificateCoursesByDeletedAtAndFromInsuredCertificateIdAndToInsuredCertificateIdResponse
+  description: Responses from the
+    'delete_insured_certificate_courses_by_deleted_at_and_from_insured_certificate_id_and_to_insured_certificate_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateCourses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredCertificateCoursesByDeletedAtAndFromInsuredCertificateIdAndToInsuredCertificateIdResponse
+    inputTypeName: DeleteInsuredCertificateCoursesByDeletedAtAndFromInsuredCertificateIdAndToInsuredCertificateIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_certificate_courses_by_deleted_at_and_from_insured_certificate_id_and_to_insured_certificate_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredCertificateCoursesByDeletedAtAndFromInsuredCertificateIdAndToInsuredCertificateIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredCertificateCoursesByDeletedAtAndFromInsuredCertificateIdAndToInsuredCertificateId
+  outputType: DeleteInsuredCertificateCoursesByDeletedAtAndFromInsuredCertificateIdAndToInsuredCertificateIdResponse!
+  arguments:
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyFromInsuredCertificateId
+      type: Uuid
+    - name: keyToInsuredCertificateId
+      type: Uuid
+    - name: preCheck
+      type: InsuredCertificateCoursesBoolExp
+      description: Delete permission predicate over the 'insured_certificate_courses'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_certificate_courses_by_deleted_at_and_from_insured_certificate_id_and_to_insured_certificate_id
+    argumentMapping:
+      keyDeletedAt: key_deleted_at
+      keyFromInsuredCertificateId: key_from_insured_certificate_id
+      keyToInsuredCertificateId: key_to_insured_certificate_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredCertificateCoursesByDeletedAtAndFromInsuredCertificateIdAndToInsuredCertificateId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_certificate_courses' collection
+    using the 'deleted_at', 'from_insured_certificate_id' and
+    'to_insured_certificate_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredCertificateCoursesByDeletedAtAndFromInsuredCertificateIdAndToInsuredCertificateId
+  permissions:
+    - role: admin
+      allowExecution: true
+

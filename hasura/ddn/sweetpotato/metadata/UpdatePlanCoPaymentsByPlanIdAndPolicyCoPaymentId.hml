@@ -1,0 +1,170 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdUpdateColumns
+  description: Update the columns of the 'plan_co_payments' collection
+  fields:
+    - name: applyAllPlanInsuredBenefits
+      type: UpdateColumnPlanCoPaymentsApplyAllPlanInsuredBenefits
+      description: Update the 'apply_all_plan_insured_benefits' column in the
+        'plan_co_payments' collection.
+    - name: createdAt
+      type: UpdateColumnPlanCoPaymentsCreatedAt
+      description: Update the 'created_at' column in the 'plan_co_payments' collection.
+    - name: deletedAt
+      type: UpdateColumnPlanCoPaymentsDeletedAt
+      description: Update the 'deleted_at' column in the 'plan_co_payments' collection.
+    - name: planCoPaymentId
+      type: UpdateColumnPlanCoPaymentsPlanCoPaymentId
+      description: Update the 'plan_co_payment_id' column in the 'plan_co_payments'
+        collection.
+    - name: planId
+      type: UpdateColumnPlanCoPaymentsPlanId
+      description: Update the 'plan_id' column in the 'plan_co_payments' collection.
+    - name: policyCoPaymentId
+      type: UpdateColumnPlanCoPaymentsPolicyCoPaymentId
+      description: Update the 'policy_co_payment_id' column in the 'plan_co_payments'
+        collection.
+    - name: tenantId
+      type: UpdateColumnPlanCoPaymentsTenantId
+      description: Update the 'tenant_id' column in the 'plan_co_payments' collection.
+    - name: updatedAt
+      type: UpdateColumnPlanCoPaymentsUpdatedAt
+      description: Update the 'updated_at' column in the 'plan_co_payments' collection.
+  graphql:
+    typeName: UpdatePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdUpdateColumns
+    inputTypeName: UpdatePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_plan_co_payments_by_plan_id_and_policy_co_payment_id_update_columns
+      fieldMapping:
+        applyAllPlanInsuredBenefits:
+          column:
+            name: apply_all_plan_insured_benefits
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        planCoPaymentId:
+          column:
+            name: plan_co_payment_id
+        planId:
+          column:
+            name: plan_id
+        policyCoPaymentId:
+          column:
+            name: policy_co_payment_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - applyAllPlanInsuredBenefits
+          - createdAt
+          - deletedAt
+          - planCoPaymentId
+          - planId
+          - policyCoPaymentId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdResponse
+  description: Responses from the
+    'update_plan_co_payments_by_plan_id_and_policy_co_payment_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanCoPayments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdResponse
+    inputTypeName: UpdatePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_plan_co_payments_by_plan_id_and_policy_co_payment_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePlanCoPaymentsByPlanIdAndPolicyCoPaymentId
+  outputType: UpdatePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdResponse!
+  arguments:
+    - name: keyPlanId
+      type: Uuid!
+    - name: keyPolicyCoPaymentId
+      type: Uuid!
+    - name: postCheck
+      type: PlanCoPaymentsBoolExp
+      description: Update permission post-condition predicate over the
+        'plan_co_payments' collection
+    - name: preCheck
+      type: PlanCoPaymentsBoolExp
+      description: Update permission pre-condition predicate over the
+        'plan_co_payments' collection
+    - name: updateColumns
+      type: UpdatePlanCoPaymentsByPlanIdAndPolicyCoPaymentIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_plan_co_payments_by_plan_id_and_policy_co_payment_id
+    argumentMapping:
+      keyPlanId: key_plan_id
+      keyPolicyCoPaymentId: key_policy_co_payment_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePlanCoPaymentsByPlanIdAndPolicyCoPaymentId
+    rootFieldKind: Mutation
+  description: Update any row on the 'plan_co_payments' collection using the
+    'plan_id' and 'policy_co_payment_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePlanCoPaymentsByPlanIdAndPolicyCoPaymentId
+  permissions:
+    - role: admin
+      allowExecution: true
+

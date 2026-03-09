@@ -1,0 +1,369 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OcrInvoiceItems
+  fields:
+    - name: amount
+      type: Bigdecimal
+    - name: amountAfterVat
+      type: Bigdecimal
+    - name: amountBeforeVat
+      type: Bigdecimal
+    - name: batchNumber
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: discountAmount
+      type: Bigdecimal
+    - name: expriedAt
+      type: Timestamptz
+    - name: extraAmount
+      type: Bigdecimal
+    - name: id
+      type: Uuid!
+    - name: invoiceId
+      type: Uuid!
+    - name: itemName
+      type: String_1
+    - name: lineNumber
+      type: Bigdecimal
+    - name: paymentAmount
+      type: Bigdecimal
+    - name: quantity
+      type: Bigdecimal
+    - name: rawData
+      type: Json
+    - name: unit
+      type: String_1
+    - name: unitPrice
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz!
+    - name: vatAmount
+      type: Bigdecimal
+    - name: vatPercentage
+      type: Bigdecimal
+  graphql:
+    typeName: OcrInvoiceItems
+    inputTypeName: OcrInvoiceItemsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: ocr_invoice_items
+      fieldMapping:
+        amount:
+          column:
+            name: amount
+        amountAfterVat:
+          column:
+            name: amount_after_vat
+        amountBeforeVat:
+          column:
+            name: amount_before_vat
+        batchNumber:
+          column:
+            name: batch_number
+        createdAt:
+          column:
+            name: created_at
+        discountAmount:
+          column:
+            name: discount_amount
+        expriedAt:
+          column:
+            name: expried_at
+        extraAmount:
+          column:
+            name: extra_amount
+        id:
+          column:
+            name: id
+        invoiceId:
+          column:
+            name: invoice_id
+        itemName:
+          column:
+            name: item_name
+        lineNumber:
+          column:
+            name: line_number
+        paymentAmount:
+          column:
+            name: payment_amount
+        quantity:
+          column:
+            name: quantity
+        rawData:
+          column:
+            name: raw_data
+        unit:
+          column:
+            name: unit
+        unitPrice:
+          column:
+            name: unit_price
+        updatedAt:
+          column:
+            name: updated_at
+        vatAmount:
+          column:
+            name: vat_amount
+        vatPercentage:
+          column:
+            name: vat_percentage
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OcrInvoiceItems
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - amount
+          - amountAfterVat
+          - amountBeforeVat
+          - batchNumber
+          - createdAt
+          - discountAmount
+          - expriedAt
+          - extraAmount
+          - id
+          - invoiceId
+          - itemName
+          - lineNumber
+          - paymentAmount
+          - quantity
+          - rawData
+          - unit
+          - unitPrice
+          - updatedAt
+          - vatAmount
+          - vatPercentage
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OcrInvoiceItemsBoolExp
+  operand:
+    object:
+      type: OcrInvoiceItems
+      comparableFields:
+        - fieldName: amount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: amountAfterVat
+          booleanExpressionType: NumericBoolExp
+        - fieldName: amountBeforeVat
+          booleanExpressionType: NumericBoolExp
+        - fieldName: batchNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: discountAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: expriedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: extraAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: invoiceId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: itemName
+          booleanExpressionType: TextBoolExp
+        - fieldName: lineNumber
+          booleanExpressionType: NumericBoolExp
+        - fieldName: paymentAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: quantity
+          booleanExpressionType: NumericBoolExp
+        - fieldName: rawData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: unit
+          booleanExpressionType: TextBoolExp
+        - fieldName: unitPrice
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: vatAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: vatPercentage
+          booleanExpressionType: NumericBoolExp
+      comparableRelationships:
+        - relationshipName: ocrInvoice
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OcrInvoiceItemsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OcrInvoiceItemsAggExp
+  operand:
+    object:
+      aggregatedType: OcrInvoiceItems
+      aggregatableFields:
+        - fieldName: amount
+          aggregateExpression: NumericAggExp
+        - fieldName: amountAfterVat
+          aggregateExpression: NumericAggExp
+        - fieldName: amountBeforeVat
+          aggregateExpression: NumericAggExp
+        - fieldName: batchNumber
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: discountAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: expriedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: extraAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: invoiceId
+          aggregateExpression: UuidAggExp
+        - fieldName: itemName
+          aggregateExpression: TextAggExp
+        - fieldName: lineNumber
+          aggregateExpression: NumericAggExp
+        - fieldName: paymentAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: quantity
+          aggregateExpression: NumericAggExp
+        - fieldName: rawData
+          aggregateExpression: JsonbAggExp
+        - fieldName: unit
+          aggregateExpression: TextAggExp
+        - fieldName: unitPrice
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: vatAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: vatPercentage
+          aggregateExpression: NumericAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OcrInvoiceItemsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OcrInvoiceItemsOrderByExp
+  operand:
+    object:
+      orderedType: OcrInvoiceItems
+      orderableFields:
+        - fieldName: amount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: amountAfterVat
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: amountBeforeVat
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: batchNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: discountAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: expriedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: extraAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: invoiceId
+          orderByExpression: UuidOrderByExp
+        - fieldName: itemName
+          orderByExpression: String1OrderByExp
+        - fieldName: lineNumber
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: paymentAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: quantity
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: rawData
+          orderByExpression: JsonOrderByExp
+        - fieldName: unit
+          orderByExpression: String1OrderByExp
+        - fieldName: unitPrice
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: vatAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: vatPercentage
+          orderByExpression: BigdecimalOrderByExp
+      orderableRelationships:
+        - relationshipName: ocrInvoice
+  graphql:
+    expressionTypeName: OcrInvoiceItemsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OcrInvoiceItems
+  objectType: OcrInvoiceItems
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: ocr_invoice_items
+  filterExpressionType: OcrInvoiceItemsBoolExp
+  aggregateExpression: OcrInvoiceItemsAggExp
+  orderByExpression: OcrInvoiceItemsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: ocrInvoiceItems
+      subscription:
+        rootField: ocrInvoiceItems
+    selectUniques:
+      - queryRootField: ocrInvoiceItemsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: ocrInvoiceItemsById
+    filterInputTypeName: OcrInvoiceItemsFilterInput
+    aggregate:
+      queryRootField: ocrInvoiceItemsAggregate
+      subscription:
+        rootField: ocrInvoiceItemsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OcrInvoiceItems
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrInvoice
+  sourceType: OcrInvoiceItems
+  target:
+    model:
+      name: OcrInvoices
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: invoiceId
+      target:
+        modelField:
+          - fieldName: id
+

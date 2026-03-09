@@ -1,0 +1,286 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProviderGroupMedicalProviders
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: medicalProviderGroupHistoryId
+      type: Uuid!
+    - name: medicalProviderId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: MpMedicalProviderGroupMedicalProviders
+    inputTypeName: MpMedicalProviderGroupMedicalProvidersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_provider_group_medical_providers
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        medicalProviderGroupHistoryId:
+          column:
+            name: medical_provider_group_history_id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProviderGroupMedicalProviders
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - medicalProviderGroupHistoryId
+          - medicalProviderId
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProviderGroupMedicalProvidersBoolExp
+  operand:
+    object:
+      type: MpMedicalProviderGroupMedicalProviders
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderGroupHistoryId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProvider
+        - relationshipName: identityUser
+        - relationshipName: mpMedicalProviderGroupHistory
+        - relationshipName: identityUserByUpdatedBy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProviderGroupMedicalProvidersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProviderGroupMedicalProvidersAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProviderGroupMedicalProviders
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderGroupHistoryId
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProviderGroupMedicalProvidersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProviderGroupMedicalProvidersOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProviderGroupMedicalProviders
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderGroupHistoryId
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: mpMedicalProvider
+        - relationshipName: identityUser
+        - relationshipName: mpMedicalProviderGroupHistory
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: MpMedicalProviderGroupMedicalProvidersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProviderGroupMedicalProviders
+  objectType: MpMedicalProviderGroupMedicalProviders
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_provider_group_medical_providers
+  filterExpressionType: MpMedicalProviderGroupMedicalProvidersBoolExp
+  aggregateExpression: MpMedicalProviderGroupMedicalProvidersAggExp
+  orderByExpression: MpMedicalProviderGroupMedicalProvidersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProviderGroupMedicalProviders
+      subscription:
+        rootField: mpMedicalProviderGroupMedicalProviders
+    selectUniques:
+      - queryRootField: mpMedicalProviderGroupMedicalProvidersByMedicalProviderGroupMedicalProvidersMedicalProviderIdMe
+        uniqueIdentifier:
+          - medicalProviderGroupHistoryId
+          - medicalProviderId
+        subscription:
+          rootField: mpMedicalProviderGroupMedicalProvidersByMedicalProviderGroupMedicalProvidersMedicalProviderIdMe
+    filterInputTypeName: MpMedicalProviderGroupMedicalProvidersFilterInput
+    aggregate:
+      queryRootField: mpMedicalProviderGroupMedicalProvidersAggregate
+      subscription:
+        rootField: mpMedicalProviderGroupMedicalProvidersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProviderGroupMedicalProviders
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: MpMedicalProviderGroupMedicalProviders
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: MpMedicalProviderGroupMedicalProviders
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderGroupHistory
+  sourceType: MpMedicalProviderGroupMedicalProviders
+  target:
+    model:
+      name: MpMedicalProviderGroupHistories
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderGroupHistoryId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: MpMedicalProviderGroupMedicalProviders
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+

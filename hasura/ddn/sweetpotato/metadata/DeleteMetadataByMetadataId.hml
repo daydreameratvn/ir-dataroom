@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMetadataByMetadataIdResponse
+  description: Responses from the 'delete_metadata_by_metadata_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Metadata!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMetadataByMetadataIdResponse
+    inputTypeName: DeleteMetadataByMetadataIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_metadata_by_metadata_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMetadataByMetadataIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMetadataByMetadataId
+  outputType: DeleteMetadataByMetadataIdResponse!
+  arguments:
+    - name: keyMetadataId
+      type: Uuid!
+    - name: preCheck
+      type: MetadataBoolExp
+      description: Delete permission predicate over the 'metadata' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_metadata_by_metadata_id
+    argumentMapping:
+      keyMetadataId: key_metadata_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMetadataByMetadataId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'metadata' collection using the 'metadata_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMetadataByMetadataId
+  permissions:
+    - role: admin
+      allowExecution: true
+

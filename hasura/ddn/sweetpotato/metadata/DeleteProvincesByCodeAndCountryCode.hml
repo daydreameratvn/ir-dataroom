@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteProvincesByCodeAndCountryCodeResponse
+  description: Responses from the 'delete_provinces_by_code_and_country_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Provinces!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteProvincesByCodeAndCountryCodeResponse
+    inputTypeName: DeleteProvincesByCodeAndCountryCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_provinces_by_code_and_country_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteProvincesByCodeAndCountryCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteProvincesByCodeAndCountryCode
+  outputType: DeleteProvincesByCodeAndCountryCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: keyCountryCode
+      type: String_1!
+    - name: preCheck
+      type: ProvincesBoolExp
+      description: Delete permission predicate over the 'provinces' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_provinces_by_code_and_country_code
+    argumentMapping:
+      keyCode: key_code
+      keyCountryCode: key_country_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteProvincesByCodeAndCountryCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'provinces' collection using the 'code' and
+    'country_code' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteProvincesByCodeAndCountryCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

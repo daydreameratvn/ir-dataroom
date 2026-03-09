@@ -1,0 +1,163 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutUnderwritingNotesObject
+  fields:
+    - name: coverageFromSecondYear
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: exclusionFirstYear
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: insuranceRequestId
+      type: Uuid!
+    - name: insuredPersonId
+      type: Uuid!
+    - name: lifetimeExclusions
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertHazelnutUnderwritingNotesObject
+    inputTypeName: InsertHazelnutUnderwritingNotesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_underwriting_notes_object
+      fieldMapping:
+        coverageFromSecondYear:
+          column:
+            name: coverage_from_second_year
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        exclusionFirstYear:
+          column:
+            name: exclusion_first_year
+        id:
+          column:
+            name: id
+        insuranceRequestId:
+          column:
+            name: insurance_request_id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        lifetimeExclusions:
+          column:
+            name: lifetime_exclusions
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutUnderwritingNotesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - coverageFromSecondYear
+          - createdAt
+          - createdBy
+          - deletedAt
+          - exclusionFirstYear
+          - id
+          - insuranceRequestId
+          - insuredPersonId
+          - lifetimeExclusions
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutUnderwritingNotesResponse
+  description: Responses from the 'insert_hazelnut_underwriting_notes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutUnderwritingNotes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHazelnutUnderwritingNotesResponse
+    inputTypeName: InsertHazelnutUnderwritingNotesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_underwriting_notes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutUnderwritingNotesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHazelnutUnderwritingNotes
+  outputType: InsertHazelnutUnderwritingNotesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHazelnutUnderwritingNotesObject!]!"
+    - name: postCheck
+      type: HazelnutUnderwritingNotesBoolExp
+      description: Insert permission predicate over the 'hazelnut_underwriting_notes'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hazelnut_underwriting_notes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHazelnutUnderwritingNotes
+    rootFieldKind: Mutation
+  description: Insert into the hazelnut_underwriting_notes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHazelnutUnderwritingNotes
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,244 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OcrPolsts
+  description: Bảng Kê
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: issuedAt
+      type: Timestamptz
+    - name: medicalProviderName
+      type: String_1
+    - name: paperId
+      type: Uuid!
+    - name: patientName
+      type: String_1
+    - name: rawData
+      type: Json
+    - name: totalPaymentAmount
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: OcrPolsts
+    inputTypeName: OcrPolstsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: ocr_polsts
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        issuedAt:
+          column:
+            name: issued_at
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        paperId:
+          column:
+            name: paper_id
+        patientName:
+          column:
+            name: patient_name
+        rawData:
+          column:
+            name: raw_data
+        totalPaymentAmount:
+          column:
+            name: total_payment_amount
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OcrPolsts
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - issuedAt
+          - medicalProviderName
+          - paperId
+          - patientName
+          - rawData
+          - totalPaymentAmount
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OcrPolstsBoolExp
+  operand:
+    object:
+      type: OcrPolsts
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: issuedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: medicalProviderName
+          booleanExpressionType: TextBoolExp
+        - fieldName: paperId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: patientName
+          booleanExpressionType: TextBoolExp
+        - fieldName: rawData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: totalPaymentAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: ocrPaper
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OcrPolstsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OcrPolstsAggExp
+  operand:
+    object:
+      aggregatedType: OcrPolsts
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: issuedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: medicalProviderName
+          aggregateExpression: TextAggExp
+        - fieldName: paperId
+          aggregateExpression: UuidAggExp
+        - fieldName: patientName
+          aggregateExpression: TextAggExp
+        - fieldName: rawData
+          aggregateExpression: JsonbAggExp
+        - fieldName: totalPaymentAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OcrPolstsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OcrPolstsOrderByExp
+  operand:
+    object:
+      orderedType: OcrPolsts
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: issuedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: medicalProviderName
+          orderByExpression: String1OrderByExp
+        - fieldName: paperId
+          orderByExpression: UuidOrderByExp
+        - fieldName: patientName
+          orderByExpression: String1OrderByExp
+        - fieldName: rawData
+          orderByExpression: JsonOrderByExp
+        - fieldName: totalPaymentAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: ocrPaper
+  graphql:
+    expressionTypeName: OcrPolstsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OcrPolsts
+  objectType: OcrPolsts
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: ocr_polsts
+  filterExpressionType: OcrPolstsBoolExp
+  aggregateExpression: OcrPolstsAggExp
+  orderByExpression: OcrPolstsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: ocrPolsts
+      subscription:
+        rootField: ocrPolsts
+    selectUniques:
+      - queryRootField: ocrPolstsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: ocrPolstsById
+      - queryRootField: ocrPolstsByPaperId
+        uniqueIdentifier:
+          - paperId
+        subscription:
+          rootField: ocrPolstsByPaperId
+    filterInputTypeName: OcrPolstsFilterInput
+    aggregate:
+      queryRootField: ocrPolstsAggregate
+      subscription:
+        rootField: ocrPolstsAggregate
+  description: Bảng Kê
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OcrPolsts
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPaper
+  sourceType: OcrPolsts
+  target:
+    model:
+      name: OcrPapers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paperId
+      target:
+        modelField:
+          - fieldName: id
+

@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCasesCountByDayObject
+  fields:
+    - name: count
+      type: Int64
+    - name: day
+      type: Timestamptz
+  graphql:
+    typeName: InsertClaimCasesCountByDayObject
+    inputTypeName: InsertClaimCasesCountByDayObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_cases_count_by_day_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCasesCountByDayObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - count
+          - day
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCasesCountByDayResponse
+  description: Responses from the 'insert_claim_cases_count_by_day' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCasesCountByDay!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCasesCountByDayResponse
+    inputTypeName: InsertClaimCasesCountByDayResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_cases_count_by_day_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCasesCountByDayResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCasesCountByDay
+  outputType: InsertClaimCasesCountByDayResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCasesCountByDayObject!]!"
+    - name: postCheck
+      type: ClaimCasesCountByDayBoolExp
+      description: Insert permission predicate over the 'claim_cases_count_by_day'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_cases_count_by_day
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCasesCountByDay
+    rootFieldKind: Mutation
+  description: Insert into the claim_cases_count_by_day table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCasesCountByDay
+  permissions:
+    - role: admin
+      allowExecution: true
+

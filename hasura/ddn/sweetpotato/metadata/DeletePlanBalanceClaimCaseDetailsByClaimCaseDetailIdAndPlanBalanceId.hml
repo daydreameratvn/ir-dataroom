@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePlanBalanceClaimCaseDetailsByClaimCaseDetailIdAndPlanBalanceIdResponse
+  description: Responses from the
+    'delete_plan_balance_claim_case_details_by_claim_case_detail_id_and_plan_balance_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanBalanceClaimCaseDetails!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePlanBalanceClaimCaseDetailsByClaimCaseDetailIdAndPlanBalanceIdResponse
+    inputTypeName: DeletePlanBalanceClaimCaseDetailsByClaimCaseDetailIdAndPlanBalanceIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_plan_balance_claim_case_details_by_claim_case_detail_id_and_plan_balance_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePlanBalanceClaimCaseDetailsByClaimCaseDetailIdAndPlanBalanceIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePlanBalanceClaimCaseDetailsByClaimCaseDetailIdAndPlanBalanceId
+  outputType: DeletePlanBalanceClaimCaseDetailsByClaimCaseDetailIdAndPlanBalanceIdResponse!
+  arguments:
+    - name: keyClaimCaseDetailId
+      type: Uuid!
+    - name: keyPlanBalanceId
+      type: Uuid!
+    - name: preCheck
+      type: PlanBalanceClaimCaseDetailsBoolExp
+      description: Delete permission predicate over the
+        'plan_balance_claim_case_details' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_plan_balance_claim_case_details_by_claim_case_detail_id_and_plan_balance_id
+    argumentMapping:
+      keyClaimCaseDetailId: key_claim_case_detail_id
+      keyPlanBalanceId: key_plan_balance_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePlanBalanceClaimCaseDetailsByClaimCaseDetailIdAndPlanBalanceId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'plan_balance_claim_case_details' collection
+    using the 'claim_case_detail_id' and 'plan_balance_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePlanBalanceClaimCaseDetailsByClaimCaseDetailIdAndPlanBalanceId
+  permissions:
+    - role: admin
+      allowExecution: true
+

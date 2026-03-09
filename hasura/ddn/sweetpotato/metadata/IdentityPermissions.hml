@@ -1,0 +1,276 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityPermissions
+  description: Cụ thể permission cho từng role
+  fields:
+    - name: canApproveClaims
+      type: Boolean_1!
+    - name: canCreateClaims
+      type: Boolean_1!
+    - name: canMakeDecisionOnClaims
+      type: Boolean_1!
+    - name: canPresentClaims
+      type: Boolean_1!
+    - name: canUploadDocumentOnClaims
+      type: Boolean_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: permissionId
+      type: Uuid!
+    - name: role
+      type: String_1!
+    - name: tenantId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: IdentityPermissions
+    inputTypeName: IdentityPermissionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_permissions
+      fieldMapping:
+        canApproveClaims:
+          column:
+            name: can_approve_claims
+        canCreateClaims:
+          column:
+            name: can_create_claims
+        canMakeDecisionOnClaims:
+          column:
+            name: can_make_decision_on_claims
+        canPresentClaims:
+          column:
+            name: can_present_claims
+        canUploadDocumentOnClaims:
+          column:
+            name: can_upload_document_on_claims
+        createdAt:
+          column:
+            name: created_at
+        permissionId:
+          column:
+            name: permission_id
+        role:
+          column:
+            name: role
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityPermissions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - canApproveClaims
+          - canCreateClaims
+          - canMakeDecisionOnClaims
+          - canPresentClaims
+          - canUploadDocumentOnClaims
+          - createdAt
+          - permissionId
+          - role
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityPermissionsBoolExp
+  operand:
+    object:
+      type: IdentityPermissions
+      comparableFields:
+        - fieldName: canApproveClaims
+          booleanExpressionType: BoolBoolExp
+        - fieldName: canCreateClaims
+          booleanExpressionType: BoolBoolExp
+        - fieldName: canMakeDecisionOnClaims
+          booleanExpressionType: BoolBoolExp
+        - fieldName: canPresentClaims
+          booleanExpressionType: BoolBoolExp
+        - fieldName: canUploadDocumentOnClaims
+          booleanExpressionType: BoolBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: permissionId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: role
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: identityRole
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityPermissionsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityPermissionsAggExp
+  operand:
+    object:
+      aggregatedType: IdentityPermissions
+      aggregatableFields:
+        - fieldName: canApproveClaims
+          aggregateExpression: BoolAggExp
+        - fieldName: canCreateClaims
+          aggregateExpression: BoolAggExp
+        - fieldName: canMakeDecisionOnClaims
+          aggregateExpression: BoolAggExp
+        - fieldName: canPresentClaims
+          aggregateExpression: BoolAggExp
+        - fieldName: canUploadDocumentOnClaims
+          aggregateExpression: BoolAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: permissionId
+          aggregateExpression: UuidAggExp
+        - fieldName: role
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityPermissionsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityPermissionsOrderByExp
+  operand:
+    object:
+      orderedType: IdentityPermissions
+      orderableFields:
+        - fieldName: canApproveClaims
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: canCreateClaims
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: canMakeDecisionOnClaims
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: canPresentClaims
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: canUploadDocumentOnClaims
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: permissionId
+          orderByExpression: UuidOrderByExp
+        - fieldName: role
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: identityRole
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: IdentityPermissionsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityPermissions
+  objectType: IdentityPermissions
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_permissions
+  filterExpressionType: IdentityPermissionsBoolExp
+  aggregateExpression: IdentityPermissionsAggExp
+  orderByExpression: IdentityPermissionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityPermissions
+      subscription:
+        rootField: identityPermissions
+    selectUniques:
+      - queryRootField: identityPermissionsByPermissionId
+        uniqueIdentifier:
+          - permissionId
+        subscription:
+          rootField: identityPermissionsByPermissionId
+      - queryRootField: identityPermissionsByRole
+        uniqueIdentifier:
+          - role
+        subscription:
+          rootField: identityPermissionsByRole
+    filterInputTypeName: IdentityPermissionsFilterInput
+    aggregate:
+      queryRootField: identityPermissionsAggregate
+      subscription:
+        rootField: identityPermissionsAggregate
+  description: Cụ thể permission cho từng role
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityPermissions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityRole
+  sourceType: IdentityPermissions
+  target:
+    model:
+      name: IdentityRoles
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: role
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: IdentityPermissions
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

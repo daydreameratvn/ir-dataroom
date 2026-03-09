@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseBeneficiaryWarningCodes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimCaseBeneficiaryWarningCodes
+    inputTypeName: ClaimCaseBeneficiaryWarningCodesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_beneficiary_warning_codes
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseBeneficiaryWarningCodes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseBeneficiaryWarningCodesBoolExp
+  operand:
+    object:
+      type: ClaimCaseBeneficiaryWarningCodes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimCaseBeneficiaries
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseBeneficiaryWarningCodesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseBeneficiaryWarningCodesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseBeneficiaryWarningCodes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseBeneficiaryWarningCodesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseBeneficiaryWarningCodesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseBeneficiaryWarningCodes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimCaseBeneficiaryWarningCodesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseBeneficiaryWarningCodes
+  objectType: ClaimCaseBeneficiaryWarningCodes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_beneficiary_warning_codes
+  filterExpressionType: ClaimCaseBeneficiaryWarningCodesBoolExp
+  aggregateExpression: ClaimCaseBeneficiaryWarningCodesAggExp
+  orderByExpression: ClaimCaseBeneficiaryWarningCodesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseBeneficiaryWarningCodes
+      subscription:
+        rootField: claimCaseBeneficiaryWarningCodes
+    selectUniques:
+      - queryRootField: claimCaseBeneficiaryWarningCodesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimCaseBeneficiaryWarningCodesByValue
+    filterInputTypeName: ClaimCaseBeneficiaryWarningCodesFilterInput
+    aggregate:
+      queryRootField: claimCaseBeneficiaryWarningCodesAggregate
+      subscription:
+        rootField: claimCaseBeneficiaryWarningCodesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseBeneficiaryWarningCodes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseBeneficiaries
+  sourceType: ClaimCaseBeneficiaryWarningCodes
+  target:
+    model:
+      name: ClaimCaseBeneficiaries
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseBeneficiariesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: warningCode
+  graphql:
+    aggregateFieldName: claimCaseBeneficiariesAggregate
+

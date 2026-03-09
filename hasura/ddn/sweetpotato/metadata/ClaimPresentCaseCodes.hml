@@ -1,0 +1,257 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimPresentCaseCodes
+  fields:
+    - name: claimPresentCaseCodeId
+      type: Uuid!
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: decidedAt
+      type: Timestamptz
+    - name: extendedText
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: presentCaseId
+      type: Uuid!
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: ClaimPresentCaseCodes
+    inputTypeName: ClaimPresentCaseCodesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_present_case_codes
+      fieldMapping:
+        claimPresentCaseCodeId:
+          column:
+            name: claim_present_case_code_id
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        decidedAt:
+          column:
+            name: decided_at
+        extendedText:
+          column:
+            name: extended_text
+        id:
+          column:
+            name: id
+        presentCaseId:
+          column:
+            name: present_case_id
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimPresentCaseCodes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimPresentCaseCodeId
+          - code
+          - createdAt
+          - decidedAt
+          - extendedText
+          - id
+          - presentCaseId
+          - status
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimPresentCaseCodesBoolExp
+  operand:
+    object:
+      type: ClaimPresentCaseCodes
+      comparableFields:
+        - fieldName: claimPresentCaseCodeId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: decidedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: extendedText
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: presentCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: presentCaseCode
+        - relationshipName: presentCaseCodeStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimPresentCaseCodesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimPresentCaseCodesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimPresentCaseCodes
+      aggregatableFields:
+        - fieldName: claimPresentCaseCodeId
+          aggregateExpression: UuidAggExp
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: decidedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: extendedText
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: presentCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimPresentCaseCodesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimPresentCaseCodesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimPresentCaseCodes
+      orderableFields:
+        - fieldName: claimPresentCaseCodeId
+          orderByExpression: UuidOrderByExp
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: decidedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: extendedText
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: presentCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: presentCaseCode
+        - relationshipName: presentCaseCodeStatus
+  graphql:
+    expressionTypeName: ClaimPresentCaseCodesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimPresentCaseCodes
+  objectType: ClaimPresentCaseCodes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_present_case_codes
+  filterExpressionType: ClaimPresentCaseCodesBoolExp
+  aggregateExpression: ClaimPresentCaseCodesAggExp
+  orderByExpression: ClaimPresentCaseCodesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimPresentCaseCodes
+      subscription:
+        rootField: claimPresentCaseCodes
+    selectUniques:
+      - queryRootField: claimPresentCaseCodesByClaimPresentCaseCodeId
+        uniqueIdentifier:
+          - claimPresentCaseCodeId
+        subscription:
+          rootField: claimPresentCaseCodesByClaimPresentCaseCodeId
+    filterInputTypeName: ClaimPresentCaseCodesFilterInput
+    aggregate:
+      queryRootField: claimPresentCaseCodesAggregate
+      subscription:
+        rootField: claimPresentCaseCodesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimPresentCaseCodes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: presentCaseCode
+  sourceType: ClaimPresentCaseCodes
+  target:
+    model:
+      name: PresentCaseCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: code
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: presentCaseCodeStatus
+  sourceType: ClaimPresentCaseCodes
+  target:
+    model:
+      name: PresentCaseCodeStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+

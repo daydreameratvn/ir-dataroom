@@ -1,0 +1,328 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Drugs
+  description: Danh sách thuốc import từ http://dichvucong.dav.gov.vn/congbothuoc/index
+  fields:
+    - name: activeSubstancesText
+      type: String_1
+    - name: brandName
+      type: String_1!
+    - name: category
+      type: String_1!
+    - name: concentrationText
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: form
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: oldRegistrationCode
+      type: String_1!
+    - name: registeredAt
+      type: Timestamptz
+    - name: registrationCode
+      type: String_1!
+    - name: registrationDecisionCode
+      type: String_1
+    - name: registrationExpiredAt
+      type: Timestamptz
+    - name: registrationExtendedAt
+      type: Timestamptz
+    - name: shelfLifeText
+      type: String_1
+    - name: standard
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: Drugs
+    inputTypeName: DrugsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: drugs
+      fieldMapping:
+        activeSubstancesText:
+          column:
+            name: active_substances_text
+        brandName:
+          column:
+            name: brand_name
+        category:
+          column:
+            name: category
+        concentrationText:
+          column:
+            name: concentration_text
+        createdAt:
+          column:
+            name: created_at
+        form:
+          column:
+            name: form
+        id:
+          column:
+            name: id
+        oldRegistrationCode:
+          column:
+            name: old_registration_code
+        registeredAt:
+          column:
+            name: registered_at
+        registrationCode:
+          column:
+            name: registration_code
+        registrationDecisionCode:
+          column:
+            name: registration_decision_code
+        registrationExpiredAt:
+          column:
+            name: registration_expired_at
+        registrationExtendedAt:
+          column:
+            name: registration_extended_at
+        shelfLifeText:
+          column:
+            name: shelf_life_text
+        standard:
+          column:
+            name: standard
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Drugs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - activeSubstancesText
+          - brandName
+          - category
+          - concentrationText
+          - createdAt
+          - form
+          - id
+          - oldRegistrationCode
+          - registeredAt
+          - registrationCode
+          - registrationDecisionCode
+          - registrationExpiredAt
+          - registrationExtendedAt
+          - shelfLifeText
+          - standard
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: DrugsBoolExp
+  operand:
+    object:
+      type: Drugs
+      comparableFields:
+        - fieldName: activeSubstancesText
+          booleanExpressionType: TextBoolExp
+        - fieldName: brandName
+          booleanExpressionType: TextBoolExp
+        - fieldName: category
+          booleanExpressionType: TextBoolExp
+        - fieldName: concentrationText
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: form
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: oldRegistrationCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: registeredAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: registrationCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: registrationDecisionCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: registrationExpiredAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: registrationExtendedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: shelfLifeText
+          booleanExpressionType: TextBoolExp
+        - fieldName: standard
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: drugCategory
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: DrugsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: DrugsAggExp
+  operand:
+    object:
+      aggregatedType: Drugs
+      aggregatableFields:
+        - fieldName: activeSubstancesText
+          aggregateExpression: TextAggExp
+        - fieldName: brandName
+          aggregateExpression: TextAggExp
+        - fieldName: category
+          aggregateExpression: TextAggExp
+        - fieldName: concentrationText
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: form
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: oldRegistrationCode
+          aggregateExpression: TextAggExp
+        - fieldName: registeredAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: registrationCode
+          aggregateExpression: TextAggExp
+        - fieldName: registrationDecisionCode
+          aggregateExpression: TextAggExp
+        - fieldName: registrationExpiredAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: registrationExtendedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: shelfLifeText
+          aggregateExpression: TextAggExp
+        - fieldName: standard
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: DrugsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: DrugsOrderByExp
+  operand:
+    object:
+      orderedType: Drugs
+      orderableFields:
+        - fieldName: activeSubstancesText
+          orderByExpression: String1OrderByExp
+        - fieldName: brandName
+          orderByExpression: String1OrderByExp
+        - fieldName: category
+          orderByExpression: String1OrderByExp
+        - fieldName: concentrationText
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: form
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: oldRegistrationCode
+          orderByExpression: String1OrderByExp
+        - fieldName: registeredAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: registrationCode
+          orderByExpression: String1OrderByExp
+        - fieldName: registrationDecisionCode
+          orderByExpression: String1OrderByExp
+        - fieldName: registrationExpiredAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: registrationExtendedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: shelfLifeText
+          orderByExpression: String1OrderByExp
+        - fieldName: standard
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: drugCategory
+  graphql:
+    expressionTypeName: DrugsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Drugs
+  objectType: Drugs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: drugs
+  filterExpressionType: DrugsBoolExp
+  aggregateExpression: DrugsAggExp
+  orderByExpression: DrugsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: drugs
+      subscription:
+        rootField: drugs
+    selectUniques:
+      - queryRootField: drugsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: drugsById
+      - queryRootField: drugsByRegistrationCode
+        uniqueIdentifier:
+          - registrationCode
+        subscription:
+          rootField: drugsByRegistrationCode
+    filterInputTypeName: DrugsFilterInput
+    aggregate:
+      queryRootField: drugsAggregate
+      subscription:
+        rootField: drugsAggregate
+  description: Danh sách thuốc import từ http://dichvucong.dav.gov.vn/congbothuoc/index
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Drugs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: drugCategory
+  sourceType: Drugs
+  target:
+    model:
+      name: DrugCategories
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: category
+      target:
+        modelField:
+          - fieldName: value
+

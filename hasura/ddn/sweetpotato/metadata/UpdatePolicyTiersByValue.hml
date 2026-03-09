@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPolicyTiersComment
+  description: Update the 'comment' column in the 'policy_tiers' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPolicyTiersComment
+    inputTypeName: UpdateColumnPolicyTiersCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_policy_tiers_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPolicyTiersComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnPolicyTiersValue
+  description: Update the 'value' column in the 'policy_tiers' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnPolicyTiersValue
+    inputTypeName: UpdateColumnPolicyTiersValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_policy_tiers_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnPolicyTiersValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePolicyTiersByValueUpdateColumns
+  description: Update the columns of the 'policy_tiers' collection
+  fields:
+    - name: comment
+      type: UpdateColumnPolicyTiersComment
+      description: Update the 'comment' column in the 'policy_tiers' collection.
+    - name: value
+      type: UpdateColumnPolicyTiersValue
+      description: Update the 'value' column in the 'policy_tiers' collection.
+  graphql:
+    typeName: UpdatePolicyTiersByValueUpdateColumns
+    inputTypeName: UpdatePolicyTiersByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_policy_tiers_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePolicyTiersByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePolicyTiersByValueResponse
+  description: Responses from the 'update_policy_tiers_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyTiers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePolicyTiersByValueResponse
+    inputTypeName: UpdatePolicyTiersByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_policy_tiers_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePolicyTiersByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePolicyTiersByValue
+  outputType: UpdatePolicyTiersByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: PolicyTiersBoolExp
+      description: Update permission post-condition predicate over the 'policy_tiers'
+        collection
+    - name: preCheck
+      type: PolicyTiersBoolExp
+      description: Update permission pre-condition predicate over the 'policy_tiers'
+        collection
+    - name: updateColumns
+      type: UpdatePolicyTiersByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_policy_tiers_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePolicyTiersByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'policy_tiers' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePolicyTiersByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

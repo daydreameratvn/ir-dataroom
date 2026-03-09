@@ -1,0 +1,145 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutPayoutBankAccountActionLogsObject
+  fields:
+    - name: action
+      type: String_1!
+    - name: amount
+      type: Bigdecimal
+    - name: createdAt
+      type: Timestamptz
+    - name: customData
+      type: Json
+    - name: happenedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: payoutBankAccountId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPayoutPayoutBankAccountActionLogsObject
+    inputTypeName: InsertPayoutPayoutBankAccountActionLogsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_payout_bank_account_action_logs_object
+      fieldMapping:
+        action:
+          column:
+            name: action
+        amount:
+          column:
+            name: amount
+        createdAt:
+          column:
+            name: created_at
+        customData:
+          column:
+            name: custom_data
+        happenedAt:
+          column:
+            name: happened_at
+        id:
+          column:
+            name: id
+        payoutBankAccountId:
+          column:
+            name: payout_bank_account_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutPayoutBankAccountActionLogsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - amount
+          - createdAt
+          - customData
+          - happenedAt
+          - id
+          - payoutBankAccountId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutPayoutBankAccountActionLogsResponse
+  description: Responses from the 'insert_payout_payout_bank_account_action_logs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPayoutBankAccountActionLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPayoutPayoutBankAccountActionLogsResponse
+    inputTypeName: InsertPayoutPayoutBankAccountActionLogsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_payout_bank_account_action_logs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutPayoutBankAccountActionLogsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPayoutPayoutBankAccountActionLogs
+  outputType: InsertPayoutPayoutBankAccountActionLogsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPayoutPayoutBankAccountActionLogsObject!]!"
+    - name: postCheck
+      type: PayoutPayoutBankAccountActionLogsBoolExp
+      description: Insert permission predicate over the
+        'payout_payout_bank_account_action_logs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_payout_payout_bank_account_action_logs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPayoutPayoutBankAccountActionLogs
+    rootFieldKind: Mutation
+  description: Insert into the payout_payout_bank_account_action_logs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPayoutPayoutBankAccountActionLogs
+  permissions:
+    - role: admin
+      allowExecution: true
+

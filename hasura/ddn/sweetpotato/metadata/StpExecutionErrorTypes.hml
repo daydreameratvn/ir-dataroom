@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StpExecutionErrorTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: StpExecutionErrorTypes
+    inputTypeName: StpExecutionErrorTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: stp_execution_error_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StpExecutionErrorTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StpExecutionErrorTypesBoolExp
+  operand:
+    object:
+      type: StpExecutionErrorTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: stpExecutionErrors
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StpExecutionErrorTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: StpExecutionErrorTypesAggExp
+  operand:
+    object:
+      aggregatedType: StpExecutionErrorTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: StpExecutionErrorTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: StpExecutionErrorTypesOrderByExp
+  operand:
+    object:
+      orderedType: StpExecutionErrorTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: StpExecutionErrorTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: StpExecutionErrorTypes
+  objectType: StpExecutionErrorTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: stp_execution_error_types
+  filterExpressionType: StpExecutionErrorTypesBoolExp
+  aggregateExpression: StpExecutionErrorTypesAggExp
+  orderByExpression: StpExecutionErrorTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: stpExecutionErrorTypes
+      subscription:
+        rootField: stpExecutionErrorTypes
+    selectUniques:
+      - queryRootField: stpExecutionErrorTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: stpExecutionErrorTypesByValue
+    filterInputTypeName: StpExecutionErrorTypesFilterInput
+    aggregate:
+      queryRootField: stpExecutionErrorTypesAggregate
+      subscription:
+        rootField: stpExecutionErrorTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: StpExecutionErrorTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpExecutionErrors
+  sourceType: StpExecutionErrorTypes
+  target:
+    model:
+      name: StpExecutionErrors
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: StpExecutionErrorsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: stpExecutionErrorsAggregate
+

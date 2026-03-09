@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteImportedFilesByIdResponse
+  description: Responses from the 'delete_imported_files_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ImportedFiles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteImportedFilesByIdResponse
+    inputTypeName: DeleteImportedFilesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_imported_files_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteImportedFilesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteImportedFilesById
+  outputType: DeleteImportedFilesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: ImportedFilesBoolExp
+      description: Delete permission predicate over the 'imported_files' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_imported_files_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteImportedFilesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'imported_files' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteImportedFilesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

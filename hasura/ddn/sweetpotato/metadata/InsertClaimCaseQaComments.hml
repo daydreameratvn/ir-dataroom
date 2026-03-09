@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseQaCommentsObject
+  fields:
+    - name: claimCaseQaId
+      type: Uuid!
+    - name: comment
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: notes
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertClaimCaseQaCommentsObject
+    inputTypeName: InsertClaimCaseQaCommentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_qa_comments_object
+      fieldMapping:
+        claimCaseQaId:
+          column:
+            name: claim_case_qa_id
+        comment:
+          column:
+            name: comment
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        notes:
+          column:
+            name: notes
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseQaCommentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseQaId
+          - comment
+          - createdAt
+          - deletedAt
+          - id
+          - notes
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseQaCommentsResponse
+  description: Responses from the 'insert_claim_case_qa_comments' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseQaComments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCaseQaCommentsResponse
+    inputTypeName: InsertClaimCaseQaCommentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_qa_comments_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseQaCommentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCaseQaComments
+  outputType: InsertClaimCaseQaCommentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCaseQaCommentsObject!]!"
+    - name: postCheck
+      type: ClaimCaseQaCommentsBoolExp
+      description: Insert permission predicate over the 'claim_case_qa_comments' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_case_qa_comments
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCaseQaComments
+    rootFieldKind: Mutation
+  description: Insert into the claim_case_qa_comments table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCaseQaComments
+  permissions:
+    - role: admin
+      allowExecution: true
+

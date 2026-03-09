@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityAuthProviders
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: IdentityAuthProviders
+    inputTypeName: IdentityAuthProvidersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_auth_providers
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityAuthProviders
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityAuthProvidersBoolExp
+  operand:
+    object:
+      type: IdentityAuthProviders
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: identityUserCredentials
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityAuthProvidersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityAuthProvidersAggExp
+  operand:
+    object:
+      aggregatedType: IdentityAuthProviders
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityAuthProvidersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityAuthProvidersOrderByExp
+  operand:
+    object:
+      orderedType: IdentityAuthProviders
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: IdentityAuthProvidersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityAuthProviders
+  objectType: IdentityAuthProviders
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_auth_providers
+  filterExpressionType: IdentityAuthProvidersBoolExp
+  aggregateExpression: IdentityAuthProvidersAggExp
+  orderByExpression: IdentityAuthProvidersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityAuthProviders
+      subscription:
+        rootField: identityAuthProviders
+    selectUniques:
+      - queryRootField: identityAuthProvidersByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: identityAuthProvidersByValue
+    filterInputTypeName: IdentityAuthProvidersFilterInput
+    aggregate:
+      queryRootField: identityAuthProvidersAggregate
+      subscription:
+        rootField: identityAuthProvidersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityAuthProviders
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserCredentials
+  sourceType: IdentityAuthProviders
+  target:
+    model:
+      name: IdentityUserCredentials
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityUserCredentialsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: authProvider
+  graphql:
+    aggregateFieldName: identityUserCredentialsAggregate
+

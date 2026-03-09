@@ -1,0 +1,132 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornBodyPartsObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: hierarchyLevel
+      type: Int32
+    - name: name
+      type: String_1!
+    - name: parentCode
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertHawthornBodyPartsObject
+    inputTypeName: InsertHawthornBodyPartsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_body_parts_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        hierarchyLevel:
+          column:
+            name: hierarchy_level
+        name:
+          column:
+            name: name
+        parentCode:
+          column:
+            name: parent_code
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornBodyPartsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - hierarchyLevel
+          - name
+          - parentCode
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornBodyPartsResponse
+  description: Responses from the 'insert_hawthorn_body_parts' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornBodyParts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornBodyPartsResponse
+    inputTypeName: InsertHawthornBodyPartsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_body_parts_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornBodyPartsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornBodyParts
+  outputType: InsertHawthornBodyPartsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornBodyPartsObject!]!"
+    - name: postCheck
+      type: HawthornBodyPartsBoolExp
+      description: Insert permission predicate over the 'hawthorn_body_parts' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_body_parts
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornBodyParts
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_body_parts table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornBodyParts
+  permissions:
+    - role: admin
+      allowExecution: true
+

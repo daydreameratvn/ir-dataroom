@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdMedicalProvidersByCodeResponse
+  description: Responses from the 'delete_fwd_medical_providers_by_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdMedicalProviders!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdMedicalProvidersByCodeResponse
+    inputTypeName: DeleteFwdMedicalProvidersByCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_medical_providers_by_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdMedicalProvidersByCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdMedicalProvidersByCode
+  outputType: DeleteFwdMedicalProvidersByCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+    - name: preCheck
+      type: FwdMedicalProvidersBoolExp
+      description: Delete permission predicate over the 'fwd_medical_providers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_medical_providers_by_code
+    argumentMapping:
+      keyCode: key_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdMedicalProvidersByCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_medical_providers' collection using the 'code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdMedicalProvidersByCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanRemarksObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: planId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPlanRemarksObject
+    inputTypeName: InsertPlanRemarksObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_remarks_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        planId:
+          column:
+            name: plan_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanRemarksObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - description
+          - id
+          - planId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanRemarksResponse
+  description: Responses from the 'insert_plan_remarks' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanRemarks!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPlanRemarksResponse
+    inputTypeName: InsertPlanRemarksResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_remarks_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanRemarksResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPlanRemarks
+  outputType: InsertPlanRemarksResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPlanRemarksObject!]!"
+    - name: postCheck
+      type: PlanRemarksBoolExp
+      description: Insert permission predicate over the 'plan_remarks' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_plan_remarks
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPlanRemarks
+    rootFieldKind: Mutation
+  description: Insert into the plan_remarks table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPlanRemarks
+  permissions:
+    - role: admin
+      allowExecution: true
+

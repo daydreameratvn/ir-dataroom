@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOverlordApiLogStatusesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertOverlordApiLogStatusesObject
+    inputTypeName: InsertOverlordApiLogStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_overlord_api_log_statuses_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOverlordApiLogStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOverlordApiLogStatusesResponse
+  description: Responses from the 'insert_overlord_api_log_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OverlordApiLogStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOverlordApiLogStatusesResponse
+    inputTypeName: InsertOverlordApiLogStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_overlord_api_log_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOverlordApiLogStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOverlordApiLogStatuses
+  outputType: InsertOverlordApiLogStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOverlordApiLogStatusesObject!]!"
+    - name: postCheck
+      type: OverlordApiLogStatusesBoolExp
+      description: Insert permission predicate over the 'overlord_api_log_statuses'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_overlord_api_log_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOverlordApiLogStatuses
+    rootFieldKind: Mutation
+  description: Insert into the overlord_api_log_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOverlordApiLogStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

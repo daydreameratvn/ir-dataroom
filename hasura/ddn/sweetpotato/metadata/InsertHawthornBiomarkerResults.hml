@@ -1,0 +1,163 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornBiomarkerResultsObject
+  fields:
+    - name: biomarkerCode
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: isNormal
+      type: Boolean_1
+    - name: numberValue
+      type: Bigdecimal
+    - name: reference
+      type: Json
+    - name: textValue
+      type: String_1
+    - name: uom
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: valueType
+      type: String_1!
+  graphql:
+    typeName: InsertHawthornBiomarkerResultsObject
+    inputTypeName: InsertHawthornBiomarkerResultsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_biomarker_results_object
+      fieldMapping:
+        biomarkerCode:
+          column:
+            name: biomarker_code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        isNormal:
+          column:
+            name: is_normal
+        numberValue:
+          column:
+            name: number_value
+        reference:
+          column:
+            name: reference
+        textValue:
+          column:
+            name: text_value
+        uom:
+          column:
+            name: uom
+        updatedAt:
+          column:
+            name: updated_at
+        valueType:
+          column:
+            name: value_type
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornBiomarkerResultsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - biomarkerCode
+          - createdAt
+          - deletedAt
+          - id
+          - isNormal
+          - numberValue
+          - reference
+          - textValue
+          - uom
+          - updatedAt
+          - valueType
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornBiomarkerResultsResponse
+  description: Responses from the 'insert_hawthorn_biomarker_results' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornBiomarkerResults!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornBiomarkerResultsResponse
+    inputTypeName: InsertHawthornBiomarkerResultsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_biomarker_results_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornBiomarkerResultsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornBiomarkerResults
+  outputType: InsertHawthornBiomarkerResultsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornBiomarkerResultsObject!]!"
+    - name: postCheck
+      type: HawthornBiomarkerResultsBoolExp
+      description: Insert permission predicate over the 'hawthorn_biomarker_results'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_biomarker_results
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornBiomarkerResults
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_biomarker_results table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornBiomarkerResults
+  permissions:
+    - role: admin
+      allowExecution: true
+

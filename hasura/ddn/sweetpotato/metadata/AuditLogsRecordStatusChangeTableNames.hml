@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuditLogsRecordStatusChangeTableNames
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: AuditLogsRecordStatusChangeTableNames
+    inputTypeName: AuditLogsRecordStatusChangeTableNamesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: audit_logs_record_status_change_table_names
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuditLogsRecordStatusChangeTableNames
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AuditLogsRecordStatusChangeTableNamesBoolExp
+  operand:
+    object:
+      type: AuditLogsRecordStatusChangeTableNames
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: auditLogsDataHistories
+        - relationshipName: auditLogsRecordStatusChanges
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AuditLogsRecordStatusChangeTableNamesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AuditLogsRecordStatusChangeTableNamesAggExp
+  operand:
+    object:
+      aggregatedType: AuditLogsRecordStatusChangeTableNames
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AuditLogsRecordStatusChangeTableNamesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AuditLogsRecordStatusChangeTableNamesOrderByExp
+  operand:
+    object:
+      orderedType: AuditLogsRecordStatusChangeTableNames
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: AuditLogsRecordStatusChangeTableNamesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AuditLogsRecordStatusChangeTableNames
+  objectType: AuditLogsRecordStatusChangeTableNames
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: audit_logs_record_status_change_table_names
+  filterExpressionType: AuditLogsRecordStatusChangeTableNamesBoolExp
+  aggregateExpression: AuditLogsRecordStatusChangeTableNamesAggExp
+  orderByExpression: AuditLogsRecordStatusChangeTableNamesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: auditLogsRecordStatusChangeTableNames
+      subscription:
+        rootField: auditLogsRecordStatusChangeTableNames
+    selectUniques:
+      - queryRootField: auditLogsRecordStatusChangeTableNamesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: auditLogsRecordStatusChangeTableNamesByValue
+    filterInputTypeName: AuditLogsRecordStatusChangeTableNamesFilterInput
+    aggregate:
+      queryRootField: auditLogsRecordStatusChangeTableNamesAggregate
+      subscription:
+        rootField: auditLogsRecordStatusChangeTableNamesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuditLogsRecordStatusChangeTableNames
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogsDataHistories
+  sourceType: AuditLogsRecordStatusChangeTableNames
+  target:
+    model:
+      name: AuditLogsDataHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuditLogsDataHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: table
+  graphql:
+    aggregateFieldName: auditLogsDataHistoriesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: auditLogsRecordStatusChanges
+  sourceType: AuditLogsRecordStatusChangeTableNames
+  target:
+    model:
+      name: AuditLogsRecordStatusChanges
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: AuditLogsRecordStatusChangesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: tableName
+  graphql:
+    aggregateFieldName: auditLogsRecordStatusChangesAggregate
+

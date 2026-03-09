@@ -1,0 +1,84 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePolicyCorrespondencesByCorrespondenceTemplateIdAndDeletedAtAndPolicyIdAndSendWhenResponse
+  description: Responses from the
+    'delete_policy_correspondences_by_correspondence_template_id_and_deleted_at_and_policy_id_and_send_when'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyCorrespondences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePolicyCorrespondencesByCorrespondenceTemplateIdAndDeletedAtAndPolicyIdAndSendWhenResponse
+    inputTypeName: DeletePolicyCorrespondencesByCorrespondenceTemplateIdAndDeletedAtAndPolicyIdAndSendWhenResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policy_correspondences_by_correspondence_template_id_and_deleted_at_and_policy_id_and_send_when_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePolicyCorrespondencesByCorrespondenceTemplateIdAndDeletedAtAndPolicyIdAndSendWhenResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePolicyCorrespondencesByCorrespondenceTemplateIdAndDeletedAtAndPolicyIdAndSendWhen
+  outputType: DeletePolicyCorrespondencesByCorrespondenceTemplateIdAndDeletedAtAndPolicyIdAndSendWhenResponse!
+  arguments:
+    - name: keyCorrespondenceTemplateId
+      type: Uuid!
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyPolicyId
+      type: Uuid!
+    - name: keySendWhen
+      type: String_1
+    - name: preCheck
+      type: PolicyCorrespondencesBoolExp
+      description: Delete permission predicate over the 'policy_correspondences' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policy_correspondences_by_correspondence_template_id_and_deleted_at_and_policy_id_and_send_when
+    argumentMapping:
+      keyCorrespondenceTemplateId: key_correspondence_template_id
+      keyDeletedAt: key_deleted_at
+      keyPolicyId: key_policy_id
+      keySendWhen: key_send_when
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePolicyCorrespondencesByCorrespondenceTemplateIdAndDeletedAtAndPolicyIdAndSendWhen
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policy_correspondences' collection using the
+    'correspondence_template_id', 'deleted_at', 'policy_id' and 'send_when' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePolicyCorrespondencesByCorrespondenceTemplateIdAndDeletedAtAndPolicyIdAndSendWhen
+  permissions:
+    - role: admin
+      allowExecution: true
+

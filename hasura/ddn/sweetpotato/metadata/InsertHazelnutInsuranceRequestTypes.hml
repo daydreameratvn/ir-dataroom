@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutInsuranceRequestTypesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertHazelnutInsuranceRequestTypesObject
+    inputTypeName: InsertHazelnutInsuranceRequestTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_insurance_request_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutInsuranceRequestTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutInsuranceRequestTypesResponse
+  description: Responses from the 'insert_hazelnut_insurance_request_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutInsuranceRequestTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHazelnutInsuranceRequestTypesResponse
+    inputTypeName: InsertHazelnutInsuranceRequestTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_insurance_request_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutInsuranceRequestTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHazelnutInsuranceRequestTypes
+  outputType: InsertHazelnutInsuranceRequestTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHazelnutInsuranceRequestTypesObject!]!"
+    - name: postCheck
+      type: HazelnutInsuranceRequestTypesBoolExp
+      description: Insert permission predicate over the
+        'hazelnut_insurance_request_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hazelnut_insurance_request_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHazelnutInsuranceRequestTypes
+    rootFieldKind: Mutation
+  description: Insert into the hazelnut_insurance_request_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHazelnutInsuranceRequestTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

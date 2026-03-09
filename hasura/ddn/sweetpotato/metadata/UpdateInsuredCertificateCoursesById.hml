@@ -1,0 +1,178 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsuredCertificateCoursesByIdUpdateColumns
+  description: Update the columns of the 'insured_certificate_courses' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnInsuredCertificateCoursesCreatedAt
+      description: Update the 'created_at' column in the 'insured_certificate_courses'
+        collection.
+    - name: createdBy
+      type: UpdateColumnInsuredCertificateCoursesCreatedBy
+      description: Update the 'created_by' column in the 'insured_certificate_courses'
+        collection.
+    - name: deletedAt
+      type: UpdateColumnInsuredCertificateCoursesDeletedAt
+      description: Update the 'deleted_at' column in the 'insured_certificate_courses'
+        collection.
+    - name: fromInsuredCertificateId
+      type: UpdateColumnInsuredCertificateCoursesFromInsuredCertificateId
+      description: Update the 'from_insured_certificate_id' column in the
+        'insured_certificate_courses' collection.
+    - name: id
+      type: UpdateColumnInsuredCertificateCoursesId
+      description: Update the 'id' column in the 'insured_certificate_courses' collection.
+    - name: ordinalNumber
+      type: UpdateColumnInsuredCertificateCoursesOrdinalNumber
+      description: Update the 'ordinal_number' column in the
+        'insured_certificate_courses' collection.
+    - name: toInsuredCertificateId
+      type: UpdateColumnInsuredCertificateCoursesToInsuredCertificateId
+      description: Update the 'to_insured_certificate_id' column in the
+        'insured_certificate_courses' collection.
+    - name: updatedAt
+      type: UpdateColumnInsuredCertificateCoursesUpdatedAt
+      description: Update the 'updated_at' column in the 'insured_certificate_courses'
+        collection.
+    - name: updatedBy
+      type: UpdateColumnInsuredCertificateCoursesUpdatedBy
+      description: Update the 'updated_by' column in the 'insured_certificate_courses'
+        collection.
+  graphql:
+    typeName: UpdateInsuredCertificateCoursesByIdUpdateColumns
+    inputTypeName: UpdateInsuredCertificateCoursesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insured_certificate_courses_by_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        fromInsuredCertificateId:
+          column:
+            name: from_insured_certificate_id
+        id:
+          column:
+            name: id
+        ordinalNumber:
+          column:
+            name: ordinal_number
+        toInsuredCertificateId:
+          column:
+            name: to_insured_certificate_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsuredCertificateCoursesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - fromInsuredCertificateId
+          - id
+          - ordinalNumber
+          - toInsuredCertificateId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsuredCertificateCoursesByIdResponse
+  description: Responses from the 'update_insured_certificate_courses_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateCourses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateInsuredCertificateCoursesByIdResponse
+    inputTypeName: UpdateInsuredCertificateCoursesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insured_certificate_courses_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsuredCertificateCoursesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateInsuredCertificateCoursesById
+  outputType: UpdateInsuredCertificateCoursesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: InsuredCertificateCoursesBoolExp
+      description: Update permission post-condition predicate over the
+        'insured_certificate_courses' collection
+    - name: preCheck
+      type: InsuredCertificateCoursesBoolExp
+      description: Update permission pre-condition predicate over the
+        'insured_certificate_courses' collection
+    - name: updateColumns
+      type: UpdateInsuredCertificateCoursesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_insured_certificate_courses_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateInsuredCertificateCoursesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'insured_certificate_courses' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateInsuredCertificateCoursesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

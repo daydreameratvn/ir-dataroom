@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePresentCaseAssessmentsByIdResponse
+  description: Responses from the 'delete_present_case_assessments_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PresentCaseAssessments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePresentCaseAssessmentsByIdResponse
+    inputTypeName: DeletePresentCaseAssessmentsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_present_case_assessments_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePresentCaseAssessmentsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePresentCaseAssessmentsById
+  outputType: DeletePresentCaseAssessmentsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: PresentCaseAssessmentsBoolExp
+      description: Delete permission predicate over the 'present_case_assessments'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_present_case_assessments_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePresentCaseAssessmentsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'present_case_assessments' collection using
+    the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePresentCaseAssessmentsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

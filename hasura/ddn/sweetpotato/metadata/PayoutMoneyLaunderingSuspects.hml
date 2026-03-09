@@ -1,0 +1,299 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutMoneyLaunderingSuspects
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: dob
+      type: Timestamptz!
+    - name: gender
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: identityPaperType
+      type: String_1
+    - name: insurerId
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: paperId
+      type: String_1!
+    - name: policyType
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PayoutMoneyLaunderingSuspects
+    inputTypeName: PayoutMoneyLaunderingSuspectsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_money_laundering_suspects
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        dob:
+          column:
+            name: dob
+        gender:
+          column:
+            name: gender
+        id:
+          column:
+            name: id
+        identityPaperType:
+          column:
+            name: identity_paper_type
+        insurerId:
+          column:
+            name: insurer_id
+        name:
+          column:
+            name: name
+        paperId:
+          column:
+            name: paper_id
+        policyType:
+          column:
+            name: policy_type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutMoneyLaunderingSuspects
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - dob
+          - gender
+          - id
+          - identityPaperType
+          - insurerId
+          - name
+          - paperId
+          - policyType
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutMoneyLaunderingSuspectsBoolExp
+  operand:
+    object:
+      type: PayoutMoneyLaunderingSuspects
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: dob
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: gender
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: identityPaperType
+          booleanExpressionType: TextBoolExp
+        - fieldName: insurerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: paperId
+          booleanExpressionType: TextBoolExp
+        - fieldName: policyType
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: payoutAntiMoneyLaunderings
+        - relationshipName: identityPaperTypeByIdentityPaperType
+        - relationshipName: policyTypeByPolicyType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutMoneyLaunderingSuspectsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutMoneyLaunderingSuspectsAggExp
+  operand:
+    object:
+      aggregatedType: PayoutMoneyLaunderingSuspects
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: dob
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: gender
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: identityPaperType
+          aggregateExpression: TextAggExp
+        - fieldName: insurerId
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: paperId
+          aggregateExpression: TextAggExp
+        - fieldName: policyType
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutMoneyLaunderingSuspectsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutMoneyLaunderingSuspectsOrderByExp
+  operand:
+    object:
+      orderedType: PayoutMoneyLaunderingSuspects
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: dob
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: gender
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: identityPaperType
+          orderByExpression: String1OrderByExp
+        - fieldName: insurerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: paperId
+          orderByExpression: String1OrderByExp
+        - fieldName: policyType
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: identityPaperTypeByIdentityPaperType
+        - relationshipName: policyTypeByPolicyType
+  graphql:
+    expressionTypeName: PayoutMoneyLaunderingSuspectsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutMoneyLaunderingSuspects
+  objectType: PayoutMoneyLaunderingSuspects
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_money_laundering_suspects
+  filterExpressionType: PayoutMoneyLaunderingSuspectsBoolExp
+  aggregateExpression: PayoutMoneyLaunderingSuspectsAggExp
+  orderByExpression: PayoutMoneyLaunderingSuspectsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutMoneyLaunderingSuspects
+      subscription:
+        rootField: payoutMoneyLaunderingSuspects
+    selectUniques:
+      - queryRootField: payoutMoneyLaunderingSuspectsByMoneyLaunderingSuspectsInsurerIdPaperIdPolicyTypeKey
+        uniqueIdentifier:
+          - insurerId
+          - paperId
+          - policyType
+        subscription:
+          rootField: payoutMoneyLaunderingSuspectsByMoneyLaunderingSuspectsInsurerIdPaperIdPolicyTypeKey
+      - queryRootField: payoutMoneyLaunderingSuspectsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: payoutMoneyLaunderingSuspectsById
+    filterInputTypeName: PayoutMoneyLaunderingSuspectsFilterInput
+    aggregate:
+      queryRootField: payoutMoneyLaunderingSuspectsAggregate
+      subscription:
+        rootField: payoutMoneyLaunderingSuspectsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutMoneyLaunderingSuspects
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutAntiMoneyLaunderings
+  sourceType: PayoutMoneyLaunderingSuspects
+  target:
+    model:
+      name: PayoutAntiMoneyLaunderings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutAntiMoneyLaunderingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: moneyLaunderingSuspectId
+  graphql:
+    aggregateFieldName: payoutAntiMoneyLaunderingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityPaperTypeByIdentityPaperType
+  sourceType: PayoutMoneyLaunderingSuspects
+  target:
+    model:
+      name: IdentityPaperTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: identityPaperType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyTypeByPolicyType
+  sourceType: PayoutMoneyLaunderingSuspects
+  target:
+    model:
+      name: PolicyTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyType
+      target:
+        modelField:
+          - fieldName: value
+

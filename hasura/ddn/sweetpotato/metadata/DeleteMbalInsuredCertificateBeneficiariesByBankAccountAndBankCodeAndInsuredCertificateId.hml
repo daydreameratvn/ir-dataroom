@@ -1,0 +1,83 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMbalInsuredCertificateBeneficiariesByBankAccountAndBankCodeAndInsuredCertificateIdResponse
+  description: Responses from the
+    'delete_mbal_insured_certificate_beneficiaries_by_bank_account_and_bank_code_and_insured_certificate_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MbalInsuredCertificateBeneficiaries!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMbalInsuredCertificateBeneficiariesByBankAccountAndBankCodeAndInsuredCertificateIdResponse
+    inputTypeName: DeleteMbalInsuredCertificateBeneficiariesByBankAccountAndBankCodeAndInsuredCertificateIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mbal_insured_certificate_beneficiaries_by_bank_account_and_bank_code_and_insured_certificate_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMbalInsuredCertificateBeneficiariesByBankAccountAndBankCodeAndInsuredCertificateIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMbalInsuredCertificateBeneficiariesByBankAccountAndBankCodeAndInsuredCertificateId
+  outputType: DeleteMbalInsuredCertificateBeneficiariesByBankAccountAndBankCodeAndInsuredCertificateIdResponse!
+  arguments:
+    - name: keyBankAccount
+      type: String_1!
+    - name: keyBankCode
+      type: String_1!
+    - name: keyInsuredCertificateId
+      type: Uuid!
+    - name: preCheck
+      type: MbalInsuredCertificateBeneficiariesBoolExp
+      description: Delete permission predicate over the
+        'mbal_insured_certificate_beneficiaries' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mbal_insured_certificate_beneficiaries_by_bank_account_and_bank_code_and_insured_certificate_id
+    argumentMapping:
+      keyBankAccount: key_bank_account
+      keyBankCode: key_bank_code
+      keyInsuredCertificateId: key_insured_certificate_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMbalInsuredCertificateBeneficiariesByBankAccountAndBankCodeAndInsuredCertificateId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mbal_insured_certificate_beneficiaries'
+    collection using the 'bank_account', 'bank_code' and
+    'insured_certificate_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMbalInsuredCertificateBeneficiariesByBankAccountAndBankCodeAndInsuredCertificateId
+  permissions:
+    - role: admin
+      allowExecution: true
+

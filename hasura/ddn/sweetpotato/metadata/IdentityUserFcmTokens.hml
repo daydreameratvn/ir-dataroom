@@ -1,0 +1,251 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityUserFcmTokens
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: expiredAt
+      type: Timestamptz
+    - name: fcmToken
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: userDeviceId
+      type: Uuid
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: IdentityUserFcmTokens
+    inputTypeName: IdentityUserFcmTokensInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_user_fcm_tokens
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        expiredAt:
+          column:
+            name: expired_at
+        fcmToken:
+          column:
+            name: fcm_token
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+        userDeviceId:
+          column:
+            name: user_device_id
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityUserFcmTokens
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - expiredAt
+          - fcmToken
+          - id
+          - updatedAt
+          - userDeviceId
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityUserFcmTokensBoolExp
+  operand:
+    object:
+      type: IdentityUserFcmTokens
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: expiredAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fcmToken
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: userDeviceId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityUserDevice
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityUserFcmTokensBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityUserFcmTokensAggExp
+  operand:
+    object:
+      aggregatedType: IdentityUserFcmTokens
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: expiredAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fcmToken
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: userDeviceId
+          aggregateExpression: UuidAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityUserFcmTokensAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityUserFcmTokensOrderByExp
+  operand:
+    object:
+      orderedType: IdentityUserFcmTokens
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: expiredAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fcmToken
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: userDeviceId
+          orderByExpression: UuidOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUserDevice
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: IdentityUserFcmTokensOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityUserFcmTokens
+  objectType: IdentityUserFcmTokens
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_user_fcm_tokens
+  filterExpressionType: IdentityUserFcmTokensBoolExp
+  aggregateExpression: IdentityUserFcmTokensAggExp
+  orderByExpression: IdentityUserFcmTokensOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityUserFcmTokens
+      subscription:
+        rootField: identityUserFcmTokens
+    selectUniques:
+      - queryRootField: identityUserFcmTokensById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: identityUserFcmTokensById
+      - queryRootField: identityUserFcmTokensByUserFcmTokensUserIdFcmTokenKey
+        uniqueIdentifier:
+          - fcmToken
+          - userId
+        subscription:
+          rootField: identityUserFcmTokensByUserFcmTokensUserIdFcmTokenKey
+    filterInputTypeName: IdentityUserFcmTokensFilterInput
+    aggregate:
+      queryRootField: identityUserFcmTokensAggregate
+      subscription:
+        rootField: identityUserFcmTokensAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityUserFcmTokens
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserDevice
+  sourceType: IdentityUserFcmTokens
+  target:
+    model:
+      name: IdentityUserDevices
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userDeviceId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: IdentityUserFcmTokens
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

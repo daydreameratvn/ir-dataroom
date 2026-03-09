@@ -1,0 +1,484 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HazelnutInsuranceRequestsInsuredPersons
+  fields:
+    - name: beneficiaryId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insuranceCoverageId
+      type: Uuid!
+    - name: insuranceRequestId
+      type: Uuid!
+    - name: insuredPersonId
+      type: Uuid!
+    - name: isBeneficiaryByLaw
+      type: Boolean_1!
+    - name: requesterId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: HazelnutInsuranceRequestsInsuredPersons
+    inputTypeName: HazelnutInsuranceRequestsInsuredPersonsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hazelnut_insurance_requests_insured_persons
+      fieldMapping:
+        beneficiaryId:
+          column:
+            name: beneficiary_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuranceCoverageId:
+          column:
+            name: insurance_coverage_id
+        insuranceRequestId:
+          column:
+            name: insurance_request_id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        isBeneficiaryByLaw:
+          column:
+            name: is_beneficiary_by_law
+        requesterId:
+          column:
+            name: requester_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HazelnutInsuranceRequestsInsuredPersons
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - beneficiaryId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - insuranceCoverageId
+          - insuranceRequestId
+          - insuredPersonId
+          - isBeneficiaryByLaw
+          - requesterId
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HazelnutInsuranceRequestsInsuredPersonsBoolExp
+  operand:
+    object:
+      type: HazelnutInsuranceRequestsInsuredPersons
+      comparableFields:
+        - fieldName: beneficiaryId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuranceCoverageId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuranceRequestId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredPersonId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isBeneficiaryByLaw
+          booleanExpressionType: BoolBoolExp
+        - fieldName: requesterId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: insuredPerson
+        - relationshipName: insuredRelationship
+        - relationshipName: identityUser
+        - relationshipName: hazelnutInsuranceCoverage
+        - relationshipName: hazelnutInsuranceRequest
+        - relationshipName: insuredPersonByInsuredPersonId
+        - relationshipName: insuredRelationshipByInsuredPersonIdAndRequesterId
+        - relationshipName: insuredPersonByRequesterId
+        - relationshipName: hazelnutInsuredHealthHistories
+        - relationshipName: hazelnutUnderwritingNotes
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HazelnutInsuranceRequestsInsuredPersonsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HazelnutInsuranceRequestsInsuredPersonsAggExp
+  operand:
+    object:
+      aggregatedType: HazelnutInsuranceRequestsInsuredPersons
+      aggregatableFields:
+        - fieldName: beneficiaryId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuranceCoverageId
+          aggregateExpression: UuidAggExp
+        - fieldName: insuranceRequestId
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredPersonId
+          aggregateExpression: UuidAggExp
+        - fieldName: isBeneficiaryByLaw
+          aggregateExpression: BoolAggExp
+        - fieldName: requesterId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HazelnutInsuranceRequestsInsuredPersonsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HazelnutInsuranceRequestsInsuredPersonsOrderByExp
+  operand:
+    object:
+      orderedType: HazelnutInsuranceRequestsInsuredPersons
+      orderableFields:
+        - fieldName: beneficiaryId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuranceCoverageId
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuranceRequestId
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredPersonId
+          orderByExpression: UuidOrderByExp
+        - fieldName: isBeneficiaryByLaw
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: requesterId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredPerson
+        - relationshipName: insuredRelationship
+        - relationshipName: identityUser
+        - relationshipName: hazelnutInsuranceCoverage
+        - relationshipName: hazelnutInsuranceRequest
+        - relationshipName: insuredPersonByInsuredPersonId
+        - relationshipName: insuredRelationshipByInsuredPersonIdAndRequesterId
+        - relationshipName: insuredPersonByRequesterId
+  graphql:
+    expressionTypeName: HazelnutInsuranceRequestsInsuredPersonsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HazelnutInsuranceRequestsInsuredPersons
+  objectType: HazelnutInsuranceRequestsInsuredPersons
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hazelnut_insurance_requests_insured_persons
+  filterExpressionType: HazelnutInsuranceRequestsInsuredPersonsBoolExp
+  aggregateExpression: HazelnutInsuranceRequestsInsuredPersonsAggExp
+  orderByExpression: HazelnutInsuranceRequestsInsuredPersonsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hazelnutInsuranceRequestsInsuredPersons
+      subscription:
+        rootField: hazelnutInsuranceRequestsInsuredPersons
+    selectUniques:
+      - queryRootField: hazelnutInsuranceRequestsInsuredPersonsByInsuranceRequestsInsuredPersonsPkey
+        uniqueIdentifier:
+          - insuranceRequestId
+          - insuredPersonId
+        subscription:
+          rootField: hazelnutInsuranceRequestsInsuredPersonsByInsuranceRequestsInsuredPersonsPkey
+    filterInputTypeName: HazelnutInsuranceRequestsInsuredPersonsFilterInput
+    aggregate:
+      queryRootField: hazelnutInsuranceRequestsInsuredPersonsAggregate
+      subscription:
+        rootField: hazelnutInsuranceRequestsInsuredPersonsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HazelnutInsuranceRequestsInsuredPersons
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPerson
+  sourceType: HazelnutInsuranceRequestsInsuredPersons
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: beneficiaryId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredRelationship
+  sourceType: HazelnutInsuranceRequestsInsuredPersons
+  target:
+    model:
+      name: InsuredRelationships
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: beneficiaryId
+      target:
+        modelField:
+          - fieldName: insuredPersonFromId
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonToId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: HazelnutInsuranceRequestsInsuredPersons
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceCoverage
+  sourceType: HazelnutInsuranceRequestsInsuredPersons
+  target:
+    model:
+      name: HazelnutInsuranceCoverages
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuranceCoverageId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequest
+  sourceType: HazelnutInsuranceRequestsInsuredPersons
+  target:
+    model:
+      name: HazelnutInsuranceRequests
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuranceRequestId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersonByInsuredPersonId
+  sourceType: HazelnutInsuranceRequestsInsuredPersons
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredRelationshipByInsuredPersonIdAndRequesterId
+  sourceType: HazelnutInsuranceRequestsInsuredPersons
+  target:
+    model:
+      name: InsuredRelationships
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonFromId
+    - source:
+        fieldPath:
+          - fieldName: requesterId
+      target:
+        modelField:
+          - fieldName: insuredPersonToId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersonByRequesterId
+  sourceType: HazelnutInsuranceRequestsInsuredPersons
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: requesterId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuredHealthHistories
+  sourceType: HazelnutInsuranceRequestsInsuredPersons
+  target:
+    model:
+      name: HazelnutInsuredHealthHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuredHealthHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuranceRequestId
+      target:
+        modelField:
+          - fieldName: insuranceRequestId
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: hazelnutInsuredHealthHistoriesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutUnderwritingNotes
+  sourceType: HazelnutInsuranceRequestsInsuredPersons
+  target:
+    model:
+      name: HazelnutUnderwritingNotes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutUnderwritingNotesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuranceRequestId
+      target:
+        modelField:
+          - fieldName: insuranceRequestId
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: hazelnutUnderwritingNotesAggregate
+

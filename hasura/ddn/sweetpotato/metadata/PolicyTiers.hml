@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyTiers
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PolicyTiers
+    inputTypeName: PolicyTiersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_tiers
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyTiers
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyTiersBoolExp
+  operand:
+    object:
+      type: PolicyTiers
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policies
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyTiersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyTiersAggExp
+  operand:
+    object:
+      aggregatedType: PolicyTiers
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyTiersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyTiersOrderByExp
+  operand:
+    object:
+      orderedType: PolicyTiers
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicyTiersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyTiers
+  objectType: PolicyTiers
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_tiers
+  filterExpressionType: PolicyTiersBoolExp
+  aggregateExpression: PolicyTiersAggExp
+  orderByExpression: PolicyTiersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyTiers
+      subscription:
+        rootField: policyTiers
+    selectUniques:
+      - queryRootField: policyTiersByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: policyTiersByValue
+    filterInputTypeName: PolicyTiersFilterInput
+    aggregate:
+      queryRootField: policyTiersAggregate
+      subscription:
+        rootField: policyTiersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyTiers
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: PolicyTiers
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: tier
+  graphql:
+    aggregateFieldName: policiesAggregate
+

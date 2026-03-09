@@ -1,0 +1,162 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsurerRolesUsersByInsurerRoleIdAndUserIdUpdateColumns
+  description: Update the columns of the 'insurer_roles_users' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnInsurerRolesUsersCreatedAt
+      description: Update the 'created_at' column in the 'insurer_roles_users' collection.
+    - name: deletedAt
+      type: UpdateColumnInsurerRolesUsersDeletedAt
+      description: Update the 'deleted_at' column in the 'insurer_roles_users' collection.
+    - name: enablePpyNotifications
+      type: UpdateColumnInsurerRolesUsersEnablePpyNotifications
+      description: Update the 'enable_ppy_notifications' column in the
+        'insurer_roles_users' collection.
+    - name: id
+      type: UpdateColumnInsurerRolesUsersId
+      description: Update the 'id' column in the 'insurer_roles_users' collection.
+    - name: insurerRoleId
+      type: UpdateColumnInsurerRolesUsersInsurerRoleId
+      description: Update the 'insurer_role_id' column in the 'insurer_roles_users'
+        collection.
+    - name: updatedAt
+      type: UpdateColumnInsurerRolesUsersUpdatedAt
+      description: Update the 'updated_at' column in the 'insurer_roles_users' collection.
+    - name: userId
+      type: UpdateColumnInsurerRolesUsersUserId
+      description: Update the 'user_id' column in the 'insurer_roles_users' collection.
+  graphql:
+    typeName: UpdateInsurerRolesUsersByInsurerRoleIdAndUserIdUpdateColumns
+    inputTypeName: UpdateInsurerRolesUsersByInsurerRoleIdAndUserIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insurer_roles_users_by_insurer_role_id_and_user_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        enablePpyNotifications:
+          column:
+            name: enable_ppy_notifications
+        id:
+          column:
+            name: id
+        insurerRoleId:
+          column:
+            name: insurer_role_id
+        updatedAt:
+          column:
+            name: updated_at
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsurerRolesUsersByInsurerRoleIdAndUserIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - enablePpyNotifications
+          - id
+          - insurerRoleId
+          - updatedAt
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsurerRolesUsersByInsurerRoleIdAndUserIdResponse
+  description: Responses from the
+    'update_insurer_roles_users_by_insurer_role_id_and_user_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsurerRolesUsers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateInsurerRolesUsersByInsurerRoleIdAndUserIdResponse
+    inputTypeName: UpdateInsurerRolesUsersByInsurerRoleIdAndUserIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insurer_roles_users_by_insurer_role_id_and_user_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsurerRolesUsersByInsurerRoleIdAndUserIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateInsurerRolesUsersByInsurerRoleIdAndUserId
+  outputType: UpdateInsurerRolesUsersByInsurerRoleIdAndUserIdResponse!
+  arguments:
+    - name: keyInsurerRoleId
+      type: Uuid!
+    - name: keyUserId
+      type: Uuid!
+    - name: postCheck
+      type: InsurerRolesUsersBoolExp
+      description: Update permission post-condition predicate over the
+        'insurer_roles_users' collection
+    - name: preCheck
+      type: InsurerRolesUsersBoolExp
+      description: Update permission pre-condition predicate over the
+        'insurer_roles_users' collection
+    - name: updateColumns
+      type: UpdateInsurerRolesUsersByInsurerRoleIdAndUserIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_insurer_roles_users_by_insurer_role_id_and_user_id
+    argumentMapping:
+      keyInsurerRoleId: key_insurer_role_id
+      keyUserId: key_user_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateInsurerRolesUsersByInsurerRoleIdAndUserId
+    rootFieldKind: Mutation
+  description: Update any row on the 'insurer_roles_users' collection using the
+    'insurer_role_id' and 'user_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateInsurerRolesUsersByInsurerRoleIdAndUserId
+  permissions:
+    - role: admin
+      allowExecution: true
+

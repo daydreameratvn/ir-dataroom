@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseStpStatuses
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimCaseStpStatuses
+    inputTypeName: ClaimCaseStpStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_stp_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseStpStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseStpStatusesBoolExp
+  operand:
+    object:
+      type: ClaimCaseStpStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimCases
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseStpStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseStpStatusesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseStpStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseStpStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseStpStatusesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseStpStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimCaseStpStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseStpStatuses
+  objectType: ClaimCaseStpStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_stp_statuses
+  filterExpressionType: ClaimCaseStpStatusesBoolExp
+  aggregateExpression: ClaimCaseStpStatusesAggExp
+  orderByExpression: ClaimCaseStpStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseStpStatuses
+      subscription:
+        rootField: claimCaseStpStatuses
+    selectUniques:
+      - queryRootField: claimCaseStpStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimCaseStpStatusesByValue
+    filterInputTypeName: ClaimCaseStpStatusesFilterInput
+    aggregate:
+      queryRootField: claimCaseStpStatusesAggregate
+      subscription:
+        rootField: claimCaseStpStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseStpStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCases
+  sourceType: ClaimCaseStpStatuses
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: stpStatus
+  graphql:
+    aggregateFieldName: claimCasesAggregate
+

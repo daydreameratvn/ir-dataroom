@@ -1,0 +1,80 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHawthornPatientsByDobAndFullNameAndGenderResponse
+  description: Responses from the
+    'delete_hawthorn_patients_by_dob_and_full_name_and_gender' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornPatients!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHawthornPatientsByDobAndFullNameAndGenderResponse
+    inputTypeName: DeleteHawthornPatientsByDobAndFullNameAndGenderResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hawthorn_patients_by_dob_and_full_name_and_gender_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHawthornPatientsByDobAndFullNameAndGenderResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHawthornPatientsByDobAndFullNameAndGender
+  outputType: DeleteHawthornPatientsByDobAndFullNameAndGenderResponse!
+  arguments:
+    - name: keyDob
+      type: Timestamptz
+    - name: keyFullName
+      type: String_1
+    - name: keyGender
+      type: String_1
+    - name: preCheck
+      type: HawthornPatientsBoolExp
+      description: Delete permission predicate over the 'hawthorn_patients' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hawthorn_patients_by_dob_and_full_name_and_gender
+    argumentMapping:
+      keyDob: key_dob
+      keyFullName: key_full_name
+      keyGender: key_gender
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHawthornPatientsByDobAndFullNameAndGender
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hawthorn_patients' collection using the
+    'dob', 'full_name' and 'gender' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHawthornPatientsByDobAndFullNameAndGender
+  permissions:
+    - role: admin
+      allowExecution: true
+

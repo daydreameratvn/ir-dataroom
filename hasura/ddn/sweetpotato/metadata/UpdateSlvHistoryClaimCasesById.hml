@@ -1,0 +1,167 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateSlvHistoryClaimCasesByIdUpdateColumns
+  description: Update the columns of the 'slv_history_claim_cases' collection
+  fields:
+    - name: code
+      type: UpdateColumnSlvHistoryClaimCasesCode
+      description: Update the 'code' column in the 'slv_history_claim_cases' collection.
+    - name: createdAt
+      type: UpdateColumnSlvHistoryClaimCasesCreatedAt
+      description: Update the 'created_at' column in the 'slv_history_claim_cases'
+        collection.
+    - name: decisionAt
+      type: UpdateColumnSlvHistoryClaimCasesDecisionAt
+      description: Update the 'decision_at' column in the 'slv_history_claim_cases'
+        collection.
+    - name: deletedAt
+      type: UpdateColumnSlvHistoryClaimCasesDeletedAt
+      description: Update the 'deleted_at' column in the 'slv_history_claim_cases'
+        collection.
+    - name: id
+      type: UpdateColumnSlvHistoryClaimCasesId
+      description: Update the 'id' column in the 'slv_history_claim_cases' collection.
+    - name: insuredPersonId
+      type: UpdateColumnSlvHistoryClaimCasesInsuredPersonId
+      description: Update the 'insured_person_id' column in the
+        'slv_history_claim_cases' collection.
+    - name: status
+      type: UpdateColumnSlvHistoryClaimCasesStatus
+      description: Update the 'status' column in the 'slv_history_claim_cases' collection.
+    - name: updatedAt
+      type: UpdateColumnSlvHistoryClaimCasesUpdatedAt
+      description: Update the 'updated_at' column in the 'slv_history_claim_cases'
+        collection.
+  graphql:
+    typeName: UpdateSlvHistoryClaimCasesByIdUpdateColumns
+    inputTypeName: UpdateSlvHistoryClaimCasesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_slv_history_claim_cases_by_id_update_columns
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        decisionAt:
+          column:
+            name: decision_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateSlvHistoryClaimCasesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - decisionAt
+          - deletedAt
+          - id
+          - insuredPersonId
+          - status
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateSlvHistoryClaimCasesByIdResponse
+  description: Responses from the 'update_slv_history_claim_cases_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvHistoryClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateSlvHistoryClaimCasesByIdResponse
+    inputTypeName: UpdateSlvHistoryClaimCasesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_slv_history_claim_cases_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateSlvHistoryClaimCasesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateSlvHistoryClaimCasesById
+  outputType: UpdateSlvHistoryClaimCasesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: SlvHistoryClaimCasesBoolExp
+      description: Update permission post-condition predicate over the
+        'slv_history_claim_cases' collection
+    - name: preCheck
+      type: SlvHistoryClaimCasesBoolExp
+      description: Update permission pre-condition predicate over the
+        'slv_history_claim_cases' collection
+    - name: updateColumns
+      type: UpdateSlvHistoryClaimCasesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_slv_history_claim_cases_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateSlvHistoryClaimCasesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'slv_history_claim_cases' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateSlvHistoryClaimCasesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

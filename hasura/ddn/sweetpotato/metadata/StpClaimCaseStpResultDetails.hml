@@ -1,0 +1,263 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StpClaimCaseStpResultDetails
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: explanation
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: isPassed
+      type: Boolean_1!
+    - name: stpRuleId
+      type: Uuid!
+    - name: stpRuleResult
+      type: Json!
+    - name: stpRuleSetId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: StpClaimCaseStpResultDetails
+    inputTypeName: StpClaimCaseStpResultDetailsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: stp_claim_case_stp_result_details
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        explanation:
+          column:
+            name: explanation
+        id:
+          column:
+            name: id
+        isPassed:
+          column:
+            name: is_passed
+        stpRuleId:
+          column:
+            name: stp_rule_id
+        stpRuleResult:
+          column:
+            name: stp_rule_result
+        stpRuleSetId:
+          column:
+            name: stp_rule_set_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StpClaimCaseStpResultDetails
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - explanation
+          - id
+          - isPassed
+          - stpRuleId
+          - stpRuleResult
+          - stpRuleSetId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StpClaimCaseStpResultDetailsBoolExp
+  operand:
+    object:
+      type: StpClaimCaseStpResultDetails
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: explanation
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isPassed
+          booleanExpressionType: BoolBoolExp
+        - fieldName: stpRuleId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: stpRuleResult
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: stpRuleSetId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: stpStpRule
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StpClaimCaseStpResultDetailsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: StpClaimCaseStpResultDetailsAggExp
+  operand:
+    object:
+      aggregatedType: StpClaimCaseStpResultDetails
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: explanation
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isPassed
+          aggregateExpression: BoolAggExp
+        - fieldName: stpRuleId
+          aggregateExpression: UuidAggExp
+        - fieldName: stpRuleResult
+          aggregateExpression: JsonbAggExp
+        - fieldName: stpRuleSetId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: StpClaimCaseStpResultDetailsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: StpClaimCaseStpResultDetailsOrderByExp
+  operand:
+    object:
+      orderedType: StpClaimCaseStpResultDetails
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: explanation
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isPassed
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: stpRuleId
+          orderByExpression: UuidOrderByExp
+        - fieldName: stpRuleResult
+          orderByExpression: JsonOrderByExp
+        - fieldName: stpRuleSetId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: stpStpRule
+  graphql:
+    expressionTypeName: StpClaimCaseStpResultDetailsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: StpClaimCaseStpResultDetails
+  objectType: StpClaimCaseStpResultDetails
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: stp_claim_case_stp_result_details
+  filterExpressionType: StpClaimCaseStpResultDetailsBoolExp
+  aggregateExpression: StpClaimCaseStpResultDetailsAggExp
+  orderByExpression: StpClaimCaseStpResultDetailsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: stpClaimCaseStpResultDetails
+      subscription:
+        rootField: stpClaimCaseStpResultDetails
+    selectUniques:
+      - queryRootField: stpClaimCaseStpResultDetailsByClaimCaseStpResultDetailsClaimCaseIdStpRuleIdKey
+        uniqueIdentifier:
+          - claimCaseId
+          - stpRuleId
+        subscription:
+          rootField: stpClaimCaseStpResultDetailsByClaimCaseStpResultDetailsClaimCaseIdStpRuleIdKey
+      - queryRootField: stpClaimCaseStpResultDetailsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: stpClaimCaseStpResultDetailsById
+    filterInputTypeName: StpClaimCaseStpResultDetailsFilterInput
+    aggregate:
+      queryRootField: stpClaimCaseStpResultDetailsAggregate
+      subscription:
+        rootField: stpClaimCaseStpResultDetailsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: StpClaimCaseStpResultDetails
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: StpClaimCaseStpResultDetails
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stpStpRule
+  sourceType: StpClaimCaseStpResultDetails
+  target:
+    model:
+      name: StpStpRules
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: stpRuleId
+      target:
+        modelField:
+          - fieldName: id
+

@@ -1,0 +1,227 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClassificationPapers
+  description: Lưu trữ tài liệu được gửi lên
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: isParsed
+      type: Boolean_1!
+    - name: paperId
+      type: Uuid!
+    - name: paperType
+      type: String_1
+    - name: parsedData
+      type: Json!
+    - name: rawData
+      type: Json
+    - name: s3Params
+      type: Json
+    - name: updatedAt
+      type: Timestamp
+  graphql:
+    typeName: ClassificationPapers
+    inputTypeName: ClassificationPapersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: classification_papers
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        isParsed:
+          column:
+            name: is_parsed
+        paperId:
+          column:
+            name: paper_id
+        paperType:
+          column:
+            name: paper_type
+        parsedData:
+          column:
+            name: parsed_data
+        rawData:
+          column:
+            name: raw_data
+        s3Params:
+          column:
+            name: s3_params
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClassificationPapers
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - isParsed
+          - paperId
+          - paperType
+          - parsedData
+          - rawData
+          - s3Params
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClassificationPapersBoolExp
+  operand:
+    object:
+      type: ClassificationPapers
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: isParsed
+          booleanExpressionType: BoolBoolExp
+        - fieldName: paperId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paperType
+          booleanExpressionType: TextBoolExp
+        - fieldName: parsedData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: rawData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: s3Params
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestampBoolExp
+      comparableRelationships:
+        - relationshipName: classificationPaperType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClassificationPapersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClassificationPapersAggExp
+  operand:
+    object:
+      aggregatedType: ClassificationPapers
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: isParsed
+          aggregateExpression: BoolAggExp
+        - fieldName: paperId
+          aggregateExpression: UuidAggExp
+        - fieldName: paperType
+          aggregateExpression: TextAggExp
+        - fieldName: parsedData
+          aggregateExpression: JsonbAggExp
+        - fieldName: rawData
+          aggregateExpression: JsonbAggExp
+        - fieldName: s3Params
+          aggregateExpression: JsonbAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestampAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClassificationPapersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClassificationPapersOrderByExp
+  operand:
+    object:
+      orderedType: ClassificationPapers
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: isParsed
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: paperId
+          orderByExpression: UuidOrderByExp
+        - fieldName: paperType
+          orderByExpression: String1OrderByExp
+        - fieldName: parsedData
+          orderByExpression: JsonOrderByExp
+        - fieldName: rawData
+          orderByExpression: JsonOrderByExp
+        - fieldName: s3Params
+          orderByExpression: JsonOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestampOrderByExp
+      orderableRelationships:
+        - relationshipName: classificationPaperType
+  graphql:
+    expressionTypeName: ClassificationPapersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClassificationPapers
+  objectType: ClassificationPapers
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: classification_papers
+  filterExpressionType: ClassificationPapersBoolExp
+  aggregateExpression: ClassificationPapersAggExp
+  orderByExpression: ClassificationPapersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: classificationPapers
+      subscription:
+        rootField: classificationPapers
+    selectUniques:
+      - queryRootField: classificationPapersByPaperId
+        uniqueIdentifier:
+          - paperId
+        subscription:
+          rootField: classificationPapersByPaperId
+    filterInputTypeName: ClassificationPapersFilterInput
+    aggregate:
+      queryRootField: classificationPapersAggregate
+      subscription:
+        rootField: classificationPapersAggregate
+  description: Lưu trữ tài liệu được gửi lên
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClassificationPapers
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: classificationPaperType
+  sourceType: ClassificationPapers
+  target:
+    model:
+      name: ClassificationPaperTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paperType
+      target:
+        modelField:
+          - fieldName: value
+

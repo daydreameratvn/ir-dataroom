@@ -1,0 +1,144 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsuredRelationshipsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insuredPersonFromId
+      type: Uuid!
+    - name: insuredPersonToId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertInsuredRelationshipsObject
+    inputTypeName: InsertInsuredRelationshipsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insured_relationships_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuredPersonFromId:
+          column:
+            name: insured_person_from_id
+        insuredPersonToId:
+          column:
+            name: insured_person_to_id
+        tenantId:
+          column:
+            name: tenant_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsuredRelationshipsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - insuredPersonFromId
+          - insuredPersonToId
+          - tenantId
+          - type
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsuredRelationshipsResponse
+  description: Responses from the 'insert_insured_relationships' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredRelationships!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertInsuredRelationshipsResponse
+    inputTypeName: InsertInsuredRelationshipsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insured_relationships_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsuredRelationshipsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertInsuredRelationships
+  outputType: InsertInsuredRelationshipsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertInsuredRelationshipsObject!]!"
+    - name: postCheck
+      type: InsuredRelationshipsBoolExp
+      description: Insert permission predicate over the 'insured_relationships' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_insured_relationships
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertInsuredRelationships
+    rootFieldKind: Mutation
+  description: Insert into the insured_relationships table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertInsuredRelationships
+  permissions:
+    - role: admin
+      allowExecution: true
+

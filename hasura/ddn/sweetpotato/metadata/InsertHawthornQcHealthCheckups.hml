@@ -1,0 +1,139 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornQcHealthCheckupsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: healthCheckupId
+      type: Uuid!
+    - name: id
+      type: Uuid
+    - name: qcAt
+      type: Timestamptz!
+    - name: qcById
+      type: Uuid!
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertHawthornQcHealthCheckupsObject
+    inputTypeName: InsertHawthornQcHealthCheckupsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_qc_health_checkups_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        healthCheckupId:
+          column:
+            name: health_checkup_id
+        id:
+          column:
+            name: id
+        qcAt:
+          column:
+            name: qc_at
+        qcById:
+          column:
+            name: qc_by_id
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornQcHealthCheckupsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - healthCheckupId
+          - id
+          - qcAt
+          - qcById
+          - status
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornQcHealthCheckupsResponse
+  description: Responses from the 'insert_hawthorn_qc_health_checkups' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornQcHealthCheckups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornQcHealthCheckupsResponse
+    inputTypeName: InsertHawthornQcHealthCheckupsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_qc_health_checkups_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornQcHealthCheckupsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornQcHealthCheckups
+  outputType: InsertHawthornQcHealthCheckupsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornQcHealthCheckupsObject!]!"
+    - name: postCheck
+      type: HawthornQcHealthCheckupsBoolExp
+      description: Insert permission predicate over the 'hawthorn_qc_health_checkups'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_qc_health_checkups
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornQcHealthCheckups
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_qc_health_checkups table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornQcHealthCheckups
+  permissions:
+    - role: admin
+      allowExecution: true
+

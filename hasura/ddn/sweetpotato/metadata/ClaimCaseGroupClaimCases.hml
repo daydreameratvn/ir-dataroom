@@ -1,0 +1,272 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseGroupClaimCases
+  fields:
+    - name: claimCaseGroupId
+      type: Uuid
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: ClaimCaseGroupClaimCases
+    inputTypeName: ClaimCaseGroupClaimCasesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_group_claim_cases
+      fieldMapping:
+        claimCaseGroupId:
+          column:
+            name: claim_case_group_id
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseGroupClaimCases
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseGroupId
+          - claimCaseId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseGroupClaimCasesBoolExp
+  operand:
+    object:
+      type: ClaimCaseGroupClaimCases
+      comparableFields:
+        - fieldName: claimCaseGroupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCaseGroup
+        - relationshipName: claimCase
+        - relationshipName: claimCaseGroupClaimCaseType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseGroupClaimCasesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseGroupClaimCasesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseGroupClaimCases
+      aggregatableFields:
+        - fieldName: claimCaseGroupId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseGroupClaimCasesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseGroupClaimCasesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseGroupClaimCases
+      orderableFields:
+        - fieldName: claimCaseGroupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCaseGroup
+        - relationshipName: claimCase
+        - relationshipName: claimCaseGroupClaimCaseType
+  graphql:
+    expressionTypeName: ClaimCaseGroupClaimCasesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseGroupClaimCases
+  objectType: ClaimCaseGroupClaimCases
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_group_claim_cases
+  filterExpressionType: ClaimCaseGroupClaimCasesBoolExp
+  aggregateExpression: ClaimCaseGroupClaimCasesAggExp
+  orderByExpression: ClaimCaseGroupClaimCasesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseGroupClaimCases
+      subscription:
+        rootField: claimCaseGroupClaimCases
+    selectUniques:
+      - queryRootField: claimCaseGroupClaimCasesByClaimCaseGroupClaimCasesClaimCaseIdClaimCaseGroupId
+        uniqueIdentifier:
+          - claimCaseGroupId
+          - claimCaseId
+          - deletedAt
+        subscription:
+          rootField: claimCaseGroupClaimCasesByClaimCaseGroupClaimCasesClaimCaseIdClaimCaseGroupId
+      - queryRootField: claimCaseGroupClaimCasesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimCaseGroupClaimCasesById
+    filterInputTypeName: ClaimCaseGroupClaimCasesFilterInput
+    aggregate:
+      queryRootField: claimCaseGroupClaimCasesAggregate
+      subscription:
+        rootField: claimCaseGroupClaimCasesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseGroupClaimCases
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseGroup
+  sourceType: ClaimCaseGroupClaimCases
+  target:
+    model:
+      name: ClaimCaseGroups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseGroupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: ClaimCaseGroupClaimCases
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseGroupClaimCaseType
+  sourceType: ClaimCaseGroupClaimCases
+  target:
+    model:
+      name: ClaimCaseGroupClaimCaseTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

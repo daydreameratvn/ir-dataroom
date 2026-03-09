@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertLifeInsuranceEventsObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertLifeInsuranceEventsObject
+    inputTypeName: InsertLifeInsuranceEventsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_life_insurance_events_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertLifeInsuranceEventsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertLifeInsuranceEventsResponse
+  description: Responses from the 'insert_life_insurance_events' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[LifeInsuranceEvents!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertLifeInsuranceEventsResponse
+    inputTypeName: InsertLifeInsuranceEventsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_life_insurance_events_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertLifeInsuranceEventsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertLifeInsuranceEvents
+  outputType: InsertLifeInsuranceEventsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertLifeInsuranceEventsObject!]!"
+    - name: postCheck
+      type: LifeInsuranceEventsBoolExp
+      description: Insert permission predicate over the 'life_insurance_events' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_life_insurance_events
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertLifeInsuranceEvents
+    rootFieldKind: Mutation
+  description: Insert into the life_insurance_events table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertLifeInsuranceEvents
+  permissions:
+    - role: admin
+      allowExecution: true
+

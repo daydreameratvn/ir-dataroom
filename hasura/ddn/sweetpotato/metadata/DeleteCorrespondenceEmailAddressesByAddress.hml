@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCorrespondenceEmailAddressesByAddressResponse
+  description: Responses from the
+    'delete_correspondence_email_addresses_by_address' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmailAddresses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCorrespondenceEmailAddressesByAddressResponse
+    inputTypeName: DeleteCorrespondenceEmailAddressesByAddressResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_correspondence_email_addresses_by_address_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCorrespondenceEmailAddressesByAddressResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCorrespondenceEmailAddressesByAddress
+  outputType: DeleteCorrespondenceEmailAddressesByAddressResponse!
+  arguments:
+    - name: keyAddress
+      type: String_1!
+    - name: preCheck
+      type: CorrespondenceEmailAddressesBoolExp
+      description: Delete permission predicate over the
+        'correspondence_email_addresses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_correspondence_email_addresses_by_address
+    argumentMapping:
+      keyAddress: key_address
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCorrespondenceEmailAddressesByAddress
+    rootFieldKind: Mutation
+  description: Delete any row on the 'correspondence_email_addresses' collection
+    using the 'address' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCorrespondenceEmailAddressesByAddress
+  permissions:
+    - role: admin
+      allowExecution: true
+

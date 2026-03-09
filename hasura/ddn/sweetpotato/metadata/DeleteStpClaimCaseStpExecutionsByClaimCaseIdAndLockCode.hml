@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteStpClaimCaseStpExecutionsByClaimCaseIdAndLockCodeResponse
+  description: Responses from the
+    'delete_stp_claim_case_stp_executions_by_claim_case_id_and_lock_code'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpClaimCaseStpExecutions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteStpClaimCaseStpExecutionsByClaimCaseIdAndLockCodeResponse
+    inputTypeName: DeleteStpClaimCaseStpExecutionsByClaimCaseIdAndLockCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_stp_claim_case_stp_executions_by_claim_case_id_and_lock_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteStpClaimCaseStpExecutionsByClaimCaseIdAndLockCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteStpClaimCaseStpExecutionsByClaimCaseIdAndLockCode
+  outputType: DeleteStpClaimCaseStpExecutionsByClaimCaseIdAndLockCodeResponse!
+  arguments:
+    - name: keyClaimCaseId
+      type: Uuid!
+    - name: keyLockCode
+      type: String_1!
+    - name: preCheck
+      type: StpClaimCaseStpExecutionsBoolExp
+      description: Delete permission predicate over the
+        'stp_claim_case_stp_executions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_stp_claim_case_stp_executions_by_claim_case_id_and_lock_code
+    argumentMapping:
+      keyClaimCaseId: key_claim_case_id
+      keyLockCode: key_lock_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteStpClaimCaseStpExecutionsByClaimCaseIdAndLockCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'stp_claim_case_stp_executions' collection
+    using the 'claim_case_id' and 'lock_code' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteStpClaimCaseStpExecutionsByClaimCaseIdAndLockCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,210 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DiseaseGroupIcds
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: diseaseGroupId
+      type: Uuid!
+    - name: icdMetadataId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: DiseaseGroupIcds
+    inputTypeName: DiseaseGroupIcdsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: disease_group_icds
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        diseaseGroupId:
+          column:
+            name: disease_group_id
+        icdMetadataId:
+          column:
+            name: icd_metadata_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DiseaseGroupIcds
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - diseaseGroupId
+          - icdMetadataId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: DiseaseGroupIcdsBoolExp
+  operand:
+    object:
+      type: DiseaseGroupIcds
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: diseaseGroupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: icdMetadataId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: diseaseGroup
+        - relationshipName: metadatum
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: DiseaseGroupIcdsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: DiseaseGroupIcdsAggExp
+  operand:
+    object:
+      aggregatedType: DiseaseGroupIcds
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: diseaseGroupId
+          aggregateExpression: UuidAggExp
+        - fieldName: icdMetadataId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: DiseaseGroupIcdsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: DiseaseGroupIcdsOrderByExp
+  operand:
+    object:
+      orderedType: DiseaseGroupIcds
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: diseaseGroupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: icdMetadataId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: diseaseGroup
+        - relationshipName: metadatum
+  graphql:
+    expressionTypeName: DiseaseGroupIcdsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: DiseaseGroupIcds
+  objectType: DiseaseGroupIcds
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: disease_group_icds
+  filterExpressionType: DiseaseGroupIcdsBoolExp
+  aggregateExpression: DiseaseGroupIcdsAggExp
+  orderByExpression: DiseaseGroupIcdsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: diseaseGroupIcds
+      subscription:
+        rootField: diseaseGroupIcds
+    selectUniques:
+      - queryRootField: diseaseGroupIcdsByDiseaseGroupIcdsPkey
+        uniqueIdentifier:
+          - diseaseGroupId
+          - icdMetadataId
+        subscription:
+          rootField: diseaseGroupIcdsByDiseaseGroupIcdsPkey
+    filterInputTypeName: DiseaseGroupIcdsFilterInput
+    aggregate:
+      queryRootField: diseaseGroupIcdsAggregate
+      subscription:
+        rootField: diseaseGroupIcdsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: DiseaseGroupIcds
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: diseaseGroup
+  sourceType: DiseaseGroupIcds
+  target:
+    model:
+      name: DiseaseGroups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: diseaseGroupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: metadatum
+  sourceType: DiseaseGroupIcds
+  target:
+    model:
+      name: Metadata
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: icdMetadataId
+      target:
+        modelField:
+          - fieldName: metadataId
+

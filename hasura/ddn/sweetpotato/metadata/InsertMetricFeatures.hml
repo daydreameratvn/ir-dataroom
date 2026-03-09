@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetricFeaturesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertMetricFeaturesObject
+    inputTypeName: InsertMetricFeaturesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_metric_features_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetricFeaturesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetricFeaturesResponse
+  description: Responses from the 'insert_metric_features' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetricFeatures!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMetricFeaturesResponse
+    inputTypeName: InsertMetricFeaturesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_metric_features_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetricFeaturesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMetricFeatures
+  outputType: InsertMetricFeaturesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMetricFeaturesObject!]!"
+    - name: postCheck
+      type: MetricFeaturesBoolExp
+      description: Insert permission predicate over the 'metric_features' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_metric_features
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMetricFeatures
+    rootFieldKind: Mutation
+  description: Insert into the metric_features table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMetricFeatures
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,139 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsurerDeclineCodesMappingObject
+  fields:
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: insurerDeclineCode
+      type: String_1!
+    - name: insurerId
+      type: Uuid!
+    - name: ppyDeclineCode
+      type: String_1!
+    - name: productCode
+      type: String_1!
+    - name: productId
+      type: Uuid!
+  graphql:
+    typeName: InsertInsurerDeclineCodesMappingObject
+    inputTypeName: InsertInsurerDeclineCodesMappingObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insurer_decline_codes_mapping_object
+      fieldMapping:
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        insurerDeclineCode:
+          column:
+            name: insurer_decline_code
+        insurerId:
+          column:
+            name: insurer_id
+        ppyDeclineCode:
+          column:
+            name: ppy_decline_code
+        productCode:
+          column:
+            name: product_code
+        productId:
+          column:
+            name: product_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsurerDeclineCodesMappingObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - description
+          - id
+          - insurerDeclineCode
+          - insurerId
+          - ppyDeclineCode
+          - productCode
+          - productId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsurerDeclineCodesMappingResponse
+  description: Responses from the 'insert_insurer_decline_codes_mapping' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsurerDeclineCodesMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertInsurerDeclineCodesMappingResponse
+    inputTypeName: InsertInsurerDeclineCodesMappingResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insurer_decline_codes_mapping_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsurerDeclineCodesMappingResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertInsurerDeclineCodesMapping
+  outputType: InsertInsurerDeclineCodesMappingResponse!
+  arguments:
+    - name: objects
+      type: "[InsertInsurerDeclineCodesMappingObject!]!"
+    - name: postCheck
+      type: InsurerDeclineCodesMappingBoolExp
+      description: Insert permission predicate over the
+        'insurer_decline_codes_mapping' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_insurer_decline_codes_mapping
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertInsurerDeclineCodesMapping
+    rootFieldKind: Mutation
+  description: Insert into the insurer_decline_codes_mapping table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertInsurerDeclineCodesMapping
+  permissions:
+    - role: admin
+      allowExecution: true
+

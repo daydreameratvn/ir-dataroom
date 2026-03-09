@@ -1,0 +1,103 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingBookingsSchedulesHistoriesActionsObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertMedicalBookingBookingsSchedulesHistoriesActionsObject
+    inputTypeName: InsertMedicalBookingBookingsSchedulesHistoriesActionsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_bookings_schedules_histories_actions_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingBookingsSchedulesHistoriesActionsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingBookingsSchedulesHistoriesActionsResponse
+  description: Responses from the
+    'insert_medical_booking_bookings_schedules_histories_actions' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingBookingsSchedulesHistoriesActions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMedicalBookingBookingsSchedulesHistoriesActionsResponse
+    inputTypeName: InsertMedicalBookingBookingsSchedulesHistoriesActionsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_bookings_schedules_histories_actions_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingBookingsSchedulesHistoriesActionsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMedicalBookingBookingsSchedulesHistoriesActions
+  outputType: InsertMedicalBookingBookingsSchedulesHistoriesActionsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMedicalBookingBookingsSchedulesHistoriesActionsObject!]!"
+    - name: postCheck
+      type: MedicalBookingBookingsSchedulesHistoriesActionsBoolExp
+      description: Insert permission predicate over the
+        'medical_booking_bookings_schedules_histories_actions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_medical_booking_bookings_schedules_histories_actions
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMedicalBookingBookingsSchedulesHistoriesActions
+    rootFieldKind: Mutation
+  description: Insert into the medical_booking_bookings_schedules_histories_actions table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMedicalBookingBookingsSchedulesHistoriesActions
+  permissions:
+    - role: admin
+      allowExecution: true
+

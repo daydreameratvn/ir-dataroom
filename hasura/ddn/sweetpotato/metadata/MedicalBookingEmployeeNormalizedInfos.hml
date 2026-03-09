@@ -1,0 +1,164 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MedicalBookingEmployeeNormalizedInfos
+  fields:
+    - name: dob
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: normalizedName
+      type: String_1
+    - name: upperCaseName
+      type: String_1
+    - name: yob
+      type: Bigdecimal
+  graphql:
+    typeName: MedicalBookingEmployeeNormalizedInfos
+    inputTypeName: MedicalBookingEmployeeNormalizedInfosInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: medical_booking_employee_normalized_infos
+      fieldMapping:
+        dob:
+          column:
+            name: dob
+        id:
+          column:
+            name: id
+        normalizedName:
+          column:
+            name: normalized_name
+        upperCaseName:
+          column:
+            name: upper_case_name
+        yob:
+          column:
+            name: yob
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MedicalBookingEmployeeNormalizedInfos
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - dob
+          - id
+          - normalizedName
+          - upperCaseName
+          - yob
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MedicalBookingEmployeeNormalizedInfosBoolExp
+  operand:
+    object:
+      type: MedicalBookingEmployeeNormalizedInfos
+      comparableFields:
+        - fieldName: dob
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: normalizedName
+          booleanExpressionType: TextBoolExp
+        - fieldName: upperCaseName
+          booleanExpressionType: TextBoolExp
+        - fieldName: yob
+          booleanExpressionType: NumericBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MedicalBookingEmployeeNormalizedInfosBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MedicalBookingEmployeeNormalizedInfosAggExp
+  operand:
+    object:
+      aggregatedType: MedicalBookingEmployeeNormalizedInfos
+      aggregatableFields:
+        - fieldName: dob
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: normalizedName
+          aggregateExpression: TextAggExp
+        - fieldName: upperCaseName
+          aggregateExpression: TextAggExp
+        - fieldName: yob
+          aggregateExpression: NumericAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MedicalBookingEmployeeNormalizedInfosAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MedicalBookingEmployeeNormalizedInfosOrderByExp
+  operand:
+    object:
+      orderedType: MedicalBookingEmployeeNormalizedInfos
+      orderableFields:
+        - fieldName: dob
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: normalizedName
+          orderByExpression: String1OrderByExp
+        - fieldName: upperCaseName
+          orderByExpression: String1OrderByExp
+        - fieldName: yob
+          orderByExpression: BigdecimalOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MedicalBookingEmployeeNormalizedInfosOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MedicalBookingEmployeeNormalizedInfos
+  objectType: MedicalBookingEmployeeNormalizedInfos
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: medical_booking_employee_normalized_infos
+  filterExpressionType: MedicalBookingEmployeeNormalizedInfosBoolExp
+  aggregateExpression: MedicalBookingEmployeeNormalizedInfosAggExp
+  orderByExpression: MedicalBookingEmployeeNormalizedInfosOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: medicalBookingEmployeeNormalizedInfos
+      subscription:
+        rootField: medicalBookingEmployeeNormalizedInfos
+    selectUniques: []
+    filterInputTypeName: MedicalBookingEmployeeNormalizedInfosFilterInput
+    aggregate:
+      queryRootField: medicalBookingEmployeeNormalizedInfosAggregate
+      subscription:
+        rootField: medicalBookingEmployeeNormalizedInfosAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MedicalBookingEmployeeNormalizedInfos
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

@@ -1,0 +1,252 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCompanySettingsObject
+  fields:
+    - name: bankAccount
+      type: Json
+    - name: bankAccounts
+      type: Json
+    - name: bccEmailsRefId
+      type: Uuid
+    - name: brokerEmailsRefId
+      type: Uuid
+    - name: claimSubmissionDeadlineInDaysSinceEventDate
+      type: Bigdecimal
+    - name: companyId
+      type: Uuid!
+    - name: correspondenceApiType
+      type: String_1
+    - name: correspondenceFromEmail
+      type: String_1
+    - name: correspondenceFromEmailName
+      type: String_1
+    - name: correspondenceShowDiagnosis
+      type: Boolean_1
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: hrEmailsRefId
+      type: Uuid
+    - name: insurerEmailsRefId
+      type: Uuid
+    - name: pendingRemindDueDays
+      type: Bigdecimal
+    - name: presentCaseEmailsRefId
+      type: Uuid
+    - name: presentCaseTat
+      type: Bigdecimal
+    - name: presentCaseUsersRefId
+      type: Uuid
+    - name: reimbursementFundCode
+      type: String_1
+    - name: stpTat
+      type: Bigdecimal
+    - name: suspensionDueDays
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: useClaimBenefitV2
+      type: Boolean_1
+    - name: useCorrespondenceV2
+      type: Boolean_1
+    - name: useHsProduct
+      type: Boolean_1
+  graphql:
+    typeName: InsertCompanySettingsObject
+    inputTypeName: InsertCompanySettingsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_company_settings_object
+      fieldMapping:
+        bankAccount:
+          column:
+            name: bank_account
+        bankAccounts:
+          column:
+            name: bank_accounts
+        bccEmailsRefId:
+          column:
+            name: bcc_emails_ref_id
+        brokerEmailsRefId:
+          column:
+            name: broker_emails_ref_id
+        claimSubmissionDeadlineInDaysSinceEventDate:
+          column:
+            name: claim_submission_deadline_in_days_since_event_date
+        companyId:
+          column:
+            name: company_id
+        correspondenceApiType:
+          column:
+            name: correspondence_api_type
+        correspondenceFromEmail:
+          column:
+            name: correspondence_from_email
+        correspondenceFromEmailName:
+          column:
+            name: correspondence_from_email_name
+        correspondenceShowDiagnosis:
+          column:
+            name: correspondence_show_diagnosis
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        hrEmailsRefId:
+          column:
+            name: hr_emails_ref_id
+        insurerEmailsRefId:
+          column:
+            name: insurer_emails_ref_id
+        pendingRemindDueDays:
+          column:
+            name: pending_remind_due_days
+        presentCaseEmailsRefId:
+          column:
+            name: present_case_emails_ref_id
+        presentCaseTat:
+          column:
+            name: present_case_tat
+        presentCaseUsersRefId:
+          column:
+            name: present_case_users_ref_id
+        reimbursementFundCode:
+          column:
+            name: reimbursement_fund_code
+        stpTat:
+          column:
+            name: stp_tat
+        suspensionDueDays:
+          column:
+            name: suspension_due_days
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        useClaimBenefitV2:
+          column:
+            name: use_claim_benefit_v2
+        useCorrespondenceV2:
+          column:
+            name: use_correspondence_v2
+        useHsProduct:
+          column:
+            name: use_hs_product
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCompanySettingsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankAccount
+          - bankAccounts
+          - bccEmailsRefId
+          - brokerEmailsRefId
+          - claimSubmissionDeadlineInDaysSinceEventDate
+          - companyId
+          - correspondenceApiType
+          - correspondenceFromEmail
+          - correspondenceFromEmailName
+          - correspondenceShowDiagnosis
+          - createdAt
+          - createdBy
+          - hrEmailsRefId
+          - insurerEmailsRefId
+          - pendingRemindDueDays
+          - presentCaseEmailsRefId
+          - presentCaseTat
+          - presentCaseUsersRefId
+          - reimbursementFundCode
+          - stpTat
+          - suspensionDueDays
+          - updatedAt
+          - updatedBy
+          - useClaimBenefitV2
+          - useCorrespondenceV2
+          - useHsProduct
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCompanySettingsResponse
+  description: Responses from the 'insert_company_settings' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanySettings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCompanySettingsResponse
+    inputTypeName: InsertCompanySettingsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_company_settings_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCompanySettingsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCompanySettings
+  outputType: InsertCompanySettingsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCompanySettingsObject!]!"
+    - name: postCheck
+      type: CompanySettingsBoolExp
+      description: Insert permission predicate over the 'company_settings' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_company_settings
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCompanySettings
+    rootFieldKind: Mutation
+  description: Insert into the company_settings table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCompanySettings
+  permissions:
+    - role: admin
+      allowExecution: true
+

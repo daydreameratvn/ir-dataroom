@@ -1,0 +1,161 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpMedicalProviderTpaByIdUpdateColumns
+  description: Update the columns of the 'mp_medical_provider_tpa' collection
+  fields:
+    - name: companyId
+      type: UpdateColumnMpMedicalProviderTpaCompanyId
+      description: Update the 'company_id' column in the 'mp_medical_provider_tpa'
+        collection.
+    - name: createdAt
+      type: UpdateColumnMpMedicalProviderTpaCreatedAt
+      description: Update the 'created_at' column in the 'mp_medical_provider_tpa'
+        collection.
+    - name: deletedAt
+      type: UpdateColumnMpMedicalProviderTpaDeletedAt
+      description: Update the 'deleted_at' column in the 'mp_medical_provider_tpa'
+        collection.
+    - name: id
+      type: UpdateColumnMpMedicalProviderTpaId
+      description: Update the 'id' column in the 'mp_medical_provider_tpa' collection.
+    - name: medicalProviderId
+      type: UpdateColumnMpMedicalProviderTpaMedicalProviderId
+      description: Update the 'medical_provider_id' column in the
+        'mp_medical_provider_tpa' collection.
+    - name: tenantId
+      type: UpdateColumnMpMedicalProviderTpaTenantId
+      description: Update the 'tenant_id' column in the 'mp_medical_provider_tpa'
+        collection.
+    - name: updatedAt
+      type: UpdateColumnMpMedicalProviderTpaUpdatedAt
+      description: Update the 'updated_at' column in the 'mp_medical_provider_tpa'
+        collection.
+  graphql:
+    typeName: UpdateMpMedicalProviderTpaByIdUpdateColumns
+    inputTypeName: UpdateMpMedicalProviderTpaByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_medical_provider_tpa_by_id_update_columns
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpMedicalProviderTpaByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - createdAt
+          - deletedAt
+          - id
+          - medicalProviderId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpMedicalProviderTpaByIdResponse
+  description: Responses from the 'update_mp_medical_provider_tpa_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderTpa!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateMpMedicalProviderTpaByIdResponse
+    inputTypeName: UpdateMpMedicalProviderTpaByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_medical_provider_tpa_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpMedicalProviderTpaByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateMpMedicalProviderTpaById
+  outputType: UpdateMpMedicalProviderTpaByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: MpMedicalProviderTpaBoolExp
+      description: Update permission post-condition predicate over the
+        'mp_medical_provider_tpa' collection
+    - name: preCheck
+      type: MpMedicalProviderTpaBoolExp
+      description: Update permission pre-condition predicate over the
+        'mp_medical_provider_tpa' collection
+    - name: updateColumns
+      type: UpdateMpMedicalProviderTpaByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_mp_medical_provider_tpa_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateMpMedicalProviderTpaById
+    rootFieldKind: Mutation
+  description: Update any row on the 'mp_medical_provider_tpa' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateMpMedicalProviderTpaById
+  permissions:
+    - role: admin
+      allowExecution: true
+

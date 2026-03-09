@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteOcrQcSurgicalRecordsByPaperIdResponse
+  description: Responses from the 'delete_ocr_qc_surgical_records_by_paper_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrQcSurgicalRecords!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteOcrQcSurgicalRecordsByPaperIdResponse
+    inputTypeName: DeleteOcrQcSurgicalRecordsByPaperIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_ocr_qc_surgical_records_by_paper_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteOcrQcSurgicalRecordsByPaperIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteOcrQcSurgicalRecordsByPaperId
+  outputType: DeleteOcrQcSurgicalRecordsByPaperIdResponse!
+  arguments:
+    - name: keyPaperId
+      type: Uuid!
+    - name: preCheck
+      type: OcrQcSurgicalRecordsBoolExp
+      description: Delete permission predicate over the 'ocr_qc_surgical_records' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_ocr_qc_surgical_records_by_paper_id
+    argumentMapping:
+      keyPaperId: key_paper_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteOcrQcSurgicalRecordsByPaperId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'ocr_qc_surgical_records' collection using
+    the 'paper_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteOcrQcSurgicalRecordsByPaperId
+  permissions:
+    - role: admin
+      allowExecution: true
+

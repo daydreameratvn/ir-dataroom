@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredCertificateEndorsementReasonsByValueResponse
+  description: Responses from the
+    'delete_insured_certificate_endorsement_reasons_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateEndorsementReasons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredCertificateEndorsementReasonsByValueResponse
+    inputTypeName: DeleteInsuredCertificateEndorsementReasonsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_certificate_endorsement_reasons_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredCertificateEndorsementReasonsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredCertificateEndorsementReasonsByValue
+  outputType: DeleteInsuredCertificateEndorsementReasonsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: InsuredCertificateEndorsementReasonsBoolExp
+      description: Delete permission predicate over the
+        'insured_certificate_endorsement_reasons' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_certificate_endorsement_reasons_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredCertificateEndorsementReasonsByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_certificate_endorsement_reasons'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredCertificateEndorsementReasonsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

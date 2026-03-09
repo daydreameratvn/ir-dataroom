@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: GlobalCounters
+  fields:
+    - name: counter
+      type: Int32!
+    - name: type
+      type: String_1!
+  graphql:
+    typeName: GlobalCounters
+    inputTypeName: GlobalCountersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: global_counters
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: GlobalCounters
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - counter
+          - type
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: GlobalCountersBoolExp
+  operand:
+    object:
+      type: GlobalCounters
+      comparableFields:
+        - fieldName: counter
+          booleanExpressionType: Int4BoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: GlobalCountersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: GlobalCountersAggExp
+  operand:
+    object:
+      aggregatedType: GlobalCounters
+      aggregatableFields:
+        - fieldName: counter
+          aggregateExpression: Int4AggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: GlobalCountersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: GlobalCountersOrderByExp
+  operand:
+    object:
+      orderedType: GlobalCounters
+      orderableFields:
+        - fieldName: counter
+          orderByExpression: Int32OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: GlobalCountersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: GlobalCounters
+  objectType: GlobalCounters
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: global_counters
+  filterExpressionType: GlobalCountersBoolExp
+  aggregateExpression: GlobalCountersAggExp
+  orderByExpression: GlobalCountersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: globalCounters
+      subscription:
+        rootField: globalCounters
+    selectUniques:
+      - queryRootField: globalCountersByType
+        uniqueIdentifier:
+          - type
+        subscription:
+          rootField: globalCountersByType
+    filterInputTypeName: GlobalCountersFilterInput
+    aggregate:
+      queryRootField: globalCountersAggregate
+      subscription:
+        rootField: globalCountersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: GlobalCounters
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

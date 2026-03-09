@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCompanySettingsByCompanyIdResponse
+  description: Responses from the 'delete_company_settings_by_company_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanySettings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCompanySettingsByCompanyIdResponse
+    inputTypeName: DeleteCompanySettingsByCompanyIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_company_settings_by_company_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCompanySettingsByCompanyIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCompanySettingsByCompanyId
+  outputType: DeleteCompanySettingsByCompanyIdResponse!
+  arguments:
+    - name: keyCompanyId
+      type: Uuid!
+    - name: preCheck
+      type: CompanySettingsBoolExp
+      description: Delete permission predicate over the 'company_settings' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_company_settings_by_company_id
+    argumentMapping:
+      keyCompanyId: key_company_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCompanySettingsByCompanyId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'company_settings' collection using the
+    'company_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCompanySettingsByCompanyId
+  permissions:
+    - role: admin
+      allowExecution: true
+

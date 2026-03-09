@@ -1,0 +1,160 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashUpdateColumns
+  description: Update the columns of the 'insured_certificate_underwriting_notes' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnInsuredCertificateUnderwritingNotesCreatedAt
+      description: Update the 'created_at' column in the
+        'insured_certificate_underwriting_notes' collection.
+    - name: id
+      type: UpdateColumnInsuredCertificateUnderwritingNotesId
+      description: Update the 'id' column in the
+        'insured_certificate_underwriting_notes' collection.
+    - name: insuredCertificateId
+      type: UpdateColumnInsuredCertificateUnderwritingNotesInsuredCertificateId
+      description: Update the 'insured_certificate_id' column in the
+        'insured_certificate_underwriting_notes' collection.
+    - name: note
+      type: UpdateColumnInsuredCertificateUnderwritingNotesNote
+      description: Update the 'note' column in the
+        'insured_certificate_underwriting_notes' collection.
+    - name: noteHash
+      type: UpdateColumnInsuredCertificateUnderwritingNotesNoteHash
+      description: Update the 'note_hash' column in the
+        'insured_certificate_underwriting_notes' collection.
+    - name: type
+      type: UpdateColumnInsuredCertificateUnderwritingNotesType
+      description: Update the 'type' column in the
+        'insured_certificate_underwriting_notes' collection.
+  graphql:
+    typeName: UpdateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashUpdateColumns
+    inputTypeName: UpdateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insured_certificate_underwriting_notes_by_insured_certificate_id_and_note_hash_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        note:
+          column:
+            name: note
+        noteHash:
+          column:
+            name: note_hash
+        type:
+          column:
+            name: type
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - insuredCertificateId
+          - note
+          - noteHash
+          - type
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashResponse
+  description: Responses from the
+    'update_insured_certificate_underwriting_notes_by_insured_certificate_id_and_note_hash'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateUnderwritingNotes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashResponse
+    inputTypeName: UpdateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_insured_certificate_underwriting_notes_by_insured_certificate_id_and_note_hash_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHash
+  outputType: UpdateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashResponse!
+  arguments:
+    - name: keyInsuredCertificateId
+      type: Uuid!
+    - name: keyNoteHash
+      type: String_1!
+    - name: postCheck
+      type: InsuredCertificateUnderwritingNotesBoolExp
+      description: Update permission post-condition predicate over the
+        'insured_certificate_underwriting_notes' collection
+    - name: preCheck
+      type: InsuredCertificateUnderwritingNotesBoolExp
+      description: Update permission pre-condition predicate over the
+        'insured_certificate_underwriting_notes' collection
+    - name: updateColumns
+      type: UpdateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_insured_certificate_underwriting_notes_by_insured_certificate_id_and_note_hash
+    argumentMapping:
+      keyInsuredCertificateId: key_insured_certificate_id
+      keyNoteHash: key_note_hash
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHash
+    rootFieldKind: Mutation
+  description: Update any row on the 'insured_certificate_underwriting_notes'
+    collection using the 'insured_certificate_id' and 'note_hash' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHash
+  permissions:
+    - role: admin
+      allowExecution: true
+

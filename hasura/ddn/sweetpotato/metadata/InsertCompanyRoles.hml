@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCompanyRolesObject
+  fields:
+    - name: companyId
+      type: Uuid!
+    - name: companyRoleId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: role
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertCompanyRolesObject
+    inputTypeName: InsertCompanyRolesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_company_roles_object
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        companyRoleId:
+          column:
+            name: company_role_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        role:
+          column:
+            name: role
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCompanyRolesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - companyRoleId
+          - createdAt
+          - deletedAt
+          - role
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCompanyRolesResponse
+  description: Responses from the 'insert_company_roles' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanyRoles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCompanyRolesResponse
+    inputTypeName: InsertCompanyRolesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_company_roles_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCompanyRolesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCompanyRoles
+  outputType: InsertCompanyRolesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCompanyRolesObject!]!"
+    - name: postCheck
+      type: CompanyRolesBoolExp
+      description: Insert permission predicate over the 'company_roles' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_company_roles
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCompanyRoles
+    rootFieldKind: Mutation
+  description: Insert into the company_roles table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCompanyRoles
+  permissions:
+    - role: admin
+      allowExecution: true
+

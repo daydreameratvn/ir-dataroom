@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MaritalStatuses
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MaritalStatuses
+    inputTypeName: MaritalStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: marital_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MaritalStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MaritalStatusesBoolExp
+  operand:
+    object:
+      type: MaritalStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: fwdMaritalStatuses
+        - relationshipName: insuredPersons
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MaritalStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MaritalStatusesAggExp
+  operand:
+    object:
+      aggregatedType: MaritalStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MaritalStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MaritalStatusesOrderByExp
+  operand:
+    object:
+      orderedType: MaritalStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MaritalStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MaritalStatuses
+  objectType: MaritalStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: marital_statuses
+  filterExpressionType: MaritalStatusesBoolExp
+  aggregateExpression: MaritalStatusesAggExp
+  orderByExpression: MaritalStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: maritalStatuses
+      subscription:
+        rootField: maritalStatuses
+    selectUniques:
+      - queryRootField: maritalStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: maritalStatusesByValue
+    filterInputTypeName: MaritalStatusesFilterInput
+    aggregate:
+      queryRootField: maritalStatusesAggregate
+      subscription:
+        rootField: maritalStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MaritalStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdMaritalStatuses
+  sourceType: MaritalStatuses
+  target:
+    model:
+      name: FwdMaritalStatuses
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdMaritalStatusesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: ppyMaritalStatusCode
+  graphql:
+    aggregateFieldName: fwdMaritalStatusesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersons
+  sourceType: MaritalStatuses
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: maritalStatus
+  graphql:
+    aggregateFieldName: insuredPersonsAggregate
+

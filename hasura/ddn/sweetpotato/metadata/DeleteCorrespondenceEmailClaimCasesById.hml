@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCorrespondenceEmailClaimCasesByIdResponse
+  description: Responses from the 'delete_correspondence_email_claim_cases_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmailClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCorrespondenceEmailClaimCasesByIdResponse
+    inputTypeName: DeleteCorrespondenceEmailClaimCasesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_correspondence_email_claim_cases_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCorrespondenceEmailClaimCasesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCorrespondenceEmailClaimCasesById
+  outputType: DeleteCorrespondenceEmailClaimCasesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: CorrespondenceEmailClaimCasesBoolExp
+      description: Delete permission predicate over the
+        'correspondence_email_claim_cases' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_correspondence_email_claim_cases_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCorrespondenceEmailClaimCasesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'correspondence_email_claim_cases' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCorrespondenceEmailClaimCasesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

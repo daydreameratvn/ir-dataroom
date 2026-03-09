@@ -1,0 +1,217 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: TclApiLogs
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: requestContent
+      type: Json!
+    - name: requestedAt
+      type: Timestamptz!
+    - name: respondedAt
+      type: Timestamptz!
+    - name: responseContent
+      type: Json
+    - name: responseStatus
+      type: Int32
+    - name: responseTime
+      type: Int32!
+    - name: url
+      type: String_1!
+  graphql:
+    typeName: TclApiLogs
+    inputTypeName: TclApiLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: tcl_api_logs
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        requestContent:
+          column:
+            name: request_content
+        requestedAt:
+          column:
+            name: requested_at
+        respondedAt:
+          column:
+            name: responded_at
+        responseContent:
+          column:
+            name: response_content
+        responseStatus:
+          column:
+            name: response_status
+        responseTime:
+          column:
+            name: response_time
+        url:
+          column:
+            name: url
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: TclApiLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - requestContent
+          - requestedAt
+          - respondedAt
+          - responseContent
+          - responseStatus
+          - responseTime
+          - url
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: TclApiLogsBoolExp
+  operand:
+    object:
+      type: TclApiLogs
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: requestContent
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: requestedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: respondedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: responseContent
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: responseStatus
+          booleanExpressionType: Int4BoolExp
+        - fieldName: responseTime
+          booleanExpressionType: Int4BoolExp
+        - fieldName: url
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: TclApiLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: TclApiLogsAggExp
+  operand:
+    object:
+      aggregatedType: TclApiLogs
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: requestContent
+          aggregateExpression: JsonbAggExp
+        - fieldName: requestedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: respondedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: responseContent
+          aggregateExpression: JsonbAggExp
+        - fieldName: responseStatus
+          aggregateExpression: Int4AggExp
+        - fieldName: responseTime
+          aggregateExpression: Int4AggExp
+        - fieldName: url
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: TclApiLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: TclApiLogsOrderByExp
+  operand:
+    object:
+      orderedType: TclApiLogs
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: requestContent
+          orderByExpression: JsonOrderByExp
+        - fieldName: requestedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: respondedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: responseContent
+          orderByExpression: JsonOrderByExp
+        - fieldName: responseStatus
+          orderByExpression: Int32OrderByExp
+        - fieldName: responseTime
+          orderByExpression: Int32OrderByExp
+        - fieldName: url
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: TclApiLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: TclApiLogs
+  objectType: TclApiLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: tcl_api_logs
+  filterExpressionType: TclApiLogsBoolExp
+  aggregateExpression: TclApiLogsAggExp
+  orderByExpression: TclApiLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: tclApiLogs
+      subscription:
+        rootField: tclApiLogs
+    selectUniques:
+      - queryRootField: tclApiLogsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: tclApiLogsById
+    filterInputTypeName: TclApiLogsFilterInput
+    aggregate:
+      queryRootField: tclApiLogsAggregate
+      subscription:
+        rootField: tclApiLogsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: TclApiLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

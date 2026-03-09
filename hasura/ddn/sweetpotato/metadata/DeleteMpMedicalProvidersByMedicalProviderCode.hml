@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMpMedicalProvidersByMedicalProviderCodeResponse
+  description: Responses from the
+    'delete_mp_medical_providers_by_medical_provider_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviders!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMpMedicalProvidersByMedicalProviderCodeResponse
+    inputTypeName: DeleteMpMedicalProvidersByMedicalProviderCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mp_medical_providers_by_medical_provider_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMpMedicalProvidersByMedicalProviderCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMpMedicalProvidersByMedicalProviderCode
+  outputType: DeleteMpMedicalProvidersByMedicalProviderCodeResponse!
+  arguments:
+    - name: keyMedicalProviderCode
+      type: String_1
+    - name: preCheck
+      type: MpMedicalProvidersBoolExp
+      description: Delete permission predicate over the 'mp_medical_providers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mp_medical_providers_by_medical_provider_code
+    argumentMapping:
+      keyMedicalProviderCode: key_medical_provider_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMpMedicalProvidersByMedicalProviderCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mp_medical_providers' collection using the
+    'medical_provider_code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMpMedicalProvidersByMedicalProviderCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

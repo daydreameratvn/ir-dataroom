@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseQaPredefinedComments
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimCaseQaPredefinedComments
+    inputTypeName: ClaimCaseQaPredefinedCommentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_qa_predefined_comments
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseQaPredefinedComments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseQaPredefinedCommentsBoolExp
+  operand:
+    object:
+      type: ClaimCaseQaPredefinedComments
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimCaseQaComments
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseQaPredefinedCommentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseQaPredefinedCommentsAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseQaPredefinedComments
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseQaPredefinedCommentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseQaPredefinedCommentsOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseQaPredefinedComments
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimCaseQaPredefinedCommentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseQaPredefinedComments
+  objectType: ClaimCaseQaPredefinedComments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_qa_predefined_comments
+  filterExpressionType: ClaimCaseQaPredefinedCommentsBoolExp
+  aggregateExpression: ClaimCaseQaPredefinedCommentsAggExp
+  orderByExpression: ClaimCaseQaPredefinedCommentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseQaPredefinedComments
+      subscription:
+        rootField: claimCaseQaPredefinedComments
+    selectUniques:
+      - queryRootField: claimCaseQaPredefinedCommentsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimCaseQaPredefinedCommentsByValue
+    filterInputTypeName: ClaimCaseQaPredefinedCommentsFilterInput
+    aggregate:
+      queryRootField: claimCaseQaPredefinedCommentsAggregate
+      subscription:
+        rootField: claimCaseQaPredefinedCommentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseQaPredefinedComments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseQaComments
+  sourceType: ClaimCaseQaPredefinedComments
+  target:
+    model:
+      name: ClaimCaseQaComments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseQaCommentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: comment
+  graphql:
+    aggregateFieldName: claimCaseQaCommentsAggregate
+

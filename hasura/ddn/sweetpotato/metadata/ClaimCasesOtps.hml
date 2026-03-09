@@ -1,0 +1,220 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCasesOtps
+  description: Claim cases Otps
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: otpId
+      type: Uuid!
+  graphql:
+    typeName: ClaimCasesOtps
+    inputTypeName: ClaimCasesOtpsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_cases_otps
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        otpId:
+          column:
+            name: otp_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCasesOtps
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - createdBy
+          - otpId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCasesOtpsBoolExp
+  operand:
+    object:
+      type: ClaimCasesOtps
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: otpId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+        - relationshipName: identityOtp
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCasesOtpsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCasesOtpsAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCasesOtps
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: otpId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCasesOtpsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCasesOtpsOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCasesOtps
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: otpId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+        - relationshipName: identityOtp
+  graphql:
+    expressionTypeName: ClaimCasesOtpsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCasesOtps
+  objectType: ClaimCasesOtps
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_cases_otps
+  filterExpressionType: ClaimCasesOtpsBoolExp
+  aggregateExpression: ClaimCasesOtpsAggExp
+  orderByExpression: ClaimCasesOtpsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCasesOtps
+      subscription:
+        rootField: claimCasesOtps
+    selectUniques:
+      - queryRootField: claimCasesOtpsByClaimCasesOtpsPkey
+        uniqueIdentifier:
+          - claimCaseId
+          - otpId
+        subscription:
+          rootField: claimCasesOtpsByClaimCasesOtpsPkey
+    filterInputTypeName: ClaimCasesOtpsFilterInput
+    aggregate:
+      queryRootField: claimCasesOtpsAggregate
+      subscription:
+        rootField: claimCasesOtpsAggregate
+  description: Claim cases Otps
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCasesOtps
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: ClaimCasesOtps
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: ClaimCasesOtps
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityOtp
+  sourceType: ClaimCasesOtps
+  target:
+    model:
+      name: IdentityOtps
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: otpId
+      target:
+        modelField:
+          - fieldName: otpId
+

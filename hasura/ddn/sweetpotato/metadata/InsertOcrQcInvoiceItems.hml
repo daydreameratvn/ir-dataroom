@@ -1,0 +1,234 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrQcInvoiceItemsObject
+  fields:
+    - name: allowedToPay
+      type: Boolean_1
+    - name: amount
+      type: Bigdecimal
+    - name: amountAfterVat
+      type: Bigdecimal
+    - name: amountBeforeVat
+      type: Bigdecimal
+    - name: batchNumber
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: discountAmount
+      type: Bigdecimal
+    - name: expriedAt
+      type: Timestamptz
+    - name: extraAmount
+      type: Bigdecimal
+    - name: id
+      type: Uuid
+    - name: itemName
+      type: String_1
+    - name: lineNumber
+      type: Bigdecimal
+    - name: paymentAmount
+      type: Bigdecimal
+    - name: qcInvoiceId
+      type: Uuid!
+    - name: quantity
+      type: Bigdecimal
+    - name: unit
+      type: String_1
+    - name: unitPrice
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: vatAmount
+      type: Bigdecimal
+    - name: vatPercentage
+      type: Bigdecimal
+  graphql:
+    typeName: InsertOcrQcInvoiceItemsObject
+    inputTypeName: InsertOcrQcInvoiceItemsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_qc_invoice_items_object
+      fieldMapping:
+        allowedToPay:
+          column:
+            name: allowed_to_pay
+        amount:
+          column:
+            name: amount
+        amountAfterVat:
+          column:
+            name: amount_after_vat
+        amountBeforeVat:
+          column:
+            name: amount_before_vat
+        batchNumber:
+          column:
+            name: batch_number
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        discountAmount:
+          column:
+            name: discount_amount
+        expriedAt:
+          column:
+            name: expried_at
+        extraAmount:
+          column:
+            name: extra_amount
+        id:
+          column:
+            name: id
+        itemName:
+          column:
+            name: item_name
+        lineNumber:
+          column:
+            name: line_number
+        paymentAmount:
+          column:
+            name: payment_amount
+        qcInvoiceId:
+          column:
+            name: qc_invoice_id
+        quantity:
+          column:
+            name: quantity
+        unit:
+          column:
+            name: unit
+        unitPrice:
+          column:
+            name: unit_price
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        vatAmount:
+          column:
+            name: vat_amount
+        vatPercentage:
+          column:
+            name: vat_percentage
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrQcInvoiceItemsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - allowedToPay
+          - amount
+          - amountAfterVat
+          - amountBeforeVat
+          - batchNumber
+          - createdAt
+          - createdBy
+          - deletedAt
+          - discountAmount
+          - expriedAt
+          - extraAmount
+          - id
+          - itemName
+          - lineNumber
+          - paymentAmount
+          - qcInvoiceId
+          - quantity
+          - unit
+          - unitPrice
+          - updatedAt
+          - updatedBy
+          - vatAmount
+          - vatPercentage
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrQcInvoiceItemsResponse
+  description: Responses from the 'insert_ocr_qc_invoice_items' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrQcInvoiceItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOcrQcInvoiceItemsResponse
+    inputTypeName: InsertOcrQcInvoiceItemsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_qc_invoice_items_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrQcInvoiceItemsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOcrQcInvoiceItems
+  outputType: InsertOcrQcInvoiceItemsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOcrQcInvoiceItemsObject!]!"
+    - name: postCheck
+      type: OcrQcInvoiceItemsBoolExp
+      description: Insert permission predicate over the 'ocr_qc_invoice_items' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_ocr_qc_invoice_items
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOcrQcInvoiceItems
+    rootFieldKind: Mutation
+  description: Insert into the ocr_qc_invoice_items table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOcrQcInvoiceItems
+  permissions:
+    - role: admin
+      allowExecution: true
+

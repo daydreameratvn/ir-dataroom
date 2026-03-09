@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsurerRolesObject
+  fields:
+    - name: companyId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: hasuraRole
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: name
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertInsurerRolesObject
+    inputTypeName: InsertInsurerRolesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insurer_roles_object
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        hasuraRole:
+          column:
+            name: hasura_role
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsurerRolesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - createdAt
+          - deletedAt
+          - hasuraRole
+          - id
+          - name
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertInsurerRolesResponse
+  description: Responses from the 'insert_insurer_roles' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsurerRoles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertInsurerRolesResponse
+    inputTypeName: InsertInsurerRolesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_insurer_roles_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertInsurerRolesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertInsurerRoles
+  outputType: InsertInsurerRolesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertInsurerRolesObject!]!"
+    - name: postCheck
+      type: InsurerRolesBoolExp
+      description: Insert permission predicate over the 'insurer_roles' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_insurer_roles
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertInsurerRoles
+    rootFieldKind: Mutation
+  description: Insert into the insurer_roles table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertInsurerRoles
+  permissions:
+    - role: admin
+      allowExecution: true
+

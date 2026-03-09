@@ -1,0 +1,356 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OverlordDocuments
+  fields:
+    - name: bookingId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: issuedAt
+      type: Timestamptz!
+    - name: name
+      type: String_1
+    - name: note
+      type: String_1
+    - name: refCode
+      type: String_1!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: OverlordDocuments
+    inputTypeName: OverlordDocumentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: overlord_documents
+      fieldMapping:
+        bookingId:
+          column:
+            name: booking_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        issuedAt:
+          column:
+            name: issued_at
+        name:
+          column:
+            name: name
+        note:
+          column:
+            name: note
+        refCode:
+          column:
+            name: ref_code
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OverlordDocuments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bookingId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - issuedAt
+          - name
+          - note
+          - refCode
+          - type
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OverlordDocumentsBoolExp
+  operand:
+    object:
+      type: OverlordDocuments
+      comparableFields:
+        - fieldName: bookingId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: issuedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: note
+          booleanExpressionType: TextBoolExp
+        - fieldName: refCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: files
+        - relationshipName: overlordBooking
+        - relationshipName: identityUser
+        - relationshipName: overlordDocumentType
+        - relationshipName: identityUserByUpdatedBy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OverlordDocumentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OverlordDocumentsAggExp
+  operand:
+    object:
+      aggregatedType: OverlordDocuments
+      aggregatableFields:
+        - fieldName: bookingId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: issuedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: note
+          aggregateExpression: TextAggExp
+        - fieldName: refCode
+          aggregateExpression: TextAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OverlordDocumentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OverlordDocumentsOrderByExp
+  operand:
+    object:
+      orderedType: OverlordDocuments
+      orderableFields:
+        - fieldName: bookingId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: issuedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: note
+          orderByExpression: String1OrderByExp
+        - fieldName: refCode
+          orderByExpression: String1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: overlordBooking
+        - relationshipName: identityUser
+        - relationshipName: overlordDocumentType
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: OverlordDocumentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OverlordDocuments
+  objectType: OverlordDocuments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: overlord_documents
+  filterExpressionType: OverlordDocumentsBoolExp
+  aggregateExpression: OverlordDocumentsAggExp
+  orderByExpression: OverlordDocumentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: overlordDocuments
+      subscription:
+        rootField: overlordDocuments
+    selectUniques:
+      - queryRootField: overlordDocumentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: overlordDocumentsById
+    filterInputTypeName: OverlordDocumentsFilterInput
+    aggregate:
+      queryRootField: overlordDocumentsAggregate
+      subscription:
+        rootField: overlordDocumentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OverlordDocuments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: files
+  sourceType: OverlordDocuments
+  target:
+    model:
+      name: Files
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: overlordDocumentId
+  graphql:
+    aggregateFieldName: filesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: overlordBooking
+  sourceType: OverlordDocuments
+  target:
+    model:
+      name: OverlordBookings
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bookingId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: OverlordDocuments
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: overlordDocumentType
+  sourceType: OverlordDocuments
+  target:
+    model:
+      name: OverlordDocumentTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: OverlordDocuments
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+

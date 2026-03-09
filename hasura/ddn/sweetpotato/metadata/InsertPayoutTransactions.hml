@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutTransactionsObject
+  fields:
+    - name: bankTransactionCode
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: failureCode
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: paymentAmount
+      type: Bigdecimal!
+    - name: paymentProvider
+      type: String_1!
+    - name: paymentProviderTransactionRefCode
+      type: String_1
+    - name: paymentRequestId
+      type: Uuid
+    - name: paymentRequestItemId
+      type: Uuid
+    - name: payoutBankAccountId
+      type: Uuid
+    - name: refCode
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: transactionLogs
+      type: Json
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPayoutTransactionsObject
+    inputTypeName: InsertPayoutTransactionsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_transactions_object
+      fieldMapping:
+        bankTransactionCode:
+          column:
+            name: bank_transaction_code
+        createdAt:
+          column:
+            name: created_at
+        failureCode:
+          column:
+            name: failure_code
+        id:
+          column:
+            name: id
+        paymentAmount:
+          column:
+            name: payment_amount
+        paymentProvider:
+          column:
+            name: payment_provider
+        paymentProviderTransactionRefCode:
+          column:
+            name: payment_provider_transaction_ref_code
+        paymentRequestId:
+          column:
+            name: payment_request_id
+        paymentRequestItemId:
+          column:
+            name: payment_request_item_id
+        payoutBankAccountId:
+          column:
+            name: payout_bank_account_id
+        refCode:
+          column:
+            name: ref_code
+        status:
+          column:
+            name: status
+        transactionLogs:
+          column:
+            name: transaction_logs
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutTransactionsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankTransactionCode
+          - createdAt
+          - failureCode
+          - id
+          - paymentAmount
+          - paymentProvider
+          - paymentProviderTransactionRefCode
+          - paymentRequestId
+          - paymentRequestItemId
+          - payoutBankAccountId
+          - refCode
+          - status
+          - transactionLogs
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutTransactionsResponse
+  description: Responses from the 'insert_payout_transactions' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutTransactions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPayoutTransactionsResponse
+    inputTypeName: InsertPayoutTransactionsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_transactions_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutTransactionsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPayoutTransactions
+  outputType: InsertPayoutTransactionsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPayoutTransactionsObject!]!"
+    - name: postCheck
+      type: PayoutTransactionsBoolExp
+      description: Insert permission predicate over the 'payout_transactions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_payout_transactions
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPayoutTransactions
+    rootFieldKind: Mutation
+  description: Insert into the payout_transactions table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPayoutTransactions
+  permissions:
+    - role: admin
+      allowExecution: true
+

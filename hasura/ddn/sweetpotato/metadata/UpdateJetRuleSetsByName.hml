@@ -1,0 +1,148 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateJetRuleSetsByNameUpdateColumns
+  description: Update the columns of the 'jet_rule_sets' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnJetRuleSetsCreatedAt
+      description: Update the 'created_at' column in the 'jet_rule_sets' collection.
+    - name: description
+      type: UpdateColumnJetRuleSetsDescription
+      description: Update the 'description' column in the 'jet_rule_sets' collection.
+    - name: id
+      type: UpdateColumnJetRuleSetsId
+      description: Update the 'id' column in the 'jet_rule_sets' collection.
+    - name: name
+      type: UpdateColumnJetRuleSetsName
+      description: Update the 'name' column in the 'jet_rule_sets' collection.
+    - name: rules
+      type: UpdateColumnJetRuleSetsRules
+      description: Update the 'rules' column in the 'jet_rule_sets' collection.
+    - name: updatedAt
+      type: UpdateColumnJetRuleSetsUpdatedAt
+      description: Update the 'updated_at' column in the 'jet_rule_sets' collection.
+  graphql:
+    typeName: UpdateJetRuleSetsByNameUpdateColumns
+    inputTypeName: UpdateJetRuleSetsByNameUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_jet_rule_sets_by_name_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        rules:
+          column:
+            name: rules
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateJetRuleSetsByNameUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - description
+          - id
+          - name
+          - rules
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateJetRuleSetsByNameResponse
+  description: Responses from the 'update_jet_rule_sets_by_name' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[JetRuleSets!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateJetRuleSetsByNameResponse
+    inputTypeName: UpdateJetRuleSetsByNameResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_jet_rule_sets_by_name_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateJetRuleSetsByNameResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateJetRuleSetsByName
+  outputType: UpdateJetRuleSetsByNameResponse!
+  arguments:
+    - name: keyName
+      type: String_1!
+    - name: postCheck
+      type: JetRuleSetsBoolExp
+      description: Update permission post-condition predicate over the 'jet_rule_sets'
+        collection
+    - name: preCheck
+      type: JetRuleSetsBoolExp
+      description: Update permission pre-condition predicate over the 'jet_rule_sets'
+        collection
+    - name: updateColumns
+      type: UpdateJetRuleSetsByNameUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_jet_rule_sets_by_name
+    argumentMapping:
+      keyName: key_name
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateJetRuleSetsByName
+    rootFieldKind: Mutation
+  description: Update any row on the 'jet_rule_sets' collection using the 'name' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateJetRuleSetsByName
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingBookingsSchedulesObject
+  fields:
+    - name: bookingId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: priority
+      type: Int32
+    - name: scheduleAt
+      type: Timestamptz
+    - name: scheduleId
+      type: Uuid!
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertMedicalBookingBookingsSchedulesObject
+    inputTypeName: InsertMedicalBookingBookingsSchedulesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_bookings_schedules_object
+      fieldMapping:
+        bookingId:
+          column:
+            name: booking_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        priority:
+          column:
+            name: priority
+        scheduleAt:
+          column:
+            name: schedule_at
+        scheduleId:
+          column:
+            name: schedule_id
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingBookingsSchedulesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bookingId
+          - createdAt
+          - deletedAt
+          - id
+          - priority
+          - scheduleAt
+          - scheduleId
+          - status
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingBookingsSchedulesResponse
+  description: Responses from the 'insert_medical_booking_bookings_schedules' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingBookingsSchedules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMedicalBookingBookingsSchedulesResponse
+    inputTypeName: InsertMedicalBookingBookingsSchedulesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_bookings_schedules_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingBookingsSchedulesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMedicalBookingBookingsSchedules
+  outputType: InsertMedicalBookingBookingsSchedulesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMedicalBookingBookingsSchedulesObject!]!"
+    - name: postCheck
+      type: MedicalBookingBookingsSchedulesBoolExp
+      description: Insert permission predicate over the
+        'medical_booking_bookings_schedules' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_medical_booking_bookings_schedules
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMedicalBookingBookingsSchedules
+    rootFieldKind: Mutation
+  description: Insert into the medical_booking_bookings_schedules table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMedicalBookingBookingsSchedules
+  permissions:
+    - role: admin
+      allowExecution: true
+

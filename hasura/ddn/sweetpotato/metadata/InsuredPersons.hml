@@ -1,0 +1,1104 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredPersons
+  description: Danh sách người được bảo hiểm
+  fields:
+    - name: address
+      type: String_1
+    - name: campus
+      type: String_1
+      description: "@deprecated, use insured_certificates.campus"
+    - name: campusId
+      type: Uuid
+      description: "@deprecated, use insured_certificates.campus_id"
+    - name: correspondenceEmailsCc
+      type: "[String_1]"
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: diedAt
+      type: Timestamptz
+    - name: dob
+      type: Timestamptz!
+    - name: email
+      type: String_1
+    - name: gender
+      type: Int32
+    - name: id
+      type: Uuid!
+    - name: identityPaperType
+      type: String_1
+    - name: insuredNumber
+      type: String_1!
+      description: "@deprecated, use insured_certificates.insured_number"
+    - name: insuredPersonId
+      type: Uuid!
+    - name: internalCorrespondenceEmails
+      type: "[String_1]"
+    - name: maritalStatus
+      type: String_1
+    - name: name
+      type: String_1!
+    - name: normalizedName
+      type: String_1
+      description: "@deprecated, use normalized_name_v2"
+    - name: normalizedNameV2
+      type: String_1
+      description: data is built using a lambda cron
+    - name: notes
+      type: String_1
+    - name: paperExpiredAt
+      type: Timestamptz
+    - name: paperId
+      type: String_1
+    - name: paperIdFileId
+      type: Uuid
+    - name: paperIssuedAt
+      type: Timestamptz
+    - name: paperIssuedPlace
+      type: String_1
+    - name: phone
+      type: String_1
+    - name: portraitImage
+      type: String_1
+    - name: staffCode
+      type: String_1
+      description: "@deprecated, use insured_certificates.staff_code"
+    - name: status
+      type: String_1
+    - name: subsidiaryCompanyName
+      type: String_1
+      description: "@deprecated, use insured_certificates.subsidiary_company_name"
+    - name: tenantId
+      type: Uuid!
+    - name: tpdDate
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid
+    - name: vipLevel
+      type: String_1!
+  graphql:
+    typeName: InsuredPersons
+    inputTypeName: InsuredPersonsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_persons
+      fieldMapping:
+        address:
+          column:
+            name: address
+        campus:
+          column:
+            name: campus
+        campusId:
+          column:
+            name: campus_id
+        correspondenceEmailsCc:
+          column:
+            name: correspondence_emails_cc
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        diedAt:
+          column:
+            name: died_at
+        dob:
+          column:
+            name: dob
+        email:
+          column:
+            name: email
+        gender:
+          column:
+            name: gender
+        id:
+          column:
+            name: id
+        identityPaperType:
+          column:
+            name: identity_paper_type
+        insuredNumber:
+          column:
+            name: insured_number
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        internalCorrespondenceEmails:
+          column:
+            name: internal_correspondence_emails
+        maritalStatus:
+          column:
+            name: marital_status
+        name:
+          column:
+            name: name
+        normalizedName:
+          column:
+            name: normalized_name
+        normalizedNameV2:
+          column:
+            name: normalized_name_v2
+        notes:
+          column:
+            name: notes
+        paperExpiredAt:
+          column:
+            name: paper_expired_at
+        paperId:
+          column:
+            name: paper_id
+        paperIdFileId:
+          column:
+            name: paper_id_file_id
+        paperIssuedAt:
+          column:
+            name: paper_issued_at
+        paperIssuedPlace:
+          column:
+            name: paper_issued_place
+        phone:
+          column:
+            name: phone
+        portraitImage:
+          column:
+            name: portrait_image
+        staffCode:
+          column:
+            name: staff_code
+        status:
+          column:
+            name: status
+        subsidiaryCompanyName:
+          column:
+            name: subsidiary_company_name
+        tenantId:
+          column:
+            name: tenant_id
+        tpdDate:
+          column:
+            name: tpd_date
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+        vipLevel:
+          column:
+            name: vip_level
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredPersons
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - address
+          - campus
+          - campusId
+          - correspondenceEmailsCc
+          - createdAt
+          - createdBy
+          - deletedAt
+          - diedAt
+          - dob
+          - email
+          - gender
+          - id
+          - identityPaperType
+          - insuredNumber
+          - insuredPersonId
+          - internalCorrespondenceEmails
+          - maritalStatus
+          - name
+          - normalizedName
+          - normalizedNameV2
+          - notes
+          - paperExpiredAt
+          - paperId
+          - paperIdFileId
+          - paperIssuedAt
+          - paperIssuedPlace
+          - phone
+          - portraitImage
+          - staffCode
+          - status
+          - subsidiaryCompanyName
+          - tenantId
+          - tpdDate
+          - updatedAt
+          - updatedBy
+          - userId
+          - vipLevel
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredPersonsBoolExp
+  operand:
+    object:
+      type: InsuredPersons
+      comparableFields:
+        - fieldName: address
+          booleanExpressionType: TextBoolExp
+        - fieldName: campus
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: campusId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: diedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: dob
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: email
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: gender
+          booleanExpressionType: Int4BoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: identityPaperType
+          booleanExpressionType: TextBoolExp
+        - fieldName: insuredNumber
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: insuredPersonId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: maritalStatus
+          booleanExpressionType: TextBoolExp
+        - fieldName: name
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: normalizedName
+          booleanExpressionType: TextBoolExp
+        - fieldName: normalizedNameV2
+          booleanExpressionType: TextBoolExp
+        - fieldName: notes
+          booleanExpressionType: TextBoolExp
+        - fieldName: paperExpiredAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: paperId
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: paperIdFileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paperIssuedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: paperIssuedPlace
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: phone
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: portraitImage
+          booleanExpressionType: TextBoolExp
+        - fieldName: staffCode
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: status
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: subsidiaryCompanyName
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tpdDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: vipLevel
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: bhvInsuredPersons
+        - relationshipName: claimCases
+        - relationshipName: hazelnutInsuranceRequests
+        - relationshipName: hazelnutInsuranceRequestsInsuredPersons
+        - relationshipName: hazelnutInsuranceRequestsInsuredPersonsByInsuredPersonId
+        - relationshipName: hazelnutInsuranceRequestsInsuredPersonsByRequesterId
+        - relationshipName: importedDataItems
+        - relationshipName: insuredCertificates
+        - relationshipName: insuredPersonRemarks
+        - relationshipName: insuredPersonSettings
+        - relationshipName: companyCampus
+        - relationshipName: identityPaperTypeByIdentityPaperType
+        - relationshipName: maritalStatusByMaritalStatus
+        - relationshipName: file
+        - relationshipName: insuredPersonStatus
+        - relationshipName: tenant
+        - relationshipName: identityUser
+        - relationshipName: identityUserByUserId
+        - relationshipName: insuredPersonVipLevel
+        - relationshipName: insuredRelationships
+        - relationshipName: insuredRelationshipsByInsuredPersonToId
+        - relationshipName: mbalInsuredPersons
+        - relationshipName: originalClaimCases
+        - relationshipName: policies
+        - relationshipName: slvHistoryClaimCases
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredPersonsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredPersonsAggExp
+  operand:
+    object:
+      aggregatedType: InsuredPersons
+      aggregatableFields:
+        - fieldName: address
+          aggregateExpression: TextAggExp
+        - fieldName: campus
+          aggregateExpression: VarcharAggExp
+        - fieldName: campusId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: diedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: dob
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: email
+          aggregateExpression: VarcharAggExp
+        - fieldName: gender
+          aggregateExpression: Int4AggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: identityPaperType
+          aggregateExpression: TextAggExp
+        - fieldName: insuredNumber
+          aggregateExpression: VarcharAggExp
+        - fieldName: insuredPersonId
+          aggregateExpression: UuidAggExp
+        - fieldName: maritalStatus
+          aggregateExpression: TextAggExp
+        - fieldName: name
+          aggregateExpression: VarcharAggExp
+        - fieldName: normalizedName
+          aggregateExpression: TextAggExp
+        - fieldName: normalizedNameV2
+          aggregateExpression: TextAggExp
+        - fieldName: notes
+          aggregateExpression: TextAggExp
+        - fieldName: paperExpiredAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: paperId
+          aggregateExpression: VarcharAggExp
+        - fieldName: paperIdFileId
+          aggregateExpression: UuidAggExp
+        - fieldName: paperIssuedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: paperIssuedPlace
+          aggregateExpression: VarcharAggExp
+        - fieldName: phone
+          aggregateExpression: VarcharAggExp
+        - fieldName: portraitImage
+          aggregateExpression: TextAggExp
+        - fieldName: staffCode
+          aggregateExpression: VarcharAggExp
+        - fieldName: status
+          aggregateExpression: VarcharAggExp
+        - fieldName: subsidiaryCompanyName
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: tpdDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+        - fieldName: vipLevel
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredPersonsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredPersonsOrderByExp
+  operand:
+    object:
+      orderedType: InsuredPersons
+      orderableFields:
+        - fieldName: address
+          orderByExpression: String1OrderByExp
+        - fieldName: campus
+          orderByExpression: String1OrderByExp
+        - fieldName: campusId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: diedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: dob
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: email
+          orderByExpression: String1OrderByExp
+        - fieldName: gender
+          orderByExpression: Int32OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: identityPaperType
+          orderByExpression: String1OrderByExp
+        - fieldName: insuredNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: insuredPersonId
+          orderByExpression: UuidOrderByExp
+        - fieldName: maritalStatus
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: normalizedName
+          orderByExpression: String1OrderByExp
+        - fieldName: normalizedNameV2
+          orderByExpression: String1OrderByExp
+        - fieldName: notes
+          orderByExpression: String1OrderByExp
+        - fieldName: paperExpiredAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: paperId
+          orderByExpression: String1OrderByExp
+        - fieldName: paperIdFileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: paperIssuedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: paperIssuedPlace
+          orderByExpression: String1OrderByExp
+        - fieldName: phone
+          orderByExpression: String1OrderByExp
+        - fieldName: portraitImage
+          orderByExpression: String1OrderByExp
+        - fieldName: staffCode
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: subsidiaryCompanyName
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tpdDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+        - fieldName: vipLevel
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: companyCampus
+        - relationshipName: identityPaperTypeByIdentityPaperType
+        - relationshipName: maritalStatusByMaritalStatus
+        - relationshipName: file
+        - relationshipName: insuredPersonStatus
+        - relationshipName: tenant
+        - relationshipName: identityUser
+        - relationshipName: identityUserByUserId
+        - relationshipName: insuredPersonVipLevel
+  graphql:
+    expressionTypeName: InsuredPersonsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredPersons
+  objectType: InsuredPersons
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_persons
+  filterExpressionType: InsuredPersonsBoolExp
+  aggregateExpression: InsuredPersonsAggExp
+  orderByExpression: InsuredPersonsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredPersons
+      subscription:
+        rootField: insuredPersons
+    selectUniques:
+      - queryRootField: insuredPersonsByInsuredPersonsInsuredNumberDeletedAtKey
+        uniqueIdentifier:
+          - deletedAt
+          - insuredNumber
+        subscription:
+          rootField: insuredPersonsByInsuredPersonsInsuredNumberDeletedAtKey
+      - queryRootField: insuredPersonsByInsuredPersonId
+        uniqueIdentifier:
+          - insuredPersonId
+        subscription:
+          rootField: insuredPersonsByInsuredPersonId
+    filterInputTypeName: InsuredPersonsFilterInput
+    aggregate:
+      queryRootField: insuredPersonsAggregate
+      subscription:
+        rootField: insuredPersonsAggregate
+  description: Danh sách người được bảo hiểm
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredPersons
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bhvInsuredPersons
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: BhvInsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: BhvInsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: bhvInsuredPersonsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCases
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: claimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequests
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: HazelnutInsuranceRequests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceRequestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: requesterId
+  graphql:
+    aggregateFieldName: hazelnutInsuranceRequestsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequestsInsuredPersons
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: HazelnutInsuranceRequestsInsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceRequestsInsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: beneficiaryId
+  graphql:
+    aggregateFieldName: hazelnutInsuranceRequestsInsuredPersonsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequestsInsuredPersonsByInsuredPersonId
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: HazelnutInsuranceRequestsInsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceRequestsInsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: hazelnutInsuranceRequestsInsuredPersonsByInsuredPersonIdAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequestsInsuredPersonsByRequesterId
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: HazelnutInsuranceRequestsInsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceRequestsInsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: requesterId
+  graphql:
+    aggregateFieldName: hazelnutInsuranceRequestsInsuredPersonsByRequesterIdAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: importedDataItems
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: ImportedDataItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ImportedDataItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: importedDataItemsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificates
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredCertificatesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: insuredCertificatesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersonRemarks
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: InsuredPersonRemarks
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredPersonRemarksAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: insuredPersonRemarksAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersonSettings
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: InsuredPersonSettings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredPersonSettingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: insuredPersonSettingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: companyCampus
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: CompanyCampuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: campusId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityPaperTypeByIdentityPaperType
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: IdentityPaperTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: identityPaperType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: maritalStatusByMaritalStatus
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: MaritalStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: maritalStatus
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: file
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: Files
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paperIdFileId
+      target:
+        modelField:
+          - fieldName: fileId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersonStatus
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: InsuredPersonStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUserId
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersonVipLevel
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: InsuredPersonVipLevel
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: vipLevel
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredRelationships
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: InsuredRelationships
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredRelationshipsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonFromId
+  graphql:
+    aggregateFieldName: insuredRelationshipsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredRelationshipsByInsuredPersonToId
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: InsuredRelationships
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredRelationshipsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonToId
+  graphql:
+    aggregateFieldName: insuredRelationshipsByInsuredPersonToIdAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mbalInsuredPersons
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: MbalInsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MbalInsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: id
+  graphql:
+    aggregateFieldName: mbalInsuredPersonsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: originalClaimCases
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: OriginalClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OriginalClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: originalClaimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: policiesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvHistoryClaimCases
+  sourceType: InsuredPersons
+  target:
+    model:
+      name: SlvHistoryClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvHistoryClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+  graphql:
+    aggregateFieldName: slvHistoryClaimCasesAggregate
+

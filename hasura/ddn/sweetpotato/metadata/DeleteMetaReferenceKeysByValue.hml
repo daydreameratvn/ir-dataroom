@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMetaReferenceKeysByValueResponse
+  description: Responses from the 'delete_meta_reference_keys_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetaReferenceKeys!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMetaReferenceKeysByValueResponse
+    inputTypeName: DeleteMetaReferenceKeysByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_meta_reference_keys_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMetaReferenceKeysByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMetaReferenceKeysByValue
+  outputType: DeleteMetaReferenceKeysByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: MetaReferenceKeysBoolExp
+      description: Delete permission predicate over the 'meta_reference_keys' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_meta_reference_keys_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMetaReferenceKeysByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'meta_reference_keys' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMetaReferenceKeysByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

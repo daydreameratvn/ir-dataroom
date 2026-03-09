@@ -1,0 +1,309 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HazelnutInsuranceCoverageBenefits
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: hasPoisoningBenefits
+      type: Boolean_1
+    - name: id
+      type: Uuid!
+    - name: insuranceCoverageId
+      type: Uuid
+    - name: isIncluded
+      type: Boolean_1!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: HazelnutInsuranceCoverageBenefits
+    inputTypeName: HazelnutInsuranceCoverageBenefitsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hazelnut_insurance_coverage_benefits
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        hasPoisoningBenefits:
+          column:
+            name: has_poisoning_benefits
+        id:
+          column:
+            name: id
+        insuranceCoverageId:
+          column:
+            name: insurance_coverage_id
+        isIncluded:
+          column:
+            name: is_included
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HazelnutInsuranceCoverageBenefits
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - hasPoisoningBenefits
+          - id
+          - insuranceCoverageId
+          - isIncluded
+          - type
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HazelnutInsuranceCoverageBenefitsBoolExp
+  operand:
+    object:
+      type: HazelnutInsuranceCoverageBenefits
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: hasPoisoningBenefits
+          booleanExpressionType: BoolBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuranceCoverageId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isIncluded
+          booleanExpressionType: BoolBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: hazelnutInsuranceCoverage
+        - relationshipName: hazelnutInsuredBenefitType
+        - relationshipName: identityUserByUpdatedBy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HazelnutInsuranceCoverageBenefitsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HazelnutInsuranceCoverageBenefitsAggExp
+  operand:
+    object:
+      aggregatedType: HazelnutInsuranceCoverageBenefits
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: hasPoisoningBenefits
+          aggregateExpression: BoolAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuranceCoverageId
+          aggregateExpression: UuidAggExp
+        - fieldName: isIncluded
+          aggregateExpression: BoolAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HazelnutInsuranceCoverageBenefitsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HazelnutInsuranceCoverageBenefitsOrderByExp
+  operand:
+    object:
+      orderedType: HazelnutInsuranceCoverageBenefits
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: hasPoisoningBenefits
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuranceCoverageId
+          orderByExpression: UuidOrderByExp
+        - fieldName: isIncluded
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: hazelnutInsuranceCoverage
+        - relationshipName: hazelnutInsuredBenefitType
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: HazelnutInsuranceCoverageBenefitsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HazelnutInsuranceCoverageBenefits
+  objectType: HazelnutInsuranceCoverageBenefits
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hazelnut_insurance_coverage_benefits
+  filterExpressionType: HazelnutInsuranceCoverageBenefitsBoolExp
+  aggregateExpression: HazelnutInsuranceCoverageBenefitsAggExp
+  orderByExpression: HazelnutInsuranceCoverageBenefitsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hazelnutInsuranceCoverageBenefits
+      subscription:
+        rootField: hazelnutInsuranceCoverageBenefits
+    selectUniques:
+      - queryRootField: hazelnutInsuranceCoverageBenefitsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hazelnutInsuranceCoverageBenefitsById
+    filterInputTypeName: HazelnutInsuranceCoverageBenefitsFilterInput
+    aggregate:
+      queryRootField: hazelnutInsuranceCoverageBenefitsAggregate
+      subscription:
+        rootField: hazelnutInsuranceCoverageBenefitsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HazelnutInsuranceCoverageBenefits
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: HazelnutInsuranceCoverageBenefits
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceCoverage
+  sourceType: HazelnutInsuranceCoverageBenefits
+  target:
+    model:
+      name: HazelnutInsuranceCoverages
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuranceCoverageId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuredBenefitType
+  sourceType: HazelnutInsuranceCoverageBenefits
+  target:
+    model:
+      name: HazelnutInsuredBenefitTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: HazelnutInsuranceCoverageBenefits
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+

@@ -1,0 +1,87 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePlanBalancesByDeletedAtAndNameAndPlanIdAndTypeAndValueResponse
+  description: Responses from the
+    'delete_plan_balances_by_deleted_at_and_name_and_plan_id_and_type_and_value'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanBalances!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePlanBalancesByDeletedAtAndNameAndPlanIdAndTypeAndValueResponse
+    inputTypeName: DeletePlanBalancesByDeletedAtAndNameAndPlanIdAndTypeAndValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_plan_balances_by_deleted_at_and_name_and_plan_id_and_type_and_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePlanBalancesByDeletedAtAndNameAndPlanIdAndTypeAndValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePlanBalancesByDeletedAtAndNameAndPlanIdAndTypeAndValue
+  outputType: DeletePlanBalancesByDeletedAtAndNameAndPlanIdAndTypeAndValueResponse!
+  arguments:
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyName
+      type: String_1!
+    - name: keyPlanId
+      type: Uuid!
+    - name: keyType
+      type: String_1!
+    - name: keyValue
+      type: Bigdecimal!
+    - name: preCheck
+      type: PlanBalancesBoolExp
+      description: Delete permission predicate over the 'plan_balances' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_plan_balances_by_deleted_at_and_name_and_plan_id_and_type_and_value
+    argumentMapping:
+      keyDeletedAt: key_deleted_at
+      keyName: key_name
+      keyPlanId: key_plan_id
+      keyType: key_type
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePlanBalancesByDeletedAtAndNameAndPlanIdAndTypeAndValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'plan_balances' collection using the
+    'deleted_at', 'name', 'plan_id', 'type' and 'value' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePlanBalancesByDeletedAtAndNameAndPlanIdAndTypeAndValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

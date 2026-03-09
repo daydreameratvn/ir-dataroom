@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutPaymentRequestTypesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertPayoutPaymentRequestTypesObject
+    inputTypeName: InsertPayoutPaymentRequestTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_payment_request_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutPaymentRequestTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutPaymentRequestTypesResponse
+  description: Responses from the 'insert_payout_payment_request_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPaymentRequestTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPayoutPaymentRequestTypesResponse
+    inputTypeName: InsertPayoutPaymentRequestTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_payment_request_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutPaymentRequestTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPayoutPaymentRequestTypes
+  outputType: InsertPayoutPaymentRequestTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPayoutPaymentRequestTypesObject!]!"
+    - name: postCheck
+      type: PayoutPaymentRequestTypesBoolExp
+      description: Insert permission predicate over the 'payout_payment_request_types'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_payout_payment_request_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPayoutPaymentRequestTypes
+    rootFieldKind: Mutation
+  description: Insert into the payout_payment_request_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPayoutPaymentRequestTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

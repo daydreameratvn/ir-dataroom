@@ -1,0 +1,178 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCustomSettingModulesComment
+  description: Update the 'comment' column in the 'custom_setting_modules' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCustomSettingModulesComment
+    inputTypeName: UpdateColumnCustomSettingModulesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_custom_setting_modules_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCustomSettingModulesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCustomSettingModulesValue
+  description: Update the 'value' column in the 'custom_setting_modules' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCustomSettingModulesValue
+    inputTypeName: UpdateColumnCustomSettingModulesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_custom_setting_modules_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCustomSettingModulesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCustomSettingModulesByValueUpdateColumns
+  description: Update the columns of the 'custom_setting_modules' collection
+  fields:
+    - name: comment
+      type: UpdateColumnCustomSettingModulesComment
+      description: Update the 'comment' column in the 'custom_setting_modules' collection.
+    - name: value
+      type: UpdateColumnCustomSettingModulesValue
+      description: Update the 'value' column in the 'custom_setting_modules' collection.
+  graphql:
+    typeName: UpdateCustomSettingModulesByValueUpdateColumns
+    inputTypeName: UpdateCustomSettingModulesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_custom_setting_modules_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCustomSettingModulesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCustomSettingModulesByValueResponse
+  description: Responses from the 'update_custom_setting_modules_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingModules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCustomSettingModulesByValueResponse
+    inputTypeName: UpdateCustomSettingModulesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_custom_setting_modules_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCustomSettingModulesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCustomSettingModulesByValue
+  outputType: UpdateCustomSettingModulesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: CustomSettingModulesBoolExp
+      description: Update permission post-condition predicate over the
+        'custom_setting_modules' collection
+    - name: preCheck
+      type: CustomSettingModulesBoolExp
+      description: Update permission pre-condition predicate over the
+        'custom_setting_modules' collection
+    - name: updateColumns
+      type: UpdateCustomSettingModulesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_custom_setting_modules_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCustomSettingModulesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'custom_setting_modules' collection using the
+    'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCustomSettingModulesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

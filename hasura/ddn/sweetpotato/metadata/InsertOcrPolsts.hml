@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrPolstsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: issuedAt
+      type: Timestamptz
+    - name: medicalProviderName
+      type: String_1
+    - name: paperId
+      type: Uuid!
+    - name: patientName
+      type: String_1
+    - name: rawData
+      type: Json
+    - name: totalPaymentAmount
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertOcrPolstsObject
+    inputTypeName: InsertOcrPolstsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_polsts_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        issuedAt:
+          column:
+            name: issued_at
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        paperId:
+          column:
+            name: paper_id
+        patientName:
+          column:
+            name: patient_name
+        rawData:
+          column:
+            name: raw_data
+        totalPaymentAmount:
+          column:
+            name: total_payment_amount
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrPolstsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - issuedAt
+          - medicalProviderName
+          - paperId
+          - patientName
+          - rawData
+          - totalPaymentAmount
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrPolstsResponse
+  description: Responses from the 'insert_ocr_polsts' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrPolsts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOcrPolstsResponse
+    inputTypeName: InsertOcrPolstsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_polsts_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrPolstsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOcrPolsts
+  outputType: InsertOcrPolstsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOcrPolstsObject!]!"
+    - name: postCheck
+      type: OcrPolstsBoolExp
+      description: Insert permission predicate over the 'ocr_polsts' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_ocr_polsts
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOcrPolsts
+    rootFieldKind: Mutation
+  description: Insert into the ocr_polsts table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOcrPolsts
+  permissions:
+    - role: admin
+      allowExecution: true
+

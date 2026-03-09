@@ -1,0 +1,235 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FigAssessors
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: FigAssessors
+    inputTypeName: FigAssessorsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fig_assessors
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FigAssessors
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - status
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FigAssessorsBoolExp
+  operand:
+    object:
+      type: FigAssessors
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: status
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityUserStatus
+        - relationshipName: figClaimCaseAssignments
+        - relationshipName: figClaimCases
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FigAssessorsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FigAssessorsAggExp
+  operand:
+    object:
+      aggregatedType: FigAssessors
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: status
+          aggregateExpression: VarcharAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FigAssessorsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FigAssessorsOrderByExp
+  operand:
+    object:
+      orderedType: FigAssessors
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUserStatus
+  graphql:
+    expressionTypeName: FigAssessorsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FigAssessors
+  objectType: FigAssessors
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fig_assessors
+  filterExpressionType: FigAssessorsBoolExp
+  aggregateExpression: FigAssessorsAggExp
+  orderByExpression: FigAssessorsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: figAssessors
+      subscription:
+        rootField: figAssessors
+    selectUniques:
+      - queryRootField: figAssessorsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: figAssessorsById
+    filterInputTypeName: FigAssessorsFilterInput
+    aggregate:
+      queryRootField: figAssessorsAggregate
+      subscription:
+        rootField: figAssessorsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FigAssessors
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserStatus
+  sourceType: FigAssessors
+  target:
+    model:
+      name: IdentityUserStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: figClaimCaseAssignments
+  sourceType: FigAssessors
+  target:
+    model:
+      name: FigClaimCaseAssignments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FigClaimCaseAssignmentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: assigneeUserId
+  graphql:
+    aggregateFieldName: figClaimCaseAssignmentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: figClaimCases
+  sourceType: FigAssessors
+  target:
+    model:
+      name: FigClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FigClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: assigneeUserId
+  graphql:
+    aggregateFieldName: figClaimCasesAggregate
+

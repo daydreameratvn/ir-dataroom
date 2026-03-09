@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredPersonVipLevelByValueResponse
+  description: Responses from the 'delete_insured_person_vip_level_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredPersonVipLevel!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredPersonVipLevelByValueResponse
+    inputTypeName: DeleteInsuredPersonVipLevelByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_person_vip_level_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredPersonVipLevelByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredPersonVipLevelByValue
+  outputType: DeleteInsuredPersonVipLevelByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: InsuredPersonVipLevelBoolExp
+      description: Delete permission predicate over the 'insured_person_vip_level'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_person_vip_level_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredPersonVipLevelByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_person_vip_level' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredPersonVipLevelByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

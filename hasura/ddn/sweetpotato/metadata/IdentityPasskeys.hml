@@ -1,0 +1,280 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: IdentityPasskeys
+  fields:
+    - name: backedUp
+      type: Boolean_1!
+    - name: counter
+      type: Int64!
+    - name: createdAt
+      type: Timestamptz!
+    - name: credentialId
+      type: String_1!
+    - name: deletedAt
+      type: Timestamptz
+    - name: deviceType
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: lastUsedAt
+      type: Timestamptz
+    - name: publicKey
+      type: Json!
+    - name: transports
+      type: "[String_1]"
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: IdentityPasskeys
+    inputTypeName: IdentityPasskeysInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: identity_passkeys
+      fieldMapping:
+        backedUp:
+          column:
+            name: backed_up
+        counter:
+          column:
+            name: counter
+        createdAt:
+          column:
+            name: created_at
+        credentialId:
+          column:
+            name: credential_id
+        deletedAt:
+          column:
+            name: deleted_at
+        deviceType:
+          column:
+            name: device_type
+        id:
+          column:
+            name: id
+        lastUsedAt:
+          column:
+            name: last_used_at
+        publicKey:
+          column:
+            name: public_key
+        transports:
+          column:
+            name: transports
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: IdentityPasskeys
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - backedUp
+          - counter
+          - createdAt
+          - credentialId
+          - deletedAt
+          - deviceType
+          - id
+          - lastUsedAt
+          - publicKey
+          - transports
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: IdentityPasskeysBoolExp
+  operand:
+    object:
+      type: IdentityPasskeys
+      comparableFields:
+        - fieldName: backedUp
+          booleanExpressionType: BoolBoolExp
+        - fieldName: counter
+          booleanExpressionType: Int8BoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: credentialId
+          booleanExpressionType: TextBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deviceType
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: lastUsedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: publicKey
+          booleanExpressionType: ByteaBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityPasskeyDeviceType
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: IdentityPasskeysBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: IdentityPasskeysAggExp
+  operand:
+    object:
+      aggregatedType: IdentityPasskeys
+      aggregatableFields:
+        - fieldName: backedUp
+          aggregateExpression: BoolAggExp
+        - fieldName: counter
+          aggregateExpression: Int8AggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: credentialId
+          aggregateExpression: TextAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deviceType
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: lastUsedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: publicKey
+          aggregateExpression: ByteaAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: IdentityPasskeysAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: IdentityPasskeysOrderByExp
+  operand:
+    object:
+      orderedType: IdentityPasskeys
+      orderableFields:
+        - fieldName: backedUp
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: counter
+          orderByExpression: Int64OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: credentialId
+          orderByExpression: String1OrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deviceType
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: lastUsedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: publicKey
+          orderByExpression: JsonOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityPasskeyDeviceType
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: IdentityPasskeysOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: IdentityPasskeys
+  objectType: IdentityPasskeys
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: identity_passkeys
+  filterExpressionType: IdentityPasskeysBoolExp
+  aggregateExpression: IdentityPasskeysAggExp
+  orderByExpression: IdentityPasskeysOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: identityPasskeys
+      subscription:
+        rootField: identityPasskeys
+    selectUniques:
+      - queryRootField: identityPasskeysByCredentialId
+        uniqueIdentifier:
+          - credentialId
+        subscription:
+          rootField: identityPasskeysByCredentialId
+      - queryRootField: identityPasskeysById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: identityPasskeysById
+    filterInputTypeName: IdentityPasskeysFilterInput
+    aggregate:
+      queryRootField: identityPasskeysAggregate
+      subscription:
+        rootField: identityPasskeysAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: IdentityPasskeys
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityPasskeyDeviceType
+  sourceType: IdentityPasskeys
+  target:
+    model:
+      name: IdentityPasskeyDeviceTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: deviceType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: IdentityPasskeys
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteReportsPoliciesByPolicyIdAndReportIdResponse
+  description: Responses from the
+    'delete_reports_policies_by_policy_id_and_report_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ReportsPolicies!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteReportsPoliciesByPolicyIdAndReportIdResponse
+    inputTypeName: DeleteReportsPoliciesByPolicyIdAndReportIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_reports_policies_by_policy_id_and_report_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteReportsPoliciesByPolicyIdAndReportIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteReportsPoliciesByPolicyIdAndReportId
+  outputType: DeleteReportsPoliciesByPolicyIdAndReportIdResponse!
+  arguments:
+    - name: keyPolicyId
+      type: Uuid!
+    - name: keyReportId
+      type: Uuid!
+    - name: preCheck
+      type: ReportsPoliciesBoolExp
+      description: Delete permission predicate over the 'reports_policies' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_reports_policies_by_policy_id_and_report_id
+    argumentMapping:
+      keyPolicyId: key_policy_id
+      keyReportId: key_report_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteReportsPoliciesByPolicyIdAndReportId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'reports_policies' collection using the
+    'policy_id' and 'report_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteReportsPoliciesByPolicyIdAndReportId
+  permissions:
+    - role: admin
+      allowExecution: true
+

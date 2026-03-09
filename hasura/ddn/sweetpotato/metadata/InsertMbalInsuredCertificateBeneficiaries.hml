@@ -1,0 +1,145 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMbalInsuredCertificateBeneficiariesObject
+  fields:
+    - name: bankAccount
+      type: String_1!
+    - name: bankCode
+      type: String_1!
+    - name: bankName
+      type: String_1!
+    - name: beneficiaryName
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertMbalInsuredCertificateBeneficiariesObject
+    inputTypeName: InsertMbalInsuredCertificateBeneficiariesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mbal_insured_certificate_beneficiaries_object
+      fieldMapping:
+        bankAccount:
+          column:
+            name: bank_account
+        bankCode:
+          column:
+            name: bank_code
+        bankName:
+          column:
+            name: bank_name
+        beneficiaryName:
+          column:
+            name: beneficiary_name
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMbalInsuredCertificateBeneficiariesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankAccount
+          - bankCode
+          - bankName
+          - beneficiaryName
+          - createdAt
+          - id
+          - insuredCertificateId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMbalInsuredCertificateBeneficiariesResponse
+  description: Responses from the 'insert_mbal_insured_certificate_beneficiaries' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MbalInsuredCertificateBeneficiaries!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMbalInsuredCertificateBeneficiariesResponse
+    inputTypeName: InsertMbalInsuredCertificateBeneficiariesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mbal_insured_certificate_beneficiaries_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMbalInsuredCertificateBeneficiariesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMbalInsuredCertificateBeneficiaries
+  outputType: InsertMbalInsuredCertificateBeneficiariesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMbalInsuredCertificateBeneficiariesObject!]!"
+    - name: postCheck
+      type: MbalInsuredCertificateBeneficiariesBoolExp
+      description: Insert permission predicate over the
+        'mbal_insured_certificate_beneficiaries' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_mbal_insured_certificate_beneficiaries
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMbalInsuredCertificateBeneficiaries
+    rootFieldKind: Mutation
+  description: Insert into the mbal_insured_certificate_beneficiaries table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMbalInsuredCertificateBeneficiaries
+  permissions:
+    - role: admin
+      allowExecution: true
+

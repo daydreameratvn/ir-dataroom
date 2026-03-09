@@ -1,0 +1,133 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanCoPaymentPlanInsuredBenefitObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: planCoPaymentId
+      type: Uuid!
+    - name: planInsuredBenefitId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPlanCoPaymentPlanInsuredBenefitObject
+    inputTypeName: InsertPlanCoPaymentPlanInsuredBenefitObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_co_payment_plan_insured_benefit_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        planCoPaymentId:
+          column:
+            name: plan_co_payment_id
+        planInsuredBenefitId:
+          column:
+            name: plan_insured_benefit_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanCoPaymentPlanInsuredBenefitObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - planCoPaymentId
+          - planInsuredBenefitId
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanCoPaymentPlanInsuredBenefitResponse
+  description: Responses from the 'insert_plan_co_payment_plan_insured_benefit' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanCoPaymentPlanInsuredBenefit!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPlanCoPaymentPlanInsuredBenefitResponse
+    inputTypeName: InsertPlanCoPaymentPlanInsuredBenefitResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_co_payment_plan_insured_benefit_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanCoPaymentPlanInsuredBenefitResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPlanCoPaymentPlanInsuredBenefit
+  outputType: InsertPlanCoPaymentPlanInsuredBenefitResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPlanCoPaymentPlanInsuredBenefitObject!]!"
+    - name: postCheck
+      type: PlanCoPaymentPlanInsuredBenefitBoolExp
+      description: Insert permission predicate over the
+        'plan_co_payment_plan_insured_benefit' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_plan_co_payment_plan_insured_benefit
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPlanCoPaymentPlanInsuredBenefit
+    rootFieldKind: Mutation
+  description: Insert into the plan_co_payment_plan_insured_benefit table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPlanCoPaymentPlanInsuredBenefit
+  permissions:
+    - role: admin
+      allowExecution: true
+

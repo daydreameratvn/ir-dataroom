@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceEmailAddressFieldsObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertCorrespondenceEmailAddressFieldsObject
+    inputTypeName: InsertCorrespondenceEmailAddressFieldsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_email_address_fields_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceEmailAddressFieldsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceEmailAddressFieldsResponse
+  description: Responses from the 'insert_correspondence_email_address_fields' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmailAddressFields!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCorrespondenceEmailAddressFieldsResponse
+    inputTypeName: InsertCorrespondenceEmailAddressFieldsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_email_address_fields_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceEmailAddressFieldsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCorrespondenceEmailAddressFields
+  outputType: InsertCorrespondenceEmailAddressFieldsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCorrespondenceEmailAddressFieldsObject!]!"
+    - name: postCheck
+      type: CorrespondenceEmailAddressFieldsBoolExp
+      description: Insert permission predicate over the
+        'correspondence_email_address_fields' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_correspondence_email_address_fields
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCorrespondenceEmailAddressFields
+    rootFieldKind: Mutation
+  description: Insert into the correspondence_email_address_fields table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCorrespondenceEmailAddressFields
+  permissions:
+    - role: admin
+      allowExecution: true
+

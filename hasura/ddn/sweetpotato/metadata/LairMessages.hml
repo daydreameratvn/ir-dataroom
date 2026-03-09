@@ -1,0 +1,205 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LairMessages
+  fields:
+    - name: chatId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: role
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: LairMessages
+    inputTypeName: LairMessagesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: lair_messages
+      fieldMapping:
+        chatId:
+          column:
+            name: chat_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        role:
+          column:
+            name: role
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LairMessages
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - chatId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - role
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: LairMessagesBoolExp
+  operand:
+    object:
+      type: LairMessages
+      comparableFields:
+        - fieldName: chatId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: role
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: LairMessagesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: LairMessagesAggExp
+  operand:
+    object:
+      aggregatedType: LairMessages
+      aggregatableFields:
+        - fieldName: chatId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: role
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: LairMessagesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: LairMessagesOrderByExp
+  operand:
+    object:
+      orderedType: LairMessages
+      orderableFields:
+        - fieldName: chatId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: role
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: LairMessagesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: LairMessages
+  objectType: LairMessages
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: lair_messages
+  filterExpressionType: LairMessagesBoolExp
+  aggregateExpression: LairMessagesAggExp
+  orderByExpression: LairMessagesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: lairMessages
+      subscription:
+        rootField: lairMessages
+    selectUniques:
+      - queryRootField: lairMessagesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: lairMessagesById
+    filterInputTypeName: LairMessagesFilterInput
+    aggregate:
+      queryRootField: lairMessagesAggregate
+      subscription:
+        rootField: lairMessagesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: LairMessages
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

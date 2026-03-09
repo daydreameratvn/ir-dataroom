@@ -1,0 +1,492 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanBalances
+  description: Hạn mức gói
+  fields:
+    - name: allowAssessment
+      type: Boolean_1!
+    - name: applyConditionKey
+      type: String_1
+    - name: contractReferencePhrase
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: diseaseGroupId
+      type: Uuid
+    - name: displayOrder
+      type: Int32!
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: planId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: value
+      type: Bigdecimal!
+  graphql:
+    typeName: PlanBalances
+    inputTypeName: PlanBalancesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_balances
+      fieldMapping:
+        allowAssessment:
+          column:
+            name: allow_assessment
+        applyConditionKey:
+          column:
+            name: apply_condition_key
+        contractReferencePhrase:
+          column:
+            name: contract_reference_phrase
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        diseaseGroupId:
+          column:
+            name: disease_group_id
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        planId:
+          column:
+            name: plan_id
+        tenantId:
+          column:
+            name: tenant_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanBalances
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - allowAssessment
+          - applyConditionKey
+          - contractReferencePhrase
+          - createdAt
+          - deletedAt
+          - description
+          - diseaseGroupId
+          - displayOrder
+          - id
+          - name
+          - planId
+          - tenantId
+          - type
+          - updatedAt
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanBalancesBoolExp
+  operand:
+    object:
+      type: PlanBalances
+      comparableFields:
+        - fieldName: allowAssessment
+          booleanExpressionType: BoolBoolExp
+        - fieldName: applyConditionKey
+          booleanExpressionType: TextBoolExp
+        - fieldName: contractReferencePhrase
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: diseaseGroupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: displayOrder
+          booleanExpressionType: Int4BoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: type
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: value
+          booleanExpressionType: NumericBoolExp
+      comparableRelationships:
+        - relationshipName: planBalanceBenefits
+        - relationshipName: planBalanceClaimCaseDetails
+        - relationshipName: planBalanceApplyConditionKey
+        - relationshipName: diseaseGroup
+        - relationshipName: plan
+        - relationshipName: tenant
+        - relationshipName: planBalanceType
+        - relationshipName: planDisplayedBalances
+        - relationshipName: planParentBenefitBalanceDisplays
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanBalancesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanBalancesAggExp
+  operand:
+    object:
+      aggregatedType: PlanBalances
+      aggregatableFields:
+        - fieldName: allowAssessment
+          aggregateExpression: BoolAggExp
+        - fieldName: applyConditionKey
+          aggregateExpression: TextAggExp
+        - fieldName: contractReferencePhrase
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: diseaseGroupId
+          aggregateExpression: UuidAggExp
+        - fieldName: displayOrder
+          aggregateExpression: Int4AggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: VarcharAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: type
+          aggregateExpression: VarcharAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: value
+          aggregateExpression: NumericAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanBalancesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanBalancesOrderByExp
+  operand:
+    object:
+      orderedType: PlanBalances
+      orderableFields:
+        - fieldName: allowAssessment
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: applyConditionKey
+          orderByExpression: String1OrderByExp
+        - fieldName: contractReferencePhrase
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: diseaseGroupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: displayOrder
+          orderByExpression: Int32OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: value
+          orderByExpression: BigdecimalOrderByExp
+      orderableRelationships:
+        - relationshipName: planBalanceApplyConditionKey
+        - relationshipName: diseaseGroup
+        - relationshipName: plan
+        - relationshipName: tenant
+        - relationshipName: planBalanceType
+  graphql:
+    expressionTypeName: PlanBalancesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanBalances
+  objectType: PlanBalances
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_balances
+  filterExpressionType: PlanBalancesBoolExp
+  aggregateExpression: PlanBalancesAggExp
+  orderByExpression: PlanBalancesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planBalances
+      subscription:
+        rootField: planBalances
+    selectUniques:
+      - queryRootField: planBalancesByPlanBalancesNamePlanIdValueTypeDeletedAtKey
+        uniqueIdentifier:
+          - deletedAt
+          - name
+          - planId
+          - type
+          - value
+        subscription:
+          rootField: planBalancesByPlanBalancesNamePlanIdValueTypeDeletedAtKey
+      - queryRootField: planBalancesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: planBalancesById
+    filterInputTypeName: PlanBalancesFilterInput
+    aggregate:
+      queryRootField: planBalancesAggregate
+      subscription:
+        rootField: planBalancesAggregate
+  description: Hạn mức gói
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanBalances
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalanceBenefits
+  sourceType: PlanBalances
+  target:
+    model:
+      name: PlanBalanceBenefits
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanBalanceBenefitsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: planBalanceId
+  graphql:
+    aggregateFieldName: planBalanceBenefitsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalanceClaimCaseDetails
+  sourceType: PlanBalances
+  target:
+    model:
+      name: PlanBalanceClaimCaseDetails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanBalanceClaimCaseDetailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: planBalanceId
+  graphql:
+    aggregateFieldName: planBalanceClaimCaseDetailsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalanceApplyConditionKey
+  sourceType: PlanBalances
+  target:
+    model:
+      name: PlanBalanceApplyConditionKeys
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: applyConditionKey
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: diseaseGroup
+  sourceType: PlanBalances
+  target:
+    model:
+      name: DiseaseGroups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: diseaseGroupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plan
+  sourceType: PlanBalances
+  target:
+    model:
+      name: Plans
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: PlanBalances
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalanceType
+  sourceType: PlanBalances
+  target:
+    model:
+      name: PlanBalanceTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planDisplayedBalances
+  sourceType: PlanBalances
+  target:
+    model:
+      name: PlanDisplayedBalances
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanDisplayedBalancesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: planBalanceId
+  graphql:
+    aggregateFieldName: planDisplayedBalancesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planParentBenefitBalanceDisplays
+  sourceType: PlanBalances
+  target:
+    model:
+      name: PlanParentBenefitBalanceDisplay
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanParentBenefitBalanceDisplayAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: planBalanceId
+  graphql:
+    aggregateFieldName: planParentBenefitBalanceDisplaysAggregate
+

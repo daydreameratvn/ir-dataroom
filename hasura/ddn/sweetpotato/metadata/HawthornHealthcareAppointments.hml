@@ -1,0 +1,270 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornHealthcareAppointments
+  description: Lần thăm khám (bao gồm khám tổng quát, khám chữa bệnh, tiêm phòng, ...)
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: endedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: medicalProviderId
+      type: Uuid
+    - name: patientId
+      type: Uuid!
+    - name: startedAt
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: HawthornHealthcareAppointments
+    inputTypeName: HawthornHealthcareAppointmentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_healthcare_appointments
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        endedAt:
+          column:
+            name: ended_at
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        patientId:
+          column:
+            name: patient_id
+        startedAt:
+          column:
+            name: started_at
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornHealthcareAppointments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - endedAt
+          - id
+          - medicalProviderId
+          - patientId
+          - startedAt
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornHealthcareAppointmentsBoolExp
+  operand:
+    object:
+      type: HawthornHealthcareAppointments
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: endedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: patientId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: startedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornHealthCheckups
+        - relationshipName: mpMedicalProvider
+        - relationshipName: hawthornPatient
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornHealthcareAppointmentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornHealthcareAppointmentsAggExp
+  operand:
+    object:
+      aggregatedType: HawthornHealthcareAppointments
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: endedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: patientId
+          aggregateExpression: UuidAggExp
+        - fieldName: startedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornHealthcareAppointmentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornHealthcareAppointmentsOrderByExp
+  operand:
+    object:
+      orderedType: HawthornHealthcareAppointments
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: endedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: patientId
+          orderByExpression: UuidOrderByExp
+        - fieldName: startedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: mpMedicalProvider
+        - relationshipName: hawthornPatient
+  graphql:
+    expressionTypeName: HawthornHealthcareAppointmentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornHealthcareAppointments
+  objectType: HawthornHealthcareAppointments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_healthcare_appointments
+  filterExpressionType: HawthornHealthcareAppointmentsBoolExp
+  aggregateExpression: HawthornHealthcareAppointmentsAggExp
+  orderByExpression: HawthornHealthcareAppointmentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornHealthcareAppointments
+      subscription:
+        rootField: hawthornHealthcareAppointments
+    selectUniques:
+      - queryRootField: hawthornHealthcareAppointmentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hawthornHealthcareAppointmentsById
+    filterInputTypeName: HawthornHealthcareAppointmentsFilterInput
+    aggregate:
+      queryRootField: hawthornHealthcareAppointmentsAggregate
+      subscription:
+        rootField: hawthornHealthcareAppointmentsAggregate
+  description: Lần thăm khám (bao gồm khám tổng quát, khám chữa bệnh, tiêm phòng, ...)
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornHealthcareAppointments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornHealthCheckups
+  sourceType: HawthornHealthcareAppointments
+  target:
+    model:
+      name: HawthornHealthCheckups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornHealthCheckupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: healthcareAppointmentId
+  graphql:
+    aggregateFieldName: hawthornHealthCheckupsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: HawthornHealthcareAppointments
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPatient
+  sourceType: HawthornHealthcareAppointments
+  target:
+    model:
+      name: HawthornPatients
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: patientId
+      target:
+        modelField:
+          - fieldName: id
+

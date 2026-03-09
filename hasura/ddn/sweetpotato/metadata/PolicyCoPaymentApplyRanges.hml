@@ -1,0 +1,245 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyCoPaymentApplyRanges
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: from
+      type: Bigdecimal!
+    - name: id
+      type: Uuid!
+    - name: policyCoPaymentId
+      type: Uuid!
+    - name: to
+      type: Bigdecimal!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PolicyCoPaymentApplyRanges
+    inputTypeName: PolicyCoPaymentApplyRangesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_co_payment_apply_ranges
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        from:
+          column:
+            name: from
+        id:
+          column:
+            name: id
+        policyCoPaymentId:
+          column:
+            name: policy_co_payment_id
+        to:
+          column:
+            name: to
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyCoPaymentApplyRanges
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - from
+          - id
+          - policyCoPaymentId
+          - to
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyCoPaymentApplyRangesBoolExp
+  operand:
+    object:
+      type: PolicyCoPaymentApplyRanges
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: from
+          booleanExpressionType: NumericBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyCoPaymentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: to
+          booleanExpressionType: NumericBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: policyCoPayment
+        - relationshipName: policyCoPaymentApplyRangeType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyCoPaymentApplyRangesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyCoPaymentApplyRangesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyCoPaymentApplyRanges
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: from
+          aggregateExpression: NumericAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: policyCoPaymentId
+          aggregateExpression: UuidAggExp
+        - fieldName: to
+          aggregateExpression: NumericAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyCoPaymentApplyRangesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyCoPaymentApplyRangesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyCoPaymentApplyRanges
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: from
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyCoPaymentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: to
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: policyCoPayment
+        - relationshipName: policyCoPaymentApplyRangeType
+  graphql:
+    expressionTypeName: PolicyCoPaymentApplyRangesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyCoPaymentApplyRanges
+  objectType: PolicyCoPaymentApplyRanges
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_co_payment_apply_ranges
+  filterExpressionType: PolicyCoPaymentApplyRangesBoolExp
+  aggregateExpression: PolicyCoPaymentApplyRangesAggExp
+  orderByExpression: PolicyCoPaymentApplyRangesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyCoPaymentApplyRanges
+      subscription:
+        rootField: policyCoPaymentApplyRanges
+    selectUniques:
+      - queryRootField: policyCoPaymentApplyRangesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: policyCoPaymentApplyRangesById
+    filterInputTypeName: PolicyCoPaymentApplyRangesFilterInput
+    aggregate:
+      queryRootField: policyCoPaymentApplyRangesAggregate
+      subscription:
+        rootField: policyCoPaymentApplyRangesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyCoPaymentApplyRanges
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPayment
+  sourceType: PolicyCoPaymentApplyRanges
+  target:
+    model:
+      name: PolicyCoPayments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyCoPaymentId
+      target:
+        modelField:
+          - fieldName: policyCoPaymentId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPaymentApplyRangeType
+  sourceType: PolicyCoPaymentApplyRanges
+  target:
+    model:
+      name: PolicyCoPaymentApplyRangeTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

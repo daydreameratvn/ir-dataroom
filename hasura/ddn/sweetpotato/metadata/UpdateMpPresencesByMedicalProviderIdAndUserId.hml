@@ -1,0 +1,160 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpPresencesByMedicalProviderIdAndUserIdUpdateColumns
+  description: Update the columns of the 'mp_presences' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnMpPresencesCreatedAt
+      description: Update the 'created_at' column in the 'mp_presences' collection.
+    - name: id
+      type: UpdateColumnMpPresencesId
+      description: Update the 'id' column in the 'mp_presences' collection.
+    - name: ip
+      type: UpdateColumnMpPresencesIp
+      description: Update the 'ip' column in the 'mp_presences' collection.
+    - name: lastPresentAt
+      type: UpdateColumnMpPresencesLastPresentAt
+      description: Update the 'last_present_at' column in the 'mp_presences' collection.
+    - name: medicalProviderId
+      type: UpdateColumnMpPresencesMedicalProviderId
+      description: Update the 'medical_provider_id' column in the 'mp_presences' collection.
+    - name: updatedAt
+      type: UpdateColumnMpPresencesUpdatedAt
+      description: Update the 'updated_at' column in the 'mp_presences' collection.
+    - name: userId
+      type: UpdateColumnMpPresencesUserId
+      description: Update the 'user_id' column in the 'mp_presences' collection.
+  graphql:
+    typeName: UpdateMpPresencesByMedicalProviderIdAndUserIdUpdateColumns
+    inputTypeName: UpdateMpPresencesByMedicalProviderIdAndUserIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_presences_by_medical_provider_id_and_user_id_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        ip:
+          column:
+            name: ip
+        lastPresentAt:
+          column:
+            name: last_present_at
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        updatedAt:
+          column:
+            name: updated_at
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpPresencesByMedicalProviderIdAndUserIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - ip
+          - lastPresentAt
+          - medicalProviderId
+          - updatedAt
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpPresencesByMedicalProviderIdAndUserIdResponse
+  description: Responses from the
+    'update_mp_presences_by_medical_provider_id_and_user_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpPresences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateMpPresencesByMedicalProviderIdAndUserIdResponse
+    inputTypeName: UpdateMpPresencesByMedicalProviderIdAndUserIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_presences_by_medical_provider_id_and_user_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpPresencesByMedicalProviderIdAndUserIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateMpPresencesByMedicalProviderIdAndUserId
+  outputType: UpdateMpPresencesByMedicalProviderIdAndUserIdResponse!
+  arguments:
+    - name: keyMedicalProviderId
+      type: Uuid!
+    - name: keyUserId
+      type: Uuid!
+    - name: postCheck
+      type: MpPresencesBoolExp
+      description: Update permission post-condition predicate over the 'mp_presences'
+        collection
+    - name: preCheck
+      type: MpPresencesBoolExp
+      description: Update permission pre-condition predicate over the 'mp_presences'
+        collection
+    - name: updateColumns
+      type: UpdateMpPresencesByMedicalProviderIdAndUserIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_mp_presences_by_medical_provider_id_and_user_id
+    argumentMapping:
+      keyMedicalProviderId: key_medical_provider_id
+      keyUserId: key_user_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateMpPresencesByMedicalProviderIdAndUserId
+    rootFieldKind: Mutation
+  description: Update any row on the 'mp_presences' collection using the
+    'medical_provider_id' and 'user_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateMpPresencesByMedicalProviderIdAndUserId
+  permissions:
+    - role: admin
+      allowExecution: true
+

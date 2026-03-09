@@ -1,0 +1,318 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProviderMapping
+  description: Map data cơ sở y tế giữa công ty bảo hiểm và papaya
+  fields:
+    - name: code
+      type: String_1!
+    - name: companyId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: ppyMedicalProviderId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: MpMedicalProviderMapping
+    inputTypeName: MpMedicalProviderMappingInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_provider_mapping
+      fieldMapping:
+        code:
+          column:
+            name: code
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        ppyMedicalProviderId:
+          column:
+            name: ppy_medical_provider_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProviderMapping
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - companyId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - name
+          - ppyMedicalProviderId
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProviderMappingBoolExp
+  operand:
+    object:
+      type: MpMedicalProviderMapping
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: companyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: ppyMedicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: company
+        - relationshipName: identityUser
+        - relationshipName: mpMedicalProvider
+        - relationshipName: identityUserByUpdatedBy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProviderMappingBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProviderMappingAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProviderMapping
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: companyId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: ppyMedicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProviderMappingAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProviderMappingOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProviderMapping
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: companyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: ppyMedicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+        - relationshipName: identityUser
+        - relationshipName: mpMedicalProvider
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: MpMedicalProviderMappingOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProviderMapping
+  objectType: MpMedicalProviderMapping
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_provider_mapping
+  filterExpressionType: MpMedicalProviderMappingBoolExp
+  aggregateExpression: MpMedicalProviderMappingAggExp
+  orderByExpression: MpMedicalProviderMappingOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProviderMapping
+      subscription:
+        rootField: mpMedicalProviderMapping
+    selectUniques:
+      - queryRootField: mpMedicalProviderMappingById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: mpMedicalProviderMappingById
+      - queryRootField: mpMedicalProviderMappingByMedicalProviderMappingPpyMedicalProviderIdCompanyIdKey
+        uniqueIdentifier:
+          - code
+          - companyId
+          - ppyMedicalProviderId
+        subscription:
+          rootField: mpMedicalProviderMappingByMedicalProviderMappingPpyMedicalProviderIdCompanyIdKey
+    filterInputTypeName: MpMedicalProviderMappingFilterInput
+    aggregate:
+      queryRootField: mpMedicalProviderMappingAggregate
+      subscription:
+        rootField: mpMedicalProviderMappingAggregate
+  description: Map data cơ sở y tế giữa công ty bảo hiểm và papaya
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProviderMapping
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: MpMedicalProviderMapping
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: MpMedicalProviderMapping
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: MpMedicalProviderMapping
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ppyMedicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: MpMedicalProviderMapping
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+

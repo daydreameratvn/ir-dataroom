@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteOcrQcDischargePaperDiagnosesByIcdMetadataIdAndPaperIdResponse
+  description: Responses from the
+    'delete_ocr_qc_discharge_paper_diagnoses_by_icd_metadata_id_and_paper_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrQcDischargePaperDiagnoses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteOcrQcDischargePaperDiagnosesByIcdMetadataIdAndPaperIdResponse
+    inputTypeName: DeleteOcrQcDischargePaperDiagnosesByIcdMetadataIdAndPaperIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_ocr_qc_discharge_paper_diagnoses_by_icd_metadata_id_and_paper_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteOcrQcDischargePaperDiagnosesByIcdMetadataIdAndPaperIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteOcrQcDischargePaperDiagnosesByIcdMetadataIdAndPaperId
+  outputType: DeleteOcrQcDischargePaperDiagnosesByIcdMetadataIdAndPaperIdResponse!
+  arguments:
+    - name: keyIcdMetadataId
+      type: Uuid!
+    - name: keyPaperId
+      type: Uuid!
+    - name: preCheck
+      type: OcrQcDischargePaperDiagnosesBoolExp
+      description: Delete permission predicate over the
+        'ocr_qc_discharge_paper_diagnoses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_ocr_qc_discharge_paper_diagnoses_by_icd_metadata_id_and_paper_id
+    argumentMapping:
+      keyIcdMetadataId: key_icd_metadata_id
+      keyPaperId: key_paper_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteOcrQcDischargePaperDiagnosesByIcdMetadataIdAndPaperId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'ocr_qc_discharge_paper_diagnoses' collection
+    using the 'icd_metadata_id' and 'paper_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteOcrQcDischargePaperDiagnosesByIcdMetadataIdAndPaperId
+  permissions:
+    - role: admin
+      allowExecution: true
+

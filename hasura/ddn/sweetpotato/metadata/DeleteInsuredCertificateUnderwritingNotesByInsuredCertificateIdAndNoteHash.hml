@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashResponse
+  description: Responses from the
+    'delete_insured_certificate_underwriting_notes_by_insured_certificate_id_and_note_hash'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateUnderwritingNotes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashResponse
+    inputTypeName: DeleteInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_certificate_underwriting_notes_by_insured_certificate_id_and_note_hash_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHash
+  outputType: DeleteInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHashResponse!
+  arguments:
+    - name: keyInsuredCertificateId
+      type: Uuid!
+    - name: keyNoteHash
+      type: String_1!
+    - name: preCheck
+      type: InsuredCertificateUnderwritingNotesBoolExp
+      description: Delete permission predicate over the
+        'insured_certificate_underwriting_notes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_certificate_underwriting_notes_by_insured_certificate_id_and_note_hash
+    argumentMapping:
+      keyInsuredCertificateId: key_insured_certificate_id
+      keyNoteHash: key_note_hash
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHash
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_certificate_underwriting_notes'
+    collection using the 'insured_certificate_id' and 'note_hash' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredCertificateUnderwritingNotesByInsuredCertificateIdAndNoteHash
+  permissions:
+    - role: admin
+      allowExecution: true
+

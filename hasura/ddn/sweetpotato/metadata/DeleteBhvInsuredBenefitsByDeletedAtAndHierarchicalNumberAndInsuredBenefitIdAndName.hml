@@ -1,0 +1,84 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteBhvInsuredBenefitsByDeletedAtAndHierarchicalNumberAndInsuredBenefitIdAndNameResponse
+  description: Responses from the
+    'delete_bhv_insured_benefits_by_deleted_at_and_hierarchical_number_and_insured_benefit_id_and_name'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[BhvInsuredBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteBhvInsuredBenefitsByDeletedAtAndHierarchicalNumberAndInsuredBenefitIdAndNameResponse
+    inputTypeName: DeleteBhvInsuredBenefitsByDeletedAtAndHierarchicalNumberAndInsuredBenefitIdAndNameResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_bhv_insured_benefits_by_deleted_at_and_hierarchical_number_and_insured_benefit_id_and_name_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteBhvInsuredBenefitsByDeletedAtAndHierarchicalNumberAndInsuredBenefitIdAndNameResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteBhvInsuredBenefitsByDeletedAtAndHierarchicalNumberAndInsuredBenefitIdAndName
+  outputType: DeleteBhvInsuredBenefitsByDeletedAtAndHierarchicalNumberAndInsuredBenefitIdAndNameResponse!
+  arguments:
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyHierarchicalNumber
+      type: String_1!
+    - name: keyInsuredBenefitId
+      type: Uuid!
+    - name: keyName
+      type: String_1!
+    - name: preCheck
+      type: BhvInsuredBenefitsBoolExp
+      description: Delete permission predicate over the 'bhv_insured_benefits' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_bhv_insured_benefits_by_deleted_at_and_hierarchical_number_and_insured_benefit_id_and_name
+    argumentMapping:
+      keyDeletedAt: key_deleted_at
+      keyHierarchicalNumber: key_hierarchical_number
+      keyInsuredBenefitId: key_insured_benefit_id
+      keyName: key_name
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteBhvInsuredBenefitsByDeletedAtAndHierarchicalNumberAndInsuredBenefitIdAndName
+    rootFieldKind: Mutation
+  description: Delete any row on the 'bhv_insured_benefits' collection using the
+    'deleted_at', 'hierarchical_number', 'insured_benefit_id' and 'name' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteBhvInsuredBenefitsByDeletedAtAndHierarchicalNumberAndInsuredBenefitIdAndName
+  permissions:
+    - role: admin
+      allowExecution: true
+

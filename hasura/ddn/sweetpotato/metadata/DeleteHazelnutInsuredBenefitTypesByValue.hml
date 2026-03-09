@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHazelnutInsuredBenefitTypesByValueResponse
+  description: Responses from the 'delete_hazelnut_insured_benefit_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutInsuredBenefitTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHazelnutInsuredBenefitTypesByValueResponse
+    inputTypeName: DeleteHazelnutInsuredBenefitTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hazelnut_insured_benefit_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHazelnutInsuredBenefitTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHazelnutInsuredBenefitTypesByValue
+  outputType: DeleteHazelnutInsuredBenefitTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: HazelnutInsuredBenefitTypesBoolExp
+      description: Delete permission predicate over the
+        'hazelnut_insured_benefit_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hazelnut_insured_benefit_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHazelnutInsuredBenefitTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hazelnut_insured_benefit_types' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHazelnutInsuredBenefitTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,144 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPendingCodesObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1!
+    - name: documentType
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: internal
+      type: Boolean_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPendingCodesObject
+    inputTypeName: InsertPendingCodesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_pending_codes_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        documentType:
+          column:
+            name: document_type
+        id:
+          column:
+            name: id
+        internal:
+          column:
+            name: internal
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPendingCodesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - deletedAt
+          - description
+          - documentType
+          - id
+          - internal
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPendingCodesResponse
+  description: Responses from the 'insert_pending_codes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PendingCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPendingCodesResponse
+    inputTypeName: InsertPendingCodesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_pending_codes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPendingCodesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPendingCodes
+  outputType: InsertPendingCodesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPendingCodesObject!]!"
+    - name: postCheck
+      type: PendingCodesBoolExp
+      description: Insert permission predicate over the 'pending_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_pending_codes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPendingCodes
+    rootFieldKind: Mutation
+  description: Insert into the pending_codes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPendingCodes
+  permissions:
+    - role: admin
+      allowExecution: true
+

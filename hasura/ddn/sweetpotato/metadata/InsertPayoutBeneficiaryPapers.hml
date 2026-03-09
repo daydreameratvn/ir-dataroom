@@ -1,0 +1,193 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutBeneficiaryPapersObject
+  fields:
+    - name: bankBranch
+      type: String_1
+    - name: bankBranchId
+      type: Uuid
+    - name: bankCity
+      type: String_1
+    - name: bankCityId
+      type: Int32
+    - name: bankId
+      type: Uuid
+    - name: bankName
+      type: String_1
+    - name: beneficiaryName
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: paperIssuedDate
+      type: Timestamptz
+    - name: paperIssuedPlace
+      type: String_1
+    - name: paperNumber
+      type: String_1!
+    - name: paymentAmount
+      type: Bigdecimal
+    - name: paymentRequestId
+      type: Uuid
+    - name: paymentRequestItemId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPayoutBeneficiaryPapersObject
+    inputTypeName: InsertPayoutBeneficiaryPapersObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_beneficiary_papers_object
+      fieldMapping:
+        bankBranch:
+          column:
+            name: bank_branch
+        bankBranchId:
+          column:
+            name: bank_branch_id
+        bankCity:
+          column:
+            name: bank_city
+        bankCityId:
+          column:
+            name: bank_city_id
+        bankId:
+          column:
+            name: bank_id
+        bankName:
+          column:
+            name: bank_name
+        beneficiaryName:
+          column:
+            name: beneficiary_name
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        paperIssuedDate:
+          column:
+            name: paper_issued_date
+        paperIssuedPlace:
+          column:
+            name: paper_issued_place
+        paperNumber:
+          column:
+            name: paper_number
+        paymentAmount:
+          column:
+            name: payment_amount
+        paymentRequestId:
+          column:
+            name: payment_request_id
+        paymentRequestItemId:
+          column:
+            name: payment_request_item_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutBeneficiaryPapersObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankBranch
+          - bankBranchId
+          - bankCity
+          - bankCityId
+          - bankId
+          - bankName
+          - beneficiaryName
+          - createdAt
+          - id
+          - paperIssuedDate
+          - paperIssuedPlace
+          - paperNumber
+          - paymentAmount
+          - paymentRequestId
+          - paymentRequestItemId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutBeneficiaryPapersResponse
+  description: Responses from the 'insert_payout_beneficiary_papers' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutBeneficiaryPapers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPayoutBeneficiaryPapersResponse
+    inputTypeName: InsertPayoutBeneficiaryPapersResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_beneficiary_papers_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutBeneficiaryPapersResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPayoutBeneficiaryPapers
+  outputType: InsertPayoutBeneficiaryPapersResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPayoutBeneficiaryPapersObject!]!"
+    - name: postCheck
+      type: PayoutBeneficiaryPapersBoolExp
+      description: Insert permission predicate over the 'payout_beneficiary_papers'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_payout_beneficiary_papers
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPayoutBeneficiaryPapers
+    rootFieldKind: Mutation
+  description: Insert into the payout_beneficiary_papers table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPayoutBeneficiaryPapers
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutAntiMoneyLaunderingStatuses
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PayoutAntiMoneyLaunderingStatuses
+    inputTypeName: PayoutAntiMoneyLaunderingStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_anti_money_laundering_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutAntiMoneyLaunderingStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutAntiMoneyLaunderingStatusesBoolExp
+  operand:
+    object:
+      type: PayoutAntiMoneyLaunderingStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: payoutAntiMoneyLaunderings
+        - relationshipName: payoutPaymentRequests
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutAntiMoneyLaunderingStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutAntiMoneyLaunderingStatusesAggExp
+  operand:
+    object:
+      aggregatedType: PayoutAntiMoneyLaunderingStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutAntiMoneyLaunderingStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutAntiMoneyLaunderingStatusesOrderByExp
+  operand:
+    object:
+      orderedType: PayoutAntiMoneyLaunderingStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PayoutAntiMoneyLaunderingStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutAntiMoneyLaunderingStatuses
+  objectType: PayoutAntiMoneyLaunderingStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_anti_money_laundering_statuses
+  filterExpressionType: PayoutAntiMoneyLaunderingStatusesBoolExp
+  aggregateExpression: PayoutAntiMoneyLaunderingStatusesAggExp
+  orderByExpression: PayoutAntiMoneyLaunderingStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutAntiMoneyLaunderingStatuses
+      subscription:
+        rootField: payoutAntiMoneyLaunderingStatuses
+    selectUniques:
+      - queryRootField: payoutAntiMoneyLaunderingStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: payoutAntiMoneyLaunderingStatusesByValue
+    filterInputTypeName: PayoutAntiMoneyLaunderingStatusesFilterInput
+    aggregate:
+      queryRootField: payoutAntiMoneyLaunderingStatusesAggregate
+      subscription:
+        rootField: payoutAntiMoneyLaunderingStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutAntiMoneyLaunderingStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutAntiMoneyLaunderings
+  sourceType: PayoutAntiMoneyLaunderingStatuses
+  target:
+    model:
+      name: PayoutAntiMoneyLaunderings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutAntiMoneyLaunderingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: payoutAntiMoneyLaunderingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequests
+  sourceType: PayoutAntiMoneyLaunderingStatuses
+  target:
+    model:
+      name: PayoutPaymentRequests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPaymentRequestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: antiMoneyLaunderingStatus
+  graphql:
+    aggregateFieldName: payoutPaymentRequestsAggregate
+

@@ -1,0 +1,414 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: KumquatApiLogs
+  description: Full API request/response logs for debugging, audit, and analytics
+  fields:
+    - name: clientIp
+      type: String_1
+    - name: completedAt
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz!
+    - name: durationMs
+      type: Int32
+      description: Request processing time in milliseconds
+    - name: environment
+      type: String_1
+    - name: errorCode
+      type: String_1
+    - name: errorMessage
+      type: String_1
+    - name: errorStack
+      type: String_1
+      description: Stack trace - only populated in non-production environments
+    - name: headers
+      type: Json
+    - name: id
+      type: Uuid!
+    - name: method
+      type: String_1!
+    - name: oauthClientId
+      type: Uuid
+    - name: partnerCode
+      type: String_1
+      description: Denormalized from oauth_clients for fast filtering
+    - name: path
+      type: String_1!
+    - name: queryParams
+      type: Json
+    - name: requestBodyDecrypted
+      type: Json
+      description: Decrypted request payload for debugging
+    - name: requestBodyEncrypted
+      type: Json
+      description: Original encrypted request envelope as received
+    - name: requestId
+      type: String_1!
+      description: Unique trace ID for correlating logs across services
+    - name: responseBody
+      type: Json
+      description: Response data before encryption
+    - name: responseStatus
+      type: Int32!
+    - name: serviceVersion
+      type: String_1
+    - name: startedAt
+      type: Timestamptz!
+    - name: userAgent
+      type: String_1
+  graphql:
+    typeName: KumquatApiLogs
+    inputTypeName: KumquatApiLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: kumquat_api_logs
+      fieldMapping:
+        clientIp:
+          column:
+            name: client_ip
+        completedAt:
+          column:
+            name: completed_at
+        createdAt:
+          column:
+            name: created_at
+        durationMs:
+          column:
+            name: duration_ms
+        environment:
+          column:
+            name: environment
+        errorCode:
+          column:
+            name: error_code
+        errorMessage:
+          column:
+            name: error_message
+        errorStack:
+          column:
+            name: error_stack
+        headers:
+          column:
+            name: headers
+        id:
+          column:
+            name: id
+        method:
+          column:
+            name: method
+        oauthClientId:
+          column:
+            name: oauth_client_id
+        partnerCode:
+          column:
+            name: partner_code
+        path:
+          column:
+            name: path
+        queryParams:
+          column:
+            name: query_params
+        requestBodyDecrypted:
+          column:
+            name: request_body_decrypted
+        requestBodyEncrypted:
+          column:
+            name: request_body_encrypted
+        requestId:
+          column:
+            name: request_id
+        responseBody:
+          column:
+            name: response_body
+        responseStatus:
+          column:
+            name: response_status
+        serviceVersion:
+          column:
+            name: service_version
+        startedAt:
+          column:
+            name: started_at
+        userAgent:
+          column:
+            name: user_agent
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: KumquatApiLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - clientIp
+          - completedAt
+          - createdAt
+          - durationMs
+          - environment
+          - errorCode
+          - errorMessage
+          - errorStack
+          - headers
+          - id
+          - method
+          - oauthClientId
+          - partnerCode
+          - path
+          - queryParams
+          - requestBodyDecrypted
+          - requestBodyEncrypted
+          - requestId
+          - responseBody
+          - responseStatus
+          - serviceVersion
+          - startedAt
+          - userAgent
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: KumquatApiLogsBoolExp
+  operand:
+    object:
+      type: KumquatApiLogs
+      comparableFields:
+        - fieldName: clientIp
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: completedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: durationMs
+          booleanExpressionType: Int4BoolExp
+        - fieldName: environment
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: errorCode
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: errorMessage
+          booleanExpressionType: TextBoolExp
+        - fieldName: errorStack
+          booleanExpressionType: TextBoolExp
+        - fieldName: headers
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: method
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: oauthClientId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: partnerCode
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: path
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: queryParams
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: requestBodyDecrypted
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: requestBodyEncrypted
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: requestId
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: responseBody
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: responseStatus
+          booleanExpressionType: Int4BoolExp
+        - fieldName: serviceVersion
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: startedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: userAgent
+          booleanExpressionType: VarcharBoolExp
+      comparableRelationships:
+        - relationshipName: kumquatOauthClient
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: KumquatApiLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: KumquatApiLogsAggExp
+  operand:
+    object:
+      aggregatedType: KumquatApiLogs
+      aggregatableFields:
+        - fieldName: clientIp
+          aggregateExpression: VarcharAggExp
+        - fieldName: completedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: durationMs
+          aggregateExpression: Int4AggExp
+        - fieldName: environment
+          aggregateExpression: VarcharAggExp
+        - fieldName: errorCode
+          aggregateExpression: VarcharAggExp
+        - fieldName: errorMessage
+          aggregateExpression: TextAggExp
+        - fieldName: errorStack
+          aggregateExpression: TextAggExp
+        - fieldName: headers
+          aggregateExpression: JsonbAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: method
+          aggregateExpression: VarcharAggExp
+        - fieldName: oauthClientId
+          aggregateExpression: UuidAggExp
+        - fieldName: partnerCode
+          aggregateExpression: VarcharAggExp
+        - fieldName: path
+          aggregateExpression: VarcharAggExp
+        - fieldName: queryParams
+          aggregateExpression: JsonbAggExp
+        - fieldName: requestBodyDecrypted
+          aggregateExpression: JsonbAggExp
+        - fieldName: requestBodyEncrypted
+          aggregateExpression: JsonbAggExp
+        - fieldName: requestId
+          aggregateExpression: VarcharAggExp
+        - fieldName: responseBody
+          aggregateExpression: JsonbAggExp
+        - fieldName: responseStatus
+          aggregateExpression: Int4AggExp
+        - fieldName: serviceVersion
+          aggregateExpression: VarcharAggExp
+        - fieldName: startedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: userAgent
+          aggregateExpression: VarcharAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: KumquatApiLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: KumquatApiLogsOrderByExp
+  operand:
+    object:
+      orderedType: KumquatApiLogs
+      orderableFields:
+        - fieldName: clientIp
+          orderByExpression: String1OrderByExp
+        - fieldName: completedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: durationMs
+          orderByExpression: Int32OrderByExp
+        - fieldName: environment
+          orderByExpression: String1OrderByExp
+        - fieldName: errorCode
+          orderByExpression: String1OrderByExp
+        - fieldName: errorMessage
+          orderByExpression: String1OrderByExp
+        - fieldName: errorStack
+          orderByExpression: String1OrderByExp
+        - fieldName: headers
+          orderByExpression: JsonOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: method
+          orderByExpression: String1OrderByExp
+        - fieldName: oauthClientId
+          orderByExpression: UuidOrderByExp
+        - fieldName: partnerCode
+          orderByExpression: String1OrderByExp
+        - fieldName: path
+          orderByExpression: String1OrderByExp
+        - fieldName: queryParams
+          orderByExpression: JsonOrderByExp
+        - fieldName: requestBodyDecrypted
+          orderByExpression: JsonOrderByExp
+        - fieldName: requestBodyEncrypted
+          orderByExpression: JsonOrderByExp
+        - fieldName: requestId
+          orderByExpression: String1OrderByExp
+        - fieldName: responseBody
+          orderByExpression: JsonOrderByExp
+        - fieldName: responseStatus
+          orderByExpression: Int32OrderByExp
+        - fieldName: serviceVersion
+          orderByExpression: String1OrderByExp
+        - fieldName: startedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: userAgent
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: kumquatOauthClient
+  graphql:
+    expressionTypeName: KumquatApiLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: KumquatApiLogs
+  objectType: KumquatApiLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: kumquat_api_logs
+  filterExpressionType: KumquatApiLogsBoolExp
+  aggregateExpression: KumquatApiLogsAggExp
+  orderByExpression: KumquatApiLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: kumquatApiLogs
+      subscription:
+        rootField: kumquatApiLogs
+    selectUniques:
+      - queryRootField: kumquatApiLogsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: kumquatApiLogsById
+    filterInputTypeName: KumquatApiLogsFilterInput
+    aggregate:
+      queryRootField: kumquatApiLogsAggregate
+      subscription:
+        rootField: kumquatApiLogsAggregate
+  description: Full API request/response logs for debugging, audit, and analytics
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: KumquatApiLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: kumquatOauthClient
+  sourceType: KumquatApiLogs
+  target:
+    model:
+      name: KumquatOauthClients
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: oauthClientId
+      target:
+        modelField:
+          - fieldName: id
+

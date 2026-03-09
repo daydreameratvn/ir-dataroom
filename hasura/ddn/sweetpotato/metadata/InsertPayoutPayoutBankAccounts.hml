@@ -1,0 +1,187 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutPayoutBankAccountsObject
+  fields:
+    - name: accountName
+      type: String_1!
+    - name: accountNumber
+      type: String_1!
+    - name: balance
+      type: Bigdecimal
+    - name: balanceCheckedAt
+      type: Timestamptz
+    - name: bankId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: enableAutoRepayWhenTopup
+      type: Boolean_1
+    - name: fundCode
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: paymentProvider
+      type: String_1!
+    - name: refCode
+      type: String_1!
+    - name: refName
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPayoutPayoutBankAccountsObject
+    inputTypeName: InsertPayoutPayoutBankAccountsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_payout_bank_accounts_object
+      fieldMapping:
+        accountName:
+          column:
+            name: account_name
+        accountNumber:
+          column:
+            name: account_number
+        balance:
+          column:
+            name: balance
+        balanceCheckedAt:
+          column:
+            name: balance_checked_at
+        bankId:
+          column:
+            name: bank_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        enableAutoRepayWhenTopup:
+          column:
+            name: enable_auto_repay_when_topup
+        fundCode:
+          column:
+            name: fund_code
+        id:
+          column:
+            name: id
+        paymentProvider:
+          column:
+            name: payment_provider
+        refCode:
+          column:
+            name: ref_code
+        refName:
+          column:
+            name: ref_name
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutPayoutBankAccountsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - accountName
+          - accountNumber
+          - balance
+          - balanceCheckedAt
+          - bankId
+          - createdAt
+          - deletedAt
+          - enableAutoRepayWhenTopup
+          - fundCode
+          - id
+          - paymentProvider
+          - refCode
+          - refName
+          - status
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutPayoutBankAccountsResponse
+  description: Responses from the 'insert_payout_payout_bank_accounts' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPayoutBankAccounts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPayoutPayoutBankAccountsResponse
+    inputTypeName: InsertPayoutPayoutBankAccountsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_payout_bank_accounts_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutPayoutBankAccountsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPayoutPayoutBankAccounts
+  outputType: InsertPayoutPayoutBankAccountsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPayoutPayoutBankAccountsObject!]!"
+    - name: postCheck
+      type: PayoutPayoutBankAccountsBoolExp
+      description: Insert permission predicate over the 'payout_payout_bank_accounts'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_payout_payout_bank_accounts
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPayoutPayoutBankAccounts
+    rootFieldKind: Mutation
+  description: Insert into the payout_payout_bank_accounts table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPayoutPayoutBankAccounts
+  permissions:
+    - role: admin
+      allowExecution: true
+

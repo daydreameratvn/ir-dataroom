@@ -1,0 +1,283 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: JetResultDetails
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: explanation
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: isPassed
+      type: Boolean_1!
+    - name: jetResultId
+      type: Uuid!
+    - name: jetRuleId
+      type: Uuid
+    - name: jetRuleResult
+      type: Json
+    - name: nonJetReasonId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: JetResultDetails
+    inputTypeName: JetResultDetailsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: jet_result_details
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        explanation:
+          column:
+            name: explanation
+        id:
+          column:
+            name: id
+        isPassed:
+          column:
+            name: is_passed
+        jetResultId:
+          column:
+            name: jet_result_id
+        jetRuleId:
+          column:
+            name: jet_rule_id
+        jetRuleResult:
+          column:
+            name: jet_rule_result
+        nonJetReasonId:
+          column:
+            name: non_jet_reason_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: JetResultDetails
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - explanation
+          - id
+          - isPassed
+          - jetResultId
+          - jetRuleId
+          - jetRuleResult
+          - nonJetReasonId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: JetResultDetailsBoolExp
+  operand:
+    object:
+      type: JetResultDetails
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: explanation
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isPassed
+          booleanExpressionType: BoolBoolExp
+        - fieldName: jetResultId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: jetRuleId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: jetRuleResult
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: nonJetReasonId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: jetResult
+        - relationshipName: jetRule
+        - relationshipName: nonJetReason
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: JetResultDetailsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: JetResultDetailsAggExp
+  operand:
+    object:
+      aggregatedType: JetResultDetails
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: explanation
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isPassed
+          aggregateExpression: BoolAggExp
+        - fieldName: jetResultId
+          aggregateExpression: UuidAggExp
+        - fieldName: jetRuleId
+          aggregateExpression: UuidAggExp
+        - fieldName: jetRuleResult
+          aggregateExpression: JsonbAggExp
+        - fieldName: nonJetReasonId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: JetResultDetailsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: JetResultDetailsOrderByExp
+  operand:
+    object:
+      orderedType: JetResultDetails
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: explanation
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isPassed
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: jetResultId
+          orderByExpression: UuidOrderByExp
+        - fieldName: jetRuleId
+          orderByExpression: UuidOrderByExp
+        - fieldName: jetRuleResult
+          orderByExpression: JsonOrderByExp
+        - fieldName: nonJetReasonId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: jetResult
+        - relationshipName: jetRule
+        - relationshipName: nonJetReason
+  graphql:
+    expressionTypeName: JetResultDetailsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: JetResultDetails
+  objectType: JetResultDetails
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: jet_result_details
+  filterExpressionType: JetResultDetailsBoolExp
+  aggregateExpression: JetResultDetailsAggExp
+  orderByExpression: JetResultDetailsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: jetResultDetails
+      subscription:
+        rootField: jetResultDetails
+    selectUniques:
+      - queryRootField: jetResultDetailsByJetResultDetailsJetResultIdJetRuleIdKey
+        uniqueIdentifier:
+          - jetResultId
+          - jetRuleId
+        subscription:
+          rootField: jetResultDetailsByJetResultDetailsJetResultIdJetRuleIdKey
+      - queryRootField: jetResultDetailsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: jetResultDetailsById
+    filterInputTypeName: JetResultDetailsFilterInput
+    aggregate:
+      queryRootField: jetResultDetailsAggregate
+      subscription:
+        rootField: jetResultDetailsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: JetResultDetails
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: jetResult
+  sourceType: JetResultDetails
+  target:
+    model:
+      name: JetResults
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: jetResultId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: jetRule
+  sourceType: JetResultDetails
+  target:
+    model:
+      name: JetRules
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: jetRuleId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: nonJetReason
+  sourceType: JetResultDetails
+  target:
+    model:
+      name: NonJetReasons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: nonJetReasonId
+      target:
+        modelField:
+          - fieldName: id
+

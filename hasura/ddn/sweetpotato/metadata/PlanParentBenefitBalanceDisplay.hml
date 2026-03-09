@@ -1,0 +1,229 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanParentBenefitBalanceDisplay
+  fields:
+    - name: benefitType
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: planBalanceId
+      type: Uuid!
+    - name: planId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+  graphql:
+    typeName: PlanParentBenefitBalanceDisplay
+    inputTypeName: PlanParentBenefitBalanceDisplayInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_parent_benefit_balance_display
+      fieldMapping:
+        benefitType:
+          column:
+            name: benefit_type
+        id:
+          column:
+            name: id
+        planBalanceId:
+          column:
+            name: plan_balance_id
+        planId:
+          column:
+            name: plan_id
+        tenantId:
+          column:
+            name: tenant_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanParentBenefitBalanceDisplay
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - benefitType
+          - id
+          - planBalanceId
+          - planId
+          - tenantId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanParentBenefitBalanceDisplayBoolExp
+  operand:
+    object:
+      type: PlanParentBenefitBalanceDisplay
+      comparableFields:
+        - fieldName: benefitType
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planBalanceId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: insuredBenefitType
+        - relationshipName: planBalance
+        - relationshipName: plan
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanParentBenefitBalanceDisplayBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanParentBenefitBalanceDisplayAggExp
+  operand:
+    object:
+      aggregatedType: PlanParentBenefitBalanceDisplay
+      aggregatableFields:
+        - fieldName: benefitType
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: planBalanceId
+          aggregateExpression: UuidAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanParentBenefitBalanceDisplayAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanParentBenefitBalanceDisplayOrderByExp
+  operand:
+    object:
+      orderedType: PlanParentBenefitBalanceDisplay
+      orderableFields:
+        - fieldName: benefitType
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: planBalanceId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredBenefitType
+        - relationshipName: planBalance
+        - relationshipName: plan
+  graphql:
+    expressionTypeName: PlanParentBenefitBalanceDisplayOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanParentBenefitBalanceDisplay
+  objectType: PlanParentBenefitBalanceDisplay
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_parent_benefit_balance_display
+  filterExpressionType: PlanParentBenefitBalanceDisplayBoolExp
+  aggregateExpression: PlanParentBenefitBalanceDisplayAggExp
+  orderByExpression: PlanParentBenefitBalanceDisplayOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planParentBenefitBalanceDisplay
+      subscription:
+        rootField: planParentBenefitBalanceDisplay
+    selectUniques:
+      - queryRootField: planParentBenefitBalanceDisplayById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: planParentBenefitBalanceDisplayById
+    filterInputTypeName: PlanParentBenefitBalanceDisplayFilterInput
+    aggregate:
+      queryRootField: planParentBenefitBalanceDisplayAggregate
+      subscription:
+        rootField: planParentBenefitBalanceDisplayAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanParentBenefitBalanceDisplay
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredBenefitType
+  sourceType: PlanParentBenefitBalanceDisplay
+  target:
+    model:
+      name: InsuredBenefitTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: benefitType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalance
+  sourceType: PlanParentBenefitBalanceDisplay
+  target:
+    model:
+      name: PlanBalances
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planBalanceId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plan
+  sourceType: PlanParentBenefitBalanceDisplay
+  target:
+    model:
+      name: Plans
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+

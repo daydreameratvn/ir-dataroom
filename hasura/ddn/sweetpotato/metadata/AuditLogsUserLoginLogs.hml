@@ -1,0 +1,234 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AuditLogsUserLoginLogs
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deviceInfo
+      type: Json
+    - name: message
+      type: String_1
+    - name: tenantId
+      type: Uuid
+    - name: userId
+      type: Uuid
+    - name: userInfoSnapshot
+      type: Json!
+      description: a snapshot of user info when they authenticate
+    - name: userLoginLogId
+      type: Uuid!
+  graphql:
+    typeName: AuditLogsUserLoginLogs
+    inputTypeName: AuditLogsUserLoginLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: audit_logs_user_login_logs
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deviceInfo:
+          column:
+            name: device_info
+        message:
+          column:
+            name: message
+        tenantId:
+          column:
+            name: tenant_id
+        userId:
+          column:
+            name: user_id
+        userInfoSnapshot:
+          column:
+            name: user_info_snapshot
+        userLoginLogId:
+          column:
+            name: user_login_log_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AuditLogsUserLoginLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deviceInfo
+          - message
+          - tenantId
+          - userId
+          - userInfoSnapshot
+          - userLoginLogId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: AuditLogsUserLoginLogsBoolExp
+  operand:
+    object:
+      type: AuditLogsUserLoginLogs
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deviceInfo
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: message
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userInfoSnapshot
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: userLoginLogId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: tenant
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: AuditLogsUserLoginLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: AuditLogsUserLoginLogsAggExp
+  operand:
+    object:
+      aggregatedType: AuditLogsUserLoginLogs
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deviceInfo
+          aggregateExpression: JsonbAggExp
+        - fieldName: message
+          aggregateExpression: VarcharAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+        - fieldName: userInfoSnapshot
+          aggregateExpression: JsonbAggExp
+        - fieldName: userLoginLogId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: AuditLogsUserLoginLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: AuditLogsUserLoginLogsOrderByExp
+  operand:
+    object:
+      orderedType: AuditLogsUserLoginLogs
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deviceInfo
+          orderByExpression: JsonOrderByExp
+        - fieldName: message
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+        - fieldName: userInfoSnapshot
+          orderByExpression: JsonOrderByExp
+        - fieldName: userLoginLogId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: tenant
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: AuditLogsUserLoginLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: AuditLogsUserLoginLogs
+  objectType: AuditLogsUserLoginLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: audit_logs_user_login_logs
+  filterExpressionType: AuditLogsUserLoginLogsBoolExp
+  aggregateExpression: AuditLogsUserLoginLogsAggExp
+  orderByExpression: AuditLogsUserLoginLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: auditLogsUserLoginLogs
+      subscription:
+        rootField: auditLogsUserLoginLogs
+    selectUniques:
+      - queryRootField: auditLogsUserLoginLogsByUserLoginLogId
+        uniqueIdentifier:
+          - userLoginLogId
+        subscription:
+          rootField: auditLogsUserLoginLogsByUserLoginLogId
+    filterInputTypeName: AuditLogsUserLoginLogsFilterInput
+    aggregate:
+      queryRootField: auditLogsUserLoginLogsAggregate
+      subscription:
+        rootField: auditLogsUserLoginLogsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: AuditLogsUserLoginLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: AuditLogsUserLoginLogs
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: AuditLogsUserLoginLogs
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCustomSettingSettingValuesByFallbackSettingApplicationIdResponse
+  description: Responses from the
+    'delete_custom_setting_setting_values_by_fallback_setting_application_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingSettingValues!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCustomSettingSettingValuesByFallbackSettingApplicationIdResponse
+    inputTypeName: DeleteCustomSettingSettingValuesByFallbackSettingApplicationIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_custom_setting_setting_values_by_fallback_setting_application_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCustomSettingSettingValuesByFallbackSettingApplicationIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCustomSettingSettingValuesByFallbackSettingApplicationId
+  outputType: DeleteCustomSettingSettingValuesByFallbackSettingApplicationIdResponse!
+  arguments:
+    - name: keyFallbackSettingApplicationId
+      type: Uuid
+    - name: preCheck
+      type: CustomSettingSettingValuesBoolExp
+      description: Delete permission predicate over the
+        'custom_setting_setting_values' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_custom_setting_setting_values_by_fallback_setting_application_id
+    argumentMapping:
+      keyFallbackSettingApplicationId: key_fallback_setting_application_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCustomSettingSettingValuesByFallbackSettingApplicationId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'custom_setting_setting_values' collection
+    using the 'fallback_setting_application_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCustomSettingSettingValuesByFallbackSettingApplicationId
+  permissions:
+    - role: admin
+      allowExecution: true
+

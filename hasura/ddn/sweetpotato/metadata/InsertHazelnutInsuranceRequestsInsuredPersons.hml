@@ -1,0 +1,170 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutInsuranceRequestsInsuredPersonsObject
+  fields:
+    - name: beneficiaryId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insuranceCoverageId
+      type: Uuid!
+    - name: insuranceRequestId
+      type: Uuid!
+    - name: insuredPersonId
+      type: Uuid!
+    - name: isBeneficiaryByLaw
+      type: Boolean_1
+    - name: requesterId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertHazelnutInsuranceRequestsInsuredPersonsObject
+    inputTypeName: InsertHazelnutInsuranceRequestsInsuredPersonsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_insurance_requests_insured_persons_object
+      fieldMapping:
+        beneficiaryId:
+          column:
+            name: beneficiary_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insuranceCoverageId:
+          column:
+            name: insurance_coverage_id
+        insuranceRequestId:
+          column:
+            name: insurance_request_id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        isBeneficiaryByLaw:
+          column:
+            name: is_beneficiary_by_law
+        requesterId:
+          column:
+            name: requester_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutInsuranceRequestsInsuredPersonsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - beneficiaryId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - insuranceCoverageId
+          - insuranceRequestId
+          - insuredPersonId
+          - isBeneficiaryByLaw
+          - requesterId
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutInsuranceRequestsInsuredPersonsResponse
+  description: Responses from the
+    'insert_hazelnut_insurance_requests_insured_persons' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutInsuranceRequestsInsuredPersons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHazelnutInsuranceRequestsInsuredPersonsResponse
+    inputTypeName: InsertHazelnutInsuranceRequestsInsuredPersonsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_insurance_requests_insured_persons_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutInsuranceRequestsInsuredPersonsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHazelnutInsuranceRequestsInsuredPersons
+  outputType: InsertHazelnutInsuranceRequestsInsuredPersonsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHazelnutInsuranceRequestsInsuredPersonsObject!]!"
+    - name: postCheck
+      type: HazelnutInsuranceRequestsInsuredPersonsBoolExp
+      description: Insert permission predicate over the
+        'hazelnut_insurance_requests_insured_persons' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hazelnut_insurance_requests_insured_persons
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHazelnutInsuranceRequestsInsuredPersons
+    rootFieldKind: Mutation
+  description: Insert into the hazelnut_insurance_requests_insured_persons table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHazelnutInsuranceRequestsInsuredPersons
+  permissions:
+    - role: admin
+      allowExecution: true
+

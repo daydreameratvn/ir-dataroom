@@ -1,0 +1,253 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsurerDeclineCodesMapping
+  fields:
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: insurerDeclineCode
+      type: String_1!
+    - name: insurerId
+      type: Uuid!
+    - name: ppyDeclineCode
+      type: String_1!
+    - name: productCode
+      type: String_1!
+    - name: productId
+      type: Uuid!
+  graphql:
+    typeName: InsurerDeclineCodesMapping
+    inputTypeName: InsurerDeclineCodesMappingInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insurer_decline_codes_mapping
+      fieldMapping:
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        insurerDeclineCode:
+          column:
+            name: insurer_decline_code
+        insurerId:
+          column:
+            name: insurer_id
+        ppyDeclineCode:
+          column:
+            name: ppy_decline_code
+        productCode:
+          column:
+            name: product_code
+        productId:
+          column:
+            name: product_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsurerDeclineCodesMapping
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - description
+          - id
+          - insurerDeclineCode
+          - insurerId
+          - ppyDeclineCode
+          - productCode
+          - productId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsurerDeclineCodesMappingBoolExp
+  operand:
+    object:
+      type: InsurerDeclineCodesMapping
+      comparableFields:
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerDeclineCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: insurerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: ppyDeclineCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: productCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: productId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: company
+        - relationshipName: declineCode
+        - relationshipName: product
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsurerDeclineCodesMappingBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsurerDeclineCodesMappingAggExp
+  operand:
+    object:
+      aggregatedType: InsurerDeclineCodesMapping
+      aggregatableFields:
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerDeclineCode
+          aggregateExpression: TextAggExp
+        - fieldName: insurerId
+          aggregateExpression: UuidAggExp
+        - fieldName: ppyDeclineCode
+          aggregateExpression: TextAggExp
+        - fieldName: productCode
+          aggregateExpression: TextAggExp
+        - fieldName: productId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsurerDeclineCodesMappingAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsurerDeclineCodesMappingOrderByExp
+  operand:
+    object:
+      orderedType: InsurerDeclineCodesMapping
+      orderableFields:
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerDeclineCode
+          orderByExpression: String1OrderByExp
+        - fieldName: insurerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: ppyDeclineCode
+          orderByExpression: String1OrderByExp
+        - fieldName: productCode
+          orderByExpression: String1OrderByExp
+        - fieldName: productId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+        - relationshipName: declineCode
+        - relationshipName: product
+  graphql:
+    expressionTypeName: InsurerDeclineCodesMappingOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsurerDeclineCodesMapping
+  objectType: InsurerDeclineCodesMapping
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insurer_decline_codes_mapping
+  filterExpressionType: InsurerDeclineCodesMappingBoolExp
+  aggregateExpression: InsurerDeclineCodesMappingAggExp
+  orderByExpression: InsurerDeclineCodesMappingOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insurerDeclineCodesMapping
+      subscription:
+        rootField: insurerDeclineCodesMapping
+    selectUniques:
+      - queryRootField: insurerDeclineCodesMappingById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: insurerDeclineCodesMappingById
+    filterInputTypeName: InsurerDeclineCodesMappingFilterInput
+    aggregate:
+      queryRootField: insurerDeclineCodesMappingAggregate
+      subscription:
+        rootField: insurerDeclineCodesMappingAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsurerDeclineCodesMapping
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: InsurerDeclineCodesMapping
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insurerId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: declineCode
+  sourceType: InsurerDeclineCodesMapping
+  target:
+    model:
+      name: DeclineCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ppyDeclineCode
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: product
+  sourceType: InsurerDeclineCodesMapping
+  target:
+    model:
+      name: Products
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: productId
+      target:
+        modelField:
+          - fieldName: id
+

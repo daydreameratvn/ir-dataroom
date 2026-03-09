@@ -1,0 +1,82 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredCertificateAgentsByAgentIdAndInsuredCertificateIdAndTypeResponse
+  description: Responses from the
+    'delete_insured_certificate_agents_by_agent_id_and_insured_certificate_id_and_type'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateAgents!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredCertificateAgentsByAgentIdAndInsuredCertificateIdAndTypeResponse
+    inputTypeName: DeleteInsuredCertificateAgentsByAgentIdAndInsuredCertificateIdAndTypeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_certificate_agents_by_agent_id_and_insured_certificate_id_and_type_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredCertificateAgentsByAgentIdAndInsuredCertificateIdAndTypeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredCertificateAgentsByAgentIdAndInsuredCertificateIdAndType
+  outputType: DeleteInsuredCertificateAgentsByAgentIdAndInsuredCertificateIdAndTypeResponse!
+  arguments:
+    - name: keyAgentId
+      type: Uuid!
+    - name: keyInsuredCertificateId
+      type: Uuid!
+    - name: keyType
+      type: String_1!
+    - name: preCheck
+      type: InsuredCertificateAgentsBoolExp
+      description: Delete permission predicate over the 'insured_certificate_agents'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_certificate_agents_by_agent_id_and_insured_certificate_id_and_type
+    argumentMapping:
+      keyAgentId: key_agent_id
+      keyInsuredCertificateId: key_insured_certificate_id
+      keyType: key_type
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredCertificateAgentsByAgentIdAndInsuredCertificateIdAndType
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_certificate_agents' collection using
+    the 'agent_id', 'insured_certificate_id' and 'type' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredCertificateAgentsByAgentIdAndInsuredCertificateIdAndType
+  permissions:
+    - role: admin
+      allowExecution: true
+

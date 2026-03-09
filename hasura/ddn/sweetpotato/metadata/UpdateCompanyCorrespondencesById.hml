@@ -1,0 +1,184 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCompanyCorrespondencesByIdUpdateColumns
+  description: Update the columns of the 'company_correspondences' collection
+  fields:
+    - name: autoSend
+      type: UpdateColumnCompanyCorrespondencesAutoSend
+      description: Update the 'auto_send' column in the 'company_correspondences'
+        collection.
+    - name: companyId
+      type: UpdateColumnCompanyCorrespondencesCompanyId
+      description: Update the 'company_id' column in the 'company_correspondences'
+        collection.
+    - name: conditions
+      type: UpdateColumnCompanyCorrespondencesConditions
+      description: Update the 'conditions' column in the 'company_correspondences'
+        collection.
+    - name: correspondenceTemplateId
+      type: UpdateColumnCompanyCorrespondencesCorrespondenceTemplateId
+      description: Update the 'correspondence_template_id' column in the
+        'company_correspondences' collection.
+    - name: createdAt
+      type: UpdateColumnCompanyCorrespondencesCreatedAt
+      description: Update the 'created_at' column in the 'company_correspondences'
+        collection.
+    - name: deletedAt
+      type: UpdateColumnCompanyCorrespondencesDeletedAt
+      description: Update the 'deleted_at' column in the 'company_correspondences'
+        collection.
+    - name: id
+      type: UpdateColumnCompanyCorrespondencesId
+      description: Update the 'id' column in the 'company_correspondences' collection.
+    - name: planId
+      type: UpdateColumnCompanyCorrespondencesPlanId
+      description: Update the 'plan_id' column in the 'company_correspondences' collection.
+    - name: sendWhen
+      type: UpdateColumnCompanyCorrespondencesSendWhen
+      description: Update the 'send_when' column in the 'company_correspondences'
+        collection.
+    - name: updatedAt
+      type: UpdateColumnCompanyCorrespondencesUpdatedAt
+      description: Update the 'updated_at' column in the 'company_correspondences'
+        collection.
+  graphql:
+    typeName: UpdateCompanyCorrespondencesByIdUpdateColumns
+    inputTypeName: UpdateCompanyCorrespondencesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_company_correspondences_by_id_update_columns
+      fieldMapping:
+        autoSend:
+          column:
+            name: auto_send
+        companyId:
+          column:
+            name: company_id
+        conditions:
+          column:
+            name: conditions
+        correspondenceTemplateId:
+          column:
+            name: correspondence_template_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        planId:
+          column:
+            name: plan_id
+        sendWhen:
+          column:
+            name: send_when
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCompanyCorrespondencesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoSend
+          - companyId
+          - conditions
+          - correspondenceTemplateId
+          - createdAt
+          - deletedAt
+          - id
+          - planId
+          - sendWhen
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCompanyCorrespondencesByIdResponse
+  description: Responses from the 'update_company_correspondences_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanyCorrespondences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCompanyCorrespondencesByIdResponse
+    inputTypeName: UpdateCompanyCorrespondencesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_company_correspondences_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCompanyCorrespondencesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCompanyCorrespondencesById
+  outputType: UpdateCompanyCorrespondencesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: CompanyCorrespondencesBoolExp
+      description: Update permission post-condition predicate over the
+        'company_correspondences' collection
+    - name: preCheck
+      type: CompanyCorrespondencesBoolExp
+      description: Update permission pre-condition predicate over the
+        'company_correspondences' collection
+    - name: updateColumns
+      type: UpdateCompanyCorrespondencesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_company_correspondences_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCompanyCorrespondencesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'company_correspondences' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCompanyCorrespondencesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

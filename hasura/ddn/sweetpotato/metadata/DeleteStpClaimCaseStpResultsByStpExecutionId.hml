@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteStpClaimCaseStpResultsByStpExecutionIdResponse
+  description: Responses from the
+    'delete_stp_claim_case_stp_results_by_stp_execution_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpClaimCaseStpResults!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteStpClaimCaseStpResultsByStpExecutionIdResponse
+    inputTypeName: DeleteStpClaimCaseStpResultsByStpExecutionIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_stp_claim_case_stp_results_by_stp_execution_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteStpClaimCaseStpResultsByStpExecutionIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteStpClaimCaseStpResultsByStpExecutionId
+  outputType: DeleteStpClaimCaseStpResultsByStpExecutionIdResponse!
+  arguments:
+    - name: keyStpExecutionId
+      type: Uuid
+    - name: preCheck
+      type: StpClaimCaseStpResultsBoolExp
+      description: Delete permission predicate over the 'stp_claim_case_stp_results'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_stp_claim_case_stp_results_by_stp_execution_id
+    argumentMapping:
+      keyStpExecutionId: key_stp_execution_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteStpClaimCaseStpResultsByStpExecutionId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'stp_claim_case_stp_results' collection using
+    the 'stp_execution_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteStpClaimCaseStpResultsByStpExecutionId
+  permissions:
+    - role: admin
+      allowExecution: true
+

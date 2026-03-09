@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornPipelineStepExecutionsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: error
+      type: Json
+    - name: id
+      type: Uuid
+    - name: parameter
+      type: Json
+    - name: pipelineExecutionArn
+      type: String_1!
+    - name: pipelineExecutionId
+      type: Uuid!
+    - name: result
+      type: Json
+    - name: startedAt
+      type: String_1!
+    - name: status
+      type: String_1!
+    - name: stepName
+      type: String_1!
+    - name: taskToken
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertHawthornPipelineStepExecutionsObject
+    inputTypeName: InsertHawthornPipelineStepExecutionsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_pipeline_step_executions_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        error:
+          column:
+            name: error
+        id:
+          column:
+            name: id
+        parameter:
+          column:
+            name: parameter
+        pipelineExecutionArn:
+          column:
+            name: pipeline_execution_arn
+        pipelineExecutionId:
+          column:
+            name: pipeline_execution_id
+        result:
+          column:
+            name: result
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        stepName:
+          column:
+            name: step_name
+        taskToken:
+          column:
+            name: task_token
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornPipelineStepExecutionsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - error
+          - id
+          - parameter
+          - pipelineExecutionArn
+          - pipelineExecutionId
+          - result
+          - startedAt
+          - status
+          - stepName
+          - taskToken
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornPipelineStepExecutionsResponse
+  description: Responses from the 'insert_hawthorn_pipeline_step_executions' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornPipelineStepExecutions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornPipelineStepExecutionsResponse
+    inputTypeName: InsertHawthornPipelineStepExecutionsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_pipeline_step_executions_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornPipelineStepExecutionsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornPipelineStepExecutions
+  outputType: InsertHawthornPipelineStepExecutionsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornPipelineStepExecutionsObject!]!"
+    - name: postCheck
+      type: HawthornPipelineStepExecutionsBoolExp
+      description: Insert permission predicate over the
+        'hawthorn_pipeline_step_executions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_pipeline_step_executions
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornPipelineStepExecutions
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_pipeline_step_executions table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornPipelineStepExecutions
+  permissions:
+    - role: admin
+      allowExecution: true
+

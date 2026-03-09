@@ -1,0 +1,132 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornBiomarkersObject
+  fields:
+    - name: categoryCode
+      type: String_1!
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: name
+      type: String_1!
+    - name: reference
+      type: Json!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertHawthornBiomarkersObject
+    inputTypeName: InsertHawthornBiomarkersObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_biomarkers_object
+      fieldMapping:
+        categoryCode:
+          column:
+            name: category_code
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        name:
+          column:
+            name: name
+        reference:
+          column:
+            name: reference
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornBiomarkersObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - categoryCode
+          - code
+          - createdAt
+          - name
+          - reference
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornBiomarkersResponse
+  description: Responses from the 'insert_hawthorn_biomarkers' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornBiomarkers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornBiomarkersResponse
+    inputTypeName: InsertHawthornBiomarkersResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_biomarkers_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornBiomarkersResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornBiomarkers
+  outputType: InsertHawthornBiomarkersResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornBiomarkersObject!]!"
+    - name: postCheck
+      type: HawthornBiomarkersBoolExp
+      description: Insert permission predicate over the 'hawthorn_biomarkers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_biomarkers
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornBiomarkers
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_biomarkers table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornBiomarkers
+  permissions:
+    - role: admin
+      allowExecution: true
+

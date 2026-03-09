@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceTemplateTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CorrespondenceTemplateTypes
+    inputTypeName: CorrespondenceTemplateTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_template_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceTemplateTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceTemplateTypesBoolExp
+  operand:
+    object:
+      type: CorrespondenceTemplateTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: correspondenceTemplateByLocales
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceTemplateTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceTemplateTypesAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceTemplateTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceTemplateTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceTemplateTypesOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceTemplateTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CorrespondenceTemplateTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceTemplateTypes
+  objectType: CorrespondenceTemplateTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_template_types
+  filterExpressionType: CorrespondenceTemplateTypesBoolExp
+  aggregateExpression: CorrespondenceTemplateTypesAggExp
+  orderByExpression: CorrespondenceTemplateTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceTemplateTypes
+      subscription:
+        rootField: correspondenceTemplateTypes
+    selectUniques:
+      - queryRootField: correspondenceTemplateTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: correspondenceTemplateTypesByValue
+    filterInputTypeName: CorrespondenceTemplateTypesFilterInput
+    aggregate:
+      queryRootField: correspondenceTemplateTypesAggregate
+      subscription:
+        rootField: correspondenceTemplateTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceTemplateTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceTemplateByLocales
+  sourceType: CorrespondenceTemplateTypes
+  target:
+    model:
+      name: CorrespondenceTemplateByLocales
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceTemplateByLocalesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: correspondenceTemplateByLocalesAggregate
+

@@ -1,0 +1,248 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: JetRules
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: enabled
+      type: Boolean_1!
+    - name: id
+      type: Uuid!
+    - name: jetRuleSetId
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: order
+      type: Int32!
+    - name: rule
+      type: Json!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: JetRules
+    inputTypeName: JetRulesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: jet_rules
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        enabled:
+          column:
+            name: enabled
+        id:
+          column:
+            name: id
+        jetRuleSetId:
+          column:
+            name: jet_rule_set_id
+        name:
+          column:
+            name: name
+        order:
+          column:
+            name: order
+        rule:
+          column:
+            name: rule
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: JetRules
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - enabled
+          - id
+          - jetRuleSetId
+          - name
+          - order
+          - rule
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: JetRulesBoolExp
+  operand:
+    object:
+      type: JetRules
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: enabled
+          booleanExpressionType: BoolBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: jetRuleSetId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: order
+          booleanExpressionType: Int4BoolExp
+        - fieldName: rule
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: jetResultDetails
+        - relationshipName: jetRuleSet
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: JetRulesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: JetRulesAggExp
+  operand:
+    object:
+      aggregatedType: JetRules
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: enabled
+          aggregateExpression: BoolAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: jetRuleSetId
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: order
+          aggregateExpression: Int4AggExp
+        - fieldName: rule
+          aggregateExpression: JsonbAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: JetRulesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: JetRulesOrderByExp
+  operand:
+    object:
+      orderedType: JetRules
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: enabled
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: jetRuleSetId
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: order
+          orderByExpression: Int32OrderByExp
+        - fieldName: rule
+          orderByExpression: JsonOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: jetRuleSet
+  graphql:
+    expressionTypeName: JetRulesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: JetRules
+  objectType: JetRules
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: jet_rules
+  filterExpressionType: JetRulesBoolExp
+  aggregateExpression: JetRulesAggExp
+  orderByExpression: JetRulesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: jetRules
+      subscription:
+        rootField: jetRules
+    selectUniques:
+      - queryRootField: jetRulesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: jetRulesById
+    filterInputTypeName: JetRulesFilterInput
+    aggregate:
+      queryRootField: jetRulesAggregate
+      subscription:
+        rootField: jetRulesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: JetRules
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: jetResultDetails
+  sourceType: JetRules
+  target:
+    model:
+      name: JetResultDetails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: JetResultDetailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: jetRuleId
+  graphql:
+    aggregateFieldName: jetResultDetailsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: jetRuleSet
+  sourceType: JetRules
+  target:
+    model:
+      name: JetRuleSets
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: jetRuleSetId
+      target:
+        modelField:
+          - fieldName: id
+

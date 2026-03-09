@@ -1,0 +1,186 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyCoPaymentsObject
+  fields:
+    - name: applyTargetAgeRange
+      type: Boolean_1
+    - name: applyTargetCondition
+      type: Boolean_1
+    - name: applyToAllMedicalProvider
+      type: Boolean_1
+    - name: applyToAllPlans
+      type: Boolean_1
+    - name: applyToBlackList
+      type: Boolean_1
+    - name: applyToVoluntaryTarget
+      type: Boolean_1
+    - name: bonusPaymentRatio
+      type: Bigdecimal
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: policyCoPaymentId
+      type: Uuid
+    - name: policyId
+      type: Uuid!
+    - name: target
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: value
+      type: Bigdecimal!
+  graphql:
+    typeName: InsertPolicyCoPaymentsObject
+    inputTypeName: InsertPolicyCoPaymentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_co_payments_object
+      fieldMapping:
+        applyTargetAgeRange:
+          column:
+            name: apply_target_age_range
+        applyTargetCondition:
+          column:
+            name: apply_target_condition
+        applyToAllMedicalProvider:
+          column:
+            name: apply_to_all_medical_provider
+        applyToAllPlans:
+          column:
+            name: apply_to_all_plans
+        applyToBlackList:
+          column:
+            name: apply_to_black_list
+        applyToVoluntaryTarget:
+          column:
+            name: apply_to_voluntary_target
+        bonusPaymentRatio:
+          column:
+            name: bonus_payment_ratio
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        policyCoPaymentId:
+          column:
+            name: policy_co_payment_id
+        policyId:
+          column:
+            name: policy_id
+        target:
+          column:
+            name: target
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyCoPaymentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - applyTargetAgeRange
+          - applyTargetCondition
+          - applyToAllMedicalProvider
+          - applyToAllPlans
+          - applyToBlackList
+          - applyToVoluntaryTarget
+          - bonusPaymentRatio
+          - createdAt
+          - deletedAt
+          - policyCoPaymentId
+          - policyId
+          - target
+          - tenantId
+          - updatedAt
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyCoPaymentsResponse
+  description: Responses from the 'insert_policy_co_payments' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyCoPayments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyCoPaymentsResponse
+    inputTypeName: InsertPolicyCoPaymentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_co_payments_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyCoPaymentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyCoPayments
+  outputType: InsertPolicyCoPaymentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyCoPaymentsObject!]!"
+    - name: postCheck
+      type: PolicyCoPaymentsBoolExp
+      description: Insert permission predicate over the 'policy_co_payments' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_co_payments
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyCoPayments
+    rootFieldKind: Mutation
+  description: Insert into the policy_co_payments table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyCoPayments
+  permissions:
+    - role: admin
+      allowExecution: true
+

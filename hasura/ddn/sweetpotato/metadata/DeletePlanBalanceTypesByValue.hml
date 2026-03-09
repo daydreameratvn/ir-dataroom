@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePlanBalanceTypesByValueResponse
+  description: Responses from the 'delete_plan_balance_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanBalanceTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePlanBalanceTypesByValueResponse
+    inputTypeName: DeletePlanBalanceTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_plan_balance_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePlanBalanceTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePlanBalanceTypesByValue
+  outputType: DeletePlanBalanceTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: PlanBalanceTypesBoolExp
+      description: Delete permission predicate over the 'plan_balance_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_plan_balance_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePlanBalanceTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'plan_balance_types' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePlanBalanceTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

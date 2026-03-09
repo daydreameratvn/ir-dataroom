@@ -1,0 +1,213 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePlanBalancesByIdUpdateColumns
+  description: Update the columns of the 'plan_balances' collection
+  fields:
+    - name: allowAssessment
+      type: UpdateColumnPlanBalancesAllowAssessment
+      description: Update the 'allow_assessment' column in the 'plan_balances' collection.
+    - name: applyConditionKey
+      type: UpdateColumnPlanBalancesApplyConditionKey
+      description: Update the 'apply_condition_key' column in the 'plan_balances'
+        collection.
+    - name: contractReferencePhrase
+      type: UpdateColumnPlanBalancesContractReferencePhrase
+      description: Update the 'contract_reference_phrase' column in the
+        'plan_balances' collection.
+    - name: createdAt
+      type: UpdateColumnPlanBalancesCreatedAt
+      description: Update the 'created_at' column in the 'plan_balances' collection.
+    - name: deletedAt
+      type: UpdateColumnPlanBalancesDeletedAt
+      description: Update the 'deleted_at' column in the 'plan_balances' collection.
+    - name: description
+      type: UpdateColumnPlanBalancesDescription
+      description: Update the 'description' column in the 'plan_balances' collection.
+    - name: diseaseGroupId
+      type: UpdateColumnPlanBalancesDiseaseGroupId
+      description: Update the 'disease_group_id' column in the 'plan_balances' collection.
+    - name: displayOrder
+      type: UpdateColumnPlanBalancesDisplayOrder
+      description: Update the 'display_order' column in the 'plan_balances' collection.
+    - name: id
+      type: UpdateColumnPlanBalancesId
+      description: Update the 'id' column in the 'plan_balances' collection.
+    - name: name
+      type: UpdateColumnPlanBalancesName
+      description: Update the 'name' column in the 'plan_balances' collection.
+    - name: planId
+      type: UpdateColumnPlanBalancesPlanId
+      description: Update the 'plan_id' column in the 'plan_balances' collection.
+    - name: tenantId
+      type: UpdateColumnPlanBalancesTenantId
+      description: Update the 'tenant_id' column in the 'plan_balances' collection.
+    - name: type
+      type: UpdateColumnPlanBalancesType
+      description: Update the 'type' column in the 'plan_balances' collection.
+    - name: updatedAt
+      type: UpdateColumnPlanBalancesUpdatedAt
+      description: Update the 'updated_at' column in the 'plan_balances' collection.
+    - name: value
+      type: UpdateColumnPlanBalancesValue
+      description: Update the 'value' column in the 'plan_balances' collection.
+  graphql:
+    typeName: UpdatePlanBalancesByIdUpdateColumns
+    inputTypeName: UpdatePlanBalancesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_plan_balances_by_id_update_columns
+      fieldMapping:
+        allowAssessment:
+          column:
+            name: allow_assessment
+        applyConditionKey:
+          column:
+            name: apply_condition_key
+        contractReferencePhrase:
+          column:
+            name: contract_reference_phrase
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        diseaseGroupId:
+          column:
+            name: disease_group_id
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        planId:
+          column:
+            name: plan_id
+        tenantId:
+          column:
+            name: tenant_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePlanBalancesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - allowAssessment
+          - applyConditionKey
+          - contractReferencePhrase
+          - createdAt
+          - deletedAt
+          - description
+          - diseaseGroupId
+          - displayOrder
+          - id
+          - name
+          - planId
+          - tenantId
+          - type
+          - updatedAt
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePlanBalancesByIdResponse
+  description: Responses from the 'update_plan_balances_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanBalances!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePlanBalancesByIdResponse
+    inputTypeName: UpdatePlanBalancesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_plan_balances_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePlanBalancesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePlanBalancesById
+  outputType: UpdatePlanBalancesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: PlanBalancesBoolExp
+      description: Update permission post-condition predicate over the 'plan_balances'
+        collection
+    - name: preCheck
+      type: PlanBalancesBoolExp
+      description: Update permission pre-condition predicate over the 'plan_balances'
+        collection
+    - name: updateColumns
+      type: UpdatePlanBalancesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_plan_balances_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePlanBalancesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'plan_balances' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePlanBalancesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimPresentCaseCodesByClaimPresentCaseCodeIdResponse
+  description: Responses from the
+    'delete_claim_present_case_codes_by_claim_present_case_code_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimPresentCaseCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimPresentCaseCodesByClaimPresentCaseCodeIdResponse
+    inputTypeName: DeleteClaimPresentCaseCodesByClaimPresentCaseCodeIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_present_case_codes_by_claim_present_case_code_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimPresentCaseCodesByClaimPresentCaseCodeIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimPresentCaseCodesByClaimPresentCaseCodeId
+  outputType: DeleteClaimPresentCaseCodesByClaimPresentCaseCodeIdResponse!
+  arguments:
+    - name: keyClaimPresentCaseCodeId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimPresentCaseCodesBoolExp
+      description: Delete permission predicate over the 'claim_present_case_codes'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_present_case_codes_by_claim_present_case_code_id
+    argumentMapping:
+      keyClaimPresentCaseCodeId: key_claim_present_case_code_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimPresentCaseCodesByClaimPresentCaseCodeId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_present_case_codes' collection using
+    the 'claim_present_case_code_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimPresentCaseCodesByClaimPresentCaseCodeId
+  permissions:
+    - role: admin
+      allowExecution: true
+

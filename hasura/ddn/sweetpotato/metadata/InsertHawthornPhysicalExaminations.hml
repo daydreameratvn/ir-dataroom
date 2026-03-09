@@ -1,0 +1,157 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornPhysicalExaminationsObject
+  fields:
+    - name: content
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: documentId
+      type: Uuid
+    - name: groupCode
+      type: String_1!
+    - name: healthCheckupId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: name
+      type: String_1!
+    - name: patientId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertHawthornPhysicalExaminationsObject
+    inputTypeName: InsertHawthornPhysicalExaminationsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_physical_examinations_object
+      fieldMapping:
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        documentId:
+          column:
+            name: document_id
+        groupCode:
+          column:
+            name: group_code
+        healthCheckupId:
+          column:
+            name: health_checkup_id
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        patientId:
+          column:
+            name: patient_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornPhysicalExaminationsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - content
+          - createdAt
+          - deletedAt
+          - documentId
+          - groupCode
+          - healthCheckupId
+          - id
+          - name
+          - patientId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHawthornPhysicalExaminationsResponse
+  description: Responses from the 'insert_hawthorn_physical_examinations' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornPhysicalExaminations!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHawthornPhysicalExaminationsResponse
+    inputTypeName: InsertHawthornPhysicalExaminationsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hawthorn_physical_examinations_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHawthornPhysicalExaminationsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHawthornPhysicalExaminations
+  outputType: InsertHawthornPhysicalExaminationsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHawthornPhysicalExaminationsObject!]!"
+    - name: postCheck
+      type: HawthornPhysicalExaminationsBoolExp
+      description: Insert permission predicate over the
+        'hawthorn_physical_examinations' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hawthorn_physical_examinations
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHawthornPhysicalExaminations
+    rootFieldKind: Mutation
+  description: Insert into the hawthorn_physical_examinations table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHawthornPhysicalExaminations
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FigToDos
+  description: Việc cần làm khi nhận assign claim_case.
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: FigToDos
+    inputTypeName: FigToDosInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fig_to_dos
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FigToDos
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FigToDosBoolExp
+  operand:
+    object:
+      type: FigToDos
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: figClaimCaseAssignments
+        - relationshipName: figClaimCases
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FigToDosBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FigToDosAggExp
+  operand:
+    object:
+      aggregatedType: FigToDos
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FigToDosAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FigToDosOrderByExp
+  operand:
+    object:
+      orderedType: FigToDos
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: FigToDosOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FigToDos
+  objectType: FigToDos
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fig_to_dos
+  filterExpressionType: FigToDosBoolExp
+  aggregateExpression: FigToDosAggExp
+  orderByExpression: FigToDosOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: figToDos
+      subscription:
+        rootField: figToDos
+    selectUniques:
+      - queryRootField: figToDosByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: figToDosByValue
+    filterInputTypeName: FigToDosFilterInput
+    aggregate:
+      queryRootField: figToDosAggregate
+      subscription:
+        rootField: figToDosAggregate
+  description: Việc cần làm khi nhận assign claim_case.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FigToDos
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: figClaimCaseAssignments
+  sourceType: FigToDos
+  target:
+    model:
+      name: FigClaimCaseAssignments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FigClaimCaseAssignmentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: toDo
+  graphql:
+    aggregateFieldName: figClaimCaseAssignmentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: figClaimCases
+  sourceType: FigToDos
+  target:
+    model:
+      name: FigClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FigClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: toDo
+  graphql:
+    aggregateFieldName: figClaimCasesAggregate
+

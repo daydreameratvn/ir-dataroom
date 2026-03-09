@@ -1,0 +1,86 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePoliciesPlansInsuredBenefitsByDeletedAtAndPlanIdAndPlanInsuredBenefitIdAndPolicyIdResponse
+  description: Responses from the
+    'delete_policies_plans_insured_benefits_by_deleted_at_and_plan_id_and_plan_insured_benefit_id_and_policy_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PoliciesPlansInsuredBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePoliciesPlansInsuredBenefitsByDeletedAtAndPlanIdAndPlanInsuredBenefitIdAndPolicyIdResponse
+    inputTypeName: DeletePoliciesPlansInsuredBenefitsByDeletedAtAndPlanIdAndPlanInsuredBenefitIdAndPolicyIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policies_plans_insured_benefits_by_deleted_at_and_plan_id_and_plan_insured_benefit_id_and_policy_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePoliciesPlansInsuredBenefitsByDeletedAtAndPlanIdAndPlanInsuredBenefitIdAndPolicyIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePoliciesPlansInsuredBenefitsByDeletedAtAndPlanIdAndPlanInsuredBenefitIdAndPolicyId
+  outputType: DeletePoliciesPlansInsuredBenefitsByDeletedAtAndPlanIdAndPlanInsuredBenefitIdAndPolicyIdResponse!
+  arguments:
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyPlanId
+      type: Uuid!
+    - name: keyPlanInsuredBenefitId
+      type: Uuid!
+    - name: keyPolicyId
+      type: Uuid!
+    - name: preCheck
+      type: PoliciesPlansInsuredBenefitsBoolExp
+      description: Delete permission predicate over the
+        'policies_plans_insured_benefits' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policies_plans_insured_benefits_by_deleted_at_and_plan_id_and_plan_insured_benefit_id_and_policy_id
+    argumentMapping:
+      keyDeletedAt: key_deleted_at
+      keyPlanId: key_plan_id
+      keyPlanInsuredBenefitId: key_plan_insured_benefit_id
+      keyPolicyId: key_policy_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePoliciesPlansInsuredBenefitsByDeletedAtAndPlanIdAndPlanInsuredBenefitIdAndPolicyId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policies_plans_insured_benefits' collection
+    using the 'deleted_at', 'plan_id', 'plan_insured_benefit_id' and 'policy_id'
+    keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePoliciesPlansInsuredBenefitsByDeletedAtAndPlanIdAndPlanInsuredBenefitIdAndPolicyId
+  permissions:
+    - role: admin
+      allowExecution: true
+

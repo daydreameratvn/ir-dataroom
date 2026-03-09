@@ -1,0 +1,283 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseAssessedDiagnoses
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: icdMetadataId
+      type: Uuid!
+    - name: id
+      type: Uuid!
+    - name: order
+      type: Int32
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: ClaimCaseAssessedDiagnoses
+    inputTypeName: ClaimCaseAssessedDiagnosesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_assessed_diagnoses
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        icdMetadataId:
+          column:
+            name: icd_metadata_id
+        id:
+          column:
+            name: id
+        order:
+          column:
+            name: order
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseAssessedDiagnoses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - icdMetadataId
+          - id
+          - order
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseAssessedDiagnosesBoolExp
+  operand:
+    object:
+      type: ClaimCaseAssessedDiagnoses
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: icdMetadataId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: order
+          booleanExpressionType: Int4BoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+        - relationshipName: metadatum
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseAssessedDiagnosesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseAssessedDiagnosesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseAssessedDiagnoses
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: icdMetadataId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: order
+          aggregateExpression: Int4AggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseAssessedDiagnosesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseAssessedDiagnosesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseAssessedDiagnoses
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: icdMetadataId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: order
+          orderByExpression: Int32OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: identityUser
+        - relationshipName: metadatum
+  graphql:
+    expressionTypeName: ClaimCaseAssessedDiagnosesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseAssessedDiagnoses
+  objectType: ClaimCaseAssessedDiagnoses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_assessed_diagnoses
+  filterExpressionType: ClaimCaseAssessedDiagnosesBoolExp
+  aggregateExpression: ClaimCaseAssessedDiagnosesAggExp
+  orderByExpression: ClaimCaseAssessedDiagnosesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseAssessedDiagnoses
+      subscription:
+        rootField: claimCaseAssessedDiagnoses
+    selectUniques:
+      - queryRootField: claimCaseAssessedDiagnosesByClaimCaseAssessedDiagnosesClaimCaseIdIcdMetadataIdKey
+        uniqueIdentifier:
+          - claimCaseId
+          - icdMetadataId
+        subscription:
+          rootField: claimCaseAssessedDiagnosesByClaimCaseAssessedDiagnosesClaimCaseIdIcdMetadataIdKey
+      - queryRootField: claimCaseAssessedDiagnosesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimCaseAssessedDiagnosesById
+    filterInputTypeName: ClaimCaseAssessedDiagnosesFilterInput
+    aggregate:
+      queryRootField: claimCaseAssessedDiagnosesAggregate
+      subscription:
+        rootField: claimCaseAssessedDiagnosesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseAssessedDiagnoses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: ClaimCaseAssessedDiagnoses
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: ClaimCaseAssessedDiagnoses
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: metadatum
+  sourceType: ClaimCaseAssessedDiagnoses
+  target:
+    model:
+      name: Metadata
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: icdMetadataId
+      target:
+        modelField:
+          - fieldName: metadataId
+

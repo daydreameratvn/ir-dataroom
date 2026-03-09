@@ -1,0 +1,268 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanDocuments
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1
+    - name: planDocumentId
+      type: Uuid!
+    - name: planId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PlanDocuments
+    inputTypeName: PlanDocumentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_documents
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        planDocumentId:
+          column:
+            name: plan_document_id
+        planId:
+          column:
+            name: plan_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanDocuments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - name
+          - planDocumentId
+          - planId
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanDocumentsBoolExp
+  operand:
+    object:
+      type: PlanDocuments
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: planDocumentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: files
+        - relationshipName: plan
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanDocumentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanDocumentsAggExp
+  operand:
+    object:
+      aggregatedType: PlanDocuments
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: planDocumentId
+          aggregateExpression: UuidAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanDocumentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanDocumentsOrderByExp
+  operand:
+    object:
+      orderedType: PlanDocuments
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: planDocumentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: plan
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: PlanDocumentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanDocuments
+  objectType: PlanDocuments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_documents
+  filterExpressionType: PlanDocumentsBoolExp
+  aggregateExpression: PlanDocumentsAggExp
+  orderByExpression: PlanDocumentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planDocuments
+      subscription:
+        rootField: planDocuments
+    selectUniques:
+      - queryRootField: planDocumentsByPlanDocumentId
+        uniqueIdentifier:
+          - planDocumentId
+        subscription:
+          rootField: planDocumentsByPlanDocumentId
+    filterInputTypeName: PlanDocumentsFilterInput
+    aggregate:
+      queryRootField: planDocumentsAggregate
+      subscription:
+        rootField: planDocumentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanDocuments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: files
+  sourceType: PlanDocuments
+  target:
+    model:
+      name: Files
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FilesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planDocumentId
+      target:
+        modelField:
+          - fieldName: planDocumentId
+  graphql:
+    aggregateFieldName: filesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plan
+  sourceType: PlanDocuments
+  target:
+    model:
+      name: Plans
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: PlanDocuments
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

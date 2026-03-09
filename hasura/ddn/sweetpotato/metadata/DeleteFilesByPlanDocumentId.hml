@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFilesByPlanDocumentIdResponse
+  description: Responses from the 'delete_files_by_plan_document_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Files!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFilesByPlanDocumentIdResponse
+    inputTypeName: DeleteFilesByPlanDocumentIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_files_by_plan_document_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFilesByPlanDocumentIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFilesByPlanDocumentId
+  outputType: DeleteFilesByPlanDocumentIdResponse!
+  arguments:
+    - name: keyPlanDocumentId
+      type: Uuid
+    - name: preCheck
+      type: FilesBoolExp
+      description: Delete permission predicate over the 'files' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_files_by_plan_document_id
+    argumentMapping:
+      keyPlanDocumentId: key_plan_document_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFilesByPlanDocumentId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'files' collection using the 'plan_document_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFilesByPlanDocumentId
+  permissions:
+    - role: admin
+      allowExecution: true
+

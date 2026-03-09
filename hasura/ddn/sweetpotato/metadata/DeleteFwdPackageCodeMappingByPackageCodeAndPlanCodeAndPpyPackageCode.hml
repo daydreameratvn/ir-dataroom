@@ -1,0 +1,82 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeResponse
+  description: Responses from the
+    'delete_fwd_package_code_mapping_by_package_code_and_plan_code_and_ppy_package_code'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdPackageCodeMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeResponse
+    inputTypeName: DeleteFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_package_code_mapping_by_package_code_and_plan_code_and_ppy_package_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCode
+  outputType: DeleteFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCodeResponse!
+  arguments:
+    - name: keyPackageCode
+      type: String_1!
+    - name: keyPlanCode
+      type: String_1!
+    - name: keyPpyPackageCode
+      type: String_1!
+    - name: preCheck
+      type: FwdPackageCodeMappingBoolExp
+      description: Delete permission predicate over the 'fwd_package_code_mapping'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_package_code_mapping_by_package_code_and_plan_code_and_ppy_package_code
+    argumentMapping:
+      keyPackageCode: key_package_code
+      keyPlanCode: key_plan_code
+      keyPpyPackageCode: key_ppy_package_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_package_code_mapping' collection using
+    the 'package_code', 'plan_code' and 'ppy_package_code' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdPackageCodeMappingByPackageCodeAndPlanCodeAndPpyPackageCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

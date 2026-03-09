@@ -1,0 +1,202 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdPendingCodes
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: name
+      type: String_1!
+    - name: ppyPendingCode
+      type: String_1!
+    - name: remark
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: FwdPendingCodes
+    inputTypeName: FwdPendingCodesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_pending_codes
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        name:
+          column:
+            name: name
+        ppyPendingCode:
+          column:
+            name: ppy_pending_code
+        remark:
+          column:
+            name: remark
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdPendingCodes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - name
+          - ppyPendingCode
+          - remark
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdPendingCodesBoolExp
+  operand:
+    object:
+      type: FwdPendingCodes
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: ppyPendingCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: remark
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: pendingCode
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdPendingCodesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdPendingCodesAggExp
+  operand:
+    object:
+      aggregatedType: FwdPendingCodes
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: ppyPendingCode
+          aggregateExpression: TextAggExp
+        - fieldName: remark
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdPendingCodesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdPendingCodesOrderByExp
+  operand:
+    object:
+      orderedType: FwdPendingCodes
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: ppyPendingCode
+          orderByExpression: String1OrderByExp
+        - fieldName: remark
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: pendingCode
+  graphql:
+    expressionTypeName: FwdPendingCodesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdPendingCodes
+  objectType: FwdPendingCodes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_pending_codes
+  filterExpressionType: FwdPendingCodesBoolExp
+  aggregateExpression: FwdPendingCodesAggExp
+  orderByExpression: FwdPendingCodesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdPendingCodes
+      subscription:
+        rootField: fwdPendingCodes
+    selectUniques:
+      - queryRootField: fwdPendingCodesByPendingCodesPkey
+        uniqueIdentifier:
+          - code
+          - ppyPendingCode
+        subscription:
+          rootField: fwdPendingCodesByPendingCodesPkey
+    filterInputTypeName: FwdPendingCodesFilterInput
+    aggregate:
+      queryRootField: fwdPendingCodesAggregate
+      subscription:
+        rootField: fwdPendingCodesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdPendingCodes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: pendingCode
+  sourceType: FwdPendingCodes
+  target:
+    model:
+      name: PendingCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: ppyPendingCode
+      target:
+        modelField:
+          - fieldName: code
+

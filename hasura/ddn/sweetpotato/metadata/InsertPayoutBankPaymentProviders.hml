@@ -1,0 +1,145 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutBankPaymentProvidersObject
+  fields:
+    - name: bankId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: flexBankCode
+      type: String_1
+    - name: flexBankName
+      type: String_1
+    - name: flexFastTransferSupported
+      type: Boolean_1
+    - name: id
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+    - name: xenditBankCode
+      type: String_1
+  graphql:
+    typeName: InsertPayoutBankPaymentProvidersObject
+    inputTypeName: InsertPayoutBankPaymentProvidersObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_bank_payment_providers_object
+      fieldMapping:
+        bankId:
+          column:
+            name: bank_id
+        createdAt:
+          column:
+            name: created_at
+        flexBankCode:
+          column:
+            name: flex_bank_code
+        flexBankName:
+          column:
+            name: flex_bank_name
+        flexFastTransferSupported:
+          column:
+            name: flex_fast_transfer_supported
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+        xenditBankCode:
+          column:
+            name: xendit_bank_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutBankPaymentProvidersObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankId
+          - createdAt
+          - flexBankCode
+          - flexBankName
+          - flexFastTransferSupported
+          - id
+          - updatedAt
+          - xenditBankCode
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutBankPaymentProvidersResponse
+  description: Responses from the 'insert_payout_bank_payment_providers' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutBankPaymentProviders!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPayoutBankPaymentProvidersResponse
+    inputTypeName: InsertPayoutBankPaymentProvidersResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_bank_payment_providers_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutBankPaymentProvidersResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPayoutBankPaymentProviders
+  outputType: InsertPayoutBankPaymentProvidersResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPayoutBankPaymentProvidersObject!]!"
+    - name: postCheck
+      type: PayoutBankPaymentProvidersBoolExp
+      description: Insert permission predicate over the
+        'payout_bank_payment_providers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_payout_bank_payment_providers
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPayoutBankPaymentProviders
+    rootFieldKind: Mutation
+  description: Insert into the payout_bank_payment_providers table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPayoutBankPaymentProviders
+  permissions:
+    - role: admin
+      allowExecution: true
+

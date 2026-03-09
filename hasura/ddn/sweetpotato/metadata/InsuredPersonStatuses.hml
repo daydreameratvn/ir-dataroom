@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredPersonStatuses
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsuredPersonStatuses
+    inputTypeName: InsuredPersonStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_person_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredPersonStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredPersonStatusesBoolExp
+  operand:
+    object:
+      type: InsuredPersonStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: insuredPersons
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredPersonStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredPersonStatusesAggExp
+  operand:
+    object:
+      aggregatedType: InsuredPersonStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredPersonStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredPersonStatusesOrderByExp
+  operand:
+    object:
+      orderedType: InsuredPersonStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: InsuredPersonStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredPersonStatuses
+  objectType: InsuredPersonStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_person_statuses
+  filterExpressionType: InsuredPersonStatusesBoolExp
+  aggregateExpression: InsuredPersonStatusesAggExp
+  orderByExpression: InsuredPersonStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredPersonStatuses
+      subscription:
+        rootField: insuredPersonStatuses
+    selectUniques:
+      - queryRootField: insuredPersonStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: insuredPersonStatusesByValue
+    filterInputTypeName: InsuredPersonStatusesFilterInput
+    aggregate:
+      queryRootField: insuredPersonStatusesAggregate
+      subscription:
+        rootField: insuredPersonStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredPersonStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPersons
+  sourceType: InsuredPersonStatuses
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: InsuredPersonsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: insuredPersonsAggregate
+

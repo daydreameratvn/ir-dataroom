@@ -1,0 +1,379 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SlvHistoryClaimRecords
+  fields:
+    - name: claimType
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: declineCode
+      type: String_1
+    - name: deletedAt
+      type: Timestamptz
+    - name: diagnosis
+      type: String_1
+    - name: eventDate
+      type: Timestamptz
+    - name: historyClaimCaseId
+      type: Uuid!
+    - name: hospitalizationFrom
+      type: Timestamptz
+    - name: hospitalizationTo
+      type: Timestamptz
+    - name: icdCodes
+      type: "[String_1]"
+    - name: icuDuration
+      type: Int32
+    - name: id
+      type: Uuid!
+    - name: isSurgery
+      type: Boolean_1
+    - name: medicalProviderName
+      type: String_1
+    - name: paidAmount
+      type: Bigdecimal
+    - name: paidHospitalizationDuration
+      type: Int32
+    - name: policyNumber
+      type: String_1!
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: SlvHistoryClaimRecords
+    inputTypeName: SlvHistoryClaimRecordsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: slv_history_claim_records
+      fieldMapping:
+        claimType:
+          column:
+            name: claim_type
+        createdAt:
+          column:
+            name: created_at
+        declineCode:
+          column:
+            name: decline_code
+        deletedAt:
+          column:
+            name: deleted_at
+        diagnosis:
+          column:
+            name: diagnosis
+        eventDate:
+          column:
+            name: event_date
+        historyClaimCaseId:
+          column:
+            name: history_claim_case_id
+        hospitalizationFrom:
+          column:
+            name: hospitalization_from
+        hospitalizationTo:
+          column:
+            name: hospitalization_to
+        icdCodes:
+          column:
+            name: icd_codes
+        icuDuration:
+          column:
+            name: icu_duration
+        id:
+          column:
+            name: id
+        isSurgery:
+          column:
+            name: is_surgery
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        paidAmount:
+          column:
+            name: paid_amount
+        paidHospitalizationDuration:
+          column:
+            name: paid_hospitalization_duration
+        policyNumber:
+          column:
+            name: policy_number
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SlvHistoryClaimRecords
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimType
+          - createdAt
+          - declineCode
+          - deletedAt
+          - diagnosis
+          - eventDate
+          - historyClaimCaseId
+          - hospitalizationFrom
+          - hospitalizationTo
+          - icdCodes
+          - icuDuration
+          - id
+          - isSurgery
+          - medicalProviderName
+          - paidAmount
+          - paidHospitalizationDuration
+          - policyNumber
+          - status
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SlvHistoryClaimRecordsBoolExp
+  operand:
+    object:
+      type: SlvHistoryClaimRecords
+      comparableFields:
+        - fieldName: claimType
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: declineCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: diagnosis
+          booleanExpressionType: TextBoolExp
+        - fieldName: eventDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: historyClaimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: hospitalizationFrom
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: hospitalizationTo
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: icuDuration
+          booleanExpressionType: Int4BoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isSurgery
+          booleanExpressionType: BoolBoolExp
+        - fieldName: medicalProviderName
+          booleanExpressionType: TextBoolExp
+        - fieldName: paidAmount
+          booleanExpressionType: NumericBoolExp
+        - fieldName: paidHospitalizationDuration
+          booleanExpressionType: Int4BoolExp
+        - fieldName: policyNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: slvHistoryClaimCase
+        - relationshipName: slvClaimCaseSameEventGroupStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SlvHistoryClaimRecordsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SlvHistoryClaimRecordsAggExp
+  operand:
+    object:
+      aggregatedType: SlvHistoryClaimRecords
+      aggregatableFields:
+        - fieldName: claimType
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: declineCode
+          aggregateExpression: TextAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: diagnosis
+          aggregateExpression: TextAggExp
+        - fieldName: eventDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: historyClaimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: hospitalizationFrom
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: hospitalizationTo
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: icuDuration
+          aggregateExpression: Int4AggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isSurgery
+          aggregateExpression: BoolAggExp
+        - fieldName: medicalProviderName
+          aggregateExpression: TextAggExp
+        - fieldName: paidAmount
+          aggregateExpression: NumericAggExp
+        - fieldName: paidHospitalizationDuration
+          aggregateExpression: Int4AggExp
+        - fieldName: policyNumber
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SlvHistoryClaimRecordsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SlvHistoryClaimRecordsOrderByExp
+  operand:
+    object:
+      orderedType: SlvHistoryClaimRecords
+      orderableFields:
+        - fieldName: claimType
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: declineCode
+          orderByExpression: String1OrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: diagnosis
+          orderByExpression: String1OrderByExp
+        - fieldName: eventDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: historyClaimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: hospitalizationFrom
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: hospitalizationTo
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: icuDuration
+          orderByExpression: Int32OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isSurgery
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: medicalProviderName
+          orderByExpression: String1OrderByExp
+        - fieldName: paidAmount
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: paidHospitalizationDuration
+          orderByExpression: Int32OrderByExp
+        - fieldName: policyNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: slvHistoryClaimCase
+        - relationshipName: slvClaimCaseSameEventGroupStatus
+  graphql:
+    expressionTypeName: SlvHistoryClaimRecordsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SlvHistoryClaimRecords
+  objectType: SlvHistoryClaimRecords
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: slv_history_claim_records
+  filterExpressionType: SlvHistoryClaimRecordsBoolExp
+  aggregateExpression: SlvHistoryClaimRecordsAggExp
+  orderByExpression: SlvHistoryClaimRecordsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: slvHistoryClaimRecords
+      subscription:
+        rootField: slvHistoryClaimRecords
+    selectUniques:
+      - queryRootField: slvHistoryClaimRecordsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: slvHistoryClaimRecordsById
+      - queryRootField: slvHistoryClaimRecordsByHistoryClaimTypePolicyNumberDeletedAtKey
+        uniqueIdentifier:
+          - claimType
+          - deletedAt
+          - historyClaimCaseId
+          - policyNumber
+        subscription:
+          rootField: slvHistoryClaimRecordsByHistoryClaimTypePolicyNumberDeletedAtKey
+    filterInputTypeName: SlvHistoryClaimRecordsFilterInput
+    aggregate:
+      queryRootField: slvHistoryClaimRecordsAggregate
+      subscription:
+        rootField: slvHistoryClaimRecordsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SlvHistoryClaimRecords
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvHistoryClaimCase
+  sourceType: SlvHistoryClaimRecords
+  target:
+    model:
+      name: SlvHistoryClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: historyClaimCaseId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvClaimCaseSameEventGroupStatus
+  sourceType: SlvHistoryClaimRecords
+  target:
+    model:
+      name: SlvClaimCaseSameEventGroupStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+

@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceSendWhenObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertCorrespondenceSendWhenObject
+    inputTypeName: InsertCorrespondenceSendWhenObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_send_when_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceSendWhenObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceSendWhenResponse
+  description: Responses from the 'insert_correspondence_send_when' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceSendWhen!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCorrespondenceSendWhenResponse
+    inputTypeName: InsertCorrespondenceSendWhenResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_send_when_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceSendWhenResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCorrespondenceSendWhen
+  outputType: InsertCorrespondenceSendWhenResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCorrespondenceSendWhenObject!]!"
+    - name: postCheck
+      type: CorrespondenceSendWhenBoolExp
+      description: Insert permission predicate over the 'correspondence_send_when'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_correspondence_send_when
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCorrespondenceSendWhen
+    rootFieldKind: Mutation
+  description: Insert into the correspondence_send_when table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCorrespondenceSendWhen
+  permissions:
+    - role: admin
+      allowExecution: true
+

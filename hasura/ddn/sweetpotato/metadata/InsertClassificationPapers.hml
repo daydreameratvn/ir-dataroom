@@ -1,0 +1,144 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClassificationPapersObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: isParsed
+      type: Boolean_1
+    - name: paperId
+      type: Uuid
+    - name: paperType
+      type: String_1
+    - name: parsedData
+      type: Json!
+    - name: rawData
+      type: Json
+    - name: s3Params
+      type: Json
+    - name: updatedAt
+      type: Timestamp
+  graphql:
+    typeName: InsertClassificationPapersObject
+    inputTypeName: InsertClassificationPapersObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_classification_papers_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        isParsed:
+          column:
+            name: is_parsed
+        paperId:
+          column:
+            name: paper_id
+        paperType:
+          column:
+            name: paper_type
+        parsedData:
+          column:
+            name: parsed_data
+        rawData:
+          column:
+            name: raw_data
+        s3Params:
+          column:
+            name: s3_params
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClassificationPapersObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - isParsed
+          - paperId
+          - paperType
+          - parsedData
+          - rawData
+          - s3Params
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClassificationPapersResponse
+  description: Responses from the 'insert_classification_papers' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClassificationPapers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClassificationPapersResponse
+    inputTypeName: InsertClassificationPapersResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_classification_papers_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClassificationPapersResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClassificationPapers
+  outputType: InsertClassificationPapersResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClassificationPapersObject!]!"
+    - name: postCheck
+      type: ClassificationPapersBoolExp
+      description: Insert permission predicate over the 'classification_papers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_classification_papers
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClassificationPapers
+    rootFieldKind: Mutation
+  description: Insert into the classification_papers table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClassificationPapers
+  permissions:
+    - role: admin
+      allowExecution: true
+

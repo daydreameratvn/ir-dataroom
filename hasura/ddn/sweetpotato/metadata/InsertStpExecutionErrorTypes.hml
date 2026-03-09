@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertStpExecutionErrorTypesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertStpExecutionErrorTypesObject
+    inputTypeName: InsertStpExecutionErrorTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_stp_execution_error_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertStpExecutionErrorTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertStpExecutionErrorTypesResponse
+  description: Responses from the 'insert_stp_execution_error_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpExecutionErrorTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertStpExecutionErrorTypesResponse
+    inputTypeName: InsertStpExecutionErrorTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_stp_execution_error_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertStpExecutionErrorTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertStpExecutionErrorTypes
+  outputType: InsertStpExecutionErrorTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertStpExecutionErrorTypesObject!]!"
+    - name: postCheck
+      type: StpExecutionErrorTypesBoolExp
+      description: Insert permission predicate over the 'stp_execution_error_types'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_stp_execution_error_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertStpExecutionErrorTypes
+    rootFieldKind: Mutation
+  description: Insert into the stp_execution_error_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertStpExecutionErrorTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

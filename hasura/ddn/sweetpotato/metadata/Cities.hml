@@ -1,0 +1,297 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Cities
+  fields:
+    - name: code
+      type: String_1
+    - name: displayOrder
+      type: Int32
+    - name: enFullName
+      type: String_1
+    - name: fullName
+      type: String_1
+    - name: id
+      type: Int32!
+      description: Citad code
+    - name: name
+      type: String_1!
+  graphql:
+    typeName: Cities
+    inputTypeName: CitiesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: cities
+      fieldMapping:
+        code:
+          column:
+            name: code
+        displayOrder:
+          column:
+            name: display_order
+        enFullName:
+          column:
+            name: en_full_name
+        fullName:
+          column:
+            name: full_name
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Cities
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - displayOrder
+          - enFullName
+          - fullName
+          - id
+          - name
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CitiesBoolExp
+  operand:
+    object:
+      type: Cities
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: displayOrder
+          booleanExpressionType: Int4BoolExp
+        - fieldName: enFullName
+          booleanExpressionType: TextBoolExp
+        - fieldName: fullName
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: id
+          booleanExpressionType: Int4BoolExp
+        - fieldName: name
+          booleanExpressionType: VarcharBoolExp
+      comparableRelationships:
+        - relationshipName: bankBranchs
+        - relationshipName: districts
+        - relationshipName: mpMedicalProviders
+        - relationshipName: payoutBeneficiaryPapers
+        - relationshipName: wards
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CitiesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CitiesAggExp
+  operand:
+    object:
+      aggregatedType: Cities
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: VarcharAggExp
+        - fieldName: displayOrder
+          aggregateExpression: Int4AggExp
+        - fieldName: enFullName
+          aggregateExpression: TextAggExp
+        - fieldName: fullName
+          aggregateExpression: VarcharAggExp
+        - fieldName: id
+          aggregateExpression: Int4AggExp
+        - fieldName: name
+          aggregateExpression: VarcharAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CitiesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CitiesOrderByExp
+  operand:
+    object:
+      orderedType: Cities
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: displayOrder
+          orderByExpression: Int32OrderByExp
+        - fieldName: enFullName
+          orderByExpression: String1OrderByExp
+        - fieldName: fullName
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: Int32OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CitiesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Cities
+  objectType: Cities
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: cities
+  filterExpressionType: CitiesBoolExp
+  aggregateExpression: CitiesAggExp
+  orderByExpression: CitiesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: cities
+      subscription:
+        rootField: cities
+    selectUniques:
+      - queryRootField: citiesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: citiesById
+    filterInputTypeName: CitiesFilterInput
+    aggregate:
+      queryRootField: citiesAggregate
+      subscription:
+        rootField: citiesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Cities
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bankBranchs
+  sourceType: Cities
+  target:
+    model:
+      name: BankBranchs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: BankBranchsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: cityId
+  graphql:
+    aggregateFieldName: bankBranchsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: districts
+  sourceType: Cities
+  target:
+    model:
+      name: Districts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: DistrictsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: cityId
+  graphql:
+    aggregateFieldName: districtsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviders
+  sourceType: Cities
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProvidersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: cityId
+  graphql:
+    aggregateFieldName: mpMedicalProvidersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutBeneficiaryPapers
+  sourceType: Cities
+  target:
+    model:
+      name: PayoutBeneficiaryPapers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutBeneficiaryPapersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankCityId
+  graphql:
+    aggregateFieldName: payoutBeneficiaryPapersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: wards
+  sourceType: Cities
+  target:
+    model:
+      name: Wards
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: WardsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: cityId
+  graphql:
+    aggregateFieldName: wardsAggregate
+

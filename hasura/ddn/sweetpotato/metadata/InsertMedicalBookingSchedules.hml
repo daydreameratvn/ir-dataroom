@@ -1,0 +1,163 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingSchedulesObject
+  fields:
+    - name: contractId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: date
+      type: Date!
+    - name: dayOfWeek
+      type: Int32!
+    - name: deletedAt
+      type: Timestamp
+    - name: fromTime
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: maxSlots
+      type: Int32
+    - name: timePeriod
+      type: String_1!
+    - name: toTime
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertMedicalBookingSchedulesObject
+    inputTypeName: InsertMedicalBookingSchedulesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_schedules_object
+      fieldMapping:
+        contractId:
+          column:
+            name: contract_id
+        createdAt:
+          column:
+            name: created_at
+        date:
+          column:
+            name: date
+        dayOfWeek:
+          column:
+            name: day_of_week
+        deletedAt:
+          column:
+            name: deleted_at
+        fromTime:
+          column:
+            name: from_time
+        id:
+          column:
+            name: id
+        maxSlots:
+          column:
+            name: max_slots
+        timePeriod:
+          column:
+            name: time_period
+        toTime:
+          column:
+            name: to_time
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingSchedulesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - contractId
+          - createdAt
+          - date
+          - dayOfWeek
+          - deletedAt
+          - fromTime
+          - id
+          - maxSlots
+          - timePeriod
+          - toTime
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingSchedulesResponse
+  description: Responses from the 'insert_medical_booking_schedules' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingSchedules!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMedicalBookingSchedulesResponse
+    inputTypeName: InsertMedicalBookingSchedulesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_schedules_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingSchedulesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMedicalBookingSchedules
+  outputType: InsertMedicalBookingSchedulesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMedicalBookingSchedulesObject!]!"
+    - name: postCheck
+      type: MedicalBookingSchedulesBoolExp
+      description: Insert permission predicate over the 'medical_booking_schedules'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_medical_booking_schedules
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMedicalBookingSchedules
+    rootFieldKind: Mutation
+  description: Insert into the medical_booking_schedules table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMedicalBookingSchedules
+  permissions:
+    - role: admin
+      allowExecution: true
+

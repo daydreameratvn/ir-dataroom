@@ -1,0 +1,180 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCorrespondenceCcBehaviorsComment
+  description: Update the 'comment' column in the 'correspondence_cc_behaviors' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCorrespondenceCcBehaviorsComment
+    inputTypeName: UpdateColumnCorrespondenceCcBehaviorsCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_correspondence_cc_behaviors_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCorrespondenceCcBehaviorsComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnCorrespondenceCcBehaviorsValue
+  description: Update the 'value' column in the 'correspondence_cc_behaviors' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnCorrespondenceCcBehaviorsValue
+    inputTypeName: UpdateColumnCorrespondenceCcBehaviorsValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_correspondence_cc_behaviors_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnCorrespondenceCcBehaviorsValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorrespondenceCcBehaviorsByValueUpdateColumns
+  description: Update the columns of the 'correspondence_cc_behaviors' collection
+  fields:
+    - name: comment
+      type: UpdateColumnCorrespondenceCcBehaviorsComment
+      description: Update the 'comment' column in the 'correspondence_cc_behaviors'
+        collection.
+    - name: value
+      type: UpdateColumnCorrespondenceCcBehaviorsValue
+      description: Update the 'value' column in the 'correspondence_cc_behaviors'
+        collection.
+  graphql:
+    typeName: UpdateCorrespondenceCcBehaviorsByValueUpdateColumns
+    inputTypeName: UpdateCorrespondenceCcBehaviorsByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_correspondence_cc_behaviors_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorrespondenceCcBehaviorsByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorrespondenceCcBehaviorsByValueResponse
+  description: Responses from the 'update_correspondence_cc_behaviors_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceCcBehaviors!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCorrespondenceCcBehaviorsByValueResponse
+    inputTypeName: UpdateCorrespondenceCcBehaviorsByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_correspondence_cc_behaviors_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorrespondenceCcBehaviorsByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCorrespondenceCcBehaviorsByValue
+  outputType: UpdateCorrespondenceCcBehaviorsByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: CorrespondenceCcBehaviorsBoolExp
+      description: Update permission post-condition predicate over the
+        'correspondence_cc_behaviors' collection
+    - name: preCheck
+      type: CorrespondenceCcBehaviorsBoolExp
+      description: Update permission pre-condition predicate over the
+        'correspondence_cc_behaviors' collection
+    - name: updateColumns
+      type: UpdateCorrespondenceCcBehaviorsByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_correspondence_cc_behaviors_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCorrespondenceCcBehaviorsByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'correspondence_cc_behaviors' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCorrespondenceCcBehaviorsByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

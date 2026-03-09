@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrPapersObject
+  fields:
+    - name: claimDocumentId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: isOcrResultModified
+      type: Boolean_1
+    - name: qcAt
+      type: Timestamptz
+    - name: qcBy
+      type: Uuid
+    - name: qcResult
+      type: Boolean_1
+    - name: type
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertOcrPapersObject
+    inputTypeName: InsertOcrPapersObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_papers_object
+      fieldMapping:
+        claimDocumentId:
+          column:
+            name: claim_document_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        isOcrResultModified:
+          column:
+            name: is_ocr_result_modified
+        qcAt:
+          column:
+            name: qc_at
+        qcBy:
+          column:
+            name: qc_by
+        qcResult:
+          column:
+            name: qc_result
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrPapersObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimDocumentId
+          - createdAt
+          - id
+          - isOcrResultModified
+          - qcAt
+          - qcBy
+          - qcResult
+          - type
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrPapersResponse
+  description: Responses from the 'insert_ocr_papers' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrPapers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOcrPapersResponse
+    inputTypeName: InsertOcrPapersResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_papers_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrPapersResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOcrPapers
+  outputType: InsertOcrPapersResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOcrPapersObject!]!"
+    - name: postCheck
+      type: OcrPapersBoolExp
+      description: Insert permission predicate over the 'ocr_papers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_ocr_papers
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOcrPapers
+    rootFieldKind: Mutation
+  description: Insert into the ocr_papers table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOcrPapers
+  permissions:
+    - role: admin
+      allowExecution: true
+

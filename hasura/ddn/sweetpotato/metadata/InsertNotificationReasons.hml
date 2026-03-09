@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertNotificationReasonsObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertNotificationReasonsObject
+    inputTypeName: InsertNotificationReasonsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_notification_reasons_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertNotificationReasonsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertNotificationReasonsResponse
+  description: Responses from the 'insert_notification_reasons' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[NotificationReasons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertNotificationReasonsResponse
+    inputTypeName: InsertNotificationReasonsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_notification_reasons_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertNotificationReasonsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertNotificationReasons
+  outputType: InsertNotificationReasonsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertNotificationReasonsObject!]!"
+    - name: postCheck
+      type: NotificationReasonsBoolExp
+      description: Insert permission predicate over the 'notification_reasons' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_notification_reasons
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertNotificationReasons
+    rootFieldKind: Mutation
+  description: Insert into the notification_reasons table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertNotificationReasons
+  permissions:
+    - role: admin
+      allowExecution: true
+

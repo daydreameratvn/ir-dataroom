@@ -1,0 +1,235 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MedicalBookingCustomersContracts
+  description: customers_contracts
+  fields:
+    - name: contractId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamp!
+    - name: customerId
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamp
+    - name: id
+      type: Uuid!
+    - name: packageName
+      type: String_1
+    - name: updatedAt
+      type: Timestamp!
+  graphql:
+    typeName: MedicalBookingCustomersContracts
+    inputTypeName: MedicalBookingCustomersContractsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: medical_booking_customers_contracts
+      fieldMapping:
+        contractId:
+          column:
+            name: contract_id
+        createdAt:
+          column:
+            name: created_at
+        customerId:
+          column:
+            name: customer_id
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        packageName:
+          column:
+            name: package_name
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MedicalBookingCustomersContracts
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - contractId
+          - createdAt
+          - customerId
+          - deletedAt
+          - id
+          - packageName
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MedicalBookingCustomersContractsBoolExp
+  operand:
+    object:
+      type: MedicalBookingCustomersContracts
+      comparableFields:
+        - fieldName: contractId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: customerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestampBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: packageName
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestampBoolExp
+      comparableRelationships:
+        - relationshipName: medicalBookingContract
+        - relationshipName: medicalBookingCustomer
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MedicalBookingCustomersContractsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MedicalBookingCustomersContractsAggExp
+  operand:
+    object:
+      aggregatedType: MedicalBookingCustomersContracts
+      aggregatableFields:
+        - fieldName: contractId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: customerId
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestampAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: packageName
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestampAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MedicalBookingCustomersContractsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MedicalBookingCustomersContractsOrderByExp
+  operand:
+    object:
+      orderedType: MedicalBookingCustomersContracts
+      orderableFields:
+        - fieldName: contractId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestampOrderByExp
+        - fieldName: customerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestampOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: packageName
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestampOrderByExp
+      orderableRelationships:
+        - relationshipName: medicalBookingContract
+        - relationshipName: medicalBookingCustomer
+  graphql:
+    expressionTypeName: MedicalBookingCustomersContractsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MedicalBookingCustomersContracts
+  objectType: MedicalBookingCustomersContracts
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: medical_booking_customers_contracts
+  filterExpressionType: MedicalBookingCustomersContractsBoolExp
+  aggregateExpression: MedicalBookingCustomersContractsAggExp
+  orderByExpression: MedicalBookingCustomersContractsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: medicalBookingCustomersContracts
+      subscription:
+        rootField: medicalBookingCustomersContracts
+    selectUniques:
+      - queryRootField: medicalBookingCustomersContractsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: medicalBookingCustomersContractsById
+    filterInputTypeName: MedicalBookingCustomersContractsFilterInput
+    aggregate:
+      queryRootField: medicalBookingCustomersContractsAggregate
+      subscription:
+        rootField: medicalBookingCustomersContractsAggregate
+  description: customers_contracts
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MedicalBookingCustomersContracts
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingContract
+  sourceType: MedicalBookingCustomersContracts
+  target:
+    model:
+      name: MedicalBookingContracts
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: contractId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingCustomer
+  sourceType: MedicalBookingCustomersContracts
+  target:
+    model:
+      name: MedicalBookingCustomers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customerId
+      target:
+        modelField:
+          - fieldName: id
+

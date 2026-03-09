@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: WatchListTargetTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: WatchListTargetTypes
+    inputTypeName: WatchListTargetTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: watch_list_target_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: WatchListTargetTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: WatchListTargetTypesBoolExp
+  operand:
+    object:
+      type: WatchListTargetTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: watchLists
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: WatchListTargetTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: WatchListTargetTypesAggExp
+  operand:
+    object:
+      aggregatedType: WatchListTargetTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: WatchListTargetTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: WatchListTargetTypesOrderByExp
+  operand:
+    object:
+      orderedType: WatchListTargetTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: WatchListTargetTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: WatchListTargetTypes
+  objectType: WatchListTargetTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: watch_list_target_types
+  filterExpressionType: WatchListTargetTypesBoolExp
+  aggregateExpression: WatchListTargetTypesAggExp
+  orderByExpression: WatchListTargetTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: watchListTargetTypes
+      subscription:
+        rootField: watchListTargetTypes
+    selectUniques:
+      - queryRootField: watchListTargetTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: watchListTargetTypesByValue
+    filterInputTypeName: WatchListTargetTypesFilterInput
+    aggregate:
+      queryRootField: watchListTargetTypesAggregate
+      subscription:
+        rootField: watchListTargetTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: WatchListTargetTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: watchLists
+  sourceType: WatchListTargetTypes
+  target:
+    model:
+      name: WatchList
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: WatchListAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: targetType
+  graphql:
+    aggregateFieldName: watchListsAggregate
+

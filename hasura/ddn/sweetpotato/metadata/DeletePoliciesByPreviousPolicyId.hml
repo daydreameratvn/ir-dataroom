@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePoliciesByPreviousPolicyIdResponse
+  description: Responses from the 'delete_policies_by_previous_policy_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Policies!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePoliciesByPreviousPolicyIdResponse
+    inputTypeName: DeletePoliciesByPreviousPolicyIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_policies_by_previous_policy_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePoliciesByPreviousPolicyIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePoliciesByPreviousPolicyId
+  outputType: DeletePoliciesByPreviousPolicyIdResponse!
+  arguments:
+    - name: keyPreviousPolicyId
+      type: Uuid
+    - name: preCheck
+      type: PoliciesBoolExp
+      description: Delete permission predicate over the 'policies' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_policies_by_previous_policy_id
+    argumentMapping:
+      keyPreviousPolicyId: key_previous_policy_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePoliciesByPreviousPolicyId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'policies' collection using the
+    'previous_policy_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePoliciesByPreviousPolicyId
+  permissions:
+    - role: admin
+      allowExecution: true
+

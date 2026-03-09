@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePlansByCodeResponse
+  description: Responses from the 'delete_plans_by_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Plans!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePlansByCodeResponse
+    inputTypeName: DeletePlansByCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_plans_by_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePlansByCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePlansByCode
+  outputType: DeletePlansByCodeResponse!
+  arguments:
+    - name: keyCode
+      type: String_1!
+      description: "deprecated: use policy_plan.plan_code"
+    - name: preCheck
+      type: PlansBoolExp
+      description: Delete permission predicate over the 'plans' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_plans_by_code
+    argumentMapping:
+      keyCode: key_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePlansByCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'plans' collection using the 'code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePlansByCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

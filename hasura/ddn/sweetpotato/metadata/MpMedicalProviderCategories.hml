@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProviderCategories
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MpMedicalProviderCategories
+    inputTypeName: MpMedicalProviderCategoriesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_provider_categories
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProviderCategories
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProviderCategoriesBoolExp
+  operand:
+    object:
+      type: MpMedicalProviderCategories
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProviderCategory
+        - relationshipName: mpMedicalProviders
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProviderCategoriesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProviderCategoriesAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProviderCategories
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProviderCategoriesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProviderCategoriesOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProviderCategories
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: mpMedicalProviderCategory
+  graphql:
+    expressionTypeName: MpMedicalProviderCategoriesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProviderCategories
+  objectType: MpMedicalProviderCategories
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_provider_categories
+  filterExpressionType: MpMedicalProviderCategoriesBoolExp
+  aggregateExpression: MpMedicalProviderCategoriesAggExp
+  orderByExpression: MpMedicalProviderCategoriesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProviderCategories
+      subscription:
+        rootField: mpMedicalProviderCategories
+    selectUniques:
+      - queryRootField: mpMedicalProviderCategoriesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: mpMedicalProviderCategoriesByValue
+    filterInputTypeName: MpMedicalProviderCategoriesFilterInput
+    aggregate:
+      queryRootField: mpMedicalProviderCategoriesAggregate
+      subscription:
+        rootField: mpMedicalProviderCategoriesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProviderCategories
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderCategory
+  sourceType: MpMedicalProviderCategories
+  target:
+    model:
+      name: MpMedicalProviderCategories
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviders
+  sourceType: MpMedicalProviderCategories
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProvidersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: medicalProviderCategory
+  graphql:
+    aggregateFieldName: mpMedicalProvidersAggregate
+

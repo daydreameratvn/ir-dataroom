@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnClaimCaseStatusesComment
+  description: Update the 'comment' column in the 'claim_case_statuses' collection
+  fields:
+    - name: set
+      type: String_1
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnClaimCaseStatusesComment
+    inputTypeName: UpdateColumnClaimCaseStatusesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_claim_case_statuses_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnClaimCaseStatusesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnClaimCaseStatusesValue
+  description: Update the 'value' column in the 'claim_case_statuses' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnClaimCaseStatusesValue
+    inputTypeName: UpdateColumnClaimCaseStatusesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_claim_case_statuses_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnClaimCaseStatusesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseStatusesByValueUpdateColumns
+  description: Update the columns of the 'claim_case_statuses' collection
+  fields:
+    - name: comment
+      type: UpdateColumnClaimCaseStatusesComment
+      description: Update the 'comment' column in the 'claim_case_statuses' collection.
+    - name: value
+      type: UpdateColumnClaimCaseStatusesValue
+      description: Update the 'value' column in the 'claim_case_statuses' collection.
+  graphql:
+    typeName: UpdateClaimCaseStatusesByValueUpdateColumns
+    inputTypeName: UpdateClaimCaseStatusesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_statuses_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseStatusesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseStatusesByValueResponse
+  description: Responses from the 'update_claim_case_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateClaimCaseStatusesByValueResponse
+    inputTypeName: UpdateClaimCaseStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateClaimCaseStatusesByValue
+  outputType: UpdateClaimCaseStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: ClaimCaseStatusesBoolExp
+      description: Update permission post-condition predicate over the
+        'claim_case_statuses' collection
+    - name: preCheck
+      type: ClaimCaseStatusesBoolExp
+      description: Update permission pre-condition predicate over the
+        'claim_case_statuses' collection
+    - name: updateColumns
+      type: UpdateClaimCaseStatusesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_claim_case_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateClaimCaseStatusesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'claim_case_statuses' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateClaimCaseStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

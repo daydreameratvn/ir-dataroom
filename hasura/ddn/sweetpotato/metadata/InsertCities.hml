@@ -1,0 +1,133 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCitiesObject
+  fields:
+    - name: code
+      type: String_1
+    - name: displayOrder
+      type: Int32
+    - name: enFullName
+      type: String_1
+    - name: fullName
+      type: String_1
+    - name: id
+      type: Int32!
+      description: Citad code
+    - name: name
+      type: String_1!
+  graphql:
+    typeName: InsertCitiesObject
+    inputTypeName: InsertCitiesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_cities_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        displayOrder:
+          column:
+            name: display_order
+        enFullName:
+          column:
+            name: en_full_name
+        fullName:
+          column:
+            name: full_name
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCitiesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - displayOrder
+          - enFullName
+          - fullName
+          - id
+          - name
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCitiesResponse
+  description: Responses from the 'insert_cities' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Cities!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCitiesResponse
+    inputTypeName: InsertCitiesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_cities_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCitiesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCities
+  outputType: InsertCitiesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCitiesObject!]!"
+    - name: postCheck
+      type: CitiesBoolExp
+      description: Insert permission predicate over the 'cities' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_cities
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCities
+    rootFieldKind: Mutation
+  description: Insert into the cities table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCities
+  permissions:
+    - role: admin
+      allowExecution: true
+

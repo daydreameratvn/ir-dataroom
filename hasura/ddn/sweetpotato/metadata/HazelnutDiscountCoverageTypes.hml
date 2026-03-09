@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HazelnutDiscountCoverageTypes
+  description: Tiêu chí giảm phí cho hợp đồng
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: HazelnutDiscountCoverageTypes
+    inputTypeName: HazelnutDiscountCoverageTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hazelnut_discount_coverage_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HazelnutDiscountCoverageTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HazelnutDiscountCoverageTypesBoolExp
+  operand:
+    object:
+      type: HazelnutDiscountCoverageTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: hazelnutDiscountCriteria
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HazelnutDiscountCoverageTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HazelnutDiscountCoverageTypesAggExp
+  operand:
+    object:
+      aggregatedType: HazelnutDiscountCoverageTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HazelnutDiscountCoverageTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HazelnutDiscountCoverageTypesOrderByExp
+  operand:
+    object:
+      orderedType: HazelnutDiscountCoverageTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HazelnutDiscountCoverageTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HazelnutDiscountCoverageTypes
+  objectType: HazelnutDiscountCoverageTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hazelnut_discount_coverage_types
+  filterExpressionType: HazelnutDiscountCoverageTypesBoolExp
+  aggregateExpression: HazelnutDiscountCoverageTypesAggExp
+  orderByExpression: HazelnutDiscountCoverageTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hazelnutDiscountCoverageTypes
+      subscription:
+        rootField: hazelnutDiscountCoverageTypes
+    selectUniques:
+      - queryRootField: hazelnutDiscountCoverageTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: hazelnutDiscountCoverageTypesByValue
+    filterInputTypeName: HazelnutDiscountCoverageTypesFilterInput
+    aggregate:
+      queryRootField: hazelnutDiscountCoverageTypesAggregate
+      subscription:
+        rootField: hazelnutDiscountCoverageTypesAggregate
+  description: Tiêu chí giảm phí cho hợp đồng
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HazelnutDiscountCoverageTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutDiscountCriteria
+  sourceType: HazelnutDiscountCoverageTypes
+  target:
+    model:
+      name: HazelnutDiscountCriteria
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutDiscountCriteriaAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: discountCoverageType
+  graphql:
+    aggregateFieldName: hazelnutDiscountCriteriaAggregate
+

@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateLabelsByIdUpdateColumns
+  description: Update the columns of the 'labels' collection
+  fields:
+    - name: color
+      type: UpdateColumnLabelsColor
+      description: Update the 'color' column in the 'labels' collection.
+    - name: createdAt
+      type: UpdateColumnLabelsCreatedAt
+      description: Update the 'created_at' column in the 'labels' collection.
+    - name: createdBy
+      type: UpdateColumnLabelsCreatedBy
+      description: Update the 'created_by' column in the 'labels' collection.
+    - name: deletedAt
+      type: UpdateColumnLabelsDeletedAt
+      description: Update the 'deleted_at' column in the 'labels' collection.
+    - name: description
+      type: UpdateColumnLabelsDescription
+      description: Update the 'description' column in the 'labels' collection.
+    - name: icon
+      type: UpdateColumnLabelsIcon
+      description: Update the 'icon' column in the 'labels' collection.
+    - name: id
+      type: UpdateColumnLabelsId
+      description: Update the 'id' column in the 'labels' collection.
+    - name: name
+      type: UpdateColumnLabelsName
+      description: Update the 'name' column in the 'labels' collection.
+    - name: updatedAt
+      type: UpdateColumnLabelsUpdatedAt
+      description: Update the 'updated_at' column in the 'labels' collection.
+    - name: updatedBy
+      type: UpdateColumnLabelsUpdatedBy
+      description: Update the 'updated_by' column in the 'labels' collection.
+  graphql:
+    typeName: UpdateLabelsByIdUpdateColumns
+    inputTypeName: UpdateLabelsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_labels_by_id_update_columns
+      fieldMapping:
+        color:
+          column:
+            name: color
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        icon:
+          column:
+            name: icon
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateLabelsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - color
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - icon
+          - id
+          - name
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateLabelsByIdResponse
+  description: Responses from the 'update_labels_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Labels!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateLabelsByIdResponse
+    inputTypeName: UpdateLabelsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_labels_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateLabelsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateLabelsById
+  outputType: UpdateLabelsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: LabelsBoolExp
+      description: Update permission post-condition predicate over the 'labels' collection
+    - name: preCheck
+      type: LabelsBoolExp
+      description: Update permission pre-condition predicate over the 'labels' collection
+    - name: updateColumns
+      type: UpdateLabelsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_labels_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateLabelsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'labels' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateLabelsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,79 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteStpClaimCaseStpExecutionsPapersByClaimCaseStpExecutionIdAndPaperIdResponse
+  description: Responses from the
+    'delete_stp_claim_case_stp_executions_papers_by_claim_case_stp_execution_id_and_paper_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpClaimCaseStpExecutionsPapers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteStpClaimCaseStpExecutionsPapersByClaimCaseStpExecutionIdAndPaperIdResponse
+    inputTypeName: DeleteStpClaimCaseStpExecutionsPapersByClaimCaseStpExecutionIdAndPaperIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_stp_claim_case_stp_executions_papers_by_claim_case_stp_execution_id_and_paper_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteStpClaimCaseStpExecutionsPapersByClaimCaseStpExecutionIdAndPaperIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteStpClaimCaseStpExecutionsPapersByClaimCaseStpExecutionIdAndPaperId
+  outputType: DeleteStpClaimCaseStpExecutionsPapersByClaimCaseStpExecutionIdAndPaperIdResponse!
+  arguments:
+    - name: keyClaimCaseStpExecutionId
+      type: Uuid!
+    - name: keyPaperId
+      type: Uuid!
+    - name: preCheck
+      type: StpClaimCaseStpExecutionsPapersBoolExp
+      description: Delete permission predicate over the
+        'stp_claim_case_stp_executions_papers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_stp_claim_case_stp_executions_papers_by_claim_case_stp_execution_id_and_paper_id
+    argumentMapping:
+      keyClaimCaseStpExecutionId: key_claim_case_stp_execution_id
+      keyPaperId: key_paper_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteStpClaimCaseStpExecutionsPapersByClaimCaseStpExecutionIdAndPaperId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'stp_claim_case_stp_executions_papers'
+    collection using the 'claim_case_stp_execution_id' and 'paper_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteStpClaimCaseStpExecutionsPapersByClaimCaseStpExecutionIdAndPaperId
+  permissions:
+    - role: admin
+      allowExecution: true
+

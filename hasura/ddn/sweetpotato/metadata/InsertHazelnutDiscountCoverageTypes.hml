@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutDiscountCoverageTypesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertHazelnutDiscountCoverageTypesObject
+    inputTypeName: InsertHazelnutDiscountCoverageTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_discount_coverage_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutDiscountCoverageTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutDiscountCoverageTypesResponse
+  description: Responses from the 'insert_hazelnut_discount_coverage_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutDiscountCoverageTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHazelnutDiscountCoverageTypesResponse
+    inputTypeName: InsertHazelnutDiscountCoverageTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_discount_coverage_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutDiscountCoverageTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHazelnutDiscountCoverageTypes
+  outputType: InsertHazelnutDiscountCoverageTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHazelnutDiscountCoverageTypesObject!]!"
+    - name: postCheck
+      type: HazelnutDiscountCoverageTypesBoolExp
+      description: Insert permission predicate over the
+        'hazelnut_discount_coverage_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hazelnut_discount_coverage_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHazelnutDiscountCoverageTypes
+    rootFieldKind: Mutation
+  description: Insert into the hazelnut_discount_coverage_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHazelnutDiscountCoverageTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

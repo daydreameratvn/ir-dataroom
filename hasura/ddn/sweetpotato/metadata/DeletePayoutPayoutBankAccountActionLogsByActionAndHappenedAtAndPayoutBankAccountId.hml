@@ -1,0 +1,83 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutPayoutBankAccountActionLogsByActionAndHappenedAtAndPayoutBankAccountIdResponse
+  description: Responses from the
+    'delete_payout_payout_bank_account_action_logs_by_action_and_happened_at_and_payout_bank_account_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPayoutBankAccountActionLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutPayoutBankAccountActionLogsByActionAndHappenedAtAndPayoutBankAccountIdResponse
+    inputTypeName: DeletePayoutPayoutBankAccountActionLogsByActionAndHappenedAtAndPayoutBankAccountIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_payout_bank_account_action_logs_by_action_and_happened_at_and_payout_bank_account_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutPayoutBankAccountActionLogsByActionAndHappenedAtAndPayoutBankAccountIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutPayoutBankAccountActionLogsByActionAndHappenedAtAndPayoutBankAccountId
+  outputType: DeletePayoutPayoutBankAccountActionLogsByActionAndHappenedAtAndPayoutBankAccountIdResponse!
+  arguments:
+    - name: keyAction
+      type: String_1!
+    - name: keyHappenedAt
+      type: Timestamptz!
+    - name: keyPayoutBankAccountId
+      type: Uuid!
+    - name: preCheck
+      type: PayoutPayoutBankAccountActionLogsBoolExp
+      description: Delete permission predicate over the
+        'payout_payout_bank_account_action_logs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_payout_bank_account_action_logs_by_action_and_happened_at_and_payout_bank_account_id
+    argumentMapping:
+      keyAction: key_action
+      keyHappenedAt: key_happened_at
+      keyPayoutBankAccountId: key_payout_bank_account_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutPayoutBankAccountActionLogsByActionAndHappenedAtAndPayoutBankAccountId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_payout_bank_account_action_logs'
+    collection using the 'action', 'happened_at' and 'payout_bank_account_id'
+    keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutPayoutBankAccountActionLogsByActionAndHappenedAtAndPayoutBankAccountId
+  permissions:
+    - role: admin
+      allowExecution: true
+

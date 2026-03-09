@@ -1,0 +1,261 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OverlordApiLogs
+  fields:
+    - name: bookingId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: endpoint
+      type: String_1!
+    - name: httpCode
+      type: Bigdecimal!
+    - name: id
+      type: Uuid!
+    - name: medicalProviderId
+      type: Uuid!
+    - name: request
+      type: Json!
+    - name: response
+      type: Json
+    - name: status
+      type: String_1!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: OverlordApiLogs
+    inputTypeName: OverlordApiLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: overlord_api_logs
+      fieldMapping:
+        bookingId:
+          column:
+            name: booking_id
+        createdAt:
+          column:
+            name: created_at
+        endpoint:
+          column:
+            name: endpoint
+        httpCode:
+          column:
+            name: http_code
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        request:
+          column:
+            name: request
+        response:
+          column:
+            name: response
+        status:
+          column:
+            name: status
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OverlordApiLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bookingId
+          - createdAt
+          - endpoint
+          - httpCode
+          - id
+          - medicalProviderId
+          - request
+          - response
+          - status
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OverlordApiLogsBoolExp
+  operand:
+    object:
+      type: OverlordApiLogs
+      comparableFields:
+        - fieldName: bookingId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: endpoint
+          booleanExpressionType: TextBoolExp
+        - fieldName: httpCode
+          booleanExpressionType: NumericBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: request
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: response
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: overlordApiLogStatus
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OverlordApiLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OverlordApiLogsAggExp
+  operand:
+    object:
+      aggregatedType: OverlordApiLogs
+      aggregatableFields:
+        - fieldName: bookingId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: endpoint
+          aggregateExpression: TextAggExp
+        - fieldName: httpCode
+          aggregateExpression: NumericAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: request
+          aggregateExpression: JsonbAggExp
+        - fieldName: response
+          aggregateExpression: JsonbAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OverlordApiLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OverlordApiLogsOrderByExp
+  operand:
+    object:
+      orderedType: OverlordApiLogs
+      orderableFields:
+        - fieldName: bookingId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: endpoint
+          orderByExpression: String1OrderByExp
+        - fieldName: httpCode
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: request
+          orderByExpression: JsonOrderByExp
+        - fieldName: response
+          orderByExpression: JsonOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: overlordApiLogStatus
+  graphql:
+    expressionTypeName: OverlordApiLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OverlordApiLogs
+  objectType: OverlordApiLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: overlord_api_logs
+  filterExpressionType: OverlordApiLogsBoolExp
+  aggregateExpression: OverlordApiLogsAggExp
+  orderByExpression: OverlordApiLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: overlordApiLogs
+      subscription:
+        rootField: overlordApiLogs
+    selectUniques:
+      - queryRootField: overlordApiLogsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: overlordApiLogsById
+    filterInputTypeName: OverlordApiLogsFilterInput
+    aggregate:
+      queryRootField: overlordApiLogsAggregate
+      subscription:
+        rootField: overlordApiLogsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OverlordApiLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: overlordApiLogStatus
+  sourceType: OverlordApiLogs
+  target:
+    model:
+      name: OverlordApiLogStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+

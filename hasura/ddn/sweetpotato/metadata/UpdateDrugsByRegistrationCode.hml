@@ -1,0 +1,216 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateDrugsByRegistrationCodeUpdateColumns
+  description: Update the columns of the 'drugs' collection
+  fields:
+    - name: activeSubstancesText
+      type: UpdateColumnDrugsActiveSubstancesText
+      description: Update the 'active_substances_text' column in the 'drugs' collection.
+    - name: brandName
+      type: UpdateColumnDrugsBrandName
+      description: Update the 'brand_name' column in the 'drugs' collection.
+    - name: category
+      type: UpdateColumnDrugsCategory
+      description: Update the 'category' column in the 'drugs' collection.
+    - name: concentrationText
+      type: UpdateColumnDrugsConcentrationText
+      description: Update the 'concentration_text' column in the 'drugs' collection.
+    - name: createdAt
+      type: UpdateColumnDrugsCreatedAt
+      description: Update the 'created_at' column in the 'drugs' collection.
+    - name: form
+      type: UpdateColumnDrugsForm
+      description: Update the 'form' column in the 'drugs' collection.
+    - name: id
+      type: UpdateColumnDrugsId
+      description: Update the 'id' column in the 'drugs' collection.
+    - name: oldRegistrationCode
+      type: UpdateColumnDrugsOldRegistrationCode
+      description: Update the 'old_registration_code' column in the 'drugs' collection.
+    - name: registeredAt
+      type: UpdateColumnDrugsRegisteredAt
+      description: Update the 'registered_at' column in the 'drugs' collection.
+    - name: registrationCode
+      type: UpdateColumnDrugsRegistrationCode
+      description: Update the 'registration_code' column in the 'drugs' collection.
+    - name: registrationDecisionCode
+      type: UpdateColumnDrugsRegistrationDecisionCode
+      description: Update the 'registration_decision_code' column in the 'drugs' collection.
+    - name: registrationExpiredAt
+      type: UpdateColumnDrugsRegistrationExpiredAt
+      description: Update the 'registration_expired_at' column in the 'drugs' collection.
+    - name: registrationExtendedAt
+      type: UpdateColumnDrugsRegistrationExtendedAt
+      description: Update the 'registration_extended_at' column in the 'drugs' collection.
+    - name: shelfLifeText
+      type: UpdateColumnDrugsShelfLifeText
+      description: Update the 'shelf_life_text' column in the 'drugs' collection.
+    - name: standard
+      type: UpdateColumnDrugsStandard
+      description: Update the 'standard' column in the 'drugs' collection.
+    - name: updatedAt
+      type: UpdateColumnDrugsUpdatedAt
+      description: Update the 'updated_at' column in the 'drugs' collection.
+  graphql:
+    typeName: UpdateDrugsByRegistrationCodeUpdateColumns
+    inputTypeName: UpdateDrugsByRegistrationCodeUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_drugs_by_registration_code_update_columns
+      fieldMapping:
+        activeSubstancesText:
+          column:
+            name: active_substances_text
+        brandName:
+          column:
+            name: brand_name
+        category:
+          column:
+            name: category
+        concentrationText:
+          column:
+            name: concentration_text
+        createdAt:
+          column:
+            name: created_at
+        form:
+          column:
+            name: form
+        id:
+          column:
+            name: id
+        oldRegistrationCode:
+          column:
+            name: old_registration_code
+        registeredAt:
+          column:
+            name: registered_at
+        registrationCode:
+          column:
+            name: registration_code
+        registrationDecisionCode:
+          column:
+            name: registration_decision_code
+        registrationExpiredAt:
+          column:
+            name: registration_expired_at
+        registrationExtendedAt:
+          column:
+            name: registration_extended_at
+        shelfLifeText:
+          column:
+            name: shelf_life_text
+        standard:
+          column:
+            name: standard
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateDrugsByRegistrationCodeUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - activeSubstancesText
+          - brandName
+          - category
+          - concentrationText
+          - createdAt
+          - form
+          - id
+          - oldRegistrationCode
+          - registeredAt
+          - registrationCode
+          - registrationDecisionCode
+          - registrationExpiredAt
+          - registrationExtendedAt
+          - shelfLifeText
+          - standard
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateDrugsByRegistrationCodeResponse
+  description: Responses from the 'update_drugs_by_registration_code' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Drugs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateDrugsByRegistrationCodeResponse
+    inputTypeName: UpdateDrugsByRegistrationCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_drugs_by_registration_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateDrugsByRegistrationCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateDrugsByRegistrationCode
+  outputType: UpdateDrugsByRegistrationCodeResponse!
+  arguments:
+    - name: keyRegistrationCode
+      type: String_1!
+    - name: postCheck
+      type: DrugsBoolExp
+      description: Update permission post-condition predicate over the 'drugs' collection
+    - name: preCheck
+      type: DrugsBoolExp
+      description: Update permission pre-condition predicate over the 'drugs' collection
+    - name: updateColumns
+      type: UpdateDrugsByRegistrationCodeUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_drugs_by_registration_code
+    argumentMapping:
+      keyRegistrationCode: key_registration_code
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateDrugsByRegistrationCode
+    rootFieldKind: Mutation
+  description: Update any row on the 'drugs' collection using the 'registration_code' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateDrugsByRegistrationCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,121 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCasesCountByDay
+  fields:
+    - name: count
+      type: Int64
+    - name: day
+      type: Timestamptz
+  graphql:
+    typeName: ClaimCasesCountByDay
+    inputTypeName: ClaimCasesCountByDayInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_cases_count_by_day
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCasesCountByDay
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - count
+          - day
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCasesCountByDayBoolExp
+  operand:
+    object:
+      type: ClaimCasesCountByDay
+      comparableFields:
+        - fieldName: count
+          booleanExpressionType: Int8BoolExp
+        - fieldName: day
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCasesCountByDayBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCasesCountByDayAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCasesCountByDay
+      aggregatableFields:
+        - fieldName: count
+          aggregateExpression: Int8AggExp
+        - fieldName: day
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCasesCountByDayAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCasesCountByDayOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCasesCountByDay
+      orderableFields:
+        - fieldName: count
+          orderByExpression: Int64OrderByExp
+        - fieldName: day
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimCasesCountByDayOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCasesCountByDay
+  objectType: ClaimCasesCountByDay
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_cases_count_by_day
+  filterExpressionType: ClaimCasesCountByDayBoolExp
+  aggregateExpression: ClaimCasesCountByDayAggExp
+  orderByExpression: ClaimCasesCountByDayOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCasesCountByDay
+      subscription:
+        rootField: claimCasesCountByDay
+    selectUniques: []
+    filterInputTypeName: ClaimCasesCountByDayFilterInput
+    aggregate:
+      queryRootField: claimCasesCountByDayAggregate
+      subscription:
+        rootField: claimCasesCountByDayAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCasesCountByDay
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

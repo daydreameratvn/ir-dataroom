@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutPaymentRequestStatusesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertPayoutPaymentRequestStatusesObject
+    inputTypeName: InsertPayoutPaymentRequestStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_payment_request_statuses_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutPaymentRequestStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPayoutPaymentRequestStatusesResponse
+  description: Responses from the 'insert_payout_payment_request_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPaymentRequestStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPayoutPaymentRequestStatusesResponse
+    inputTypeName: InsertPayoutPaymentRequestStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_payout_payment_request_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPayoutPaymentRequestStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPayoutPaymentRequestStatuses
+  outputType: InsertPayoutPaymentRequestStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPayoutPaymentRequestStatusesObject!]!"
+    - name: postCheck
+      type: PayoutPaymentRequestStatusesBoolExp
+      description: Insert permission predicate over the
+        'payout_payment_request_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_payout_payment_request_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPayoutPaymentRequestStatuses
+    rootFieldKind: Mutation
+  description: Insert into the payout_payment_request_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPayoutPaymentRequestStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

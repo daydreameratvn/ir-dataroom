@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimTreatmentInfoItemsByClaimIdResponse
+  description: Responses from the 'delete_claim_treatment_info_items_by_claim_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimTreatmentInfoItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimTreatmentInfoItemsByClaimIdResponse
+    inputTypeName: DeleteClaimTreatmentInfoItemsByClaimIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_treatment_info_items_by_claim_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimTreatmentInfoItemsByClaimIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimTreatmentInfoItemsByClaimId
+  outputType: DeleteClaimTreatmentInfoItemsByClaimIdResponse!
+  arguments:
+    - name: keyClaimId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimTreatmentInfoItemsBoolExp
+      description: Delete permission predicate over the 'claim_treatment_info_items'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_treatment_info_items_by_claim_id
+    argumentMapping:
+      keyClaimId: key_claim_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimTreatmentInfoItemsByClaimId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_treatment_info_items' collection using
+    the 'claim_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimTreatmentInfoItemsByClaimId
+  permissions:
+    - role: admin
+      allowExecution: true
+

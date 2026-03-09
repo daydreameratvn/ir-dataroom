@@ -1,0 +1,233 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MetricMpNpsScores
+  fields:
+    - name: comment
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: medicalProviderName
+      type: String_1
+    - name: purpose
+      type: String_1!
+    - name: score
+      type: Int32!
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: MetricMpNpsScores
+    inputTypeName: MetricMpNpsScoresInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: metric_mp_nps_scores
+      fieldMapping:
+        comment:
+          column:
+            name: comment
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        purpose:
+          column:
+            name: purpose
+        score:
+          column:
+            name: score
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MetricMpNpsScores
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - createdAt
+          - id
+          - medicalProviderName
+          - purpose
+          - score
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MetricMpNpsScoresBoolExp
+  operand:
+    object:
+      type: MetricMpNpsScores
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderName
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: purpose
+          booleanExpressionType: TextBoolExp
+        - fieldName: score
+          booleanExpressionType: Int4BoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: metricNpsScorePurpose
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MetricMpNpsScoresBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MetricMpNpsScoresAggExp
+  operand:
+    object:
+      aggregatedType: MetricMpNpsScores
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: VarcharAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderName
+          aggregateExpression: VarcharAggExp
+        - fieldName: purpose
+          aggregateExpression: TextAggExp
+        - fieldName: score
+          aggregateExpression: Int4AggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MetricMpNpsScoresAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MetricMpNpsScoresOrderByExp
+  operand:
+    object:
+      orderedType: MetricMpNpsScores
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderName
+          orderByExpression: String1OrderByExp
+        - fieldName: purpose
+          orderByExpression: String1OrderByExp
+        - fieldName: score
+          orderByExpression: Int32OrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: metricNpsScorePurpose
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: MetricMpNpsScoresOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MetricMpNpsScores
+  objectType: MetricMpNpsScores
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: metric_mp_nps_scores
+  filterExpressionType: MetricMpNpsScoresBoolExp
+  aggregateExpression: MetricMpNpsScoresAggExp
+  orderByExpression: MetricMpNpsScoresOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: metricMpNpsScores
+      subscription:
+        rootField: metricMpNpsScores
+    selectUniques:
+      - queryRootField: metricMpNpsScoresById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: metricMpNpsScoresById
+    filterInputTypeName: MetricMpNpsScoresFilterInput
+    aggregate:
+      queryRootField: metricMpNpsScoresAggregate
+      subscription:
+        rootField: metricMpNpsScoresAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MetricMpNpsScores
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: metricNpsScorePurpose
+  sourceType: MetricMpNpsScores
+  target:
+    model:
+      name: MetricNpsScorePurposes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: purpose
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: MetricMpNpsScores
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFigAssessorsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: status
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertFigAssessorsObject
+    inputTypeName: InsertFigAssessorsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fig_assessors_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFigAssessorsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - status
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFigAssessorsResponse
+  description: Responses from the 'insert_fig_assessors' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FigAssessors!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFigAssessorsResponse
+    inputTypeName: InsertFigAssessorsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fig_assessors_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFigAssessorsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFigAssessors
+  outputType: InsertFigAssessorsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFigAssessorsObject!]!"
+    - name: postCheck
+      type: FigAssessorsBoolExp
+      description: Insert permission predicate over the 'fig_assessors' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fig_assessors
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFigAssessors
+    rootFieldKind: Mutation
+  description: Insert into the fig_assessors table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFigAssessors
+  permissions:
+    - role: admin
+      allowExecution: true
+

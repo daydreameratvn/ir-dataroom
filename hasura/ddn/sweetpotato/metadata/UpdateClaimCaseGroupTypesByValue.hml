@@ -1,0 +1,178 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnClaimCaseGroupTypesComment
+  description: Update the 'comment' column in the 'claim_case_group_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnClaimCaseGroupTypesComment
+    inputTypeName: UpdateColumnClaimCaseGroupTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_claim_case_group_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnClaimCaseGroupTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnClaimCaseGroupTypesValue
+  description: Update the 'value' column in the 'claim_case_group_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnClaimCaseGroupTypesValue
+    inputTypeName: UpdateColumnClaimCaseGroupTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_claim_case_group_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnClaimCaseGroupTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseGroupTypesByValueUpdateColumns
+  description: Update the columns of the 'claim_case_group_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnClaimCaseGroupTypesComment
+      description: Update the 'comment' column in the 'claim_case_group_types' collection.
+    - name: value
+      type: UpdateColumnClaimCaseGroupTypesValue
+      description: Update the 'value' column in the 'claim_case_group_types' collection.
+  graphql:
+    typeName: UpdateClaimCaseGroupTypesByValueUpdateColumns
+    inputTypeName: UpdateClaimCaseGroupTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_group_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseGroupTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateClaimCaseGroupTypesByValueResponse
+  description: Responses from the 'update_claim_case_group_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseGroupTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateClaimCaseGroupTypesByValueResponse
+    inputTypeName: UpdateClaimCaseGroupTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_claim_case_group_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateClaimCaseGroupTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateClaimCaseGroupTypesByValue
+  outputType: UpdateClaimCaseGroupTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: ClaimCaseGroupTypesBoolExp
+      description: Update permission post-condition predicate over the
+        'claim_case_group_types' collection
+    - name: preCheck
+      type: ClaimCaseGroupTypesBoolExp
+      description: Update permission pre-condition predicate over the
+        'claim_case_group_types' collection
+    - name: updateColumns
+      type: UpdateClaimCaseGroupTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_claim_case_group_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateClaimCaseGroupTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'claim_case_group_types' collection using the
+    'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateClaimCaseGroupTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

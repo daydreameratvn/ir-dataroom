@@ -1,0 +1,141 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpMedicalProvidersCorporatesByMedicalProviderCorporateIdUpdateColumns
+  description: Update the columns of the 'mp_medical_providers_corporates' collection
+  fields:
+    - name: corporateId
+      type: UpdateColumnMpMedicalProvidersCorporatesCorporateId
+      description: Update the 'corporate_id' column in the
+        'mp_medical_providers_corporates' collection.
+    - name: createdAt
+      type: UpdateColumnMpMedicalProvidersCorporatesCreatedAt
+      description: Update the 'created_at' column in the
+        'mp_medical_providers_corporates' collection.
+    - name: medicalProviderCorporateId
+      type: UpdateColumnMpMedicalProvidersCorporatesMedicalProviderCorporateId
+      description: Update the 'medical_provider_corporate_id' column in the
+        'mp_medical_providers_corporates' collection.
+    - name: medicalProviderId
+      type: UpdateColumnMpMedicalProvidersCorporatesMedicalProviderId
+      description: Update the 'medical_provider_id' column in the
+        'mp_medical_providers_corporates' collection.
+  graphql:
+    typeName: UpdateMpMedicalProvidersCorporatesByMedicalProviderCorporateIdUpdateColumns
+    inputTypeName: UpdateMpMedicalProvidersCorporatesByMedicalProviderCorporateIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_medical_providers_corporates_by_medical_provider_corporate_id_update_columns
+      fieldMapping:
+        corporateId:
+          column:
+            name: corporate_id
+        createdAt:
+          column:
+            name: created_at
+        medicalProviderCorporateId:
+          column:
+            name: medical_provider_corporate_id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpMedicalProvidersCorporatesByMedicalProviderCorporateIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - corporateId
+          - createdAt
+          - medicalProviderCorporateId
+          - medicalProviderId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpMedicalProvidersCorporatesByMedicalProviderCorporateIdResponse
+  description: Responses from the
+    'update_mp_medical_providers_corporates_by_medical_provider_corporate_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProvidersCorporates!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateMpMedicalProvidersCorporatesByMedicalProviderCorporateIdResponse
+    inputTypeName: UpdateMpMedicalProvidersCorporatesByMedicalProviderCorporateIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_medical_providers_corporates_by_medical_provider_corporate_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpMedicalProvidersCorporatesByMedicalProviderCorporateIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateMpMedicalProvidersCorporatesByMedicalProviderCorporateId
+  outputType: UpdateMpMedicalProvidersCorporatesByMedicalProviderCorporateIdResponse!
+  arguments:
+    - name: keyMedicalProviderCorporateId
+      type: Uuid!
+    - name: postCheck
+      type: MpMedicalProvidersCorporatesBoolExp
+      description: Update permission post-condition predicate over the
+        'mp_medical_providers_corporates' collection
+    - name: preCheck
+      type: MpMedicalProvidersCorporatesBoolExp
+      description: Update permission pre-condition predicate over the
+        'mp_medical_providers_corporates' collection
+    - name: updateColumns
+      type: UpdateMpMedicalProvidersCorporatesByMedicalProviderCorporateIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_mp_medical_providers_corporates_by_medical_provider_corporate_id
+    argumentMapping:
+      keyMedicalProviderCorporateId: key_medical_provider_corporate_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateMpMedicalProvidersCorporatesByMedicalProviderCorporateId
+    rootFieldKind: Mutation
+  description: Update any row on the 'mp_medical_providers_corporates' collection
+    using the 'medical_provider_corporate_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateMpMedicalProvidersCorporatesByMedicalProviderCorporateId
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CompanyCorrespondenceApiTypes
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CompanyCorrespondenceApiTypes
+    inputTypeName: CompanyCorrespondenceApiTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: company_correspondence_api_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CompanyCorrespondenceApiTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CompanyCorrespondenceApiTypesBoolExp
+  operand:
+    object:
+      type: CompanyCorrespondenceApiTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: companySettings
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CompanyCorrespondenceApiTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CompanyCorrespondenceApiTypesAggExp
+  operand:
+    object:
+      aggregatedType: CompanyCorrespondenceApiTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CompanyCorrespondenceApiTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CompanyCorrespondenceApiTypesOrderByExp
+  operand:
+    object:
+      orderedType: CompanyCorrespondenceApiTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CompanyCorrespondenceApiTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CompanyCorrespondenceApiTypes
+  objectType: CompanyCorrespondenceApiTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: company_correspondence_api_types
+  filterExpressionType: CompanyCorrespondenceApiTypesBoolExp
+  aggregateExpression: CompanyCorrespondenceApiTypesAggExp
+  orderByExpression: CompanyCorrespondenceApiTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: companyCorrespondenceApiTypes
+      subscription:
+        rootField: companyCorrespondenceApiTypes
+    selectUniques:
+      - queryRootField: companyCorrespondenceApiTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: companyCorrespondenceApiTypesByValue
+    filterInputTypeName: CompanyCorrespondenceApiTypesFilterInput
+    aggregate:
+      queryRootField: companyCorrespondenceApiTypesAggregate
+      subscription:
+        rootField: companyCorrespondenceApiTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CompanyCorrespondenceApiTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: companySettings
+  sourceType: CompanyCorrespondenceApiTypes
+  target:
+    model:
+      name: CompanySettings
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CompanySettingsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: correspondenceApiType
+  graphql:
+    aggregateFieldName: companySettingsAggregate
+

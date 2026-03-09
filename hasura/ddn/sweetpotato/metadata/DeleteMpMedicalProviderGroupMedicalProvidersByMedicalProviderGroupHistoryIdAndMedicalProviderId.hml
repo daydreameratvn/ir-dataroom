@@ -1,0 +1,80 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMpMedicalProviderGroupMedicalProvidersByMedicalProviderGroupHistoryIdAndMedicalProviderIdResponse
+  description: Responses from the
+    'delete_mp_medical_provider_group_medical_providers_by_medical_provider_group_history_id_and_medical_provider_id'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderGroupMedicalProviders!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMpMedicalProviderGroupMedicalProvidersByMedicalProviderGroupHistoryIdAndMedicalProviderIdResponse
+    inputTypeName: DeleteMpMedicalProviderGroupMedicalProvidersByMedicalProviderGroupHistoryIdAndMedicalProviderIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mp_medical_provider_group_medical_providers_by_medical_provider_group_history_id_and_medical_provider_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMpMedicalProviderGroupMedicalProvidersByMedicalProviderGroupHistoryIdAndMedicalProviderIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMpMedicalProviderGroupMedicalProvidersByMedicalProviderGroupHistoryIdAndMedicalProviderId
+  outputType: DeleteMpMedicalProviderGroupMedicalProvidersByMedicalProviderGroupHistoryIdAndMedicalProviderIdResponse!
+  arguments:
+    - name: keyMedicalProviderGroupHistoryId
+      type: Uuid!
+    - name: keyMedicalProviderId
+      type: Uuid!
+    - name: preCheck
+      type: MpMedicalProviderGroupMedicalProvidersBoolExp
+      description: Delete permission predicate over the
+        'mp_medical_provider_group_medical_providers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mp_medical_provider_group_medical_providers_by_medical_provider_group_history_id_and_medical_provider_id
+    argumentMapping:
+      keyMedicalProviderGroupHistoryId: key_medical_provider_group_history_id
+      keyMedicalProviderId: key_medical_provider_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMpMedicalProviderGroupMedicalProvidersByMedicalProviderGroupHistoryIdAndMedicalProviderId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mp_medical_provider_group_medical_providers'
+    collection using the 'medical_provider_group_history_id' and
+    'medical_provider_id' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMpMedicalProviderGroupMedicalProvidersByMedicalProviderGroupHistoryIdAndMedicalProviderId
+  permissions:
+    - role: admin
+      allowExecution: true
+

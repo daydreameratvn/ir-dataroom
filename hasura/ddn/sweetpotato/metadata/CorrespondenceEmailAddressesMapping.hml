@@ -1,0 +1,221 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceEmailAddressesMapping
+  fields:
+    - name: addressField
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: emailAddressId
+      type: Uuid!
+    - name: emailId
+      type: Uuid!
+    - name: id
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: CorrespondenceEmailAddressesMapping
+    inputTypeName: CorrespondenceEmailAddressesMappingInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_email_addresses_mapping
+      fieldMapping:
+        addressField:
+          column:
+            name: address_field
+        createdAt:
+          column:
+            name: created_at
+        emailAddressId:
+          column:
+            name: email_address_id
+        emailId:
+          column:
+            name: email_id
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceEmailAddressesMapping
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - addressField
+          - createdAt
+          - emailAddressId
+          - emailId
+          - id
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceEmailAddressesMappingBoolExp
+  operand:
+    object:
+      type: CorrespondenceEmailAddressesMapping
+      comparableFields:
+        - fieldName: addressField
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: emailAddressId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: emailId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: correspondenceEmailAddressField
+        - relationshipName: correspondenceEmailAddress
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceEmailAddressesMappingBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceEmailAddressesMappingAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceEmailAddressesMapping
+      aggregatableFields:
+        - fieldName: addressField
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: emailAddressId
+          aggregateExpression: UuidAggExp
+        - fieldName: emailId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceEmailAddressesMappingAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceEmailAddressesMappingOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceEmailAddressesMapping
+      orderableFields:
+        - fieldName: addressField
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: emailAddressId
+          orderByExpression: UuidOrderByExp
+        - fieldName: emailId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: correspondenceEmailAddressField
+        - relationshipName: correspondenceEmailAddress
+  graphql:
+    expressionTypeName: CorrespondenceEmailAddressesMappingOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceEmailAddressesMapping
+  objectType: CorrespondenceEmailAddressesMapping
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_email_addresses_mapping
+  filterExpressionType: CorrespondenceEmailAddressesMappingBoolExp
+  aggregateExpression: CorrespondenceEmailAddressesMappingAggExp
+  orderByExpression: CorrespondenceEmailAddressesMappingOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceEmailAddressesMapping
+      subscription:
+        rootField: correspondenceEmailAddressesMapping
+    selectUniques:
+      - queryRootField: correspondenceEmailAddressesMappingById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: correspondenceEmailAddressesMappingById
+    filterInputTypeName: CorrespondenceEmailAddressesMappingFilterInput
+    aggregate:
+      queryRootField: correspondenceEmailAddressesMappingAggregate
+      subscription:
+        rootField: correspondenceEmailAddressesMappingAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceEmailAddressesMapping
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmailAddressField
+  sourceType: CorrespondenceEmailAddressesMapping
+  target:
+    model:
+      name: CorrespondenceEmailAddressFields
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: addressField
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmailAddress
+  sourceType: CorrespondenceEmailAddressesMapping
+  target:
+    model:
+      name: CorrespondenceEmailAddresses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: emailAddressId
+      target:
+        modelField:
+          - fieldName: id
+

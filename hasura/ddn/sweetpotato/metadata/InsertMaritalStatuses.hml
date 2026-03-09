@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMaritalStatusesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertMaritalStatusesObject
+    inputTypeName: InsertMaritalStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_marital_statuses_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMaritalStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMaritalStatusesResponse
+  description: Responses from the 'insert_marital_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MaritalStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMaritalStatusesResponse
+    inputTypeName: InsertMaritalStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_marital_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMaritalStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMaritalStatuses
+  outputType: InsertMaritalStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMaritalStatusesObject!]!"
+    - name: postCheck
+      type: MaritalStatusesBoolExp
+      description: Insert permission predicate over the 'marital_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_marital_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMaritalStatuses
+    rootFieldKind: Mutation
+  description: Insert into the marital_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMaritalStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

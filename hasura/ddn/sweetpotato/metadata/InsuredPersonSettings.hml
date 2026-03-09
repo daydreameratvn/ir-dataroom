@@ -1,0 +1,258 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredPersonSettings
+  fields:
+    - name: ccHrBrokerInsurer
+      type: Boolean_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: insuredPersonId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsuredPersonSettings
+    inputTypeName: InsuredPersonSettingsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_person_settings
+      fieldMapping:
+        ccHrBrokerInsurer:
+          column:
+            name: cc_hr_broker_insurer
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        id:
+          column:
+            name: id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredPersonSettings
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - ccHrBrokerInsurer
+          - createdAt
+          - createdBy
+          - id
+          - insuredPersonId
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredPersonSettingsBoolExp
+  operand:
+    object:
+      type: InsuredPersonSettings
+      comparableFields:
+        - fieldName: ccHrBrokerInsurer
+          booleanExpressionType: BoolBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredPersonId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: insuredPerson
+        - relationshipName: identityUserByUpdatedBy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredPersonSettingsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredPersonSettingsAggExp
+  operand:
+    object:
+      aggregatedType: InsuredPersonSettings
+      aggregatableFields:
+        - fieldName: ccHrBrokerInsurer
+          aggregateExpression: BoolAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredPersonId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredPersonSettingsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredPersonSettingsOrderByExp
+  operand:
+    object:
+      orderedType: InsuredPersonSettings
+      orderableFields:
+        - fieldName: ccHrBrokerInsurer
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredPersonId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: insuredPerson
+        - relationshipName: identityUserByUpdatedBy
+  graphql:
+    expressionTypeName: InsuredPersonSettingsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredPersonSettings
+  objectType: InsuredPersonSettings
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_person_settings
+  filterExpressionType: InsuredPersonSettingsBoolExp
+  aggregateExpression: InsuredPersonSettingsAggExp
+  orderByExpression: InsuredPersonSettingsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredPersonSettings
+      subscription:
+        rootField: insuredPersonSettings
+    selectUniques:
+      - queryRootField: insuredPersonSettingsByInsuredPersonId
+        uniqueIdentifier:
+          - insuredPersonId
+        subscription:
+          rootField: insuredPersonSettingsByInsuredPersonId
+      - queryRootField: insuredPersonSettingsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: insuredPersonSettingsById
+    filterInputTypeName: InsuredPersonSettingsFilterInput
+    aggregate:
+      queryRootField: insuredPersonSettingsAggregate
+      subscription:
+        rootField: insuredPersonSettingsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredPersonSettings
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: InsuredPersonSettings
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPerson
+  sourceType: InsuredPersonSettings
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByUpdatedBy
+  sourceType: InsuredPersonSettings
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: updatedBy
+      target:
+        modelField:
+          - fieldName: userId
+

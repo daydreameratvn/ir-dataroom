@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteNotificationReceiverTypesByValueResponse
+  description: Responses from the 'delete_notification_receiver_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[NotificationReceiverTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteNotificationReceiverTypesByValueResponse
+    inputTypeName: DeleteNotificationReceiverTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_notification_receiver_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteNotificationReceiverTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteNotificationReceiverTypesByValue
+  outputType: DeleteNotificationReceiverTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: NotificationReceiverTypesBoolExp
+      description: Delete permission predicate over the 'notification_receiver_types'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_notification_receiver_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteNotificationReceiverTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'notification_receiver_types' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteNotificationReceiverTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

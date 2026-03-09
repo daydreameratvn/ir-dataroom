@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePlanDocumentsByPlanDocumentIdResponse
+  description: Responses from the 'delete_plan_documents_by_plan_document_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanDocuments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePlanDocumentsByPlanDocumentIdResponse
+    inputTypeName: DeletePlanDocumentsByPlanDocumentIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_plan_documents_by_plan_document_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePlanDocumentsByPlanDocumentIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePlanDocumentsByPlanDocumentId
+  outputType: DeletePlanDocumentsByPlanDocumentIdResponse!
+  arguments:
+    - name: keyPlanDocumentId
+      type: Uuid!
+    - name: preCheck
+      type: PlanDocumentsBoolExp
+      description: Delete permission predicate over the 'plan_documents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_plan_documents_by_plan_document_id
+    argumentMapping:
+      keyPlanDocumentId: key_plan_document_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePlanDocumentsByPlanDocumentId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'plan_documents' collection using the
+    'plan_document_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePlanDocumentsByPlanDocumentId
+  permissions:
+    - role: admin
+      allowExecution: true
+

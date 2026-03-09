@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutPayoutDurationTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PayoutPayoutDurationTypes
+    inputTypeName: PayoutPayoutDurationTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_payout_duration_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutPayoutDurationTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutPayoutDurationTypesBoolExp
+  operand:
+    object:
+      type: PayoutPayoutDurationTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: payoutPaymentRequestItems
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutPayoutDurationTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutPayoutDurationTypesAggExp
+  operand:
+    object:
+      aggregatedType: PayoutPayoutDurationTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutPayoutDurationTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutPayoutDurationTypesOrderByExp
+  operand:
+    object:
+      orderedType: PayoutPayoutDurationTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PayoutPayoutDurationTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutPayoutDurationTypes
+  objectType: PayoutPayoutDurationTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_payout_duration_types
+  filterExpressionType: PayoutPayoutDurationTypesBoolExp
+  aggregateExpression: PayoutPayoutDurationTypesAggExp
+  orderByExpression: PayoutPayoutDurationTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutPayoutDurationTypes
+      subscription:
+        rootField: payoutPayoutDurationTypes
+    selectUniques:
+      - queryRootField: payoutPayoutDurationTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: payoutPayoutDurationTypesByValue
+    filterInputTypeName: PayoutPayoutDurationTypesFilterInput
+    aggregate:
+      queryRootField: payoutPayoutDurationTypesAggregate
+      subscription:
+        rootField: payoutPayoutDurationTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutPayoutDurationTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestItems
+  sourceType: PayoutPayoutDurationTypes
+  target:
+    model:
+      name: PayoutPaymentRequestItems
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPaymentRequestItemsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: payoutDurationType
+  graphql:
+    aggregateFieldName: payoutPaymentRequestItemsAggregate
+

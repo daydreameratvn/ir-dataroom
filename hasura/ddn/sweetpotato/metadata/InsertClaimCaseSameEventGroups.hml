@@ -1,0 +1,139 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseSameEventGroupsObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: eventDate
+      type: Timestamptz
+    - name: handedOverToInsurerAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertClaimCaseSameEventGroupsObject
+    inputTypeName: InsertClaimCaseSameEventGroupsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_same_event_groups_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        eventDate:
+          column:
+            name: event_date
+        handedOverToInsurerAt:
+          column:
+            name: handed_over_to_insurer_at
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseSameEventGroupsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - deletedAt
+          - eventDate
+          - handedOverToInsurerAt
+          - id
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseSameEventGroupsResponse
+  description: Responses from the 'insert_claim_case_same_event_groups' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseSameEventGroups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCaseSameEventGroupsResponse
+    inputTypeName: InsertClaimCaseSameEventGroupsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_same_event_groups_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseSameEventGroupsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCaseSameEventGroups
+  outputType: InsertClaimCaseSameEventGroupsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCaseSameEventGroupsObject!]!"
+    - name: postCheck
+      type: ClaimCaseSameEventGroupsBoolExp
+      description: Insert permission predicate over the 'claim_case_same_event_groups'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_case_same_event_groups
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCaseSameEventGroups
+    rootFieldKind: Mutation
+  description: Insert into the claim_case_same_event_groups table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCaseSameEventGroups
+  permissions:
+    - role: admin
+      allowExecution: true
+

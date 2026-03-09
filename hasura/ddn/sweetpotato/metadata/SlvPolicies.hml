@@ -1,0 +1,397 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SlvPolicies
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: mainProductCode
+      type: String_1
+    - name: mainProductName
+      type: String_1
+    - name: mainSa
+      type: Bigdecimal
+    - name: poDob
+      type: Timestamptz
+    - name: poEmail
+      type: String_1
+    - name: poFullName
+      type: String_1
+    - name: poGender
+      type: String_1
+    - name: poIdNumber
+      type: String_1
+    - name: polAutoRein
+      type: String_1
+    - name: polIssueDate
+      type: Timestamptz
+    - name: polLapseDate
+      type: Timestamptz
+    - name: polLastReinstateDate
+      type: Timestamptz
+    - name: polNumber
+      type: String_1!
+    - name: polPaidToDate
+      type: Timestamptz
+    - name: polSettleDate
+      type: Timestamptz
+    - name: polStatus
+      type: String_1!
+    - name: servingAgentId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: SlvPolicies
+    inputTypeName: SlvPoliciesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: slv_policies
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        mainProductCode:
+          column:
+            name: main_product_code
+        mainProductName:
+          column:
+            name: main_product_name
+        mainSa:
+          column:
+            name: main_sa
+        poDob:
+          column:
+            name: po_dob
+        poEmail:
+          column:
+            name: po_email
+        poFullName:
+          column:
+            name: po_full_name
+        poGender:
+          column:
+            name: po_gender
+        poIdNumber:
+          column:
+            name: po_id_number
+        polAutoRein:
+          column:
+            name: pol_auto_rein
+        polIssueDate:
+          column:
+            name: pol_issue_date
+        polLapseDate:
+          column:
+            name: pol_lapse_date
+        polLastReinstateDate:
+          column:
+            name: pol_last_reinstate_date
+        polNumber:
+          column:
+            name: pol_number
+        polPaidToDate:
+          column:
+            name: pol_paid_to_date
+        polSettleDate:
+          column:
+            name: pol_settle_date
+        polStatus:
+          column:
+            name: pol_status
+        servingAgentId:
+          column:
+            name: serving_agent_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SlvPolicies
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - mainProductCode
+          - mainProductName
+          - mainSa
+          - poDob
+          - poEmail
+          - poFullName
+          - poGender
+          - poIdNumber
+          - polAutoRein
+          - polIssueDate
+          - polLapseDate
+          - polLastReinstateDate
+          - polNumber
+          - polPaidToDate
+          - polSettleDate
+          - polStatus
+          - servingAgentId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SlvPoliciesBoolExp
+  operand:
+    object:
+      type: SlvPolicies
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: mainProductCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: mainProductName
+          booleanExpressionType: TextBoolExp
+        - fieldName: mainSa
+          booleanExpressionType: NumericBoolExp
+        - fieldName: poDob
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: poEmail
+          booleanExpressionType: TextBoolExp
+        - fieldName: poFullName
+          booleanExpressionType: TextBoolExp
+        - fieldName: poGender
+          booleanExpressionType: TextBoolExp
+        - fieldName: poIdNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: polAutoRein
+          booleanExpressionType: TextBoolExp
+        - fieldName: polIssueDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: polLapseDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: polLastReinstateDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: polNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: polPaidToDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: polSettleDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: polStatus
+          booleanExpressionType: TextBoolExp
+        - fieldName: servingAgentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: slvCoverages
+        - relationshipName: slvServingAgent
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SlvPoliciesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SlvPoliciesAggExp
+  operand:
+    object:
+      aggregatedType: SlvPolicies
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: mainProductCode
+          aggregateExpression: TextAggExp
+        - fieldName: mainProductName
+          aggregateExpression: TextAggExp
+        - fieldName: mainSa
+          aggregateExpression: NumericAggExp
+        - fieldName: poDob
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: poEmail
+          aggregateExpression: TextAggExp
+        - fieldName: poFullName
+          aggregateExpression: TextAggExp
+        - fieldName: poGender
+          aggregateExpression: TextAggExp
+        - fieldName: poIdNumber
+          aggregateExpression: TextAggExp
+        - fieldName: polAutoRein
+          aggregateExpression: TextAggExp
+        - fieldName: polIssueDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: polLapseDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: polLastReinstateDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: polNumber
+          aggregateExpression: TextAggExp
+        - fieldName: polPaidToDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: polSettleDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: polStatus
+          aggregateExpression: TextAggExp
+        - fieldName: servingAgentId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SlvPoliciesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SlvPoliciesOrderByExp
+  operand:
+    object:
+      orderedType: SlvPolicies
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: mainProductCode
+          orderByExpression: String1OrderByExp
+        - fieldName: mainProductName
+          orderByExpression: String1OrderByExp
+        - fieldName: mainSa
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: poDob
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: poEmail
+          orderByExpression: String1OrderByExp
+        - fieldName: poFullName
+          orderByExpression: String1OrderByExp
+        - fieldName: poGender
+          orderByExpression: String1OrderByExp
+        - fieldName: poIdNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: polAutoRein
+          orderByExpression: String1OrderByExp
+        - fieldName: polIssueDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: polLapseDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: polLastReinstateDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: polNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: polPaidToDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: polSettleDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: polStatus
+          orderByExpression: String1OrderByExp
+        - fieldName: servingAgentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: slvServingAgent
+  graphql:
+    expressionTypeName: SlvPoliciesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SlvPolicies
+  objectType: SlvPolicies
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: slv_policies
+  filterExpressionType: SlvPoliciesBoolExp
+  aggregateExpression: SlvPoliciesAggExp
+  orderByExpression: SlvPoliciesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: slvPolicies
+      subscription:
+        rootField: slvPolicies
+    selectUniques:
+      - queryRootField: slvPoliciesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: slvPoliciesById
+      - queryRootField: slvPoliciesByPolNumber
+        uniqueIdentifier:
+          - polNumber
+        subscription:
+          rootField: slvPoliciesByPolNumber
+    filterInputTypeName: SlvPoliciesFilterInput
+    aggregate:
+      queryRootField: slvPoliciesAggregate
+      subscription:
+        rootField: slvPoliciesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SlvPolicies
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvCoverages
+  sourceType: SlvPolicies
+  target:
+    model:
+      name: SlvCoverages
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvCoveragesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: policyId
+  graphql:
+    aggregateFieldName: slvCoveragesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvServingAgent
+  sourceType: SlvPolicies
+  target:
+    model:
+      name: SlvServingAgents
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: servingAgentId
+      target:
+        modelField:
+          - fieldName: id
+

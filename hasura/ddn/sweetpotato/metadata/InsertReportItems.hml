@@ -1,0 +1,132 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertReportItemsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: reportId
+      type: Uuid!
+    - name: reportType
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertReportItemsObject
+    inputTypeName: InsertReportItemsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_report_items_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        reportId:
+          column:
+            name: report_id
+        reportType:
+          column:
+            name: report_type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertReportItemsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - reportId
+          - reportType
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertReportItemsResponse
+  description: Responses from the 'insert_report_items' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ReportItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertReportItemsResponse
+    inputTypeName: InsertReportItemsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_report_items_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertReportItemsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertReportItems
+  outputType: InsertReportItemsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertReportItemsObject!]!"
+    - name: postCheck
+      type: ReportItemsBoolExp
+      description: Insert permission predicate over the 'report_items' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_report_items
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertReportItems
+    rootFieldKind: Mutation
+  description: Insert into the report_items table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertReportItems
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,429 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyPlan
+  fields:
+    - name: cardId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: enCardId
+      type: Uuid
+    - name: extraPaymentRatio
+      type: Bigdecimal
+    - name: id
+      type: Uuid!
+    - name: insuredBenefitTypes
+      type: "[String_1]"
+    - name: jsonDetails
+      type: Json!
+    - name: planCode
+      type: String_1
+    - name: planId
+      type: Uuid!
+    - name: planName
+      type: String_1
+    - name: policyId
+      type: Uuid!
+    - name: premium
+      type: Bigdecimal!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PolicyPlan
+    inputTypeName: PolicyPlanInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_plan
+      fieldMapping:
+        cardId:
+          column:
+            name: card_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        enCardId:
+          column:
+            name: en_card_id
+        extraPaymentRatio:
+          column:
+            name: extra_payment_ratio
+        id:
+          column:
+            name: id
+        insuredBenefitTypes:
+          column:
+            name: insured_benefit_types
+        jsonDetails:
+          column:
+            name: json_details
+        planCode:
+          column:
+            name: plan_code
+        planId:
+          column:
+            name: plan_id
+        planName:
+          column:
+            name: plan_name
+        policyId:
+          column:
+            name: policy_id
+        premium:
+          column:
+            name: premium
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyPlan
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - cardId
+          - createdAt
+          - deletedAt
+          - enCardId
+          - extraPaymentRatio
+          - id
+          - insuredBenefitTypes
+          - jsonDetails
+          - planCode
+          - planId
+          - planName
+          - policyId
+          - premium
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyPlanBoolExp
+  operand:
+    object:
+      type: PolicyPlan
+      comparableFields:
+        - fieldName: cardId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: enCardId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: extraPaymentRatio
+          booleanExpressionType: NumericBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: jsonDetails
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: planCode
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planName
+          booleanExpressionType: TextBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: premium
+          booleanExpressionType: NumericBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: policiesPlansInsuredBenefits
+        - relationshipName: policyFaqs
+        - relationshipName: plan
+        - relationshipName: policy
+        - relationshipName: card
+        - relationshipName: cardByEnCardId
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyPlanBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyPlanAggExp
+  operand:
+    object:
+      aggregatedType: PolicyPlan
+      aggregatableFields:
+        - fieldName: cardId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: enCardId
+          aggregateExpression: UuidAggExp
+        - fieldName: extraPaymentRatio
+          aggregateExpression: NumericAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: jsonDetails
+          aggregateExpression: JsonbAggExp
+        - fieldName: planCode
+          aggregateExpression: VarcharAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: planName
+          aggregateExpression: TextAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: premium
+          aggregateExpression: NumericAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyPlanAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyPlanOrderByExp
+  operand:
+    object:
+      orderedType: PolicyPlan
+      orderableFields:
+        - fieldName: cardId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: enCardId
+          orderByExpression: UuidOrderByExp
+        - fieldName: extraPaymentRatio
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: jsonDetails
+          orderByExpression: JsonOrderByExp
+        - fieldName: planCode
+          orderByExpression: String1OrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planName
+          orderByExpression: String1OrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: premium
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: plan
+        - relationshipName: policy
+        - relationshipName: card
+        - relationshipName: cardByEnCardId
+  graphql:
+    expressionTypeName: PolicyPlanOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyPlan
+  objectType: PolicyPlan
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_plan
+  filterExpressionType: PolicyPlanBoolExp
+  aggregateExpression: PolicyPlanAggExp
+  orderByExpression: PolicyPlanOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyPlan
+      subscription:
+        rootField: policyPlan
+    selectUniques:
+      - queryRootField: policyPlanByPlanPoliciesPkey
+        uniqueIdentifier:
+          - planId
+          - policyId
+        subscription:
+          rootField: policyPlanByPlanPoliciesPkey
+      - queryRootField: policyPlanByPolicyIdPlanIdDeletedAtKey
+        uniqueIdentifier:
+          - deletedAt
+          - planId
+          - policyId
+        subscription:
+          rootField: policyPlanByPolicyIdPlanIdDeletedAtKey
+    filterInputTypeName: PolicyPlanFilterInput
+    aggregate:
+      queryRootField: policyPlanAggregate
+      subscription:
+        rootField: policyPlanAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyPlan
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policiesPlansInsuredBenefits
+  sourceType: PolicyPlan
+  target:
+    model:
+      name: PoliciesPlansInsuredBenefits
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PoliciesPlansInsuredBenefitsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+  graphql:
+    aggregateFieldName: policiesPlansInsuredBenefitsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyFaqs
+  sourceType: PolicyPlan
+  target:
+    model:
+      name: PolicyFaqs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyFaqsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+  graphql:
+    aggregateFieldName: policyFaqsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plan
+  sourceType: PolicyPlan
+  target:
+    model:
+      name: Plans
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: PolicyPlan
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: card
+  sourceType: PolicyPlan
+  target:
+    model:
+      name: Cards
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: cardId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: cardByEnCardId
+  sourceType: PolicyPlan
+  target:
+    model:
+      name: Cards
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: enCardId
+      target:
+        modelField:
+          - fieldName: id
+

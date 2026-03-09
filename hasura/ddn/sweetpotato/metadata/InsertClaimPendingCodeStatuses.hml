@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimPendingCodeStatusesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertClaimPendingCodeStatusesObject
+    inputTypeName: InsertClaimPendingCodeStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_pending_code_statuses_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimPendingCodeStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimPendingCodeStatusesResponse
+  description: Responses from the 'insert_claim_pending_code_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimPendingCodeStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimPendingCodeStatusesResponse
+    inputTypeName: InsertClaimPendingCodeStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_pending_code_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimPendingCodeStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimPendingCodeStatuses
+  outputType: InsertClaimPendingCodeStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimPendingCodeStatusesObject!]!"
+    - name: postCheck
+      type: ClaimPendingCodeStatusesBoolExp
+      description: Insert permission predicate over the 'claim_pending_code_statuses'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_pending_code_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimPendingCodeStatuses
+    rootFieldKind: Mutation
+  description: Insert into the claim_pending_code_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimPendingCodeStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

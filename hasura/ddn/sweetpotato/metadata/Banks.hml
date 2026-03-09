@@ -1,0 +1,472 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Banks
+  fields:
+    - name: bankCode
+      type: Int32!
+      description: Citad code
+    - name: cardLength
+      type: Int32!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: displayOrder
+      type: Int32!
+    - name: enName
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: napasSupported
+      type: Boolean_1!
+    - name: shortName
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: vnName
+      type: String_1!
+  graphql:
+    typeName: Banks
+    inputTypeName: BanksInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: banks
+      fieldMapping:
+        bankCode:
+          column:
+            name: bank_code
+        cardLength:
+          column:
+            name: card_length
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        displayOrder:
+          column:
+            name: display_order
+        enName:
+          column:
+            name: en_name
+        id:
+          column:
+            name: id
+        napasSupported:
+          column:
+            name: napas_supported
+        shortName:
+          column:
+            name: short_name
+        updatedAt:
+          column:
+            name: updated_at
+        vnName:
+          column:
+            name: vn_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Banks
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankCode
+          - cardLength
+          - createdAt
+          - deletedAt
+          - displayOrder
+          - enName
+          - id
+          - napasSupported
+          - shortName
+          - updatedAt
+          - vnName
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: BanksBoolExp
+  operand:
+    object:
+      type: Banks
+      comparableFields:
+        - fieldName: bankCode
+          booleanExpressionType: Int4BoolExp
+        - fieldName: cardLength
+          booleanExpressionType: Int4BoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: displayOrder
+          booleanExpressionType: Int4BoolExp
+        - fieldName: enName
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: napasSupported
+          booleanExpressionType: BoolBoolExp
+        - fieldName: shortName
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: vnName
+          booleanExpressionType: VarcharBoolExp
+      comparableRelationships:
+        - relationshipName: bankBranchs
+        - relationshipName: claimCaseBeneficiaries
+        - relationshipName: claimCases
+        - relationshipName: fwdBanks
+        - relationshipName: identityUserBanks
+        - relationshipName: mpMedicalProviders
+        - relationshipName: payoutBankPaymentProviders
+        - relationshipName: payoutBeneficiaryBankAccounts
+        - relationshipName: payoutBeneficiaryPapers
+        - relationshipName: payoutPayoutBankAccounts
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: BanksBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: BanksAggExp
+  operand:
+    object:
+      aggregatedType: Banks
+      aggregatableFields:
+        - fieldName: bankCode
+          aggregateExpression: Int4AggExp
+        - fieldName: cardLength
+          aggregateExpression: Int4AggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: displayOrder
+          aggregateExpression: Int4AggExp
+        - fieldName: enName
+          aggregateExpression: VarcharAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: napasSupported
+          aggregateExpression: BoolAggExp
+        - fieldName: shortName
+          aggregateExpression: VarcharAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: vnName
+          aggregateExpression: VarcharAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: BanksAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: BanksOrderByExp
+  operand:
+    object:
+      orderedType: Banks
+      orderableFields:
+        - fieldName: bankCode
+          orderByExpression: Int32OrderByExp
+        - fieldName: cardLength
+          orderByExpression: Int32OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: displayOrder
+          orderByExpression: Int32OrderByExp
+        - fieldName: enName
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: napasSupported
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: shortName
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: vnName
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: BanksOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Banks
+  objectType: Banks
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: banks
+  filterExpressionType: BanksBoolExp
+  aggregateExpression: BanksAggExp
+  orderByExpression: BanksOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: banks
+      subscription:
+        rootField: banks
+    selectUniques:
+      - queryRootField: banksById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: banksById
+    filterInputTypeName: BanksFilterInput
+    aggregate:
+      queryRootField: banksAggregate
+      subscription:
+        rootField: banksAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Banks
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bankBranchs
+  sourceType: Banks
+  target:
+    model:
+      name: BankBranchs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: BankBranchsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankId
+  graphql:
+    aggregateFieldName: bankBranchsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseBeneficiaries
+  sourceType: Banks
+  target:
+    model:
+      name: ClaimCaseBeneficiaries
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseBeneficiariesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankId
+  graphql:
+    aggregateFieldName: claimCaseBeneficiariesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCases
+  sourceType: Banks
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankId
+  graphql:
+    aggregateFieldName: claimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdBanks
+  sourceType: Banks
+  target:
+    model:
+      name: FwdBanks
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdBanksAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: ppyBankId
+  graphql:
+    aggregateFieldName: fwdBanksAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserBanks
+  sourceType: Banks
+  target:
+    model:
+      name: IdentityUserBanks
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: IdentityUserBanksAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankId
+  graphql:
+    aggregateFieldName: identityUserBanksAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviders
+  sourceType: Banks
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProvidersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankId
+  graphql:
+    aggregateFieldName: mpMedicalProvidersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutBankPaymentProviders
+  sourceType: Banks
+  target:
+    model:
+      name: PayoutBankPaymentProviders
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutBankPaymentProvidersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankId
+  graphql:
+    aggregateFieldName: payoutBankPaymentProvidersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutBeneficiaryBankAccounts
+  sourceType: Banks
+  target:
+    model:
+      name: PayoutBeneficiaryBankAccounts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutBeneficiaryBankAccountsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankId
+  graphql:
+    aggregateFieldName: payoutBeneficiaryBankAccountsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutBeneficiaryPapers
+  sourceType: Banks
+  target:
+    model:
+      name: PayoutBeneficiaryPapers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutBeneficiaryPapersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankId
+  graphql:
+    aggregateFieldName: payoutBeneficiaryPapersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPayoutBankAccounts
+  sourceType: Banks
+  target:
+    model:
+      name: PayoutPayoutBankAccounts
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PayoutPayoutBankAccountsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: bankId
+  graphql:
+    aggregateFieldName: payoutPayoutBankAccountsAggregate
+

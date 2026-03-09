@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHawthornQcHealthCheckupDetailsByIdResponse
+  description: Responses from the
+    'delete_hawthorn_qc_health_checkup_details_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornQcHealthCheckupDetails!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHawthornQcHealthCheckupDetailsByIdResponse
+    inputTypeName: DeleteHawthornQcHealthCheckupDetailsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hawthorn_qc_health_checkup_details_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHawthornQcHealthCheckupDetailsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHawthornQcHealthCheckupDetailsById
+  outputType: DeleteHawthornQcHealthCheckupDetailsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: HawthornQcHealthCheckupDetailsBoolExp
+      description: Delete permission predicate over the
+        'hawthorn_qc_health_checkup_details' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hawthorn_qc_health_checkup_details_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHawthornQcHealthCheckupDetailsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hawthorn_qc_health_checkup_details'
+    collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHawthornQcHealthCheckupDetailsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

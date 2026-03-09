@@ -1,0 +1,88 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMetaReferencesByBooleanValueAndNumberValueAndObjectKeyAndRefIdAndStringValueResponse
+  description: Responses from the
+    'delete_meta_references_by_boolean_value_and_number_value_and_object_key_and_ref_id_and_string_value'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetaReferences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMetaReferencesByBooleanValueAndNumberValueAndObjectKeyAndRefIdAndStringValueResponse
+    inputTypeName: DeleteMetaReferencesByBooleanValueAndNumberValueAndObjectKeyAndRefIdAndStringValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_meta_references_by_boolean_value_and_number_value_and_object_key_and_ref_id_and_string_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMetaReferencesByBooleanValueAndNumberValueAndObjectKeyAndRefIdAndStringValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMetaReferencesByBooleanValueAndNumberValueAndObjectKeyAndRefIdAndStringValue
+  outputType: DeleteMetaReferencesByBooleanValueAndNumberValueAndObjectKeyAndRefIdAndStringValueResponse!
+  arguments:
+    - name: keyBooleanValue
+      type: Boolean_1
+    - name: keyNumberValue
+      type: Bigdecimal
+    - name: keyObjectKey
+      type: String_1
+    - name: keyRefId
+      type: Uuid!
+    - name: keyStringValue
+      type: String_1
+    - name: preCheck
+      type: MetaReferencesBoolExp
+      description: Delete permission predicate over the 'meta_references' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_meta_references_by_boolean_value_and_number_value_and_object_key_and_ref_id_and_string_value
+    argumentMapping:
+      keyBooleanValue: key_boolean_value
+      keyNumberValue: key_number_value
+      keyObjectKey: key_object_key
+      keyRefId: key_ref_id
+      keyStringValue: key_string_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMetaReferencesByBooleanValueAndNumberValueAndObjectKeyAndRefIdAndStringValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'meta_references' collection using the
+    'boolean_value', 'number_value', 'object_key', 'ref_id' and 'string_value'
+    keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMetaReferencesByBooleanValueAndNumberValueAndObjectKeyAndRefIdAndStringValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

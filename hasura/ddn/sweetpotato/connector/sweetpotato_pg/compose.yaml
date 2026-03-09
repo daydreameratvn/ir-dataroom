@@ -1,0 +1,14 @@
+services:
+  sweetpotato_sweetpotato_pg:
+    build:
+      context: .
+      dockerfile: .hasura-connector/Dockerfile.sweetpotato_pg
+    environment:
+      CONNECTION_URI: $SWEETPOTATO_SWEETPOTATO_PG_CONNECTION_URI
+      HASURA_SERVICE_TOKEN_SECRET: $SWEETPOTATO_SWEETPOTATO_PG_HASURA_SERVICE_TOKEN_SECRET
+      OTEL_EXPORTER_OTLP_ENDPOINT: $SWEETPOTATO_SWEETPOTATO_PG_OTEL_EXPORTER_OTLP_ENDPOINT
+      OTEL_SERVICE_NAME: $SWEETPOTATO_SWEETPOTATO_PG_OTEL_SERVICE_NAME
+    extra_hosts:
+      - local.hasura.dev:host-gateway
+    ports:
+      - 7894:8080

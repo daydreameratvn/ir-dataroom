@@ -1,0 +1,268 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProviderGroups
+  fields:
+    - name: companyId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: MpMedicalProviderGroups
+    inputTypeName: MpMedicalProviderGroupsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_provider_groups
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProviderGroups
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - name
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProviderGroupsBoolExp
+  operand:
+    object:
+      type: MpMedicalProviderGroups
+      comparableFields:
+        - fieldName: companyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProviderGroupHistories
+        - relationshipName: company
+        - relationshipName: mpMedicalProviderGroupType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProviderGroupsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProviderGroupsAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProviderGroups
+      aggregatableFields:
+        - fieldName: companyId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProviderGroupsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProviderGroupsOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProviderGroups
+      orderableFields:
+        - fieldName: companyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+        - relationshipName: mpMedicalProviderGroupType
+  graphql:
+    expressionTypeName: MpMedicalProviderGroupsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProviderGroups
+  objectType: MpMedicalProviderGroups
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_provider_groups
+  filterExpressionType: MpMedicalProviderGroupsBoolExp
+  aggregateExpression: MpMedicalProviderGroupsAggExp
+  orderByExpression: MpMedicalProviderGroupsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProviderGroups
+      subscription:
+        rootField: mpMedicalProviderGroups
+    selectUniques:
+      - queryRootField: mpMedicalProviderGroupsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: mpMedicalProviderGroupsById
+    filterInputTypeName: MpMedicalProviderGroupsFilterInput
+    aggregate:
+      queryRootField: mpMedicalProviderGroupsAggregate
+      subscription:
+        rootField: mpMedicalProviderGroupsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProviderGroups
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderGroupHistories
+  sourceType: MpMedicalProviderGroups
+  target:
+    model:
+      name: MpMedicalProviderGroupHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProviderGroupHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: medicalProviderGroupId
+  graphql:
+    aggregateFieldName: mpMedicalProviderGroupHistoriesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: MpMedicalProviderGroups
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderGroupType
+  sourceType: MpMedicalProviderGroups
+  target:
+    model:
+      name: MpMedicalProviderGroupTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

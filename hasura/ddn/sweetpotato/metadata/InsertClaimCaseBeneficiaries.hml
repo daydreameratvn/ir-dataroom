@@ -1,0 +1,229 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseBeneficiariesObject
+  fields:
+    - name: bankAccountNumber
+      type: String_1
+    - name: bankBranch
+      type: String_1
+    - name: bankBranchId
+      type: Uuid
+    - name: bankCity
+      type: String_1
+    - name: bankId
+      type: Uuid
+    - name: bankName
+      type: String_1
+    - name: beneficiaryName
+      type: String_1!
+    - name: claimCaseId
+      type: Uuid
+    - name: confirmedAt
+      type: Timestamptz
+    - name: confirmedBy
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: paperId
+      type: String_1
+    - name: paperIssueDate
+      type: Timestamptz
+    - name: paperIssuePlace
+      type: String_1
+    - name: paymentMethod
+      type: String_1!
+    - name: premiumPolicyNumber
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: warningCode
+      type: String_1
+  graphql:
+    typeName: InsertClaimCaseBeneficiariesObject
+    inputTypeName: InsertClaimCaseBeneficiariesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_beneficiaries_object
+      fieldMapping:
+        bankAccountNumber:
+          column:
+            name: bank_account_number
+        bankBranch:
+          column:
+            name: bank_branch
+        bankBranchId:
+          column:
+            name: bank_branch_id
+        bankCity:
+          column:
+            name: bank_city
+        bankId:
+          column:
+            name: bank_id
+        bankName:
+          column:
+            name: bank_name
+        beneficiaryName:
+          column:
+            name: beneficiary_name
+        claimCaseId:
+          column:
+            name: claim_case_id
+        confirmedAt:
+          column:
+            name: confirmed_at
+        confirmedBy:
+          column:
+            name: confirmed_by
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        paperId:
+          column:
+            name: paper_id
+        paperIssueDate:
+          column:
+            name: paper_issue_date
+        paperIssuePlace:
+          column:
+            name: paper_issue_place
+        paymentMethod:
+          column:
+            name: payment_method
+        premiumPolicyNumber:
+          column:
+            name: premium_policy_number
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        warningCode:
+          column:
+            name: warning_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseBeneficiariesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankAccountNumber
+          - bankBranch
+          - bankBranchId
+          - bankCity
+          - bankId
+          - bankName
+          - beneficiaryName
+          - claimCaseId
+          - confirmedAt
+          - confirmedBy
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - paperId
+          - paperIssueDate
+          - paperIssuePlace
+          - paymentMethod
+          - premiumPolicyNumber
+          - updatedAt
+          - updatedBy
+          - warningCode
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseBeneficiariesResponse
+  description: Responses from the 'insert_claim_case_beneficiaries' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseBeneficiaries!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCaseBeneficiariesResponse
+    inputTypeName: InsertClaimCaseBeneficiariesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_beneficiaries_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseBeneficiariesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCaseBeneficiaries
+  outputType: InsertClaimCaseBeneficiariesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCaseBeneficiariesObject!]!"
+    - name: postCheck
+      type: ClaimCaseBeneficiariesBoolExp
+      description: Insert permission predicate over the 'claim_case_beneficiaries'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_case_beneficiaries
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCaseBeneficiaries
+    rootFieldKind: Mutation
+  description: Insert into the claim_case_beneficiaries table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCaseBeneficiaries
+  permissions:
+    - role: admin
+      allowExecution: true
+

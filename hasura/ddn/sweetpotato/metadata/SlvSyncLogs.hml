@@ -1,0 +1,408 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SlvSyncLogs
+  fields:
+    - name: claimCaseSameEventGroupId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: endedAt
+      type: Timestamptz
+    - name: errorCode
+      type: String_1
+    - name: errorData
+      type: Json
+    - name: id
+      type: Uuid!
+    - name: parentSyncLogId
+      type: Uuid
+    - name: policyId
+      type: Uuid
+    - name: startedAt
+      type: Timestamptz
+    - name: status
+      type: String_1!
+    - name: syncData
+      type: Json
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: SlvSyncLogs
+    inputTypeName: SlvSyncLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: slv_sync_logs
+      fieldMapping:
+        claimCaseSameEventGroupId:
+          column:
+            name: claim_case_same_event_group_id
+        createdAt:
+          column:
+            name: created_at
+        endedAt:
+          column:
+            name: ended_at
+        errorCode:
+          column:
+            name: error_code
+        errorData:
+          column:
+            name: error_data
+        id:
+          column:
+            name: id
+        parentSyncLogId:
+          column:
+            name: parent_sync_log_id
+        policyId:
+          column:
+            name: policy_id
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        syncData:
+          column:
+            name: sync_data
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SlvSyncLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseSameEventGroupId
+          - createdAt
+          - endedAt
+          - errorCode
+          - errorData
+          - id
+          - parentSyncLogId
+          - policyId
+          - startedAt
+          - status
+          - syncData
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SlvSyncLogsBoolExp
+  operand:
+    object:
+      type: SlvSyncLogs
+      comparableFields:
+        - fieldName: claimCaseSameEventGroupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: endedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: errorCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: errorData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: parentSyncLogId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: startedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: syncData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: slvClaimCaseSameEventGroup
+        - relationshipName: slvSyncErrorCode
+        - relationshipName: slvSyncLog
+        - relationshipName: slvSyncLogs
+        - relationshipName: policy
+        - relationshipName: slvSyncStatus
+        - relationshipName: slvSyncType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SlvSyncLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SlvSyncLogsAggExp
+  operand:
+    object:
+      aggregatedType: SlvSyncLogs
+      aggregatableFields:
+        - fieldName: claimCaseSameEventGroupId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: endedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: errorCode
+          aggregateExpression: TextAggExp
+        - fieldName: errorData
+          aggregateExpression: JsonbAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: parentSyncLogId
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: startedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: syncData
+          aggregateExpression: JsonbAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SlvSyncLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SlvSyncLogsOrderByExp
+  operand:
+    object:
+      orderedType: SlvSyncLogs
+      orderableFields:
+        - fieldName: claimCaseSameEventGroupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: endedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: errorCode
+          orderByExpression: String1OrderByExp
+        - fieldName: errorData
+          orderByExpression: JsonOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: parentSyncLogId
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: startedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: syncData
+          orderByExpression: JsonOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: slvClaimCaseSameEventGroup
+        - relationshipName: slvSyncErrorCode
+        - relationshipName: slvSyncLog
+        - relationshipName: policy
+        - relationshipName: slvSyncStatus
+        - relationshipName: slvSyncType
+  graphql:
+    expressionTypeName: SlvSyncLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SlvSyncLogs
+  objectType: SlvSyncLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: slv_sync_logs
+  filterExpressionType: SlvSyncLogsBoolExp
+  aggregateExpression: SlvSyncLogsAggExp
+  orderByExpression: SlvSyncLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: slvSyncLogs
+      subscription:
+        rootField: slvSyncLogs
+    selectUniques:
+      - queryRootField: slvSyncLogsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: slvSyncLogsById
+    filterInputTypeName: SlvSyncLogsFilterInput
+    aggregate:
+      queryRootField: slvSyncLogsAggregate
+      subscription:
+        rootField: slvSyncLogsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SlvSyncLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvClaimCaseSameEventGroup
+  sourceType: SlvSyncLogs
+  target:
+    model:
+      name: SlvClaimCaseSameEventGroups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseSameEventGroupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvSyncErrorCode
+  sourceType: SlvSyncLogs
+  target:
+    model:
+      name: SlvSyncErrorCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: errorCode
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvSyncLog
+  sourceType: SlvSyncLogs
+  target:
+    model:
+      name: SlvSyncLogs
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: parentSyncLogId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvSyncLogs
+  sourceType: SlvSyncLogs
+  target:
+    model:
+      name: SlvSyncLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvSyncLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: parentSyncLogId
+  graphql:
+    aggregateFieldName: slvSyncLogsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: SlvSyncLogs
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvSyncStatus
+  sourceType: SlvSyncLogs
+  target:
+    model:
+      name: SlvSyncStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvSyncType
+  sourceType: SlvSyncLogs
+  target:
+    model:
+      name: SlvSyncTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

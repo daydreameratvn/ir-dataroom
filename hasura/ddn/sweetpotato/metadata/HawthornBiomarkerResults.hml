@@ -1,0 +1,329 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornBiomarkerResults
+  description: Kết quả dạng chỉ số sinh học
+  fields:
+    - name: biomarkerCode
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: isNormal
+      type: Boolean_1
+    - name: numberValue
+      type: Bigdecimal
+    - name: reference
+      type: Json
+    - name: textValue
+      type: String_1
+    - name: uom
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+    - name: valueType
+      type: String_1!
+  graphql:
+    typeName: HawthornBiomarkerResults
+    inputTypeName: HawthornBiomarkerResultsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_biomarker_results
+      fieldMapping:
+        biomarkerCode:
+          column:
+            name: biomarker_code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        isNormal:
+          column:
+            name: is_normal
+        numberValue:
+          column:
+            name: number_value
+        reference:
+          column:
+            name: reference
+        textValue:
+          column:
+            name: text_value
+        uom:
+          column:
+            name: uom
+        updatedAt:
+          column:
+            name: updated_at
+        valueType:
+          column:
+            name: value_type
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornBiomarkerResults
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - biomarkerCode
+          - createdAt
+          - deletedAt
+          - id
+          - isNormal
+          - numberValue
+          - reference
+          - textValue
+          - uom
+          - updatedAt
+          - valueType
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornBiomarkerResultsBoolExp
+  operand:
+    object:
+      type: HawthornBiomarkerResults
+      comparableFields:
+        - fieldName: biomarkerCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isNormal
+          booleanExpressionType: BoolBoolExp
+        - fieldName: numberValue
+          booleanExpressionType: NumericBoolExp
+        - fieldName: reference
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: textValue
+          booleanExpressionType: TextBoolExp
+        - fieldName: uom
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: valueType
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornBiomarker
+        - relationshipName: hawthornBiomarkerValueType
+        - relationshipName: hawthornDiagnosticTestResults
+        - relationshipName: hawthornPhysicalExaminationResults
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornBiomarkerResultsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornBiomarkerResultsAggExp
+  operand:
+    object:
+      aggregatedType: HawthornBiomarkerResults
+      aggregatableFields:
+        - fieldName: biomarkerCode
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isNormal
+          aggregateExpression: BoolAggExp
+        - fieldName: numberValue
+          aggregateExpression: NumericAggExp
+        - fieldName: reference
+          aggregateExpression: JsonbAggExp
+        - fieldName: textValue
+          aggregateExpression: TextAggExp
+        - fieldName: uom
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: valueType
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornBiomarkerResultsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornBiomarkerResultsOrderByExp
+  operand:
+    object:
+      orderedType: HawthornBiomarkerResults
+      orderableFields:
+        - fieldName: biomarkerCode
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isNormal
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: numberValue
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: reference
+          orderByExpression: JsonOrderByExp
+        - fieldName: textValue
+          orderByExpression: String1OrderByExp
+        - fieldName: uom
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: valueType
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: hawthornBiomarker
+        - relationshipName: hawthornBiomarkerValueType
+  graphql:
+    expressionTypeName: HawthornBiomarkerResultsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornBiomarkerResults
+  objectType: HawthornBiomarkerResults
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_biomarker_results
+  filterExpressionType: HawthornBiomarkerResultsBoolExp
+  aggregateExpression: HawthornBiomarkerResultsAggExp
+  orderByExpression: HawthornBiomarkerResultsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornBiomarkerResults
+      subscription:
+        rootField: hawthornBiomarkerResults
+    selectUniques:
+      - queryRootField: hawthornBiomarkerResultsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hawthornBiomarkerResultsById
+    filterInputTypeName: HawthornBiomarkerResultsFilterInput
+    aggregate:
+      queryRootField: hawthornBiomarkerResultsAggregate
+      subscription:
+        rootField: hawthornBiomarkerResultsAggregate
+  description: Kết quả dạng chỉ số sinh học
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornBiomarkerResults
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornBiomarker
+  sourceType: HawthornBiomarkerResults
+  target:
+    model:
+      name: HawthornBiomarkers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: biomarkerCode
+      target:
+        modelField:
+          - fieldName: code
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornBiomarkerValueType
+  sourceType: HawthornBiomarkerResults
+  target:
+    model:
+      name: HawthornBiomarkerValueTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: valueType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnosticTestResults
+  sourceType: HawthornBiomarkerResults
+  target:
+    model:
+      name: HawthornDiagnosticTestResults
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornDiagnosticTestResultsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: biomarkerResultId
+  graphql:
+    aggregateFieldName: hawthornDiagnosticTestResultsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPhysicalExaminationResults
+  sourceType: HawthornBiomarkerResults
+  target:
+    model:
+      name: HawthornPhysicalExaminationResults
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornPhysicalExaminationResultsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: biomarkerResultId
+  graphql:
+    aggregateFieldName: hawthornPhysicalExaminationResultsAggregate
+

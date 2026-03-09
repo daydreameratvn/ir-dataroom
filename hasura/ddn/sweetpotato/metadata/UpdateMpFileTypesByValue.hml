@@ -1,0 +1,177 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnMpFileTypesComment
+  description: Update the 'comment' column in the 'mp_file_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnMpFileTypesComment
+    inputTypeName: UpdateColumnMpFileTypesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_mp_file_types_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnMpFileTypesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnMpFileTypesValue
+  description: Update the 'value' column in the 'mp_file_types' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnMpFileTypesValue
+    inputTypeName: UpdateColumnMpFileTypesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_mp_file_types_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnMpFileTypesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpFileTypesByValueUpdateColumns
+  description: Update the columns of the 'mp_file_types' collection
+  fields:
+    - name: comment
+      type: UpdateColumnMpFileTypesComment
+      description: Update the 'comment' column in the 'mp_file_types' collection.
+    - name: value
+      type: UpdateColumnMpFileTypesValue
+      description: Update the 'value' column in the 'mp_file_types' collection.
+  graphql:
+    typeName: UpdateMpFileTypesByValueUpdateColumns
+    inputTypeName: UpdateMpFileTypesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_file_types_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpFileTypesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpFileTypesByValueResponse
+  description: Responses from the 'update_mp_file_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpFileTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateMpFileTypesByValueResponse
+    inputTypeName: UpdateMpFileTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_file_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpFileTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateMpFileTypesByValue
+  outputType: UpdateMpFileTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: MpFileTypesBoolExp
+      description: Update permission post-condition predicate over the 'mp_file_types'
+        collection
+    - name: preCheck
+      type: MpFileTypesBoolExp
+      description: Update permission pre-condition predicate over the 'mp_file_types'
+        collection
+    - name: updateColumns
+      type: UpdateMpFileTypesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_mp_file_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateMpFileTypesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'mp_file_types' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateMpFileTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

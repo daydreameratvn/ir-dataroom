@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOverlordBookingStatusesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertOverlordBookingStatusesObject
+    inputTypeName: InsertOverlordBookingStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_overlord_booking_statuses_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOverlordBookingStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOverlordBookingStatusesResponse
+  description: Responses from the 'insert_overlord_booking_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OverlordBookingStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOverlordBookingStatusesResponse
+    inputTypeName: InsertOverlordBookingStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_overlord_booking_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOverlordBookingStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOverlordBookingStatuses
+  outputType: InsertOverlordBookingStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOverlordBookingStatusesObject!]!"
+    - name: postCheck
+      type: OverlordBookingStatusesBoolExp
+      description: Insert permission predicate over the 'overlord_booking_statuses'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_overlord_booking_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOverlordBookingStatuses
+    rootFieldKind: Mutation
+  description: Insert into the overlord_booking_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOverlordBookingStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

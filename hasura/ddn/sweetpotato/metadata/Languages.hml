@@ -1,0 +1,241 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Languages
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: Languages
+    inputTypeName: LanguagesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: languages
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Languages
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: LanguagesBoolExp
+  operand:
+    object:
+      type: Languages
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: correspondenceTemplateByLocales
+        - relationshipName: displayedCopays
+        - relationshipName: enumLocalizations
+        - relationshipName: planDisplayedBalances
+        - relationshipName: policyRemarkWaitingTimes
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: LanguagesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: LanguagesAggExp
+  operand:
+    object:
+      aggregatedType: Languages
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: LanguagesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: LanguagesOrderByExp
+  operand:
+    object:
+      orderedType: Languages
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: LanguagesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Languages
+  objectType: Languages
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: languages
+  filterExpressionType: LanguagesBoolExp
+  aggregateExpression: LanguagesAggExp
+  orderByExpression: LanguagesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: languages
+      subscription:
+        rootField: languages
+    selectUniques:
+      - queryRootField: languagesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: languagesByValue
+    filterInputTypeName: LanguagesFilterInput
+    aggregate:
+      queryRootField: languagesAggregate
+      subscription:
+        rootField: languagesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Languages
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceTemplateByLocales
+  sourceType: Languages
+  target:
+    model:
+      name: CorrespondenceTemplateByLocales
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceTemplateByLocalesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: locale
+  graphql:
+    aggregateFieldName: correspondenceTemplateByLocalesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: displayedCopays
+  sourceType: Languages
+  target:
+    model:
+      name: DisplayedCopay
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: DisplayedCopayAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: language
+  graphql:
+    aggregateFieldName: displayedCopaysAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: enumLocalizations
+  sourceType: Languages
+  target:
+    model:
+      name: EnumLocalizations
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: EnumLocalizationsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: locale
+  graphql:
+    aggregateFieldName: enumLocalizationsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planDisplayedBalances
+  sourceType: Languages
+  target:
+    model:
+      name: PlanDisplayedBalances
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanDisplayedBalancesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: language
+  graphql:
+    aggregateFieldName: planDisplayedBalancesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyRemarkWaitingTimes
+  sourceType: Languages
+  target:
+    model:
+      name: PolicyRemarkWaitingTimes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyRemarkWaitingTimesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: lang
+  graphql:
+    aggregateFieldName: policyRemarkWaitingTimesAggregate
+

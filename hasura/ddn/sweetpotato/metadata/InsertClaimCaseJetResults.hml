@@ -1,0 +1,132 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseJetResultsObject
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: isJet
+      type: Boolean_1!
+    - name: jetResult
+      type: Json!
+    - name: jetRuleSetId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertClaimCaseJetResultsObject
+    inputTypeName: InsertClaimCaseJetResultsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_jet_results_object
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        isJet:
+          column:
+            name: is_jet
+        jetResult:
+          column:
+            name: jet_result
+        jetRuleSetId:
+          column:
+            name: jet_rule_set_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseJetResultsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - isJet
+          - jetResult
+          - jetRuleSetId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseJetResultsResponse
+  description: Responses from the 'insert_claim_case_jet_results' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseJetResults!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCaseJetResultsResponse
+    inputTypeName: InsertClaimCaseJetResultsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_jet_results_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseJetResultsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCaseJetResults
+  outputType: InsertClaimCaseJetResultsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCaseJetResultsObject!]!"
+    - name: postCheck
+      type: ClaimCaseJetResultsBoolExp
+      description: Insert permission predicate over the 'claim_case_jet_results' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_case_jet_results
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCaseJetResults
+    rootFieldKind: Mutation
+  description: Insert into the claim_case_jet_results table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCaseJetResults
+  permissions:
+    - role: admin
+      allowExecution: true
+

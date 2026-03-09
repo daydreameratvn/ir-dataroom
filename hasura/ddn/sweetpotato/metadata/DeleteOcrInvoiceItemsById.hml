@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteOcrInvoiceItemsByIdResponse
+  description: Responses from the 'delete_ocr_invoice_items_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrInvoiceItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteOcrInvoiceItemsByIdResponse
+    inputTypeName: DeleteOcrInvoiceItemsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_ocr_invoice_items_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteOcrInvoiceItemsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteOcrInvoiceItemsById
+  outputType: DeleteOcrInvoiceItemsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: OcrInvoiceItemsBoolExp
+      description: Delete permission predicate over the 'ocr_invoice_items' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_ocr_invoice_items_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteOcrInvoiceItemsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'ocr_invoice_items' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteOcrInvoiceItemsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

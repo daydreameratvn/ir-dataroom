@@ -1,0 +1,279 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CustomSettingSettingValues
+  fields:
+    - name: booleanValue
+      type: Boolean_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: fallbackSettingApplicationId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: jsonbValue
+      type: Json
+    - name: numericValue
+      type: Bigdecimal
+    - name: overrideSettingApplicationId
+      type: Uuid
+    - name: textValue
+      type: String_1
+    - name: timestamptzValue
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: CustomSettingSettingValues
+    inputTypeName: CustomSettingSettingValuesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: custom_setting_setting_values
+      fieldMapping:
+        booleanValue:
+          column:
+            name: boolean_value
+        createdAt:
+          column:
+            name: created_at
+        fallbackSettingApplicationId:
+          column:
+            name: fallback_setting_application_id
+        id:
+          column:
+            name: id
+        jsonbValue:
+          column:
+            name: jsonb_value
+        numericValue:
+          column:
+            name: numeric_value
+        overrideSettingApplicationId:
+          column:
+            name: override_setting_application_id
+        textValue:
+          column:
+            name: text_value
+        timestamptzValue:
+          column:
+            name: timestamptz_value
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CustomSettingSettingValues
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - booleanValue
+          - createdAt
+          - fallbackSettingApplicationId
+          - id
+          - jsonbValue
+          - numericValue
+          - overrideSettingApplicationId
+          - textValue
+          - timestamptzValue
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CustomSettingSettingValuesBoolExp
+  operand:
+    object:
+      type: CustomSettingSettingValues
+      comparableFields:
+        - fieldName: booleanValue
+          booleanExpressionType: BoolBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fallbackSettingApplicationId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: jsonbValue
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: numericValue
+          booleanExpressionType: NumericBoolExp
+        - fieldName: overrideSettingApplicationId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: textValue
+          booleanExpressionType: TextBoolExp
+        - fieldName: timestamptzValue
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: customSettingSettingApplication
+        - relationshipName: customSettingSettingApplicationByOverrideSettingApplicationId
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CustomSettingSettingValuesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CustomSettingSettingValuesAggExp
+  operand:
+    object:
+      aggregatedType: CustomSettingSettingValues
+      aggregatableFields:
+        - fieldName: booleanValue
+          aggregateExpression: BoolAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fallbackSettingApplicationId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: jsonbValue
+          aggregateExpression: JsonbAggExp
+        - fieldName: numericValue
+          aggregateExpression: NumericAggExp
+        - fieldName: overrideSettingApplicationId
+          aggregateExpression: UuidAggExp
+        - fieldName: textValue
+          aggregateExpression: TextAggExp
+        - fieldName: timestamptzValue
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CustomSettingSettingValuesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CustomSettingSettingValuesOrderByExp
+  operand:
+    object:
+      orderedType: CustomSettingSettingValues
+      orderableFields:
+        - fieldName: booleanValue
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fallbackSettingApplicationId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: jsonbValue
+          orderByExpression: JsonOrderByExp
+        - fieldName: numericValue
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: overrideSettingApplicationId
+          orderByExpression: UuidOrderByExp
+        - fieldName: textValue
+          orderByExpression: String1OrderByExp
+        - fieldName: timestamptzValue
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: customSettingSettingApplication
+        - relationshipName: customSettingSettingApplicationByOverrideSettingApplicationId
+  graphql:
+    expressionTypeName: CustomSettingSettingValuesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CustomSettingSettingValues
+  objectType: CustomSettingSettingValues
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: custom_setting_setting_values
+  filterExpressionType: CustomSettingSettingValuesBoolExp
+  aggregateExpression: CustomSettingSettingValuesAggExp
+  orderByExpression: CustomSettingSettingValuesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: customSettingSettingValues
+      subscription:
+        rootField: customSettingSettingValues
+    selectUniques:
+      - queryRootField: customSettingSettingValuesByFallbackSettingApplicationId
+        uniqueIdentifier:
+          - fallbackSettingApplicationId
+        subscription:
+          rootField: customSettingSettingValuesByFallbackSettingApplicationId
+      - queryRootField: customSettingSettingValuesByOverrideSettingApplicationId
+        uniqueIdentifier:
+          - overrideSettingApplicationId
+        subscription:
+          rootField: customSettingSettingValuesByOverrideSettingApplicationId
+      - queryRootField: customSettingSettingValuesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: customSettingSettingValuesById
+    filterInputTypeName: CustomSettingSettingValuesFilterInput
+    aggregate:
+      queryRootField: customSettingSettingValuesAggregate
+      subscription:
+        rootField: customSettingSettingValuesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CustomSettingSettingValues
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customSettingSettingApplication
+  sourceType: CustomSettingSettingValues
+  target:
+    model:
+      name: CustomSettingSettingApplications
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fallbackSettingApplicationId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customSettingSettingApplicationByOverrideSettingApplicationId
+  sourceType: CustomSettingSettingValues
+  target:
+    model:
+      name: CustomSettingSettingApplications
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: overrideSettingApplicationId
+      target:
+        modelField:
+          - fieldName: id
+

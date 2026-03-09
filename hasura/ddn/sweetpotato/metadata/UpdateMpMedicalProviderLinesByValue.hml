@@ -1,0 +1,179 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnMpMedicalProviderLinesComment
+  description: Update the 'comment' column in the 'mp_medical_provider_lines' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnMpMedicalProviderLinesComment
+    inputTypeName: UpdateColumnMpMedicalProviderLinesCommentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_mp_medical_provider_lines_comment
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnMpMedicalProviderLinesComment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateColumnMpMedicalProviderLinesValue
+  description: Update the 'value' column in the 'mp_medical_provider_lines' collection
+  fields:
+    - name: set
+      type: String_1!
+      description: Set the column to this value
+  graphql:
+    typeName: UpdateColumnMpMedicalProviderLinesValue
+    inputTypeName: UpdateColumnMpMedicalProviderLinesValueInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_column_mp_medical_provider_lines_value
+      fieldMapping:
+        set:
+          column:
+            name: _set
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateColumnMpMedicalProviderLinesValue
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - set
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpMedicalProviderLinesByValueUpdateColumns
+  description: Update the columns of the 'mp_medical_provider_lines' collection
+  fields:
+    - name: comment
+      type: UpdateColumnMpMedicalProviderLinesComment
+      description: Update the 'comment' column in the 'mp_medical_provider_lines'
+        collection.
+    - name: value
+      type: UpdateColumnMpMedicalProviderLinesValue
+      description: Update the 'value' column in the 'mp_medical_provider_lines' collection.
+  graphql:
+    typeName: UpdateMpMedicalProviderLinesByValueUpdateColumns
+    inputTypeName: UpdateMpMedicalProviderLinesByValueUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_medical_provider_lines_by_value_update_columns
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpMedicalProviderLinesByValueUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMpMedicalProviderLinesByValueResponse
+  description: Responses from the 'update_mp_medical_provider_lines_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderLines!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateMpMedicalProviderLinesByValueResponse
+    inputTypeName: UpdateMpMedicalProviderLinesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_mp_medical_provider_lines_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMpMedicalProviderLinesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateMpMedicalProviderLinesByValue
+  outputType: UpdateMpMedicalProviderLinesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: postCheck
+      type: MpMedicalProviderLinesBoolExp
+      description: Update permission post-condition predicate over the
+        'mp_medical_provider_lines' collection
+    - name: preCheck
+      type: MpMedicalProviderLinesBoolExp
+      description: Update permission pre-condition predicate over the
+        'mp_medical_provider_lines' collection
+    - name: updateColumns
+      type: UpdateMpMedicalProviderLinesByValueUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_mp_medical_provider_lines_by_value
+    argumentMapping:
+      keyValue: key_value
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateMpMedicalProviderLinesByValue
+    rootFieldKind: Mutation
+  description: Update any row on the 'mp_medical_provider_lines' collection using
+    the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateMpMedicalProviderLinesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

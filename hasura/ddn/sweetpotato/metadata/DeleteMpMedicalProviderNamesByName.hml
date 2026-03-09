@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMpMedicalProviderNamesByNameResponse
+  description: Responses from the 'delete_mp_medical_provider_names_by_name' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderNames!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMpMedicalProviderNamesByNameResponse
+    inputTypeName: DeleteMpMedicalProviderNamesByNameResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_mp_medical_provider_names_by_name_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMpMedicalProviderNamesByNameResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMpMedicalProviderNamesByName
+  outputType: DeleteMpMedicalProviderNamesByNameResponse!
+  arguments:
+    - name: keyName
+      type: String_1!
+    - name: preCheck
+      type: MpMedicalProviderNamesBoolExp
+      description: Delete permission predicate over the 'mp_medical_provider_names'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_mp_medical_provider_names_by_name
+    argumentMapping:
+      keyName: key_name
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMpMedicalProviderNamesByName
+    rootFieldKind: Mutation
+  description: Delete any row on the 'mp_medical_provider_names' collection using
+    the 'name' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMpMedicalProviderNamesByName
+  permissions:
+    - role: admin
+      allowExecution: true
+

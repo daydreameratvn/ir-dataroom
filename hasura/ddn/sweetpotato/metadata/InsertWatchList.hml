@@ -1,0 +1,156 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertWatchListObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: insurerId
+      type: Uuid!
+    - name: targetCode
+      type: String_1
+    - name: targetId
+      type: Uuid
+    - name: targetType
+      type: String_1!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: warningLevel
+      type: Int32!
+  graphql:
+    typeName: InsertWatchListObject
+    inputTypeName: InsertWatchListObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_watch_list_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        targetCode:
+          column:
+            name: target_code
+        targetId:
+          column:
+            name: target_id
+        targetType:
+          column:
+            name: target_type
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        warningLevel:
+          column:
+            name: warning_level
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertWatchListObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - insurerId
+          - targetCode
+          - targetId
+          - targetType
+          - type
+          - updatedAt
+          - warningLevel
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertWatchListResponse
+  description: Responses from the 'insert_watch_list' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[WatchList!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertWatchListResponse
+    inputTypeName: InsertWatchListResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_watch_list_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertWatchListResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertWatchList
+  outputType: InsertWatchListResponse!
+  arguments:
+    - name: objects
+      type: "[InsertWatchListObject!]!"
+    - name: postCheck
+      type: WatchListBoolExp
+      description: Insert permission predicate over the 'watch_list' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_watch_list
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertWatchList
+    rootFieldKind: Mutation
+  description: Insert into the watch_list table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertWatchList
+  permissions:
+    - role: admin
+      allowExecution: true
+

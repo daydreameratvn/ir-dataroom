@@ -1,0 +1,229 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SlackMessages
+  fields:
+    - name: channelId
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: objectId
+      type: Uuid!
+    - name: payload
+      type: Json!
+    - name: slackMemberId
+      type: String_1
+    - name: test
+      type: String_1
+    - name: timestamp
+      type: String_1!
+  graphql:
+    typeName: SlackMessages
+    inputTypeName: SlackMessagesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: slack_messages
+      fieldMapping:
+        channelId:
+          column:
+            name: channel_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        objectId:
+          column:
+            name: object_id
+        payload:
+          column:
+            name: payload
+        slackMemberId:
+          column:
+            name: slack_member_id
+        test:
+          column:
+            name: test
+        timestamp:
+          column:
+            name: timestamp
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SlackMessages
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - channelId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - objectId
+          - payload
+          - slackMemberId
+          - test
+          - timestamp
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SlackMessagesBoolExp
+  operand:
+    object:
+      type: SlackMessages
+      comparableFields:
+        - fieldName: channelId
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: objectId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: payload
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: slackMemberId
+          booleanExpressionType: TextBoolExp
+        - fieldName: test
+          booleanExpressionType: TextBoolExp
+        - fieldName: timestamp
+          booleanExpressionType: TextBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SlackMessagesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SlackMessagesAggExp
+  operand:
+    object:
+      aggregatedType: SlackMessages
+      aggregatableFields:
+        - fieldName: channelId
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: objectId
+          aggregateExpression: UuidAggExp
+        - fieldName: payload
+          aggregateExpression: JsonbAggExp
+        - fieldName: slackMemberId
+          aggregateExpression: TextAggExp
+        - fieldName: test
+          aggregateExpression: TextAggExp
+        - fieldName: timestamp
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SlackMessagesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SlackMessagesOrderByExp
+  operand:
+    object:
+      orderedType: SlackMessages
+      orderableFields:
+        - fieldName: channelId
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: objectId
+          orderByExpression: UuidOrderByExp
+        - fieldName: payload
+          orderByExpression: JsonOrderByExp
+        - fieldName: slackMemberId
+          orderByExpression: String1OrderByExp
+        - fieldName: test
+          orderByExpression: String1OrderByExp
+        - fieldName: timestamp
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: SlackMessagesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SlackMessages
+  objectType: SlackMessages
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: slack_messages
+  filterExpressionType: SlackMessagesBoolExp
+  aggregateExpression: SlackMessagesAggExp
+  orderByExpression: SlackMessagesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: slackMessages
+      subscription:
+        rootField: slackMessages
+    selectUniques:
+      - queryRootField: slackMessagesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: slackMessagesById
+    filterInputTypeName: SlackMessagesFilterInput
+    aggregate:
+      queryRootField: slackMessagesAggregate
+      subscription:
+        rootField: slackMessagesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SlackMessages
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

@@ -1,0 +1,279 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredBenefits
+  description: Quyền lợi bảo hiểm
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: parentCode
+      type: String_1
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: InsuredBenefits
+    inputTypeName: InsuredBenefitsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_benefits
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        parentCode:
+          column:
+            name: parent_code
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredBenefits
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - deletedAt
+          - id
+          - name
+          - parentCode
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredBenefitsBoolExp
+  operand:
+    object:
+      type: InsuredBenefits
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: parentCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: bhvInsuredBenefits
+        - relationshipName: insuredBenefitType
+        - relationshipName: planInsuredBenefits
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredBenefitsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredBenefitsAggExp
+  operand:
+    object:
+      aggregatedType: InsuredBenefits
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: VarcharAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: parentCode
+          aggregateExpression: TextAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredBenefitsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredBenefitsOrderByExp
+  operand:
+    object:
+      orderedType: InsuredBenefits
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: parentCode
+          orderByExpression: String1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredBenefitType
+  graphql:
+    expressionTypeName: InsuredBenefitsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredBenefits
+  objectType: InsuredBenefits
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_benefits
+  filterExpressionType: InsuredBenefitsBoolExp
+  aggregateExpression: InsuredBenefitsAggExp
+  orderByExpression: InsuredBenefitsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredBenefits
+      subscription:
+        rootField: insuredBenefits
+    selectUniques:
+      - queryRootField: insuredBenefitsByInsuredBenefitsCodeTypeKey
+        uniqueIdentifier:
+          - code
+          - type
+        subscription:
+          rootField: insuredBenefitsByInsuredBenefitsCodeTypeKey
+      - queryRootField: insuredBenefitsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: insuredBenefitsById
+    filterInputTypeName: InsuredBenefitsFilterInput
+    aggregate:
+      queryRootField: insuredBenefitsAggregate
+      subscription:
+        rootField: insuredBenefitsAggregate
+  description: Quyền lợi bảo hiểm
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredBenefits
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bhvInsuredBenefits
+  sourceType: InsuredBenefits
+  target:
+    model:
+      name: BhvInsuredBenefits
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: BhvInsuredBenefitsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: insuredBenefitId
+  graphql:
+    aggregateFieldName: bhvInsuredBenefitsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredBenefitType
+  sourceType: InsuredBenefits
+  target:
+    model:
+      name: InsuredBenefitTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planInsuredBenefits
+  sourceType: InsuredBenefits
+  target:
+    model:
+      name: PlanInsuredBenefits
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanInsuredBenefitsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: insuredBenefitId
+  graphql:
+    aggregateFieldName: planInsuredBenefitsAggregate
+

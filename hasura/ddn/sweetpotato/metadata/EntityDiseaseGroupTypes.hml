@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: EntityDiseaseGroupTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: EntityDiseaseGroupTypes
+    inputTypeName: EntityDiseaseGroupTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: entity_disease_group_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: EntityDiseaseGroupTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: EntityDiseaseGroupTypesBoolExp
+  operand:
+    object:
+      type: EntityDiseaseGroupTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: entityDiseaseGroups
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: EntityDiseaseGroupTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: EntityDiseaseGroupTypesAggExp
+  operand:
+    object:
+      aggregatedType: EntityDiseaseGroupTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: EntityDiseaseGroupTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: EntityDiseaseGroupTypesOrderByExp
+  operand:
+    object:
+      orderedType: EntityDiseaseGroupTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: EntityDiseaseGroupTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: EntityDiseaseGroupTypes
+  objectType: EntityDiseaseGroupTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: entity_disease_group_types
+  filterExpressionType: EntityDiseaseGroupTypesBoolExp
+  aggregateExpression: EntityDiseaseGroupTypesAggExp
+  orderByExpression: EntityDiseaseGroupTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: entityDiseaseGroupTypes
+      subscription:
+        rootField: entityDiseaseGroupTypes
+    selectUniques:
+      - queryRootField: entityDiseaseGroupTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: entityDiseaseGroupTypesByValue
+    filterInputTypeName: EntityDiseaseGroupTypesFilterInput
+    aggregate:
+      queryRootField: entityDiseaseGroupTypesAggregate
+      subscription:
+        rootField: entityDiseaseGroupTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: EntityDiseaseGroupTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: entityDiseaseGroups
+  sourceType: EntityDiseaseGroupTypes
+  target:
+    model:
+      name: EntityDiseaseGroups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: EntityDiseaseGroupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: entityTypeValue
+  graphql:
+    aggregateFieldName: entityDiseaseGroupsAggregate
+

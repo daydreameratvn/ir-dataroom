@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimCaseDetailsByClaimCaseDetailIdResponse
+  description: Responses from the
+    'delete_claim_case_details_by_claim_case_detail_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseDetails!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimCaseDetailsByClaimCaseDetailIdResponse
+    inputTypeName: DeleteClaimCaseDetailsByClaimCaseDetailIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_case_details_by_claim_case_detail_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimCaseDetailsByClaimCaseDetailIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimCaseDetailsByClaimCaseDetailId
+  outputType: DeleteClaimCaseDetailsByClaimCaseDetailIdResponse!
+  arguments:
+    - name: keyClaimCaseDetailId
+      type: Uuid!
+    - name: preCheck
+      type: ClaimCaseDetailsBoolExp
+      description: Delete permission predicate over the 'claim_case_details' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_case_details_by_claim_case_detail_id
+    argumentMapping:
+      keyClaimCaseDetailId: key_claim_case_detail_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimCaseDetailsByClaimCaseDetailId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_case_details' collection using the
+    'claim_case_detail_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimCaseDetailsByClaimCaseDetailId
+  permissions:
+    - role: admin
+      allowExecution: true
+

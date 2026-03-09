@@ -1,0 +1,274 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HazelnutDiscountCriteria
+  description: Tiêu chí giảm phí
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: discountCoverageType
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: noPaymentAtInternationalHospitals
+      type: Boolean_1!
+    - name: onlyPaymentAtPublicHospitals
+      type: Boolean_1!
+    - name: partialPayment
+      type: Boolean_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: HazelnutDiscountCriteria
+    inputTypeName: HazelnutDiscountCriteriaInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hazelnut_discount_criteria
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        discountCoverageType:
+          column:
+            name: discount_coverage_type
+        id:
+          column:
+            name: id
+        noPaymentAtInternationalHospitals:
+          column:
+            name: no_payment_at_international_hospitals
+        onlyPaymentAtPublicHospitals:
+          column:
+            name: only_payment_at_public_hospitals
+        partialPayment:
+          column:
+            name: partial_payment
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HazelnutDiscountCriteria
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - discountCoverageType
+          - id
+          - noPaymentAtInternationalHospitals
+          - onlyPaymentAtPublicHospitals
+          - partialPayment
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HazelnutDiscountCriteriaBoolExp
+  operand:
+    object:
+      type: HazelnutDiscountCriteria
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: discountCoverageType
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: noPaymentAtInternationalHospitals
+          booleanExpressionType: BoolBoolExp
+        - fieldName: onlyPaymentAtPublicHospitals
+          booleanExpressionType: BoolBoolExp
+        - fieldName: partialPayment
+          booleanExpressionType: BoolBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: hazelnutDiscountCoverageType
+        - relationshipName: hazelnutInsuranceRequests
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HazelnutDiscountCriteriaBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HazelnutDiscountCriteriaAggExp
+  operand:
+    object:
+      aggregatedType: HazelnutDiscountCriteria
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: discountCoverageType
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: noPaymentAtInternationalHospitals
+          aggregateExpression: BoolAggExp
+        - fieldName: onlyPaymentAtPublicHospitals
+          aggregateExpression: BoolAggExp
+        - fieldName: partialPayment
+          aggregateExpression: BoolAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HazelnutDiscountCriteriaAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HazelnutDiscountCriteriaOrderByExp
+  operand:
+    object:
+      orderedType: HazelnutDiscountCriteria
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: discountCoverageType
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: noPaymentAtInternationalHospitals
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: onlyPaymentAtPublicHospitals
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: partialPayment
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: hazelnutDiscountCoverageType
+  graphql:
+    expressionTypeName: HazelnutDiscountCriteriaOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HazelnutDiscountCriteria
+  objectType: HazelnutDiscountCriteria
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hazelnut_discount_criteria
+  filterExpressionType: HazelnutDiscountCriteriaBoolExp
+  aggregateExpression: HazelnutDiscountCriteriaAggExp
+  orderByExpression: HazelnutDiscountCriteriaOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hazelnutDiscountCriteria
+      subscription:
+        rootField: hazelnutDiscountCriteria
+    selectUniques:
+      - queryRootField: hazelnutDiscountCriteriaById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hazelnutDiscountCriteriaById
+    filterInputTypeName: HazelnutDiscountCriteriaFilterInput
+    aggregate:
+      queryRootField: hazelnutDiscountCriteriaAggregate
+      subscription:
+        rootField: hazelnutDiscountCriteriaAggregate
+  description: Tiêu chí giảm phí
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HazelnutDiscountCriteria
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutDiscountCoverageType
+  sourceType: HazelnutDiscountCriteria
+  target:
+    model:
+      name: HazelnutDiscountCoverageTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: discountCoverageType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hazelnutInsuranceRequests
+  sourceType: HazelnutDiscountCriteria
+  target:
+    model:
+      name: HazelnutInsuranceRequests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HazelnutInsuranceRequestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: discountCriteriaId
+  graphql:
+    aggregateFieldName: hazelnutInsuranceRequestsAggregate
+

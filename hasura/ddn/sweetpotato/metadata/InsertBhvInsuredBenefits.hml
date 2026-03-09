@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertBhvInsuredBenefitsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: hierarchicalNumber
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: insuredBenefitId
+      type: Uuid!
+    - name: name
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertBhvInsuredBenefitsObject
+    inputTypeName: InsertBhvInsuredBenefitsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_bhv_insured_benefits_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        hierarchicalNumber:
+          column:
+            name: hierarchical_number
+        id:
+          column:
+            name: id
+        insuredBenefitId:
+          column:
+            name: insured_benefit_id
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertBhvInsuredBenefitsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - hierarchicalNumber
+          - id
+          - insuredBenefitId
+          - name
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertBhvInsuredBenefitsResponse
+  description: Responses from the 'insert_bhv_insured_benefits' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[BhvInsuredBenefits!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertBhvInsuredBenefitsResponse
+    inputTypeName: InsertBhvInsuredBenefitsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_bhv_insured_benefits_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertBhvInsuredBenefitsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertBhvInsuredBenefits
+  outputType: InsertBhvInsuredBenefitsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertBhvInsuredBenefitsObject!]!"
+    - name: postCheck
+      type: BhvInsuredBenefitsBoolExp
+      description: Insert permission predicate over the 'bhv_insured_benefits' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_bhv_insured_benefits
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertBhvInsuredBenefits
+    rootFieldKind: Mutation
+  description: Insert into the bhv_insured_benefits table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertBhvInsuredBenefits
+  permissions:
+    - role: admin
+      allowExecution: true
+

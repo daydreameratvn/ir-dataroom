@@ -1,0 +1,192 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDrugsObject
+  fields:
+    - name: activeSubstancesText
+      type: String_1
+    - name: brandName
+      type: String_1!
+    - name: category
+      type: String_1!
+    - name: concentrationText
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: form
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: oldRegistrationCode
+      type: String_1!
+    - name: registeredAt
+      type: Timestamptz
+    - name: registrationCode
+      type: String_1!
+    - name: registrationDecisionCode
+      type: String_1
+    - name: registrationExpiredAt
+      type: Timestamptz
+    - name: registrationExtendedAt
+      type: Timestamptz
+    - name: shelfLifeText
+      type: String_1
+    - name: standard
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertDrugsObject
+    inputTypeName: InsertDrugsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_drugs_object
+      fieldMapping:
+        activeSubstancesText:
+          column:
+            name: active_substances_text
+        brandName:
+          column:
+            name: brand_name
+        category:
+          column:
+            name: category
+        concentrationText:
+          column:
+            name: concentration_text
+        createdAt:
+          column:
+            name: created_at
+        form:
+          column:
+            name: form
+        id:
+          column:
+            name: id
+        oldRegistrationCode:
+          column:
+            name: old_registration_code
+        registeredAt:
+          column:
+            name: registered_at
+        registrationCode:
+          column:
+            name: registration_code
+        registrationDecisionCode:
+          column:
+            name: registration_decision_code
+        registrationExpiredAt:
+          column:
+            name: registration_expired_at
+        registrationExtendedAt:
+          column:
+            name: registration_extended_at
+        shelfLifeText:
+          column:
+            name: shelf_life_text
+        standard:
+          column:
+            name: standard
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDrugsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - activeSubstancesText
+          - brandName
+          - category
+          - concentrationText
+          - createdAt
+          - form
+          - id
+          - oldRegistrationCode
+          - registeredAt
+          - registrationCode
+          - registrationDecisionCode
+          - registrationExpiredAt
+          - registrationExtendedAt
+          - shelfLifeText
+          - standard
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertDrugsResponse
+  description: Responses from the 'insert_drugs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Drugs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertDrugsResponse
+    inputTypeName: InsertDrugsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_drugs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertDrugsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertDrugs
+  outputType: InsertDrugsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertDrugsObject!]!"
+    - name: postCheck
+      type: DrugsBoolExp
+      description: Insert permission predicate over the 'drugs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_drugs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertDrugs
+    rootFieldKind: Mutation
+  description: Insert into the drugs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertDrugs
+  permissions:
+    - role: admin
+      allowExecution: true
+

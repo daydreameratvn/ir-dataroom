@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyDocumentsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamp
+    - name: policyDocumentId
+      type: Uuid
+    - name: policyId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: type
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertPolicyDocumentsObject
+    inputTypeName: InsertPolicyDocumentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_documents_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        policyDocumentId:
+          column:
+            name: policy_document_id
+        policyId:
+          column:
+            name: policy_id
+        tenantId:
+          column:
+            name: tenant_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyDocumentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - policyDocumentId
+          - policyId
+          - tenantId
+          - type
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyDocumentsResponse
+  description: Responses from the 'insert_policy_documents' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyDocuments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyDocumentsResponse
+    inputTypeName: InsertPolicyDocumentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_documents_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyDocumentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyDocuments
+  outputType: InsertPolicyDocumentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyDocumentsObject!]!"
+    - name: postCheck
+      type: PolicyDocumentsBoolExp
+      description: Insert permission predicate over the 'policy_documents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_documents
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyDocuments
+    rootFieldKind: Mutation
+  description: Insert into the policy_documents table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyDocuments
+  permissions:
+    - role: admin
+      allowExecution: true
+

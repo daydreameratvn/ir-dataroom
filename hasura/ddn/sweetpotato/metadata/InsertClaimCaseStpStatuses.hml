@@ -1,0 +1,101 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseStpStatusesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertClaimCaseStpStatusesObject
+    inputTypeName: InsertClaimCaseStpStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_stp_statuses_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseStpStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimCaseStpStatusesResponse
+  description: Responses from the 'insert_claim_case_stp_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseStpStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimCaseStpStatusesResponse
+    inputTypeName: InsertClaimCaseStpStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_case_stp_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimCaseStpStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimCaseStpStatuses
+  outputType: InsertClaimCaseStpStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimCaseStpStatusesObject!]!"
+    - name: postCheck
+      type: ClaimCaseStpStatusesBoolExp
+      description: Insert permission predicate over the 'claim_case_stp_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_case_stp_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimCaseStpStatuses
+    rootFieldKind: Mutation
+  description: Insert into the claim_case_stp_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimCaseStpStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

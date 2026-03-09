@@ -1,0 +1,80 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteNonJetReasonsByInsurerIdAndPlanIdAndReasonResponse
+  description: Responses from the
+    'delete_non_jet_reasons_by_insurer_id_and_plan_id_and_reason' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[NonJetReasons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteNonJetReasonsByInsurerIdAndPlanIdAndReasonResponse
+    inputTypeName: DeleteNonJetReasonsByInsurerIdAndPlanIdAndReasonResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_non_jet_reasons_by_insurer_id_and_plan_id_and_reason_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteNonJetReasonsByInsurerIdAndPlanIdAndReasonResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteNonJetReasonsByInsurerIdAndPlanIdAndReason
+  outputType: DeleteNonJetReasonsByInsurerIdAndPlanIdAndReasonResponse!
+  arguments:
+    - name: keyInsurerId
+      type: Uuid!
+    - name: keyPlanId
+      type: Uuid
+    - name: keyReason
+      type: String_1!
+    - name: preCheck
+      type: NonJetReasonsBoolExp
+      description: Delete permission predicate over the 'non_jet_reasons' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_non_jet_reasons_by_insurer_id_and_plan_id_and_reason
+    argumentMapping:
+      keyInsurerId: key_insurer_id
+      keyPlanId: key_plan_id
+      keyReason: key_reason
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteNonJetReasonsByInsurerIdAndPlanIdAndReason
+    rootFieldKind: Mutation
+  description: Delete any row on the 'non_jet_reasons' collection using the
+    'insurer_id', 'plan_id' and 'reason' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteNonJetReasonsByInsurerIdAndPlanIdAndReason
+  permissions:
+    - role: admin
+      allowExecution: true
+

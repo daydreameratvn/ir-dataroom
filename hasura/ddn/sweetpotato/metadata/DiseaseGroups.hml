@@ -1,0 +1,351 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DiseaseGroups
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: insurerId
+      type: Uuid!
+    - name: isDiseaseExcluded
+      type: Boolean_1
+    - name: name
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: DiseaseGroups
+    inputTypeName: DiseaseGroupsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: disease_groups
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        insurerId:
+          column:
+            name: insurer_id
+        isDiseaseExcluded:
+          column:
+            name: is_disease_excluded
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DiseaseGroups
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - insurerId
+          - isDiseaseExcluded
+          - name
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: DiseaseGroupsBoolExp
+  operand:
+    object:
+      type: DiseaseGroups
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insurerId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isDiseaseExcluded
+          booleanExpressionType: BoolBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCases
+        - relationshipName: diseaseGroupIcds
+        - relationshipName: company
+        - relationshipName: entityDiseaseGroups
+        - relationshipName: mbalClaimCases
+        - relationshipName: planBalances
+        - relationshipName: slvClaimCases
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: DiseaseGroupsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: DiseaseGroupsAggExp
+  operand:
+    object:
+      aggregatedType: DiseaseGroups
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insurerId
+          aggregateExpression: UuidAggExp
+        - fieldName: isDiseaseExcluded
+          aggregateExpression: BoolAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: DiseaseGroupsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: DiseaseGroupsOrderByExp
+  operand:
+    object:
+      orderedType: DiseaseGroups
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insurerId
+          orderByExpression: UuidOrderByExp
+        - fieldName: isDiseaseExcluded
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+  graphql:
+    expressionTypeName: DiseaseGroupsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: DiseaseGroups
+  objectType: DiseaseGroups
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: disease_groups
+  filterExpressionType: DiseaseGroupsBoolExp
+  aggregateExpression: DiseaseGroupsAggExp
+  orderByExpression: DiseaseGroupsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: diseaseGroups
+      subscription:
+        rootField: diseaseGroups
+    selectUniques:
+      - queryRootField: diseaseGroupsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: diseaseGroupsById
+    filterInputTypeName: DiseaseGroupsFilterInput
+    aggregate:
+      queryRootField: diseaseGroupsAggregate
+      subscription:
+        rootField: diseaseGroupsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: DiseaseGroups
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCases
+  sourceType: DiseaseGroups
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: diseaseGroupId
+  graphql:
+    aggregateFieldName: claimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: diseaseGroupIcds
+  sourceType: DiseaseGroups
+  target:
+    model:
+      name: DiseaseGroupIcds
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: DiseaseGroupIcdsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: diseaseGroupId
+  graphql:
+    aggregateFieldName: diseaseGroupIcdsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: DiseaseGroups
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insurerId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: entityDiseaseGroups
+  sourceType: DiseaseGroups
+  target:
+    model:
+      name: EntityDiseaseGroups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: EntityDiseaseGroupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: diseaseGroupId
+  graphql:
+    aggregateFieldName: entityDiseaseGroupsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mbalClaimCases
+  sourceType: DiseaseGroups
+  target:
+    model:
+      name: MbalClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MbalClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: diseaseGroupId
+  graphql:
+    aggregateFieldName: mbalClaimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalances
+  sourceType: DiseaseGroups
+  target:
+    model:
+      name: PlanBalances
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanBalancesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: diseaseGroupId
+  graphql:
+    aggregateFieldName: planBalancesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvClaimCases
+  sourceType: DiseaseGroups
+  target:
+    model:
+      name: SlvClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: diseaseGroupId
+  graphql:
+    aggregateFieldName: slvClaimCasesAggregate
+

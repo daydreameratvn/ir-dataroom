@@ -1,0 +1,174 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityPresencesV2ByInsuredCertificateIdUpdateColumns
+  description: Update the columns of the 'identity_presences_v2' collection
+  fields:
+    - name: coordinates
+      type: UpdateColumnIdentityPresencesV2Coordinates
+      description: Update the 'coordinates' column in the 'identity_presences_v2'
+        collection.
+    - name: createdAt
+      type: UpdateColumnIdentityPresencesV2CreatedAt
+      description: Update the 'created_at' column in the 'identity_presences_v2' collection.
+    - name: deviceId
+      type: UpdateColumnIdentityPresencesV2DeviceId
+      description: Update the 'device_id' column in the 'identity_presences_v2' collection.
+    - name: id
+      type: UpdateColumnIdentityPresencesV2Id
+      description: Update the 'id' column in the 'identity_presences_v2' collection.
+    - name: insuredCertificateId
+      type: UpdateColumnIdentityPresencesV2InsuredCertificateId
+      description: Update the 'insured_certificate_id' column in the
+        'identity_presences_v2' collection.
+    - name: ip
+      type: UpdateColumnIdentityPresencesV2Ip
+      description: Update the 'ip' column in the 'identity_presences_v2' collection.
+    - name: lastPresentAt
+      type: UpdateColumnIdentityPresencesV2LastPresentAt
+      description: Update the 'last_present_at' column in the 'identity_presences_v2'
+        collection.
+    - name: updatedAt
+      type: UpdateColumnIdentityPresencesV2UpdatedAt
+      description: Update the 'updated_at' column in the 'identity_presences_v2' collection.
+    - name: userId
+      type: UpdateColumnIdentityPresencesV2UserId
+      description: Update the 'user_id' column in the 'identity_presences_v2' collection.
+  graphql:
+    typeName: UpdateIdentityPresencesV2ByInsuredCertificateIdUpdateColumns
+    inputTypeName: UpdateIdentityPresencesV2ByInsuredCertificateIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_presences_v2_by_insured_certificate_id_update_columns
+      fieldMapping:
+        coordinates:
+          column:
+            name: coordinates
+        createdAt:
+          column:
+            name: created_at
+        deviceId:
+          column:
+            name: device_id
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        ip:
+          column:
+            name: ip
+        lastPresentAt:
+          column:
+            name: last_present_at
+        updatedAt:
+          column:
+            name: updated_at
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityPresencesV2ByInsuredCertificateIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - coordinates
+          - createdAt
+          - deviceId
+          - id
+          - insuredCertificateId
+          - ip
+          - lastPresentAt
+          - updatedAt
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateIdentityPresencesV2ByInsuredCertificateIdResponse
+  description: Responses from the
+    'update_identity_presences_v2_by_insured_certificate_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityPresencesV2!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateIdentityPresencesV2ByInsuredCertificateIdResponse
+    inputTypeName: UpdateIdentityPresencesV2ByInsuredCertificateIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_identity_presences_v2_by_insured_certificate_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateIdentityPresencesV2ByInsuredCertificateIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateIdentityPresencesV2ByInsuredCertificateId
+  outputType: UpdateIdentityPresencesV2ByInsuredCertificateIdResponse!
+  arguments:
+    - name: keyInsuredCertificateId
+      type: Uuid!
+    - name: postCheck
+      type: IdentityPresencesV2BoolExp
+      description: Update permission post-condition predicate over the
+        'identity_presences_v2' collection
+    - name: preCheck
+      type: IdentityPresencesV2BoolExp
+      description: Update permission pre-condition predicate over the
+        'identity_presences_v2' collection
+    - name: updateColumns
+      type: UpdateIdentityPresencesV2ByInsuredCertificateIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_identity_presences_v2_by_insured_certificate_id
+    argumentMapping:
+      keyInsuredCertificateId: key_insured_certificate_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateIdentityPresencesV2ByInsuredCertificateId
+    rootFieldKind: Mutation
+  description: Update any row on the 'identity_presences_v2' collection using the
+    'insured_certificate_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateIdentityPresencesV2ByInsuredCertificateId
+  permissions:
+    - role: admin
+      allowExecution: true
+

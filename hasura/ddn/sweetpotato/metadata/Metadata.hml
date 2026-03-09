@@ -1,0 +1,341 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Metadata
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: locale
+      type: String_1!
+    - name: metadataId
+      type: Uuid!
+    - name: title
+      type: String_1!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: Metadata
+    inputTypeName: MetadataInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: metadata
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        locale:
+          column:
+            name: locale
+        metadataId:
+          column:
+            name: metadata_id
+        title:
+          column:
+            name: title
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Metadata
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - description
+          - id
+          - locale
+          - metadataId
+          - title
+          - type
+          - updatedAt
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MetadataBoolExp
+  operand:
+    object:
+      type: Metadata
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: locale
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: metadataId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: title
+          booleanExpressionType: TextBoolExp
+        - fieldName: type
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimCaseAssessedDiagnoses
+        - relationshipName: claimCaseInputDiagnoses
+        - relationshipName: diseaseGroupIcds
+        - relationshipName: metadataType
+        - relationshipName: ocrQcDischargePaperDiagnoses
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MetadataBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MetadataAggExp
+  operand:
+    object:
+      aggregatedType: Metadata
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: locale
+          aggregateExpression: VarcharAggExp
+        - fieldName: metadataId
+          aggregateExpression: UuidAggExp
+        - fieldName: title
+          aggregateExpression: TextAggExp
+        - fieldName: type
+          aggregateExpression: VarcharAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MetadataAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MetadataOrderByExp
+  operand:
+    object:
+      orderedType: Metadata
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: locale
+          orderByExpression: String1OrderByExp
+        - fieldName: metadataId
+          orderByExpression: UuidOrderByExp
+        - fieldName: title
+          orderByExpression: String1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: metadataType
+  graphql:
+    expressionTypeName: MetadataOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Metadata
+  objectType: Metadata
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: metadata
+  filterExpressionType: MetadataBoolExp
+  aggregateExpression: MetadataAggExp
+  orderByExpression: MetadataOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: metadata
+      subscription:
+        rootField: metadata
+    selectUniques:
+      - queryRootField: metadataByMetadataId
+        uniqueIdentifier:
+          - metadataId
+        subscription:
+          rootField: metadataByMetadataId
+    filterInputTypeName: MetadataFilterInput
+    aggregate:
+      queryRootField: metadataAggregate
+      subscription:
+        rootField: metadataAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Metadata
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseAssessedDiagnoses
+  sourceType: Metadata
+  target:
+    model:
+      name: ClaimCaseAssessedDiagnoses
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseAssessedDiagnosesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: metadataId
+      target:
+        modelField:
+          - fieldName: icdMetadataId
+  graphql:
+    aggregateFieldName: claimCaseAssessedDiagnosesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseInputDiagnoses
+  sourceType: Metadata
+  target:
+    model:
+      name: ClaimCaseInputDiagnoses
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCaseInputDiagnosesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: metadataId
+      target:
+        modelField:
+          - fieldName: icdMetadataId
+  graphql:
+    aggregateFieldName: claimCaseInputDiagnosesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: diseaseGroupIcds
+  sourceType: Metadata
+  target:
+    model:
+      name: DiseaseGroupIcds
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: DiseaseGroupIcdsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: metadataId
+      target:
+        modelField:
+          - fieldName: icdMetadataId
+  graphql:
+    aggregateFieldName: diseaseGroupIcdsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: metadataType
+  sourceType: Metadata
+  target:
+    model:
+      name: MetadataTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrQcDischargePaperDiagnoses
+  sourceType: Metadata
+  target:
+    model:
+      name: OcrQcDischargePaperDiagnoses
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrQcDischargePaperDiagnosesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: metadataId
+      target:
+        modelField:
+          - fieldName: icdMetadataId
+  graphql:
+    aggregateFieldName: ocrQcDischargePaperDiagnosesAggregate
+

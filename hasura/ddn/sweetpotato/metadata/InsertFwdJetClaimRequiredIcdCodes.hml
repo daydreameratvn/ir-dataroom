@@ -1,0 +1,121 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdJetClaimRequiredIcdCodesObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertFwdJetClaimRequiredIcdCodesObject
+    inputTypeName: InsertFwdJetClaimRequiredIcdCodesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_jet_claim_required_icd_codes_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdJetClaimRequiredIcdCodesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - createdAt
+          - deletedAt
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdJetClaimRequiredIcdCodesResponse
+  description: Responses from the 'insert_fwd_jet_claim_required_icd_codes' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdJetClaimRequiredIcdCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdJetClaimRequiredIcdCodesResponse
+    inputTypeName: InsertFwdJetClaimRequiredIcdCodesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_jet_claim_required_icd_codes_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdJetClaimRequiredIcdCodesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdJetClaimRequiredIcdCodes
+  outputType: InsertFwdJetClaimRequiredIcdCodesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdJetClaimRequiredIcdCodesObject!]!"
+    - name: postCheck
+      type: FwdJetClaimRequiredIcdCodesBoolExp
+      description: Insert permission predicate over the
+        'fwd_jet_claim_required_icd_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_jet_claim_required_icd_codes
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdJetClaimRequiredIcdCodes
+    rootFieldKind: Mutation
+  description: Insert into the fwd_jet_claim_required_icd_codes table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdJetClaimRequiredIcdCodes
+  permissions:
+    - role: admin
+      allowExecution: true
+

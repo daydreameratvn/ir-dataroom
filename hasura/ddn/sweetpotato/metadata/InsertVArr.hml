@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertVArrObject
+  fields:
+    - name: arrayAgg
+      type: "[String_1]"
+  graphql:
+    typeName: InsertVArrObject
+    inputTypeName: InsertVArrObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_v_arr_object
+      fieldMapping:
+        arrayAgg:
+          column:
+            name: array_agg
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertVArrObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - arrayAgg
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertVArrResponse
+  description: Responses from the 'insert_v_arr' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[VArr!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertVArrResponse
+    inputTypeName: InsertVArrResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_v_arr_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertVArrResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertVArr
+  outputType: InsertVArrResponse!
+  arguments:
+    - name: objects
+      type: "[InsertVArrObject!]!"
+    - name: postCheck
+      type: VArrBoolExp
+      description: Insert permission predicate over the 'v_arr' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_v_arr
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertVArr
+    rootFieldKind: Mutation
+  description: Insert into the v_arr table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertVArr
+  permissions:
+    - role: admin
+      allowExecution: true
+

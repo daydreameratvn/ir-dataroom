@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LairChatTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: LairChatTypes
+    inputTypeName: LairChatTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: lair_chat_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LairChatTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: LairChatTypesBoolExp
+  operand:
+    object:
+      type: LairChatTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: lairChatType
+        - relationshipName: lairChats
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: LairChatTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: LairChatTypesAggExp
+  operand:
+    object:
+      aggregatedType: LairChatTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: LairChatTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: LairChatTypesOrderByExp
+  operand:
+    object:
+      orderedType: LairChatTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: lairChatType
+  graphql:
+    expressionTypeName: LairChatTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: LairChatTypes
+  objectType: LairChatTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: lair_chat_types
+  filterExpressionType: LairChatTypesBoolExp
+  aggregateExpression: LairChatTypesAggExp
+  orderByExpression: LairChatTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: lairChatTypes
+      subscription:
+        rootField: lairChatTypes
+    selectUniques:
+      - queryRootField: lairChatTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: lairChatTypesByValue
+    filterInputTypeName: LairChatTypesFilterInput
+    aggregate:
+      queryRootField: lairChatTypesAggregate
+      subscription:
+        rootField: lairChatTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: LairChatTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: lairChatType
+  sourceType: LairChatTypes
+  target:
+    model:
+      name: LairChatTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: lairChats
+  sourceType: LairChatTypes
+  target:
+    model:
+      name: LairChats
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: LairChatsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: lairChatsAggregate
+

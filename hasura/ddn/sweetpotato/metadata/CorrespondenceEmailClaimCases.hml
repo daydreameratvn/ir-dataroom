@@ -1,0 +1,221 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceEmailClaimCases
+  fields:
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: emailId
+      type: Uuid!
+    - name: id
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: CorrespondenceEmailClaimCases
+    inputTypeName: CorrespondenceEmailClaimCasesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_email_claim_cases
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        emailId:
+          column:
+            name: email_id
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceEmailClaimCases
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - deletedAt
+          - emailId
+          - id
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceEmailClaimCasesBoolExp
+  operand:
+    object:
+      type: CorrespondenceEmailClaimCases
+      comparableFields:
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: emailId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: correspondenceEmail
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceEmailClaimCasesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceEmailClaimCasesAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceEmailClaimCases
+      aggregatableFields:
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: emailId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceEmailClaimCasesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceEmailClaimCasesOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceEmailClaimCases
+      orderableFields:
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: emailId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: correspondenceEmail
+  graphql:
+    expressionTypeName: CorrespondenceEmailClaimCasesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceEmailClaimCases
+  objectType: CorrespondenceEmailClaimCases
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_email_claim_cases
+  filterExpressionType: CorrespondenceEmailClaimCasesBoolExp
+  aggregateExpression: CorrespondenceEmailClaimCasesAggExp
+  orderByExpression: CorrespondenceEmailClaimCasesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceEmailClaimCases
+      subscription:
+        rootField: correspondenceEmailClaimCases
+    selectUniques:
+      - queryRootField: correspondenceEmailClaimCasesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: correspondenceEmailClaimCasesById
+    filterInputTypeName: CorrespondenceEmailClaimCasesFilterInput
+    aggregate:
+      queryRootField: correspondenceEmailClaimCasesAggregate
+      subscription:
+        rootField: correspondenceEmailClaimCasesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceEmailClaimCases
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: CorrespondenceEmailClaimCases
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmail
+  sourceType: CorrespondenceEmailClaimCases
+  target:
+    model:
+      name: CorrespondenceEmails
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: emailId
+      target:
+        modelField:
+          - fieldName: id
+

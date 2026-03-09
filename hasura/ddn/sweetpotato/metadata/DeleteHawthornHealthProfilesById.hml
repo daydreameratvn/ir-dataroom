@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHawthornHealthProfilesByIdResponse
+  description: Responses from the 'delete_hawthorn_health_profiles_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HawthornHealthProfiles!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHawthornHealthProfilesByIdResponse
+    inputTypeName: DeleteHawthornHealthProfilesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hawthorn_health_profiles_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHawthornHealthProfilesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHawthornHealthProfilesById
+  outputType: DeleteHawthornHealthProfilesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: HawthornHealthProfilesBoolExp
+      description: Delete permission predicate over the 'hawthorn_health_profiles'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hawthorn_health_profiles_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHawthornHealthProfilesById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hawthorn_health_profiles' collection using
+    the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHawthornHealthProfilesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

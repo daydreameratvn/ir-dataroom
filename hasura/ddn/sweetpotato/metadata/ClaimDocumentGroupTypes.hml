@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimDocumentGroupTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimDocumentGroupTypes
+    inputTypeName: ClaimDocumentGroupTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_document_group_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimDocumentGroupTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimDocumentGroupTypesBoolExp
+  operand:
+    object:
+      type: ClaimDocumentGroupTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimDocumentGroups
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimDocumentGroupTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimDocumentGroupTypesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimDocumentGroupTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimDocumentGroupTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimDocumentGroupTypesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimDocumentGroupTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimDocumentGroupTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimDocumentGroupTypes
+  objectType: ClaimDocumentGroupTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_document_group_types
+  filterExpressionType: ClaimDocumentGroupTypesBoolExp
+  aggregateExpression: ClaimDocumentGroupTypesAggExp
+  orderByExpression: ClaimDocumentGroupTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimDocumentGroupTypes
+      subscription:
+        rootField: claimDocumentGroupTypes
+    selectUniques:
+      - queryRootField: claimDocumentGroupTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimDocumentGroupTypesByValue
+    filterInputTypeName: ClaimDocumentGroupTypesFilterInput
+    aggregate:
+      queryRootField: claimDocumentGroupTypesAggregate
+      subscription:
+        rootField: claimDocumentGroupTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimDocumentGroupTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocumentGroups
+  sourceType: ClaimDocumentGroupTypes
+  target:
+    model:
+      name: ClaimDocumentGroups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimDocumentGroupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: claimDocumentGroupsAggregate
+

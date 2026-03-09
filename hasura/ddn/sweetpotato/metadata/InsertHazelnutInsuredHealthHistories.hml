@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutInsuredHealthHistoriesObject
+  fields:
+    - name: chronicDiseases
+      type: Boolean_1
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: hospitalTreatmentLast3Years
+      type: Boolean_1
+    - name: hospitalTreatmentNext12Months
+      type: Boolean_1
+    - name: id
+      type: Uuid
+    - name: insuranceRequestId
+      type: Uuid!
+    - name: insuredPersonId
+      type: Uuid!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertHazelnutInsuredHealthHistoriesObject
+    inputTypeName: InsertHazelnutInsuredHealthHistoriesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_insured_health_histories_object
+      fieldMapping:
+        chronicDiseases:
+          column:
+            name: chronic_diseases
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        hospitalTreatmentLast3Years:
+          column:
+            name: hospital_treatment_last_3_years
+        hospitalTreatmentNext12Months:
+          column:
+            name: hospital_treatment_next_12_months
+        id:
+          column:
+            name: id
+        insuranceRequestId:
+          column:
+            name: insurance_request_id
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutInsuredHealthHistoriesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - chronicDiseases
+          - createdAt
+          - createdBy
+          - deletedAt
+          - hospitalTreatmentLast3Years
+          - hospitalTreatmentNext12Months
+          - id
+          - insuranceRequestId
+          - insuredPersonId
+          - type
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutInsuredHealthHistoriesResponse
+  description: Responses from the 'insert_hazelnut_insured_health_histories' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutInsuredHealthHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHazelnutInsuredHealthHistoriesResponse
+    inputTypeName: InsertHazelnutInsuredHealthHistoriesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_insured_health_histories_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutInsuredHealthHistoriesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHazelnutInsuredHealthHistories
+  outputType: InsertHazelnutInsuredHealthHistoriesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHazelnutInsuredHealthHistoriesObject!]!"
+    - name: postCheck
+      type: HazelnutInsuredHealthHistoriesBoolExp
+      description: Insert permission predicate over the
+        'hazelnut_insured_health_histories' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hazelnut_insured_health_histories
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHazelnutInsuredHealthHistories
+    rootFieldKind: Mutation
+  description: Insert into the hazelnut_insured_health_histories table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHazelnutInsuredHealthHistories
+  permissions:
+    - role: admin
+      allowExecution: true
+

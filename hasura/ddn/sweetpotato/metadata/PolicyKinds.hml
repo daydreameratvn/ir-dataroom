@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyKinds
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PolicyKinds
+    inputTypeName: PolicyKindsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_kinds
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyKinds
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyKindsBoolExp
+  operand:
+    object:
+      type: PolicyKinds
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policies
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyKindsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyKindsAggExp
+  operand:
+    object:
+      aggregatedType: PolicyKinds
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyKindsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyKindsOrderByExp
+  operand:
+    object:
+      orderedType: PolicyKinds
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicyKindsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyKinds
+  objectType: PolicyKinds
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_kinds
+  filterExpressionType: PolicyKindsBoolExp
+  aggregateExpression: PolicyKindsAggExp
+  orderByExpression: PolicyKindsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyKinds
+      subscription:
+        rootField: policyKinds
+    selectUniques:
+      - queryRootField: policyKindsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: policyKindsByValue
+    filterInputTypeName: PolicyKindsFilterInput
+    aggregate:
+      queryRootField: policyKindsAggregate
+      subscription:
+        rootField: policyKindsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyKinds
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: PolicyKinds
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: kind
+  graphql:
+    aggregateFieldName: policiesAggregate
+

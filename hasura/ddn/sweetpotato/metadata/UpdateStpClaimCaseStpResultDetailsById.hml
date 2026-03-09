@@ -1,0 +1,179 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateStpClaimCaseStpResultDetailsByIdUpdateColumns
+  description: Update the columns of the 'stp_claim_case_stp_result_details' collection
+  fields:
+    - name: claimCaseId
+      type: UpdateColumnStpClaimCaseStpResultDetailsClaimCaseId
+      description: Update the 'claim_case_id' column in the
+        'stp_claim_case_stp_result_details' collection.
+    - name: createdAt
+      type: UpdateColumnStpClaimCaseStpResultDetailsCreatedAt
+      description: Update the 'created_at' column in the
+        'stp_claim_case_stp_result_details' collection.
+    - name: explanation
+      type: UpdateColumnStpClaimCaseStpResultDetailsExplanation
+      description: Update the 'explanation' column in the
+        'stp_claim_case_stp_result_details' collection.
+    - name: id
+      type: UpdateColumnStpClaimCaseStpResultDetailsId
+      description: Update the 'id' column in the 'stp_claim_case_stp_result_details'
+        collection.
+    - name: isPassed
+      type: UpdateColumnStpClaimCaseStpResultDetailsIsPassed
+      description: Update the 'is_passed' column in the
+        'stp_claim_case_stp_result_details' collection.
+    - name: stpRuleId
+      type: UpdateColumnStpClaimCaseStpResultDetailsStpRuleId
+      description: Update the 'stp_rule_id' column in the
+        'stp_claim_case_stp_result_details' collection.
+    - name: stpRuleResult
+      type: UpdateColumnStpClaimCaseStpResultDetailsStpRuleResult
+      description: Update the 'stp_rule_result' column in the
+        'stp_claim_case_stp_result_details' collection.
+    - name: stpRuleSetId
+      type: UpdateColumnStpClaimCaseStpResultDetailsStpRuleSetId
+      description: Update the 'stp_rule_set_id' column in the
+        'stp_claim_case_stp_result_details' collection.
+    - name: updatedAt
+      type: UpdateColumnStpClaimCaseStpResultDetailsUpdatedAt
+      description: Update the 'updated_at' column in the
+        'stp_claim_case_stp_result_details' collection.
+  graphql:
+    typeName: UpdateStpClaimCaseStpResultDetailsByIdUpdateColumns
+    inputTypeName: UpdateStpClaimCaseStpResultDetailsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_stp_claim_case_stp_result_details_by_id_update_columns
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        explanation:
+          column:
+            name: explanation
+        id:
+          column:
+            name: id
+        isPassed:
+          column:
+            name: is_passed
+        stpRuleId:
+          column:
+            name: stp_rule_id
+        stpRuleResult:
+          column:
+            name: stp_rule_result
+        stpRuleSetId:
+          column:
+            name: stp_rule_set_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateStpClaimCaseStpResultDetailsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - explanation
+          - id
+          - isPassed
+          - stpRuleId
+          - stpRuleResult
+          - stpRuleSetId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateStpClaimCaseStpResultDetailsByIdResponse
+  description: Responses from the 'update_stp_claim_case_stp_result_details_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[StpClaimCaseStpResultDetails!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateStpClaimCaseStpResultDetailsByIdResponse
+    inputTypeName: UpdateStpClaimCaseStpResultDetailsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_stp_claim_case_stp_result_details_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateStpClaimCaseStpResultDetailsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateStpClaimCaseStpResultDetailsById
+  outputType: UpdateStpClaimCaseStpResultDetailsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: StpClaimCaseStpResultDetailsBoolExp
+      description: Update permission post-condition predicate over the
+        'stp_claim_case_stp_result_details' collection
+    - name: preCheck
+      type: StpClaimCaseStpResultDetailsBoolExp
+      description: Update permission pre-condition predicate over the
+        'stp_claim_case_stp_result_details' collection
+    - name: updateColumns
+      type: UpdateStpClaimCaseStpResultDetailsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_stp_claim_case_stp_result_details_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateStpClaimCaseStpResultDetailsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'stp_claim_case_stp_result_details'
+    collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateStpClaimCaseStpResultDetailsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

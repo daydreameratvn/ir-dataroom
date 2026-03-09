@@ -1,0 +1,74 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutBeneficiaryBankAccountsByIdResponse
+  description: Responses from the 'delete_payout_beneficiary_bank_accounts_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutBeneficiaryBankAccounts!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutBeneficiaryBankAccountsByIdResponse
+    inputTypeName: DeletePayoutBeneficiaryBankAccountsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_beneficiary_bank_accounts_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutBeneficiaryBankAccountsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutBeneficiaryBankAccountsById
+  outputType: DeletePayoutBeneficiaryBankAccountsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: preCheck
+      type: PayoutBeneficiaryBankAccountsBoolExp
+      description: Delete permission predicate over the
+        'payout_beneficiary_bank_accounts' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_beneficiary_bank_accounts_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutBeneficiaryBankAccountsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_beneficiary_bank_accounts' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutBeneficiaryBankAccountsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

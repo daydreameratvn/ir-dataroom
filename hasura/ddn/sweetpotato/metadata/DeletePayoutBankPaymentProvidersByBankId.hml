@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutBankPaymentProvidersByBankIdResponse
+  description: Responses from the
+    'delete_payout_bank_payment_providers_by_bank_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutBankPaymentProviders!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutBankPaymentProvidersByBankIdResponse
+    inputTypeName: DeletePayoutBankPaymentProvidersByBankIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_bank_payment_providers_by_bank_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutBankPaymentProvidersByBankIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutBankPaymentProvidersByBankId
+  outputType: DeletePayoutBankPaymentProvidersByBankIdResponse!
+  arguments:
+    - name: keyBankId
+      type: Uuid!
+    - name: preCheck
+      type: PayoutBankPaymentProvidersBoolExp
+      description: Delete permission predicate over the
+        'payout_bank_payment_providers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_bank_payment_providers_by_bank_id
+    argumentMapping:
+      keyBankId: key_bank_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutBankPaymentProvidersByBankId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_bank_payment_providers' collection
+    using the 'bank_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutBankPaymentProvidersByBankId
+  permissions:
+    - role: admin
+      allowExecution: true
+

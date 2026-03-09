@@ -1,0 +1,83 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsurerPresentCaseCodesMappingByDeletedAtAndInsurerIdAndPpyPresentCaseCodeResponse
+  description: Responses from the
+    'delete_insurer_present_case_codes_mapping_by_deleted_at_and_insurer_id_and_ppy_present_case_code'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsurerPresentCaseCodesMapping!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsurerPresentCaseCodesMappingByDeletedAtAndInsurerIdAndPpyPresentCaseCodeResponse
+    inputTypeName: DeleteInsurerPresentCaseCodesMappingByDeletedAtAndInsurerIdAndPpyPresentCaseCodeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insurer_present_case_codes_mapping_by_deleted_at_and_insurer_id_and_ppy_present_case_code_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsurerPresentCaseCodesMappingByDeletedAtAndInsurerIdAndPpyPresentCaseCodeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsurerPresentCaseCodesMappingByDeletedAtAndInsurerIdAndPpyPresentCaseCode
+  outputType: DeleteInsurerPresentCaseCodesMappingByDeletedAtAndInsurerIdAndPpyPresentCaseCodeResponse!
+  arguments:
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: keyInsurerId
+      type: Uuid!
+    - name: keyPpyPresentCaseCode
+      type: String_1!
+    - name: preCheck
+      type: InsurerPresentCaseCodesMappingBoolExp
+      description: Delete permission predicate over the
+        'insurer_present_case_codes_mapping' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insurer_present_case_codes_mapping_by_deleted_at_and_insurer_id_and_ppy_present_case_code
+    argumentMapping:
+      keyDeletedAt: key_deleted_at
+      keyInsurerId: key_insurer_id
+      keyPpyPresentCaseCode: key_ppy_present_case_code
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsurerPresentCaseCodesMappingByDeletedAtAndInsurerIdAndPpyPresentCaseCode
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insurer_present_case_codes_mapping'
+    collection using the 'deleted_at', 'insurer_id' and 'ppy_present_case_code'
+    keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsurerPresentCaseCodesMappingByDeletedAtAndInsurerIdAndPpyPresentCaseCode
+  permissions:
+    - role: admin
+      allowExecution: true
+

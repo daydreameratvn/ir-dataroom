@@ -1,0 +1,198 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertIdentityUserSettingsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: debugEnabled
+      type: Boolean_1
+    - name: enableAutoCorrespondence
+      type: Boolean_1
+    - name: enabledOverlord
+      type: Boolean_1
+    - name: fwdHsDecisionLimit
+      type: Bigdecimal
+    - name: fwdMrDecisionLimit
+      type: Bigdecimal
+    - name: healthcareDecisionLimit
+      type: Bigdecimal
+    - name: mbalHsDecisionLimit
+      type: Bigdecimal
+    - name: slvHsDecisionLimit
+      type: Bigdecimal
+    - name: tclMrDecisionLimit
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: useGptInClaim
+      type: Boolean_1
+    - name: usePendingFormV2
+      type: Boolean_1
+    - name: userId
+      type: Uuid!
+    - name: visibleEarlyAccessRequestTooltip
+      type: Boolean_1
+  graphql:
+    typeName: InsertIdentityUserSettingsObject
+    inputTypeName: InsertIdentityUserSettingsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_identity_user_settings_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        debugEnabled:
+          column:
+            name: debug_enabled
+        enableAutoCorrespondence:
+          column:
+            name: enable_auto_correspondence
+        enabledOverlord:
+          column:
+            name: enabled_overlord
+        fwdHsDecisionLimit:
+          column:
+            name: fwd_hs_decision_limit
+        fwdMrDecisionLimit:
+          column:
+            name: fwd_mr_decision_limit
+        healthcareDecisionLimit:
+          column:
+            name: healthcare_decision_limit
+        mbalHsDecisionLimit:
+          column:
+            name: mbal_hs_decision_limit
+        slvHsDecisionLimit:
+          column:
+            name: slv_hs_decision_limit
+        tclMrDecisionLimit:
+          column:
+            name: tcl_mr_decision_limit
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        useGptInClaim:
+          column:
+            name: use_gpt_in_claim
+        usePendingFormV2:
+          column:
+            name: use_pending_form_v2
+        userId:
+          column:
+            name: user_id
+        visibleEarlyAccessRequestTooltip:
+          column:
+            name: visible_early_access_request_tooltip
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertIdentityUserSettingsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - debugEnabled
+          - enableAutoCorrespondence
+          - enabledOverlord
+          - fwdHsDecisionLimit
+          - fwdMrDecisionLimit
+          - healthcareDecisionLimit
+          - mbalHsDecisionLimit
+          - slvHsDecisionLimit
+          - tclMrDecisionLimit
+          - updatedAt
+          - updatedBy
+          - useGptInClaim
+          - usePendingFormV2
+          - userId
+          - visibleEarlyAccessRequestTooltip
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertIdentityUserSettingsResponse
+  description: Responses from the 'insert_identity_user_settings' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityUserSettings!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertIdentityUserSettingsResponse
+    inputTypeName: InsertIdentityUserSettingsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_identity_user_settings_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertIdentityUserSettingsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertIdentityUserSettings
+  outputType: InsertIdentityUserSettingsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertIdentityUserSettingsObject!]!"
+    - name: postCheck
+      type: IdentityUserSettingsBoolExp
+      description: Insert permission predicate over the 'identity_user_settings' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_identity_user_settings
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertIdentityUserSettings
+    rootFieldKind: Mutation
+  description: Insert into the identity_user_settings table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertIdentityUserSettings
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,221 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SlvServingAgents
+  fields:
+    - name: agentCode
+      type: String_1!
+    - name: agentName
+      type: String_1
+    - name: agentOriginChnl
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: isAgentBlackList
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: SlvServingAgents
+    inputTypeName: SlvServingAgentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: slv_serving_agents
+      fieldMapping:
+        agentCode:
+          column:
+            name: agent_code
+        agentName:
+          column:
+            name: agent_name
+        agentOriginChnl:
+          column:
+            name: agent_origin_chnl
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        isAgentBlackList:
+          column:
+            name: is_agent_black_list
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SlvServingAgents
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - agentCode
+          - agentName
+          - agentOriginChnl
+          - createdAt
+          - id
+          - isAgentBlackList
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: SlvServingAgentsBoolExp
+  operand:
+    object:
+      type: SlvServingAgents
+      comparableFields:
+        - fieldName: agentCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: agentName
+          booleanExpressionType: TextBoolExp
+        - fieldName: agentOriginChnl
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isAgentBlackList
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: slvPolicies
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: SlvServingAgentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: SlvServingAgentsAggExp
+  operand:
+    object:
+      aggregatedType: SlvServingAgents
+      aggregatableFields:
+        - fieldName: agentCode
+          aggregateExpression: TextAggExp
+        - fieldName: agentName
+          aggregateExpression: TextAggExp
+        - fieldName: agentOriginChnl
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isAgentBlackList
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: SlvServingAgentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: SlvServingAgentsOrderByExp
+  operand:
+    object:
+      orderedType: SlvServingAgents
+      orderableFields:
+        - fieldName: agentCode
+          orderByExpression: String1OrderByExp
+        - fieldName: agentName
+          orderByExpression: String1OrderByExp
+        - fieldName: agentOriginChnl
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isAgentBlackList
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: SlvServingAgentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: SlvServingAgents
+  objectType: SlvServingAgents
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: slv_serving_agents
+  filterExpressionType: SlvServingAgentsBoolExp
+  aggregateExpression: SlvServingAgentsAggExp
+  orderByExpression: SlvServingAgentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: slvServingAgents
+      subscription:
+        rootField: slvServingAgents
+    selectUniques:
+      - queryRootField: slvServingAgentsByAgentCode
+        uniqueIdentifier:
+          - agentCode
+        subscription:
+          rootField: slvServingAgentsByAgentCode
+      - queryRootField: slvServingAgentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: slvServingAgentsById
+    filterInputTypeName: SlvServingAgentsFilterInput
+    aggregate:
+      queryRootField: slvServingAgentsAggregate
+      subscription:
+        rootField: slvServingAgentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SlvServingAgents
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: slvPolicies
+  sourceType: SlvServingAgents
+  target:
+    model:
+      name: SlvPolicies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: SlvPoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: servingAgentId
+  graphql:
+    aggregateFieldName: slvPoliciesAggregate
+

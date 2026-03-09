@@ -1,0 +1,120 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdMedicalProvidersObject
+  fields:
+    - name: code
+      type: String_1!
+    - name: deletedAt
+      type: Timestamptz
+    - name: name
+      type: String_1!
+    - name: ppyMedicalProviderId
+      type: Uuid
+  graphql:
+    typeName: InsertFwdMedicalProvidersObject
+    inputTypeName: InsertFwdMedicalProvidersObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_medical_providers_object
+      fieldMapping:
+        code:
+          column:
+            name: code
+        deletedAt:
+          column:
+            name: deleted_at
+        name:
+          column:
+            name: name
+        ppyMedicalProviderId:
+          column:
+            name: ppy_medical_provider_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdMedicalProvidersObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - deletedAt
+          - name
+          - ppyMedicalProviderId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdMedicalProvidersResponse
+  description: Responses from the 'insert_fwd_medical_providers' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdMedicalProviders!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdMedicalProvidersResponse
+    inputTypeName: InsertFwdMedicalProvidersResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_medical_providers_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdMedicalProvidersResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdMedicalProviders
+  outputType: InsertFwdMedicalProvidersResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdMedicalProvidersObject!]!"
+    - name: postCheck
+      type: FwdMedicalProvidersBoolExp
+      description: Insert permission predicate over the 'fwd_medical_providers' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_medical_providers
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdMedicalProviders
+    rootFieldKind: Mutation
+  description: Insert into the fwd_medical_providers table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdMedicalProviders
+  permissions:
+    - role: admin
+      allowExecution: true
+

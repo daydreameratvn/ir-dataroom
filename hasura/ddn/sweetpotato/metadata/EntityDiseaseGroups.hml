@@ -1,0 +1,297 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: EntityDiseaseGroups
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: diseaseGroupId
+      type: Uuid!
+    - name: diseaseGroupTypeValue
+      type: String_1!
+    - name: entityId
+      type: Uuid!
+    - name: entityTypeValue
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: timeInDays
+      type: Bigdecimal
+    - name: updatedAt
+      type: Timestamptz!
+    - name: waitingTimeInDays
+      type: Bigdecimal
+  graphql:
+    typeName: EntityDiseaseGroups
+    inputTypeName: EntityDiseaseGroupsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: entity_disease_groups
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        diseaseGroupId:
+          column:
+            name: disease_group_id
+        diseaseGroupTypeValue:
+          column:
+            name: disease_group_type_value
+        entityId:
+          column:
+            name: entity_id
+        entityTypeValue:
+          column:
+            name: entity_type_value
+        id:
+          column:
+            name: id
+        timeInDays:
+          column:
+            name: time_in_days
+        updatedAt:
+          column:
+            name: updated_at
+        waitingTimeInDays:
+          column:
+            name: waiting_time_in_days
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: EntityDiseaseGroups
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - diseaseGroupId
+          - diseaseGroupTypeValue
+          - entityId
+          - entityTypeValue
+          - id
+          - timeInDays
+          - updatedAt
+          - waitingTimeInDays
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: EntityDiseaseGroupsBoolExp
+  operand:
+    object:
+      type: EntityDiseaseGroups
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: diseaseGroupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: diseaseGroupTypeValue
+          booleanExpressionType: TextBoolExp
+        - fieldName: entityId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: entityTypeValue
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: timeInDays
+          booleanExpressionType: NumericBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: waitingTimeInDays
+          booleanExpressionType: NumericBoolExp
+      comparableRelationships:
+        - relationshipName: diseaseGroup
+        - relationshipName: diseaseGroupType
+        - relationshipName: entityDiseaseGroupType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: EntityDiseaseGroupsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: EntityDiseaseGroupsAggExp
+  operand:
+    object:
+      aggregatedType: EntityDiseaseGroups
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: diseaseGroupId
+          aggregateExpression: UuidAggExp
+        - fieldName: diseaseGroupTypeValue
+          aggregateExpression: TextAggExp
+        - fieldName: entityId
+          aggregateExpression: UuidAggExp
+        - fieldName: entityTypeValue
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: timeInDays
+          aggregateExpression: NumericAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: waitingTimeInDays
+          aggregateExpression: NumericAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: EntityDiseaseGroupsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: EntityDiseaseGroupsOrderByExp
+  operand:
+    object:
+      orderedType: EntityDiseaseGroups
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: diseaseGroupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: diseaseGroupTypeValue
+          orderByExpression: String1OrderByExp
+        - fieldName: entityId
+          orderByExpression: UuidOrderByExp
+        - fieldName: entityTypeValue
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: timeInDays
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: waitingTimeInDays
+          orderByExpression: BigdecimalOrderByExp
+      orderableRelationships:
+        - relationshipName: diseaseGroup
+        - relationshipName: diseaseGroupType
+        - relationshipName: entityDiseaseGroupType
+  graphql:
+    expressionTypeName: EntityDiseaseGroupsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: EntityDiseaseGroups
+  objectType: EntityDiseaseGroups
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: entity_disease_groups
+  filterExpressionType: EntityDiseaseGroupsBoolExp
+  aggregateExpression: EntityDiseaseGroupsAggExp
+  orderByExpression: EntityDiseaseGroupsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: entityDiseaseGroups
+      subscription:
+        rootField: entityDiseaseGroups
+    selectUniques:
+      - queryRootField: entityDiseaseGroupsByEntityDiseaseGroupsEntityIdEntityTypeValueDiseaseGKey
+        uniqueIdentifier:
+          - diseaseGroupId
+          - diseaseGroupTypeValue
+          - entityId
+          - entityTypeValue
+        subscription:
+          rootField: entityDiseaseGroupsByEntityDiseaseGroupsEntityIdEntityTypeValueDiseaseGKey
+      - queryRootField: entityDiseaseGroupsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: entityDiseaseGroupsById
+    filterInputTypeName: EntityDiseaseGroupsFilterInput
+    aggregate:
+      queryRootField: entityDiseaseGroupsAggregate
+      subscription:
+        rootField: entityDiseaseGroupsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: EntityDiseaseGroups
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: diseaseGroup
+  sourceType: EntityDiseaseGroups
+  target:
+    model:
+      name: DiseaseGroups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: diseaseGroupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: diseaseGroupType
+  sourceType: EntityDiseaseGroups
+  target:
+    model:
+      name: DiseaseGroupTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: diseaseGroupTypeValue
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: entityDiseaseGroupType
+  sourceType: EntityDiseaseGroups
+  target:
+    model:
+      name: EntityDiseaseGroupTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: entityTypeValue
+      target:
+        modelField:
+          - fieldName: value
+

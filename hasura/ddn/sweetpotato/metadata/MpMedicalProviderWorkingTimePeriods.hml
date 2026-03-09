@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpMedicalProviderWorkingTimePeriods
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MpMedicalProviderWorkingTimePeriods
+    inputTypeName: MpMedicalProviderWorkingTimePeriodsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_medical_provider_working_time_periods
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpMedicalProviderWorkingTimePeriods
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpMedicalProviderWorkingTimePeriodsBoolExp
+  operand:
+    object:
+      type: MpMedicalProviderWorkingTimePeriods
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: medicalBookingMedicalBookingTimes
+        - relationshipName: mpMedicalProviderWorkingTimes
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpMedicalProviderWorkingTimePeriodsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpMedicalProviderWorkingTimePeriodsAggExp
+  operand:
+    object:
+      aggregatedType: MpMedicalProviderWorkingTimePeriods
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpMedicalProviderWorkingTimePeriodsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpMedicalProviderWorkingTimePeriodsOrderByExp
+  operand:
+    object:
+      orderedType: MpMedicalProviderWorkingTimePeriods
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MpMedicalProviderWorkingTimePeriodsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpMedicalProviderWorkingTimePeriods
+  objectType: MpMedicalProviderWorkingTimePeriods
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_medical_provider_working_time_periods
+  filterExpressionType: MpMedicalProviderWorkingTimePeriodsBoolExp
+  aggregateExpression: MpMedicalProviderWorkingTimePeriodsAggExp
+  orderByExpression: MpMedicalProviderWorkingTimePeriodsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpMedicalProviderWorkingTimePeriods
+      subscription:
+        rootField: mpMedicalProviderWorkingTimePeriods
+    selectUniques:
+      - queryRootField: mpMedicalProviderWorkingTimePeriodsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: mpMedicalProviderWorkingTimePeriodsByValue
+    filterInputTypeName: MpMedicalProviderWorkingTimePeriodsFilterInput
+    aggregate:
+      queryRootField: mpMedicalProviderWorkingTimePeriodsAggregate
+      subscription:
+        rootField: mpMedicalProviderWorkingTimePeriodsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpMedicalProviderWorkingTimePeriods
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingMedicalBookingTimes
+  sourceType: MpMedicalProviderWorkingTimePeriods
+  target:
+    model:
+      name: MedicalBookingMedicalBookingTimes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingMedicalBookingTimesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: timePeriod
+  graphql:
+    aggregateFieldName: medicalBookingMedicalBookingTimesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProviderWorkingTimes
+  sourceType: MpMedicalProviderWorkingTimePeriods
+  target:
+    model:
+      name: MpMedicalProviderWorkingTimes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MpMedicalProviderWorkingTimesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: timePeriod
+  graphql:
+    aggregateFieldName: mpMedicalProviderWorkingTimesAggregate
+

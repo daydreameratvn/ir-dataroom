@@ -1,0 +1,156 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCompanyCorrespondencesObject
+  fields:
+    - name: autoSend
+      type: Boolean_1
+    - name: companyId
+      type: Uuid!
+    - name: conditions
+      type: Json
+    - name: correspondenceTemplateId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: planId
+      type: Uuid
+    - name: sendWhen
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertCompanyCorrespondencesObject
+    inputTypeName: InsertCompanyCorrespondencesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_company_correspondences_object
+      fieldMapping:
+        autoSend:
+          column:
+            name: auto_send
+        companyId:
+          column:
+            name: company_id
+        conditions:
+          column:
+            name: conditions
+        correspondenceTemplateId:
+          column:
+            name: correspondence_template_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        planId:
+          column:
+            name: plan_id
+        sendWhen:
+          column:
+            name: send_when
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCompanyCorrespondencesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoSend
+          - companyId
+          - conditions
+          - correspondenceTemplateId
+          - createdAt
+          - deletedAt
+          - id
+          - planId
+          - sendWhen
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCompanyCorrespondencesResponse
+  description: Responses from the 'insert_company_correspondences' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanyCorrespondences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCompanyCorrespondencesResponse
+    inputTypeName: InsertCompanyCorrespondencesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_company_correspondences_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCompanyCorrespondencesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCompanyCorrespondences
+  outputType: InsertCompanyCorrespondencesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCompanyCorrespondencesObject!]!"
+    - name: postCheck
+      type: CompanyCorrespondencesBoolExp
+      description: Insert permission predicate over the 'company_correspondences' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_company_correspondences
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCompanyCorrespondences
+    rootFieldKind: Mutation
+  description: Insert into the company_correspondences table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCompanyCorrespondences
+  permissions:
+    - role: admin
+      allowExecution: true
+

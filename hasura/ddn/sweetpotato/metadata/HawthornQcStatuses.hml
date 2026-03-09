@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornQcStatuses
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: HawthornQcStatuses
+    inputTypeName: HawthornQcStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_qc_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornQcStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornQcStatusesBoolExp
+  operand:
+    object:
+      type: HawthornQcStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornQcHealthCheckupDetails
+        - relationshipName: hawthornQcHealthCheckups
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornQcStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornQcStatusesAggExp
+  operand:
+    object:
+      aggregatedType: HawthornQcStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornQcStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornQcStatusesOrderByExp
+  operand:
+    object:
+      orderedType: HawthornQcStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HawthornQcStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornQcStatuses
+  objectType: HawthornQcStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_qc_statuses
+  filterExpressionType: HawthornQcStatusesBoolExp
+  aggregateExpression: HawthornQcStatusesAggExp
+  orderByExpression: HawthornQcStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornQcStatuses
+      subscription:
+        rootField: hawthornQcStatuses
+    selectUniques:
+      - queryRootField: hawthornQcStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: hawthornQcStatusesByValue
+    filterInputTypeName: HawthornQcStatusesFilterInput
+    aggregate:
+      queryRootField: hawthornQcStatusesAggregate
+      subscription:
+        rootField: hawthornQcStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornQcStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornQcHealthCheckupDetails
+  sourceType: HawthornQcStatuses
+  target:
+    model:
+      name: HawthornQcHealthCheckupDetails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornQcHealthCheckupDetailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: hawthornQcHealthCheckupDetailsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornQcHealthCheckups
+  sourceType: HawthornQcStatuses
+  target:
+    model:
+      name: HawthornQcHealthCheckups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornQcHealthCheckupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: hawthornQcHealthCheckupsAggregate
+

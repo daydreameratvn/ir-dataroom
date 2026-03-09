@@ -1,0 +1,282 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyRemarkWaitingTimes
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: displayOrder
+      type: Int32!
+    - name: id
+      type: Uuid!
+    - name: lang
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: policyId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+    - name: value
+      type: Bigdecimal
+      description: percentage
+  graphql:
+    typeName: PolicyRemarkWaitingTimes
+    inputTypeName: PolicyRemarkWaitingTimesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_remark_waiting_times
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        lang:
+          column:
+            name: lang
+        name:
+          column:
+            name: name
+        policyId:
+          column:
+            name: policy_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyRemarkWaitingTimes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - description
+          - displayOrder
+          - id
+          - lang
+          - name
+          - policyId
+          - tenantId
+          - updatedAt
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyRemarkWaitingTimesBoolExp
+  operand:
+    object:
+      type: PolicyRemarkWaitingTimes
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: displayOrder
+          booleanExpressionType: Int4BoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: lang
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: name
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: value
+          booleanExpressionType: NumericBoolExp
+      comparableRelationships:
+        - relationshipName: language
+        - relationshipName: policy
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyRemarkWaitingTimesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyRemarkWaitingTimesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyRemarkWaitingTimes
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: VarcharAggExp
+        - fieldName: displayOrder
+          aggregateExpression: Int4AggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: lang
+          aggregateExpression: VarcharAggExp
+        - fieldName: name
+          aggregateExpression: VarcharAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: value
+          aggregateExpression: NumericAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyRemarkWaitingTimesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyRemarkWaitingTimesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyRemarkWaitingTimes
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: displayOrder
+          orderByExpression: Int32OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: lang
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: value
+          orderByExpression: BigdecimalOrderByExp
+      orderableRelationships:
+        - relationshipName: language
+        - relationshipName: policy
+  graphql:
+    expressionTypeName: PolicyRemarkWaitingTimesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyRemarkWaitingTimes
+  objectType: PolicyRemarkWaitingTimes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_remark_waiting_times
+  filterExpressionType: PolicyRemarkWaitingTimesBoolExp
+  aggregateExpression: PolicyRemarkWaitingTimesAggExp
+  orderByExpression: PolicyRemarkWaitingTimesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyRemarkWaitingTimes
+      subscription:
+        rootField: policyRemarkWaitingTimes
+    selectUniques:
+      - queryRootField: policyRemarkWaitingTimesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: policyRemarkWaitingTimesById
+    filterInputTypeName: PolicyRemarkWaitingTimesFilterInput
+    aggregate:
+      queryRootField: policyRemarkWaitingTimesAggregate
+      subscription:
+        rootField: policyRemarkWaitingTimesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyRemarkWaitingTimes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: language
+  sourceType: PolicyRemarkWaitingTimes
+  target:
+    model:
+      name: Languages
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: lang
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: PolicyRemarkWaitingTimes
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+

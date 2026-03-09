@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceEmailStatuses
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CorrespondenceEmailStatuses
+    inputTypeName: CorrespondenceEmailStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_email_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceEmailStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceEmailStatusesBoolExp
+  operand:
+    object:
+      type: CorrespondenceEmailStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: correspondenceEmails
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceEmailStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceEmailStatusesAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceEmailStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceEmailStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceEmailStatusesOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceEmailStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: CorrespondenceEmailStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceEmailStatuses
+  objectType: CorrespondenceEmailStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_email_statuses
+  filterExpressionType: CorrespondenceEmailStatusesBoolExp
+  aggregateExpression: CorrespondenceEmailStatusesAggExp
+  orderByExpression: CorrespondenceEmailStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceEmailStatuses
+      subscription:
+        rootField: correspondenceEmailStatuses
+    selectUniques:
+      - queryRootField: correspondenceEmailStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: correspondenceEmailStatusesByValue
+    filterInputTypeName: CorrespondenceEmailStatusesFilterInput
+    aggregate:
+      queryRootField: correspondenceEmailStatusesAggregate
+      subscription:
+        rootField: correspondenceEmailStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceEmailStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceEmails
+  sourceType: CorrespondenceEmailStatuses
+  target:
+    model:
+      name: CorrespondenceEmails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceEmailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: correspondenceEmailsAggregate
+

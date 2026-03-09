@@ -1,0 +1,213 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PresentCaseAssignments
+  fields:
+    - name: assignedById
+      type: Uuid!
+    - name: assigneeId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: newAssessmentId
+      type: Uuid
+    - name: previousAssessmentId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PresentCaseAssignments
+    inputTypeName: PresentCaseAssignmentsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: present_case_assignments
+      fieldMapping:
+        assignedById:
+          column:
+            name: assigned_by_id
+        assigneeId:
+          column:
+            name: assignee_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        newAssessmentId:
+          column:
+            name: new_assessment_id
+        previousAssessmentId:
+          column:
+            name: previous_assessment_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PresentCaseAssignments
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - assignedById
+          - assigneeId
+          - createdAt
+          - id
+          - newAssessmentId
+          - previousAssessmentId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PresentCaseAssignmentsBoolExp
+  operand:
+    object:
+      type: PresentCaseAssignments
+      comparableFields:
+        - fieldName: assignedById
+          booleanExpressionType: UuidBoolExp
+        - fieldName: assigneeId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: newAssessmentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: previousAssessmentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: presentCaseAssessment
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PresentCaseAssignmentsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PresentCaseAssignmentsAggExp
+  operand:
+    object:
+      aggregatedType: PresentCaseAssignments
+      aggregatableFields:
+        - fieldName: assignedById
+          aggregateExpression: UuidAggExp
+        - fieldName: assigneeId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: newAssessmentId
+          aggregateExpression: UuidAggExp
+        - fieldName: previousAssessmentId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PresentCaseAssignmentsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PresentCaseAssignmentsOrderByExp
+  operand:
+    object:
+      orderedType: PresentCaseAssignments
+      orderableFields:
+        - fieldName: assignedById
+          orderByExpression: UuidOrderByExp
+        - fieldName: assigneeId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: newAssessmentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: previousAssessmentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: presentCaseAssessment
+  graphql:
+    expressionTypeName: PresentCaseAssignmentsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PresentCaseAssignments
+  objectType: PresentCaseAssignments
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: present_case_assignments
+  filterExpressionType: PresentCaseAssignmentsBoolExp
+  aggregateExpression: PresentCaseAssignmentsAggExp
+  orderByExpression: PresentCaseAssignmentsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: presentCaseAssignments
+      subscription:
+        rootField: presentCaseAssignments
+    selectUniques:
+      - queryRootField: presentCaseAssignmentsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: presentCaseAssignmentsById
+    filterInputTypeName: PresentCaseAssignmentsFilterInput
+    aggregate:
+      queryRootField: presentCaseAssignmentsAggregate
+      subscription:
+        rootField: presentCaseAssignmentsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PresentCaseAssignments
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: presentCaseAssessment
+  sourceType: PresentCaseAssignments
+  target:
+    model:
+      name: PresentCaseAssessments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: newAssessmentId
+      target:
+        modelField:
+          - fieldName: id
+

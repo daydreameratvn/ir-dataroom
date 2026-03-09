@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ServiceLevels
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ServiceLevels
+    inputTypeName: ServiceLevelsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: service_levels
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ServiceLevels
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ServiceLevelsBoolExp
+  operand:
+    object:
+      type: ServiceLevels
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: plans
+        - relationshipName: policies
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ServiceLevelsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ServiceLevelsAggExp
+  operand:
+    object:
+      aggregatedType: ServiceLevels
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ServiceLevelsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ServiceLevelsOrderByExp
+  operand:
+    object:
+      orderedType: ServiceLevels
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ServiceLevelsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ServiceLevels
+  objectType: ServiceLevels
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: service_levels
+  filterExpressionType: ServiceLevelsBoolExp
+  aggregateExpression: ServiceLevelsAggExp
+  orderByExpression: ServiceLevelsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: serviceLevels
+      subscription:
+        rootField: serviceLevels
+    selectUniques:
+      - queryRootField: serviceLevelsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: serviceLevelsByValue
+    filterInputTypeName: ServiceLevelsFilterInput
+    aggregate:
+      queryRootField: serviceLevelsAggregate
+      subscription:
+        rootField: serviceLevelsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ServiceLevels
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plans
+  sourceType: ServiceLevels
+  target:
+    model:
+      name: Plans
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlansAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: serviceLevel
+  graphql:
+    aggregateFieldName: plansAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policies
+  sourceType: ServiceLevels
+  target:
+    model:
+      name: Policies
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PoliciesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: serviceLevel
+  graphql:
+    aggregateFieldName: policiesAggregate
+

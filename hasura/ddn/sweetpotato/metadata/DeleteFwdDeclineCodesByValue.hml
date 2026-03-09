@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFwdDeclineCodesByValueResponse
+  description: Responses from the 'delete_fwd_decline_codes_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdDeclineCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFwdDeclineCodesByValueResponse
+    inputTypeName: DeleteFwdDeclineCodesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_fwd_decline_codes_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFwdDeclineCodesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFwdDeclineCodesByValue
+  outputType: DeleteFwdDeclineCodesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: FwdDeclineCodesBoolExp
+      description: Delete permission predicate over the 'fwd_decline_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_fwd_decline_codes_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFwdDeclineCodesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'fwd_decline_codes' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFwdDeclineCodesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

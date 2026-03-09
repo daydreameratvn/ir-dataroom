@@ -1,0 +1,452 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornHealthCheckups
+  description: Khám sức khỏe tổng quát, khám sức khỏe định kỳ
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: endedAt
+      type: Timestamptz
+    - name: healthcareAppointmentId
+      type: Uuid!
+    - name: id
+      type: Uuid!
+    - name: patientId
+      type: Uuid!
+    - name: rawData
+      type: Json
+    - name: startedAt
+      type: Timestamptz
+    - name: status
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: HawthornHealthCheckups
+    inputTypeName: HawthornHealthCheckupsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_health_checkups
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        endedAt:
+          column:
+            name: ended_at
+        healthcareAppointmentId:
+          column:
+            name: healthcare_appointment_id
+        id:
+          column:
+            name: id
+        patientId:
+          column:
+            name: patient_id
+        rawData:
+          column:
+            name: raw_data
+        startedAt:
+          column:
+            name: started_at
+        status:
+          column:
+            name: status
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornHealthCheckups
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - endedAt
+          - healthcareAppointmentId
+          - id
+          - patientId
+          - rawData
+          - startedAt
+          - status
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornHealthCheckupsBoolExp
+  operand:
+    object:
+      type: HawthornHealthCheckups
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: endedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: healthcareAppointmentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: patientId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: rawData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: startedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornConclusions
+        - relationshipName: hawthornDiagnoses
+        - relationshipName: hawthornDiagnosticTests
+        - relationshipName: hawthornDocuments
+        - relationshipName: hawthornHealthcareAppointment
+        - relationshipName: hawthornPatient
+        - relationshipName: hawthornHealthCheckupStatus
+        - relationshipName: hawthornPhysicalExaminations
+        - relationshipName: hawthornQcHealthCheckups
+        - relationshipName: hawthornSuggestions
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornHealthCheckupsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornHealthCheckupsAggExp
+  operand:
+    object:
+      aggregatedType: HawthornHealthCheckups
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: endedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: healthcareAppointmentId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: patientId
+          aggregateExpression: UuidAggExp
+        - fieldName: rawData
+          aggregateExpression: JsonbAggExp
+        - fieldName: startedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornHealthCheckupsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornHealthCheckupsOrderByExp
+  operand:
+    object:
+      orderedType: HawthornHealthCheckups
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: endedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: healthcareAppointmentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: patientId
+          orderByExpression: UuidOrderByExp
+        - fieldName: rawData
+          orderByExpression: JsonOrderByExp
+        - fieldName: startedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: hawthornHealthcareAppointment
+        - relationshipName: hawthornPatient
+        - relationshipName: hawthornHealthCheckupStatus
+  graphql:
+    expressionTypeName: HawthornHealthCheckupsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornHealthCheckups
+  objectType: HawthornHealthCheckups
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_health_checkups
+  filterExpressionType: HawthornHealthCheckupsBoolExp
+  aggregateExpression: HawthornHealthCheckupsAggExp
+  orderByExpression: HawthornHealthCheckupsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornHealthCheckups
+      subscription:
+        rootField: hawthornHealthCheckups
+    selectUniques:
+      - queryRootField: hawthornHealthCheckupsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hawthornHealthCheckupsById
+    filterInputTypeName: HawthornHealthCheckupsFilterInput
+    aggregate:
+      queryRootField: hawthornHealthCheckupsAggregate
+      subscription:
+        rootField: hawthornHealthCheckupsAggregate
+  description: Khám sức khỏe tổng quát, khám sức khỏe định kỳ
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornHealthCheckups
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornConclusions
+  sourceType: HawthornHealthCheckups
+  target:
+    model:
+      name: HawthornConclusions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornConclusionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: healthCheckupId
+  graphql:
+    aggregateFieldName: hawthornConclusionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnoses
+  sourceType: HawthornHealthCheckups
+  target:
+    model:
+      name: HawthornDiagnoses
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornDiagnosesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: healthCheckupId
+  graphql:
+    aggregateFieldName: hawthornDiagnosesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDiagnosticTests
+  sourceType: HawthornHealthCheckups
+  target:
+    model:
+      name: HawthornDiagnosticTests
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornDiagnosticTestsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: healthCheckupId
+  graphql:
+    aggregateFieldName: hawthornDiagnosticTestsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornDocuments
+  sourceType: HawthornHealthCheckups
+  target:
+    model:
+      name: HawthornDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: healthCheckupId
+  graphql:
+    aggregateFieldName: hawthornDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornHealthcareAppointment
+  sourceType: HawthornHealthCheckups
+  target:
+    model:
+      name: HawthornHealthcareAppointments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: healthcareAppointmentId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPatient
+  sourceType: HawthornHealthCheckups
+  target:
+    model:
+      name: HawthornPatients
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: patientId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornHealthCheckupStatus
+  sourceType: HawthornHealthCheckups
+  target:
+    model:
+      name: HawthornHealthCheckupStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPhysicalExaminations
+  sourceType: HawthornHealthCheckups
+  target:
+    model:
+      name: HawthornPhysicalExaminations
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornPhysicalExaminationsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: healthCheckupId
+  graphql:
+    aggregateFieldName: hawthornPhysicalExaminationsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornQcHealthCheckups
+  sourceType: HawthornHealthCheckups
+  target:
+    model:
+      name: HawthornQcHealthCheckups
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornQcHealthCheckupsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: healthCheckupId
+  graphql:
+    aggregateFieldName: hawthornQcHealthCheckupsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornSuggestions
+  sourceType: HawthornHealthCheckups
+  target:
+    model:
+      name: HawthornSuggestions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornSuggestionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: healthCheckupId
+  graphql:
+    aggregateFieldName: hawthornSuggestionsAggregate
+

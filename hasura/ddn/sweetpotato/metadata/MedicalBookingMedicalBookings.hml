@@ -1,0 +1,346 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MedicalBookingMedicalBookings
+  description: Lịch hẹn khám sức khỏe
+  fields:
+    - name: corporateId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: medicalBookingId
+      type: Uuid!
+    - name: medicalProviderId
+      type: Uuid!
+    - name: remark
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: title
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+    - name: userRoleId
+      type: Uuid!
+  graphql:
+    typeName: MedicalBookingMedicalBookings
+    inputTypeName: MedicalBookingMedicalBookingsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: medical_booking_medical_bookings
+      fieldMapping:
+        corporateId:
+          column:
+            name: corporate_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        medicalBookingId:
+          column:
+            name: medical_booking_id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        remark:
+          column:
+            name: remark
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        title:
+          column:
+            name: title
+        updatedAt:
+          column:
+            name: updated_at
+        userRoleId:
+          column:
+            name: user_role_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MedicalBookingMedicalBookings
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - corporateId
+          - createdAt
+          - deletedAt
+          - medicalBookingId
+          - medicalProviderId
+          - remark
+          - status
+          - tenantId
+          - title
+          - updatedAt
+          - userRoleId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MedicalBookingMedicalBookingsBoolExp
+  operand:
+    object:
+      type: MedicalBookingMedicalBookings
+      comparableFields:
+        - fieldName: corporateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: medicalBookingId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: remark
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: title
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: userRoleId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: medicalBookingMedicalBookingTimes
+        - relationshipName: corporate
+        - relationshipName: mpMedicalProvider
+        - relationshipName: medicalBookingMedicalBookingStatus
+        - relationshipName: identityUserRole
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MedicalBookingMedicalBookingsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MedicalBookingMedicalBookingsAggExp
+  operand:
+    object:
+      aggregatedType: MedicalBookingMedicalBookings
+      aggregatableFields:
+        - fieldName: corporateId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: medicalBookingId
+          aggregateExpression: UuidAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: remark
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: title
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: userRoleId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MedicalBookingMedicalBookingsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MedicalBookingMedicalBookingsOrderByExp
+  operand:
+    object:
+      orderedType: MedicalBookingMedicalBookings
+      orderableFields:
+        - fieldName: corporateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: medicalBookingId
+          orderByExpression: UuidOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: remark
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: title
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: userRoleId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: corporate
+        - relationshipName: mpMedicalProvider
+        - relationshipName: medicalBookingMedicalBookingStatus
+        - relationshipName: identityUserRole
+  graphql:
+    expressionTypeName: MedicalBookingMedicalBookingsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MedicalBookingMedicalBookings
+  objectType: MedicalBookingMedicalBookings
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: medical_booking_medical_bookings
+  filterExpressionType: MedicalBookingMedicalBookingsBoolExp
+  aggregateExpression: MedicalBookingMedicalBookingsAggExp
+  orderByExpression: MedicalBookingMedicalBookingsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: medicalBookingMedicalBookings
+      subscription:
+        rootField: medicalBookingMedicalBookings
+    selectUniques:
+      - queryRootField: medicalBookingMedicalBookingsByMedicalBookingId
+        uniqueIdentifier:
+          - medicalBookingId
+        subscription:
+          rootField: medicalBookingMedicalBookingsByMedicalBookingId
+    filterInputTypeName: MedicalBookingMedicalBookingsFilterInput
+    aggregate:
+      queryRootField: medicalBookingMedicalBookingsAggregate
+      subscription:
+        rootField: medicalBookingMedicalBookingsAggregate
+  description: Lịch hẹn khám sức khỏe
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MedicalBookingMedicalBookings
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingMedicalBookingTimes
+  sourceType: MedicalBookingMedicalBookings
+  target:
+    model:
+      name: MedicalBookingMedicalBookingTimes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingMedicalBookingTimesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalBookingId
+      target:
+        modelField:
+          - fieldName: medicalBookingId
+  graphql:
+    aggregateFieldName: medicalBookingMedicalBookingTimesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: corporate
+  sourceType: MedicalBookingMedicalBookings
+  target:
+    model:
+      name: Corporates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: corporateId
+      target:
+        modelField:
+          - fieldName: corporateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: MedicalBookingMedicalBookings
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingMedicalBookingStatus
+  sourceType: MedicalBookingMedicalBookings
+  target:
+    model:
+      name: MedicalBookingMedicalBookingStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserRole
+  sourceType: MedicalBookingMedicalBookings
+  target:
+    model:
+      name: IdentityUserRole
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userRoleId
+      target:
+        modelField:
+          - fieldName: userRoleId
+

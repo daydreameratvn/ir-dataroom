@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteCompanyCorrespondenceApiTypesByValueResponse
+  description: Responses from the
+    'delete_company_correspondence_api_types_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanyCorrespondenceApiTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteCompanyCorrespondenceApiTypesByValueResponse
+    inputTypeName: DeleteCompanyCorrespondenceApiTypesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_company_correspondence_api_types_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteCompanyCorrespondenceApiTypesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteCompanyCorrespondenceApiTypesByValue
+  outputType: DeleteCompanyCorrespondenceApiTypesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: CompanyCorrespondenceApiTypesBoolExp
+      description: Delete permission predicate over the
+        'company_correspondence_api_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_company_correspondence_api_types_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteCompanyCorrespondenceApiTypesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'company_correspondence_api_types' collection
+    using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteCompanyCorrespondenceApiTypesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

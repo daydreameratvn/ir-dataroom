@@ -1,0 +1,217 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseStatuses
+  description: Trạng thái bồi thường
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimCaseStatuses
+    inputTypeName: ClaimCaseStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseStatusesBoolExp
+  operand:
+    object:
+      type: ClaimCaseStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimCaseStatus
+        - relationshipName: claimCases
+        - relationshipName: fwdClaimCaseStatusMappings
+        - relationshipName: fwdDisplayClaimCaseStatuses
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseStatusesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseStatusesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: claimCaseStatus
+  graphql:
+    expressionTypeName: ClaimCaseStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseStatuses
+  objectType: ClaimCaseStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_statuses
+  filterExpressionType: ClaimCaseStatusesBoolExp
+  aggregateExpression: ClaimCaseStatusesAggExp
+  orderByExpression: ClaimCaseStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseStatuses
+      subscription:
+        rootField: claimCaseStatuses
+    selectUniques:
+      - queryRootField: claimCaseStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimCaseStatusesByValue
+    filterInputTypeName: ClaimCaseStatusesFilterInput
+    aggregate:
+      queryRootField: claimCaseStatusesAggregate
+      subscription:
+        rootField: claimCaseStatusesAggregate
+  description: Trạng thái bồi thường
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseStatus
+  sourceType: ClaimCaseStatuses
+  target:
+    model:
+      name: ClaimCaseStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCases
+  sourceType: ClaimCaseStatuses
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: claimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdClaimCaseStatusMappings
+  sourceType: ClaimCaseStatuses
+  target:
+    model:
+      name: FwdClaimCaseStatusMapping
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdClaimCaseStatusMappingAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: ppyStatusCode
+  graphql:
+    aggregateFieldName: fwdClaimCaseStatusMappingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdDisplayClaimCaseStatuses
+  sourceType: ClaimCaseStatuses
+  target:
+    model:
+      name: FwdDisplayClaimCaseStatuses
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: FwdDisplayClaimCaseStatusesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: ppyClaimStatusCode
+  graphql:
+    aggregateFieldName: fwdDisplayClaimCaseStatusesAggregate
+

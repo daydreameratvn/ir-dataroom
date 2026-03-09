@@ -1,0 +1,273 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PoliciesPlansInsuredBenefits
+  description: deprecated
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: planId
+      type: Uuid!
+    - name: planInsuredBenefitId
+      type: Uuid!
+    - name: policyId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid!
+  graphql:
+    typeName: PoliciesPlansInsuredBenefits
+    inputTypeName: PoliciesPlansInsuredBenefitsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policies_plans_insured_benefits
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        planId:
+          column:
+            name: plan_id
+        planInsuredBenefitId:
+          column:
+            name: plan_insured_benefit_id
+        policyId:
+          column:
+            name: policy_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PoliciesPlansInsuredBenefits
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - planId
+          - planInsuredBenefitId
+          - policyId
+          - updatedAt
+          - updatedBy
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PoliciesPlansInsuredBenefitsBoolExp
+  operand:
+    object:
+      type: PoliciesPlansInsuredBenefits
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planInsuredBenefitId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: planInsuredBenefit
+        - relationshipName: policyPlan
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PoliciesPlansInsuredBenefitsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PoliciesPlansInsuredBenefitsAggExp
+  operand:
+    object:
+      aggregatedType: PoliciesPlansInsuredBenefits
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: planInsuredBenefitId
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PoliciesPlansInsuredBenefitsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PoliciesPlansInsuredBenefitsOrderByExp
+  operand:
+    object:
+      orderedType: PoliciesPlansInsuredBenefits
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planInsuredBenefitId
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: planInsuredBenefit
+        - relationshipName: policyPlan
+  graphql:
+    expressionTypeName: PoliciesPlansInsuredBenefitsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PoliciesPlansInsuredBenefits
+  objectType: PoliciesPlansInsuredBenefits
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policies_plans_insured_benefits
+  filterExpressionType: PoliciesPlansInsuredBenefitsBoolExp
+  aggregateExpression: PoliciesPlansInsuredBenefitsAggExp
+  orderByExpression: PoliciesPlansInsuredBenefitsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policiesPlansInsuredBenefits
+      subscription:
+        rootField: policiesPlansInsuredBenefits
+    selectUniques:
+      - queryRootField: policiesPlansInsuredBenefitsByPlanIdPolicyIdPlanInsuredBenefitIdDeletedAtIdx
+        uniqueIdentifier:
+          - deletedAt
+          - planId
+          - planInsuredBenefitId
+          - policyId
+        subscription:
+          rootField: policiesPlansInsuredBenefitsByPlanIdPolicyIdPlanInsuredBenefitIdDeletedAtIdx
+      - queryRootField: policiesPlansInsuredBenefitsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: policiesPlansInsuredBenefitsById
+    filterInputTypeName: PoliciesPlansInsuredBenefitsFilterInput
+    aggregate:
+      queryRootField: policiesPlansInsuredBenefitsAggregate
+      subscription:
+        rootField: policiesPlansInsuredBenefitsAggregate
+  description: deprecated
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PoliciesPlansInsuredBenefits
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planInsuredBenefit
+  sourceType: PoliciesPlansInsuredBenefits
+  target:
+    model:
+      name: PlanInsuredBenefits
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planInsuredBenefitId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyPlan
+  sourceType: PoliciesPlansInsuredBenefits
+  target:
+    model:
+      name: PolicyPlan
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+

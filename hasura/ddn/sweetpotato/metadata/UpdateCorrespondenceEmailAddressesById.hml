@@ -1,0 +1,155 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorrespondenceEmailAddressesByIdUpdateColumns
+  description: Update the columns of the 'correspondence_email_addresses' collection
+  fields:
+    - name: address
+      type: UpdateColumnCorrespondenceEmailAddressesAddress
+      description: Update the 'address' column in the 'correspondence_email_addresses'
+        collection.
+    - name: createdAt
+      type: UpdateColumnCorrespondenceEmailAddressesCreatedAt
+      description: Update the 'created_at' column in the
+        'correspondence_email_addresses' collection.
+    - name: fullAddress
+      type: UpdateColumnCorrespondenceEmailAddressesFullAddress
+      description: Update the 'full_address' column in the
+        'correspondence_email_addresses' collection.
+    - name: id
+      type: UpdateColumnCorrespondenceEmailAddressesId
+      description: Update the 'id' column in the 'correspondence_email_addresses'
+        collection.
+    - name: name
+      type: UpdateColumnCorrespondenceEmailAddressesName
+      description: Update the 'name' column in the 'correspondence_email_addresses'
+        collection.
+    - name: updatedAt
+      type: UpdateColumnCorrespondenceEmailAddressesUpdatedAt
+      description: Update the 'updated_at' column in the
+        'correspondence_email_addresses' collection.
+  graphql:
+    typeName: UpdateCorrespondenceEmailAddressesByIdUpdateColumns
+    inputTypeName: UpdateCorrespondenceEmailAddressesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_correspondence_email_addresses_by_id_update_columns
+      fieldMapping:
+        address:
+          column:
+            name: address
+        createdAt:
+          column:
+            name: created_at
+        fullAddress:
+          column:
+            name: full_address
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorrespondenceEmailAddressesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - address
+          - createdAt
+          - fullAddress
+          - id
+          - name
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCorrespondenceEmailAddressesByIdResponse
+  description: Responses from the 'update_correspondence_email_addresses_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceEmailAddresses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCorrespondenceEmailAddressesByIdResponse
+    inputTypeName: UpdateCorrespondenceEmailAddressesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_correspondence_email_addresses_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCorrespondenceEmailAddressesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCorrespondenceEmailAddressesById
+  outputType: UpdateCorrespondenceEmailAddressesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: CorrespondenceEmailAddressesBoolExp
+      description: Update permission post-condition predicate over the
+        'correspondence_email_addresses' collection
+    - name: preCheck
+      type: CorrespondenceEmailAddressesBoolExp
+      description: Update permission pre-condition predicate over the
+        'correspondence_email_addresses' collection
+    - name: updateColumns
+      type: UpdateCorrespondenceEmailAddressesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_correspondence_email_addresses_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCorrespondenceEmailAddressesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'correspondence_email_addresses' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCorrespondenceEmailAddressesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

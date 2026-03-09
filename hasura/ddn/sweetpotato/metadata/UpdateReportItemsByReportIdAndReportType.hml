@@ -1,0 +1,153 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateReportItemsByReportIdAndReportTypeUpdateColumns
+  description: Update the columns of the 'report_items' collection
+  fields:
+    - name: createdAt
+      type: UpdateColumnReportItemsCreatedAt
+      description: Update the 'created_at' column in the 'report_items' collection.
+    - name: deletedAt
+      type: UpdateColumnReportItemsDeletedAt
+      description: Update the 'deleted_at' column in the 'report_items' collection.
+    - name: id
+      type: UpdateColumnReportItemsId
+      description: Update the 'id' column in the 'report_items' collection.
+    - name: reportId
+      type: UpdateColumnReportItemsReportId
+      description: Update the 'report_id' column in the 'report_items' collection.
+    - name: reportType
+      type: UpdateColumnReportItemsReportType
+      description: Update the 'report_type' column in the 'report_items' collection.
+    - name: updatedAt
+      type: UpdateColumnReportItemsUpdatedAt
+      description: Update the 'updated_at' column in the 'report_items' collection.
+  graphql:
+    typeName: UpdateReportItemsByReportIdAndReportTypeUpdateColumns
+    inputTypeName: UpdateReportItemsByReportIdAndReportTypeUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_report_items_by_report_id_and_report_type_update_columns
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        reportId:
+          column:
+            name: report_id
+        reportType:
+          column:
+            name: report_type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateReportItemsByReportIdAndReportTypeUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - reportId
+          - reportType
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateReportItemsByReportIdAndReportTypeResponse
+  description: Responses from the
+    'update_report_items_by_report_id_and_report_type' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ReportItems!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateReportItemsByReportIdAndReportTypeResponse
+    inputTypeName: UpdateReportItemsByReportIdAndReportTypeResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_report_items_by_report_id_and_report_type_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateReportItemsByReportIdAndReportTypeResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateReportItemsByReportIdAndReportType
+  outputType: UpdateReportItemsByReportIdAndReportTypeResponse!
+  arguments:
+    - name: keyReportId
+      type: Uuid!
+    - name: keyReportType
+      type: String_1!
+    - name: postCheck
+      type: ReportItemsBoolExp
+      description: Update permission post-condition predicate over the 'report_items'
+        collection
+    - name: preCheck
+      type: ReportItemsBoolExp
+      description: Update permission pre-condition predicate over the 'report_items'
+        collection
+    - name: updateColumns
+      type: UpdateReportItemsByReportIdAndReportTypeUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_report_items_by_report_id_and_report_type
+    argumentMapping:
+      keyReportId: key_report_id
+      keyReportType: key_report_type
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateReportItemsByReportIdAndReportType
+    rootFieldKind: Mutation
+  description: Update any row on the 'report_items' collection using the
+    'report_id' and 'report_type' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateReportItemsByReportIdAndReportType
+  permissions:
+    - role: admin
+      allowExecution: true
+

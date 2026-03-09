@@ -1,0 +1,114 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPtiClaimCasesObject
+  fields:
+    - name: benefitType
+      type: String_1
+    - name: claimCaseId
+      type: Uuid!
+    - name: diseaseGroup
+      type: String_1
+  graphql:
+    typeName: InsertPtiClaimCasesObject
+    inputTypeName: InsertPtiClaimCasesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_pti_claim_cases_object
+      fieldMapping:
+        benefitType:
+          column:
+            name: benefit_type
+        claimCaseId:
+          column:
+            name: claim_case_id
+        diseaseGroup:
+          column:
+            name: disease_group
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPtiClaimCasesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - benefitType
+          - claimCaseId
+          - diseaseGroup
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPtiClaimCasesResponse
+  description: Responses from the 'insert_pti_claim_cases' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PtiClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPtiClaimCasesResponse
+    inputTypeName: InsertPtiClaimCasesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_pti_claim_cases_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPtiClaimCasesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPtiClaimCases
+  outputType: InsertPtiClaimCasesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPtiClaimCasesObject!]!"
+    - name: postCheck
+      type: PtiClaimCasesBoolExp
+      description: Insert permission predicate over the 'pti_claim_cases' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_pti_claim_cases
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPtiClaimCases
+    rootFieldKind: Mutation
+  description: Insert into the pti_claim_cases table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPtiClaimCases
+  permissions:
+    - role: admin
+      allowExecution: true
+

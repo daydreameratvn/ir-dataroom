@@ -1,0 +1,229 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimDocumentsObject
+  fields:
+    - name: assessedClaimPendingCodeIds
+      type: "[Uuid]"
+    - name: claimCaseId
+      type: Uuid!
+    - name: claimDocumentId
+      type: Uuid
+    - name: claimPendingCodeId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: displayOrder
+      type: Int32
+    - name: emailId
+      type: Uuid
+    - name: isEstimatedDocs
+      type: Boolean_1
+    - name: isSensitive
+      type: Boolean_1
+    - name: isSupplemented
+      type: Boolean_1
+    - name: ocrPaperId
+      type: Uuid
+    - name: ocrType
+      type: String_1
+    - name: rawOcrData
+      type: Json
+      description: "@depreciated use file.raw_ocr_data for broader usage"
+    - name: source
+      type: String_1
+    - name: tenantId
+      type: Uuid
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: uploaderId
+      type: Uuid
+    - name: userName
+      type: String_1
+    - name: userRoleId
+      type: Uuid
+  graphql:
+    typeName: InsertClaimDocumentsObject_1
+    inputTypeName: InsertClaimDocumentsObjectInput_1
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_documents_object
+      fieldMapping:
+        assessedClaimPendingCodeIds:
+          column:
+            name: assessed_claim_pending_code_ids
+        claimCaseId:
+          column:
+            name: claim_case_id
+        claimDocumentId:
+          column:
+            name: claim_document_id
+        claimPendingCodeId:
+          column:
+            name: claim_pending_code_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        displayOrder:
+          column:
+            name: display_order
+        emailId:
+          column:
+            name: email_id
+        isEstimatedDocs:
+          column:
+            name: is_estimated_docs
+        isSensitive:
+          column:
+            name: is_sensitive
+        isSupplemented:
+          column:
+            name: is_supplemented
+        ocrPaperId:
+          column:
+            name: ocr_paper_id
+        ocrType:
+          column:
+            name: ocr_type
+        rawOcrData:
+          column:
+            name: raw_ocr_data
+        source:
+          column:
+            name: source
+        tenantId:
+          column:
+            name: tenant_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        uploaderId:
+          column:
+            name: uploader_id
+        userName:
+          column:
+            name: user_name
+        userRoleId:
+          column:
+            name: user_role_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimDocumentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - assessedClaimPendingCodeIds
+          - claimCaseId
+          - claimDocumentId
+          - claimPendingCodeId
+          - createdAt
+          - deletedAt
+          - deletedBy
+          - displayOrder
+          - emailId
+          - isEstimatedDocs
+          - isSensitive
+          - isSupplemented
+          - ocrPaperId
+          - ocrType
+          - rawOcrData
+          - source
+          - tenantId
+          - type
+          - updatedAt
+          - uploaderId
+          - userName
+          - userRoleId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimDocumentsResponse
+  description: Responses from the 'insert_claim_documents' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimDocuments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimDocumentsResponse_1
+    inputTypeName: InsertClaimDocumentsResponseInput_1
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_documents_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimDocumentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimDocuments
+  outputType: InsertClaimDocumentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimDocumentsObject!]!"
+    - name: postCheck
+      type: ClaimDocumentsBoolExp
+      description: Insert permission predicate over the 'claim_documents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_documents
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimDocuments_1
+    rootFieldKind: Mutation
+  description: Insert into the claim_documents table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimDocuments
+  permissions:
+    - role: admin
+      allowExecution: true
+

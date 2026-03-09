@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteIdentityUserRoleByUserRoleIdResponse
+  description: Responses from the 'delete_identity_user_role_by_user_role_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[IdentityUserRole!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteIdentityUserRoleByUserRoleIdResponse
+    inputTypeName: DeleteIdentityUserRoleByUserRoleIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_identity_user_role_by_user_role_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteIdentityUserRoleByUserRoleIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteIdentityUserRoleByUserRoleId
+  outputType: DeleteIdentityUserRoleByUserRoleIdResponse!
+  arguments:
+    - name: keyUserRoleId
+      type: Uuid!
+    - name: preCheck
+      type: IdentityUserRoleBoolExp
+      description: Delete permission predicate over the 'identity_user_role' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_identity_user_role_by_user_role_id
+    argumentMapping:
+      keyUserRoleId: key_user_role_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteIdentityUserRoleByUserRoleId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'identity_user_role' collection using the
+    'user_role_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteIdentityUserRoleByUserRoleId
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,300 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CustomSettingSettings
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: fallbackPriority
+      type: Json
+    - name: id
+      type: Uuid!
+    - name: module
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: overridePriority
+      type: Json
+    - name: test5
+      type: Int32
+    - name: updatedAt
+      type: Timestamptz!
+    - name: valueType
+      type: String_1!
+  graphql:
+    typeName: CustomSettingSettings
+    inputTypeName: CustomSettingSettingsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: custom_setting_settings
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        fallbackPriority:
+          column:
+            name: fallback_priority
+        id:
+          column:
+            name: id
+        module:
+          column:
+            name: module
+        name:
+          column:
+            name: name
+        overridePriority:
+          column:
+            name: override_priority
+        test5:
+          column:
+            name: test5
+        updatedAt:
+          column:
+            name: updated_at
+        valueType:
+          column:
+            name: value_type
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CustomSettingSettings
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - fallbackPriority
+          - id
+          - module
+          - name
+          - overridePriority
+          - test5
+          - updatedAt
+          - valueType
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CustomSettingSettingsBoolExp
+  operand:
+    object:
+      type: CustomSettingSettings
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: fallbackPriority
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: module
+          booleanExpressionType: TextBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: overridePriority
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: test5
+          booleanExpressionType: Int4BoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: valueType
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: customSettingSettingApplications
+        - relationshipName: customSettingModule
+        - relationshipName: customSettingSettingName
+        - relationshipName: customSettingValueType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CustomSettingSettingsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CustomSettingSettingsAggExp
+  operand:
+    object:
+      aggregatedType: CustomSettingSettings
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: fallbackPriority
+          aggregateExpression: JsonbAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: module
+          aggregateExpression: TextAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: overridePriority
+          aggregateExpression: JsonbAggExp
+        - fieldName: test5
+          aggregateExpression: Int4AggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: valueType
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CustomSettingSettingsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CustomSettingSettingsOrderByExp
+  operand:
+    object:
+      orderedType: CustomSettingSettings
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: fallbackPriority
+          orderByExpression: JsonOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: module
+          orderByExpression: String1OrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: overridePriority
+          orderByExpression: JsonOrderByExp
+        - fieldName: test5
+          orderByExpression: Int32OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: valueType
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: customSettingModule
+        - relationshipName: customSettingSettingName
+        - relationshipName: customSettingValueType
+  graphql:
+    expressionTypeName: CustomSettingSettingsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CustomSettingSettings
+  objectType: CustomSettingSettings
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: custom_setting_settings
+  filterExpressionType: CustomSettingSettingsBoolExp
+  aggregateExpression: CustomSettingSettingsAggExp
+  orderByExpression: CustomSettingSettingsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: customSettingSettings
+      subscription:
+        rootField: customSettingSettings
+    selectUniques:
+      - queryRootField: customSettingSettingsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: customSettingSettingsById
+    filterInputTypeName: CustomSettingSettingsFilterInput
+    aggregate:
+      queryRootField: customSettingSettingsAggregate
+      subscription:
+        rootField: customSettingSettingsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CustomSettingSettings
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customSettingSettingApplications
+  sourceType: CustomSettingSettings
+  target:
+    model:
+      name: CustomSettingSettingApplications
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CustomSettingSettingApplicationsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: settingId
+  graphql:
+    aggregateFieldName: customSettingSettingApplicationsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customSettingModule
+  sourceType: CustomSettingSettings
+  target:
+    model:
+      name: CustomSettingModules
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: module
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customSettingSettingName
+  sourceType: CustomSettingSettings
+  target:
+    model:
+      name: CustomSettingSettingNames
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: name
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customSettingValueType
+  sourceType: CustomSettingSettings
+  target:
+    model:
+      name: CustomSettingValueTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: valueType
+      target:
+        modelField:
+          - fieldName: value
+

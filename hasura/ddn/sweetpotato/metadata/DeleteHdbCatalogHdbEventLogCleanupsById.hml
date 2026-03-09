@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteHdbCatalogHdbEventLogCleanupsByIdResponse
+  description: Responses from the
+    'delete_hdb_catalog_hdb_event_log_cleanups_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HdbCatalogHdbEventLogCleanups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteHdbCatalogHdbEventLogCleanupsByIdResponse
+    inputTypeName: DeleteHdbCatalogHdbEventLogCleanupsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_hdb_catalog_hdb_event_log_cleanups_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteHdbCatalogHdbEventLogCleanupsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteHdbCatalogHdbEventLogCleanupsById
+  outputType: DeleteHdbCatalogHdbEventLogCleanupsByIdResponse!
+  arguments:
+    - name: keyId
+      type: String_1!
+    - name: preCheck
+      type: HdbCatalogHdbEventLogCleanupsBoolExp
+      description: Delete permission predicate over the
+        'hdb_catalog_hdb_event_log_cleanups' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_hdb_catalog_hdb_event_log_cleanups_by_id
+    argumentMapping:
+      keyId: key_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteHdbCatalogHdbEventLogCleanupsById
+    rootFieldKind: Mutation
+  description: Delete any row on the 'hdb_catalog_hdb_event_log_cleanups'
+    collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteHdbCatalogHdbEventLogCleanupsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

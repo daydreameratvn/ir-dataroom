@@ -1,0 +1,121 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdDisplayClaimCaseStatusesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: ppyClaimStatusCode
+      type: String_1!
+    - name: text
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertFwdDisplayClaimCaseStatusesObject
+    inputTypeName: InsertFwdDisplayClaimCaseStatusesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_display_claim_case_statuses_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        ppyClaimStatusCode:
+          column:
+            name: ppy_claim_status_code
+        text:
+          column:
+            name: text
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdDisplayClaimCaseStatusesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - ppyClaimStatusCode
+          - text
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdDisplayClaimCaseStatusesResponse
+  description: Responses from the 'insert_fwd_display_claim_case_statuses' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdDisplayClaimCaseStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdDisplayClaimCaseStatusesResponse
+    inputTypeName: InsertFwdDisplayClaimCaseStatusesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_display_claim_case_statuses_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdDisplayClaimCaseStatusesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdDisplayClaimCaseStatuses
+  outputType: InsertFwdDisplayClaimCaseStatusesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdDisplayClaimCaseStatusesObject!]!"
+    - name: postCheck
+      type: FwdDisplayClaimCaseStatusesBoolExp
+      description: Insert permission predicate over the
+        'fwd_display_claim_case_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_display_claim_case_statuses
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdDisplayClaimCaseStatuses
+    rootFieldKind: Mutation
+  description: Insert into the fwd_display_claim_case_statuses table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdDisplayClaimCaseStatuses
+  permissions:
+    - role: admin
+      allowExecution: true
+

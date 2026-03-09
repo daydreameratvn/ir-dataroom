@@ -1,0 +1,481 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PayoutActionLogs
+  fields:
+    - name: action
+      type: String_1!
+    - name: actorId
+      type: Uuid!
+    - name: antiMoneyLaunderingId
+      type: Uuid
+    - name: claimCaseId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: customCode
+      type: String_1
+    - name: customData
+      type: Json!
+    - name: id
+      type: Uuid!
+    - name: message
+      type: String_1
+    - name: paymentRequestId
+      type: Uuid
+    - name: paymentRequestItemId
+      type: Uuid
+    - name: policyId
+      type: Uuid
+    - name: refCode
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: transactionId
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PayoutActionLogs
+    inputTypeName: PayoutActionLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: payout_action_logs
+      fieldMapping:
+        action:
+          column:
+            name: action
+        actorId:
+          column:
+            name: actor_id
+        antiMoneyLaunderingId:
+          column:
+            name: anti_money_laundering_id
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        customCode:
+          column:
+            name: custom_code
+        customData:
+          column:
+            name: custom_data
+        id:
+          column:
+            name: id
+        message:
+          column:
+            name: message
+        paymentRequestId:
+          column:
+            name: payment_request_id
+        paymentRequestItemId:
+          column:
+            name: payment_request_item_id
+        policyId:
+          column:
+            name: policy_id
+        refCode:
+          column:
+            name: ref_code
+        status:
+          column:
+            name: status
+        transactionId:
+          column:
+            name: transaction_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PayoutActionLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - actorId
+          - antiMoneyLaunderingId
+          - claimCaseId
+          - createdAt
+          - customCode
+          - customData
+          - id
+          - message
+          - paymentRequestId
+          - paymentRequestItemId
+          - policyId
+          - refCode
+          - status
+          - transactionId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PayoutActionLogsBoolExp
+  operand:
+    object:
+      type: PayoutActionLogs
+      comparableFields:
+        - fieldName: action
+          booleanExpressionType: TextBoolExp
+        - fieldName: actorId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: antiMoneyLaunderingId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: customCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: customData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: message
+          booleanExpressionType: TextBoolExp
+        - fieldName: paymentRequestId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paymentRequestItemId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: policyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: refCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: transactionId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: payoutActionLogAction
+        - relationshipName: identityUser
+        - relationshipName: payoutAntiMoneyLaundering
+        - relationshipName: claimCase
+        - relationshipName: payoutPaymentRequest
+        - relationshipName: payoutPaymentRequestItem
+        - relationshipName: policy
+        - relationshipName: payoutActionLogStatus
+        - relationshipName: payoutTransaction
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PayoutActionLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PayoutActionLogsAggExp
+  operand:
+    object:
+      aggregatedType: PayoutActionLogs
+      aggregatableFields:
+        - fieldName: action
+          aggregateExpression: TextAggExp
+        - fieldName: actorId
+          aggregateExpression: UuidAggExp
+        - fieldName: antiMoneyLaunderingId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: customCode
+          aggregateExpression: TextAggExp
+        - fieldName: customData
+          aggregateExpression: JsonbAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: message
+          aggregateExpression: TextAggExp
+        - fieldName: paymentRequestId
+          aggregateExpression: UuidAggExp
+        - fieldName: paymentRequestItemId
+          aggregateExpression: UuidAggExp
+        - fieldName: policyId
+          aggregateExpression: UuidAggExp
+        - fieldName: refCode
+          aggregateExpression: TextAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: transactionId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PayoutActionLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PayoutActionLogsOrderByExp
+  operand:
+    object:
+      orderedType: PayoutActionLogs
+      orderableFields:
+        - fieldName: action
+          orderByExpression: String1OrderByExp
+        - fieldName: actorId
+          orderByExpression: UuidOrderByExp
+        - fieldName: antiMoneyLaunderingId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: customCode
+          orderByExpression: String1OrderByExp
+        - fieldName: customData
+          orderByExpression: JsonOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: message
+          orderByExpression: String1OrderByExp
+        - fieldName: paymentRequestId
+          orderByExpression: UuidOrderByExp
+        - fieldName: paymentRequestItemId
+          orderByExpression: UuidOrderByExp
+        - fieldName: policyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: refCode
+          orderByExpression: String1OrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: transactionId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: payoutActionLogAction
+        - relationshipName: identityUser
+        - relationshipName: payoutAntiMoneyLaundering
+        - relationshipName: claimCase
+        - relationshipName: payoutPaymentRequest
+        - relationshipName: payoutPaymentRequestItem
+        - relationshipName: policy
+        - relationshipName: payoutActionLogStatus
+        - relationshipName: payoutTransaction
+  graphql:
+    expressionTypeName: PayoutActionLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PayoutActionLogs
+  objectType: PayoutActionLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: payout_action_logs
+  filterExpressionType: PayoutActionLogsBoolExp
+  aggregateExpression: PayoutActionLogsAggExp
+  orderByExpression: PayoutActionLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: payoutActionLogs
+      subscription:
+        rootField: payoutActionLogs
+    selectUniques:
+      - queryRootField: payoutActionLogsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: payoutActionLogsById
+    filterInputTypeName: PayoutActionLogsFilterInput
+    aggregate:
+      queryRootField: payoutActionLogsAggregate
+      subscription:
+        rootField: payoutActionLogsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PayoutActionLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutActionLogAction
+  sourceType: PayoutActionLogs
+  target:
+    model:
+      name: PayoutActionLogActions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: action
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: PayoutActionLogs
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: actorId
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutAntiMoneyLaundering
+  sourceType: PayoutActionLogs
+  target:
+    model:
+      name: PayoutAntiMoneyLaunderings
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: antiMoneyLaunderingId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: PayoutActionLogs
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequest
+  sourceType: PayoutActionLogs
+  target:
+    model:
+      name: PayoutPaymentRequests
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentRequestId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentRequestItem
+  sourceType: PayoutActionLogs
+  target:
+    model:
+      name: PayoutPaymentRequestItems
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentRequestItemId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policy
+  sourceType: PayoutActionLogs
+  target:
+    model:
+      name: Policies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: policyId
+      target:
+        modelField:
+          - fieldName: policyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutActionLogStatus
+  sourceType: PayoutActionLogs
+  target:
+    model:
+      name: PayoutActionLogStatus
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutTransaction
+  sourceType: PayoutActionLogs
+  target:
+    model:
+      name: PayoutTransactions
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: transactionId
+      target:
+        modelField:
+          - fieldName: id
+

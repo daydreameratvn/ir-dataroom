@@ -1,0 +1,241 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertKumquatApiLogsObject
+  fields:
+    - name: clientIp
+      type: String_1
+    - name: completedAt
+      type: Timestamptz
+    - name: createdAt
+      type: Timestamptz
+    - name: durationMs
+      type: Int32
+      description: Request processing time in milliseconds
+    - name: environment
+      type: String_1
+    - name: errorCode
+      type: String_1
+    - name: errorMessage
+      type: String_1
+    - name: errorStack
+      type: String_1
+      description: Stack trace - only populated in non-production environments
+    - name: headers
+      type: Json
+    - name: id
+      type: Uuid
+    - name: method
+      type: String_1!
+    - name: oauthClientId
+      type: Uuid
+    - name: partnerCode
+      type: String_1
+      description: Denormalized from oauth_clients for fast filtering
+    - name: path
+      type: String_1!
+    - name: queryParams
+      type: Json
+    - name: requestBodyDecrypted
+      type: Json
+      description: Decrypted request payload for debugging
+    - name: requestBodyEncrypted
+      type: Json
+      description: Original encrypted request envelope as received
+    - name: requestId
+      type: String_1!
+      description: Unique trace ID for correlating logs across services
+    - name: responseBody
+      type: Json
+      description: Response data before encryption
+    - name: responseStatus
+      type: Int32!
+    - name: serviceVersion
+      type: String_1
+    - name: startedAt
+      type: Timestamptz!
+    - name: userAgent
+      type: String_1
+  graphql:
+    typeName: InsertKumquatApiLogsObject
+    inputTypeName: InsertKumquatApiLogsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_kumquat_api_logs_object
+      fieldMapping:
+        clientIp:
+          column:
+            name: client_ip
+        completedAt:
+          column:
+            name: completed_at
+        createdAt:
+          column:
+            name: created_at
+        durationMs:
+          column:
+            name: duration_ms
+        environment:
+          column:
+            name: environment
+        errorCode:
+          column:
+            name: error_code
+        errorMessage:
+          column:
+            name: error_message
+        errorStack:
+          column:
+            name: error_stack
+        headers:
+          column:
+            name: headers
+        id:
+          column:
+            name: id
+        method:
+          column:
+            name: method
+        oauthClientId:
+          column:
+            name: oauth_client_id
+        partnerCode:
+          column:
+            name: partner_code
+        path:
+          column:
+            name: path
+        queryParams:
+          column:
+            name: query_params
+        requestBodyDecrypted:
+          column:
+            name: request_body_decrypted
+        requestBodyEncrypted:
+          column:
+            name: request_body_encrypted
+        requestId:
+          column:
+            name: request_id
+        responseBody:
+          column:
+            name: response_body
+        responseStatus:
+          column:
+            name: response_status
+        serviceVersion:
+          column:
+            name: service_version
+        startedAt:
+          column:
+            name: started_at
+        userAgent:
+          column:
+            name: user_agent
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertKumquatApiLogsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - clientIp
+          - completedAt
+          - createdAt
+          - durationMs
+          - environment
+          - errorCode
+          - errorMessage
+          - errorStack
+          - headers
+          - id
+          - method
+          - oauthClientId
+          - partnerCode
+          - path
+          - queryParams
+          - requestBodyDecrypted
+          - requestBodyEncrypted
+          - requestId
+          - responseBody
+          - responseStatus
+          - serviceVersion
+          - startedAt
+          - userAgent
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertKumquatApiLogsResponse
+  description: Responses from the 'insert_kumquat_api_logs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[KumquatApiLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertKumquatApiLogsResponse
+    inputTypeName: InsertKumquatApiLogsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_kumquat_api_logs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertKumquatApiLogsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertKumquatApiLogs
+  outputType: InsertKumquatApiLogsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertKumquatApiLogsObject!]!"
+    - name: postCheck
+      type: KumquatApiLogsBoolExp
+      description: Insert permission predicate over the 'kumquat_api_logs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_kumquat_api_logs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertKumquatApiLogs
+    rootFieldKind: Mutation
+  description: Insert into the kumquat_api_logs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertKumquatApiLogs
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,132 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMbalInsuredPersonsObject
+  fields:
+    - name: address
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: job
+      type: String_1!
+    - name: occupationClass
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertMbalInsuredPersonsObject
+    inputTypeName: InsertMbalInsuredPersonsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mbal_insured_persons_object
+      fieldMapping:
+        address:
+          column:
+            name: address
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        job:
+          column:
+            name: job
+        occupationClass:
+          column:
+            name: occupation_class
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMbalInsuredPersonsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - address
+          - createdAt
+          - id
+          - job
+          - occupationClass
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMbalInsuredPersonsResponse
+  description: Responses from the 'insert_mbal_insured_persons' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MbalInsuredPersons!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMbalInsuredPersonsResponse
+    inputTypeName: InsertMbalInsuredPersonsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mbal_insured_persons_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMbalInsuredPersonsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMbalInsuredPersons
+  outputType: InsertMbalInsuredPersonsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMbalInsuredPersonsObject!]!"
+    - name: postCheck
+      type: MbalInsuredPersonsBoolExp
+      description: Insert permission predicate over the 'mbal_insured_persons' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_mbal_insured_persons
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMbalInsuredPersons
+    rootFieldKind: Mutation
+  description: Insert into the mbal_insured_persons table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMbalInsuredPersons
+  permissions:
+    - role: admin
+      allowExecution: true
+

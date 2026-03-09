@@ -1,0 +1,163 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceTemplateByLocalesObject
+  fields:
+    - name: content
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: locale
+      type: String_1
+    - name: mjmlContent
+      type: String_1
+    - name: reactEmailContent
+      type: String_1
+    - name: subject
+      type: String_1
+    - name: templateId
+      type: Uuid!
+    - name: type
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertCorrespondenceTemplateByLocalesObject
+    inputTypeName: InsertCorrespondenceTemplateByLocalesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_template_by_locales_object
+      fieldMapping:
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        locale:
+          column:
+            name: locale
+        mjmlContent:
+          column:
+            name: mjml_content
+        reactEmailContent:
+          column:
+            name: react_email_content
+        subject:
+          column:
+            name: subject
+        templateId:
+          column:
+            name: template_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceTemplateByLocalesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - content
+          - createdAt
+          - deletedAt
+          - id
+          - locale
+          - mjmlContent
+          - reactEmailContent
+          - subject
+          - templateId
+          - type
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCorrespondenceTemplateByLocalesResponse
+  description: Responses from the 'insert_correspondence_template_by_locales' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CorrespondenceTemplateByLocales!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCorrespondenceTemplateByLocalesResponse
+    inputTypeName: InsertCorrespondenceTemplateByLocalesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_correspondence_template_by_locales_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCorrespondenceTemplateByLocalesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCorrespondenceTemplateByLocales
+  outputType: InsertCorrespondenceTemplateByLocalesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCorrespondenceTemplateByLocalesObject!]!"
+    - name: postCheck
+      type: CorrespondenceTemplateByLocalesBoolExp
+      description: Insert permission predicate over the
+        'correspondence_template_by_locales' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_correspondence_template_by_locales
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCorrespondenceTemplateByLocales
+    rootFieldKind: Mutation
+  description: Insert into the correspondence_template_by_locales table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCorrespondenceTemplateByLocales
+  permissions:
+    - role: admin
+      allowExecution: true
+

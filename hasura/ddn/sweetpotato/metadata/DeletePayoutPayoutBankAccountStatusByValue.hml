@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutPayoutBankAccountStatusByValueResponse
+  description: Responses from the
+    'delete_payout_payout_bank_account_status_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutPayoutBankAccountStatus!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutPayoutBankAccountStatusByValueResponse
+    inputTypeName: DeletePayoutPayoutBankAccountStatusByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_payout_bank_account_status_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutPayoutBankAccountStatusByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutPayoutBankAccountStatusByValue
+  outputType: DeletePayoutPayoutBankAccountStatusByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: PayoutPayoutBankAccountStatusBoolExp
+      description: Delete permission predicate over the
+        'payout_payout_bank_account_status' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_payout_bank_account_status_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutPayoutBankAccountStatusByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_payout_bank_account_status'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutPayoutBankAccountStatusByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

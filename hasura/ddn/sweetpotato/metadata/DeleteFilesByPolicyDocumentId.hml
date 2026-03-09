@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteFilesByPolicyDocumentIdResponse
+  description: Responses from the 'delete_files_by_policy_document_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[Files!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteFilesByPolicyDocumentIdResponse
+    inputTypeName: DeleteFilesByPolicyDocumentIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_files_by_policy_document_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteFilesByPolicyDocumentIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteFilesByPolicyDocumentId
+  outputType: DeleteFilesByPolicyDocumentIdResponse!
+  arguments:
+    - name: keyPolicyDocumentId
+      type: Uuid
+    - name: preCheck
+      type: FilesBoolExp
+      description: Delete permission predicate over the 'files' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_files_by_policy_document_id
+    argumentMapping:
+      keyPolicyDocumentId: key_policy_document_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteFilesByPolicyDocumentId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'files' collection using the 'policy_document_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteFilesByPolicyDocumentId
+  permissions:
+    - role: admin
+      allowExecution: true
+

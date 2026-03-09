@@ -1,0 +1,365 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdSyncLogs
+  fields:
+    - name: actorId
+      type: Uuid
+    - name: claimCaseId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: data
+      type: Json!
+    - name: deletedAt
+      type: Timestamptz
+    - name: direction
+      type: String_1!
+    - name: fileId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: isSuccess
+      type: Boolean_1!
+    - name: requestId
+      type: Uuid
+    - name: responseData
+      type: Json!
+    - name: type
+      type: String_1!
+    - name: willAutoDecision
+      type: Boolean_1!
+  graphql:
+    typeName: FwdSyncLogs
+    inputTypeName: FwdSyncLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_sync_logs
+      fieldMapping:
+        actorId:
+          column:
+            name: actor_id
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        data:
+          column:
+            name: data
+        deletedAt:
+          column:
+            name: deleted_at
+        direction:
+          column:
+            name: direction
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        isSuccess:
+          column:
+            name: is_success
+        requestId:
+          column:
+            name: request_id
+        responseData:
+          column:
+            name: response_data
+        type:
+          column:
+            name: type
+        willAutoDecision:
+          column:
+            name: will_auto_decision
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdSyncLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actorId
+          - claimCaseId
+          - createdAt
+          - data
+          - deletedAt
+          - direction
+          - fileId
+          - id
+          - isSuccess
+          - requestId
+          - responseData
+          - type
+          - willAutoDecision
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdSyncLogsBoolExp
+  operand:
+    object:
+      type: FwdSyncLogs
+      comparableFields:
+        - fieldName: actorId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: data
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: direction
+          booleanExpressionType: TextBoolExp
+        - fieldName: fileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isSuccess
+          booleanExpressionType: BoolBoolExp
+        - fieldName: requestId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: responseData
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: willAutoDecision
+          booleanExpressionType: BoolBoolExp
+      comparableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: fwdOriginalClaimCase
+        - relationshipName: fwdSyncDirection
+        - relationshipName: file
+        - relationshipName: fwdSyncType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdSyncLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdSyncLogsAggExp
+  operand:
+    object:
+      aggregatedType: FwdSyncLogs
+      aggregatableFields:
+        - fieldName: actorId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: data
+          aggregateExpression: JsonbAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: direction
+          aggregateExpression: TextAggExp
+        - fieldName: fileId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isSuccess
+          aggregateExpression: BoolAggExp
+        - fieldName: requestId
+          aggregateExpression: UuidAggExp
+        - fieldName: responseData
+          aggregateExpression: JsonbAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: willAutoDecision
+          aggregateExpression: BoolAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdSyncLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdSyncLogsOrderByExp
+  operand:
+    object:
+      orderedType: FwdSyncLogs
+      orderableFields:
+        - fieldName: actorId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: data
+          orderByExpression: JsonOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: direction
+          orderByExpression: String1OrderByExp
+        - fieldName: fileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isSuccess
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: requestId
+          orderByExpression: UuidOrderByExp
+        - fieldName: responseData
+          orderByExpression: JsonOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: willAutoDecision
+          orderByExpression: Boolean1OrderByExp
+      orderableRelationships:
+        - relationshipName: identityUser
+        - relationshipName: fwdOriginalClaimCase
+        - relationshipName: fwdSyncDirection
+        - relationshipName: file
+        - relationshipName: fwdSyncType
+  graphql:
+    expressionTypeName: FwdSyncLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdSyncLogs
+  objectType: FwdSyncLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_sync_logs
+  filterExpressionType: FwdSyncLogsBoolExp
+  aggregateExpression: FwdSyncLogsAggExp
+  orderByExpression: FwdSyncLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdSyncLogs
+      subscription:
+        rootField: fwdSyncLogs
+    selectUniques:
+      - queryRootField: fwdSyncLogsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: fwdSyncLogsById
+    filterInputTypeName: FwdSyncLogsFilterInput
+    aggregate:
+      queryRootField: fwdSyncLogsAggregate
+      subscription:
+        rootField: fwdSyncLogsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdSyncLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: FwdSyncLogs
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: actorId
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdOriginalClaimCase
+  sourceType: FwdSyncLogs
+  target:
+    model:
+      name: FwdOriginalClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdSyncDirection
+  sourceType: FwdSyncLogs
+  target:
+    model:
+      name: FwdSyncDirections
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: direction
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: file
+  sourceType: FwdSyncLogs
+  target:
+    model:
+      name: Files
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: fwdSyncType
+  sourceType: FwdSyncLogs
+  target:
+    model:
+      name: FwdSyncTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

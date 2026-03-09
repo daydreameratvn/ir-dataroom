@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuditLogsDataHistoriesObject
+  fields:
+    - name: browserAgent
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: ip
+      type: String_1
+    - name: recordId
+      type: Uuid!
+    - name: table
+      type: String_1!
+    - name: tenantId
+      type: Uuid!
+    - name: token
+      type: String_1!
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: InsertAuditLogsDataHistoriesObject
+    inputTypeName: InsertAuditLogsDataHistoriesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_audit_logs_data_histories_object
+      fieldMapping:
+        browserAgent:
+          column:
+            name: browser_agent
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        ip:
+          column:
+            name: ip
+        recordId:
+          column:
+            name: record_id
+        table:
+          column:
+            name: table
+        tenantId:
+          column:
+            name: tenant_id
+        token:
+          column:
+            name: token
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuditLogsDataHistoriesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - browserAgent
+          - createdAt
+          - id
+          - ip
+          - recordId
+          - table
+          - tenantId
+          - token
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuditLogsDataHistoriesResponse
+  description: Responses from the 'insert_audit_logs_data_histories' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuditLogsDataHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertAuditLogsDataHistoriesResponse
+    inputTypeName: InsertAuditLogsDataHistoriesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_audit_logs_data_histories_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuditLogsDataHistoriesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertAuditLogsDataHistories
+  outputType: InsertAuditLogsDataHistoriesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertAuditLogsDataHistoriesObject!]!"
+    - name: postCheck
+      type: AuditLogsDataHistoriesBoolExp
+      description: Insert permission predicate over the 'audit_logs_data_histories'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_audit_logs_data_histories
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertAuditLogsDataHistories
+    rootFieldKind: Mutation
+  description: Insert into the audit_logs_data_histories table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertAuditLogsDataHistories
+  permissions:
+    - role: admin
+      allowExecution: true
+

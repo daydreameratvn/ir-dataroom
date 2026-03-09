@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteMedicalBookingBookingScheduleStatusesByValueResponse
+  description: Responses from the
+    'delete_medical_booking_booking_schedule_statuses_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingBookingScheduleStatuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteMedicalBookingBookingScheduleStatusesByValueResponse
+    inputTypeName: DeleteMedicalBookingBookingScheduleStatusesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_medical_booking_booking_schedule_statuses_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteMedicalBookingBookingScheduleStatusesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteMedicalBookingBookingScheduleStatusesByValue
+  outputType: DeleteMedicalBookingBookingScheduleStatusesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: MedicalBookingBookingScheduleStatusesBoolExp
+      description: Delete permission predicate over the
+        'medical_booking_booking_schedule_statuses' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_medical_booking_booking_schedule_statuses_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteMedicalBookingBookingScheduleStatusesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'medical_booking_booking_schedule_statuses'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteMedicalBookingBookingScheduleStatusesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

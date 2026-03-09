@@ -1,0 +1,261 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimDocumentTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: ClaimDocumentTypes
+    inputTypeName: ClaimDocumentTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_document_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimDocumentTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimDocumentTypesBoolExp
+  operand:
+    object:
+      type: ClaimDocumentTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: claimDocumentType
+        - relationshipName: claimDocuments
+        - relationshipName: claimDocumentsByType
+        - relationshipName: claimPendingCodeDocumentTypesMappings
+        - relationshipName: ocrPapers
+        - relationshipName: pendingCodes
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimDocumentTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimDocumentTypesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimDocumentTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimDocumentTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimDocumentTypesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimDocumentTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: claimDocumentType
+  graphql:
+    expressionTypeName: ClaimDocumentTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimDocumentTypes
+  objectType: ClaimDocumentTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_document_types
+  filterExpressionType: ClaimDocumentTypesBoolExp
+  aggregateExpression: ClaimDocumentTypesAggExp
+  orderByExpression: ClaimDocumentTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimDocumentTypes
+      subscription:
+        rootField: claimDocumentTypes
+    selectUniques:
+      - queryRootField: claimDocumentTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: claimDocumentTypesByValue
+    filterInputTypeName: ClaimDocumentTypesFilterInput
+    aggregate:
+      queryRootField: claimDocumentTypesAggregate
+      subscription:
+        rootField: claimDocumentTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimDocumentTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocumentType
+  sourceType: ClaimDocumentTypes
+  target:
+    model:
+      name: ClaimDocumentTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocuments
+  sourceType: ClaimDocumentTypes
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: ocrType
+  graphql:
+    aggregateFieldName: claimDocumentsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocumentsByType
+  sourceType: ClaimDocumentTypes
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: claimDocumentsByTypeAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimPendingCodeDocumentTypesMappings
+  sourceType: ClaimDocumentTypes
+  target:
+    model:
+      name: ClaimPendingCodeDocumentTypesMapping
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimPendingCodeDocumentTypesMappingAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: documentType
+  graphql:
+    aggregateFieldName: claimPendingCodeDocumentTypesMappingsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ocrPapers
+  sourceType: ClaimDocumentTypes
+  target:
+    model:
+      name: OcrPapers
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OcrPapersAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: ocrPapersAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: pendingCodes
+  sourceType: ClaimDocumentTypes
+  target:
+    model:
+      name: PendingCodes
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PendingCodesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: documentType
+  graphql:
+    aggregateFieldName: pendingCodesAggregate
+

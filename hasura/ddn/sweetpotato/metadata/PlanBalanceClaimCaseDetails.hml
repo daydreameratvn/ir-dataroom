@@ -1,0 +1,271 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanBalanceClaimCaseDetails
+  fields:
+    - name: claimCaseDetailId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: planBalanceClaimCaseDetailId
+      type: Uuid!
+    - name: planBalanceId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: PlanBalanceClaimCaseDetails
+    inputTypeName: PlanBalanceClaimCaseDetailsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_balance_claim_case_details
+      fieldMapping:
+        claimCaseDetailId:
+          column:
+            name: claim_case_detail_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        planBalanceClaimCaseDetailId:
+          column:
+            name: plan_balance_claim_case_detail_id
+        planBalanceId:
+          column:
+            name: plan_balance_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanBalanceClaimCaseDetails
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseDetailId
+          - createdAt
+          - deletedAt
+          - id
+          - planBalanceClaimCaseDetailId
+          - planBalanceId
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanBalanceClaimCaseDetailsBoolExp
+  operand:
+    object:
+      type: PlanBalanceClaimCaseDetails
+      comparableFields:
+        - fieldName: claimCaseDetailId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planBalanceClaimCaseDetailId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planBalanceId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: tenant
+        - relationshipName: claimCaseDetail
+        - relationshipName: planBalance
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanBalanceClaimCaseDetailsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanBalanceClaimCaseDetailsAggExp
+  operand:
+    object:
+      aggregatedType: PlanBalanceClaimCaseDetails
+      aggregatableFields:
+        - fieldName: claimCaseDetailId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: planBalanceClaimCaseDetailId
+          aggregateExpression: UuidAggExp
+        - fieldName: planBalanceId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanBalanceClaimCaseDetailsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanBalanceClaimCaseDetailsOrderByExp
+  operand:
+    object:
+      orderedType: PlanBalanceClaimCaseDetails
+      orderableFields:
+        - fieldName: claimCaseDetailId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: planBalanceClaimCaseDetailId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planBalanceId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: tenant
+        - relationshipName: claimCaseDetail
+        - relationshipName: planBalance
+  graphql:
+    expressionTypeName: PlanBalanceClaimCaseDetailsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanBalanceClaimCaseDetails
+  objectType: PlanBalanceClaimCaseDetails
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_balance_claim_case_details
+  filterExpressionType: PlanBalanceClaimCaseDetailsBoolExp
+  aggregateExpression: PlanBalanceClaimCaseDetailsAggExp
+  orderByExpression: PlanBalanceClaimCaseDetailsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planBalanceClaimCaseDetails
+      subscription:
+        rootField: planBalanceClaimCaseDetails
+    selectUniques:
+      - queryRootField: planBalanceClaimCaseDetailsByPlanBalanceClaimCaseDetailsPlanBalanceIdClaimCaseDeta
+        uniqueIdentifier:
+          - claimCaseDetailId
+          - planBalanceId
+        subscription:
+          rootField: planBalanceClaimCaseDetailsByPlanBalanceClaimCaseDetailsPlanBalanceIdClaimCaseDeta
+      - queryRootField: planBalanceClaimCaseDetailsByPlanBalanceClaimCaseDetailId
+        uniqueIdentifier:
+          - planBalanceClaimCaseDetailId
+        subscription:
+          rootField: planBalanceClaimCaseDetailsByPlanBalanceClaimCaseDetailId
+    filterInputTypeName: PlanBalanceClaimCaseDetailsFilterInput
+    aggregate:
+      queryRootField: planBalanceClaimCaseDetailsAggregate
+      subscription:
+        rootField: planBalanceClaimCaseDetailsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanBalanceClaimCaseDetails
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: PlanBalanceClaimCaseDetails
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseDetail
+  sourceType: PlanBalanceClaimCaseDetails
+  target:
+    model:
+      name: ClaimCaseDetails
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimCaseDetailId
+      target:
+        modelField:
+          - fieldName: claimCaseDetailId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalance
+  sourceType: PlanBalanceClaimCaseDetails
+  target:
+    model:
+      name: PlanBalances
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planBalanceId
+      target:
+        modelField:
+          - fieldName: id
+

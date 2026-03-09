@@ -1,0 +1,86 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredCertificateRelatedEventsByEffectiveDateAndEventTypeAndInsuredCertificateIdAndNewValueResponse
+  description: Responses from the
+    'delete_insured_certificate_related_events_by_effective_date_and_event_type_and_insured_certificate_id_and_new_value'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateRelatedEvents!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredCertificateRelatedEventsByEffectiveDateAndEventTypeAndInsuredCertificateIdAndNewValueResponse
+    inputTypeName: DeleteInsuredCertificateRelatedEventsByEffectiveDateAndEventTypeAndInsuredCertificateIdAndNewValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_certificate_related_events_by_effective_date_and_event_type_and_insured_certificate_id_and_new_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredCertificateRelatedEventsByEffectiveDateAndEventTypeAndInsuredCertificateIdAndNewValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredCertificateRelatedEventsByEffectiveDateAndEventTypeAndInsuredCertificateIdAndNewValue
+  outputType: DeleteInsuredCertificateRelatedEventsByEffectiveDateAndEventTypeAndInsuredCertificateIdAndNewValueResponse!
+  arguments:
+    - name: keyEffectiveDate
+      type: Timestamptz!
+    - name: keyEventType
+      type: String_1!
+    - name: keyInsuredCertificateId
+      type: Uuid
+    - name: keyNewValue
+      type: String_1
+    - name: preCheck
+      type: InsuredCertificateRelatedEventsBoolExp
+      description: Delete permission predicate over the
+        'insured_certificate_related_events' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_certificate_related_events_by_effective_date_and_event_type_and_insured_certificate_id_and_new_value
+    argumentMapping:
+      keyEffectiveDate: key_effective_date
+      keyEventType: key_event_type
+      keyInsuredCertificateId: key_insured_certificate_id
+      keyNewValue: key_new_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredCertificateRelatedEventsByEffectiveDateAndEventTypeAndInsuredCertificateIdAndNewValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_certificate_related_events'
+    collection using the 'effective_date', 'event_type',
+    'insured_certificate_id' and 'new_value' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredCertificateRelatedEventsByEffectiveDateAndEventTypeAndInsuredCertificateIdAndNewValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

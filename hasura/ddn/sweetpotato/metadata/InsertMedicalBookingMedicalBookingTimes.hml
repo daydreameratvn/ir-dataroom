@@ -1,0 +1,163 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingMedicalBookingTimesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: date
+      type: Date!
+    - name: dayOfWeek
+      type: Int32!
+    - name: fromTime
+      type: Timestamptz!
+    - name: medicalBookingId
+      type: Uuid!
+    - name: medicalBookingTimeId
+      type: Uuid
+    - name: remark
+      type: String_1
+    - name: status
+      type: String_1!
+    - name: timePeriod
+      type: String_1!
+    - name: toTime
+      type: Timestamptz!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertMedicalBookingMedicalBookingTimesObject
+    inputTypeName: InsertMedicalBookingMedicalBookingTimesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_medical_booking_times_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        date:
+          column:
+            name: date
+        dayOfWeek:
+          column:
+            name: day_of_week
+        fromTime:
+          column:
+            name: from_time
+        medicalBookingId:
+          column:
+            name: medical_booking_id
+        medicalBookingTimeId:
+          column:
+            name: medical_booking_time_id
+        remark:
+          column:
+            name: remark
+        status:
+          column:
+            name: status
+        timePeriod:
+          column:
+            name: time_period
+        toTime:
+          column:
+            name: to_time
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingMedicalBookingTimesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - date
+          - dayOfWeek
+          - fromTime
+          - medicalBookingId
+          - medicalBookingTimeId
+          - remark
+          - status
+          - timePeriod
+          - toTime
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingMedicalBookingTimesResponse
+  description: Responses from the 'insert_medical_booking_medical_booking_times' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingMedicalBookingTimes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMedicalBookingMedicalBookingTimesResponse
+    inputTypeName: InsertMedicalBookingMedicalBookingTimesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_medical_booking_times_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingMedicalBookingTimesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMedicalBookingMedicalBookingTimes
+  outputType: InsertMedicalBookingMedicalBookingTimesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMedicalBookingMedicalBookingTimesObject!]!"
+    - name: postCheck
+      type: MedicalBookingMedicalBookingTimesBoolExp
+      description: Insert permission predicate over the
+        'medical_booking_medical_booking_times' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_medical_booking_medical_booking_times
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMedicalBookingMedicalBookingTimes
+    rootFieldKind: Mutation
+  description: Insert into the medical_booking_medical_booking_times table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMedicalBookingMedicalBookingTimes
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,192 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CerebrateDocumentComplianceSources
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: CerebrateDocumentComplianceSources
+    inputTypeName: CerebrateDocumentComplianceSourcesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: cerebrate_document_compliance_sources
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CerebrateDocumentComplianceSources
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CerebrateDocumentComplianceSourcesBoolExp
+  operand:
+    object:
+      type: CerebrateDocumentComplianceSources
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: cerebrateDocumentComplianceRules
+        - relationshipName: cerebrateDocumentComplianceSource
+        - relationshipName: cerebrateDocumentComplianceSources
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CerebrateDocumentComplianceSourcesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CerebrateDocumentComplianceSourcesAggExp
+  operand:
+    object:
+      aggregatedType: CerebrateDocumentComplianceSources
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CerebrateDocumentComplianceSourcesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CerebrateDocumentComplianceSourcesOrderByExp
+  operand:
+    object:
+      orderedType: CerebrateDocumentComplianceSources
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: cerebrateDocumentComplianceSource
+  graphql:
+    expressionTypeName: CerebrateDocumentComplianceSourcesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CerebrateDocumentComplianceSources
+  objectType: CerebrateDocumentComplianceSources
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: cerebrate_document_compliance_sources
+  filterExpressionType: CerebrateDocumentComplianceSourcesBoolExp
+  aggregateExpression: CerebrateDocumentComplianceSourcesAggExp
+  orderByExpression: CerebrateDocumentComplianceSourcesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: cerebrateDocumentComplianceSources
+      subscription:
+        rootField: cerebrateDocumentComplianceSources
+    selectUniques:
+      - queryRootField: cerebrateDocumentComplianceSourcesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: cerebrateDocumentComplianceSourcesByValue
+    filterInputTypeName: CerebrateDocumentComplianceSourcesFilterInput
+    aggregate:
+      queryRootField: cerebrateDocumentComplianceSourcesAggregate
+      subscription:
+        rootField: cerebrateDocumentComplianceSourcesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CerebrateDocumentComplianceSources
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: cerebrateDocumentComplianceRules
+  sourceType: CerebrateDocumentComplianceSources
+  target:
+    model:
+      name: CerebrateDocumentComplianceRules
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CerebrateDocumentComplianceRulesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: source
+  graphql:
+    aggregateFieldName: cerebrateDocumentComplianceRulesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: cerebrateDocumentComplianceSource
+  sourceType: CerebrateDocumentComplianceSources
+  target:
+    model:
+      name: CerebrateDocumentComplianceSources
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: comment
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: cerebrateDocumentComplianceSources
+  sourceType: CerebrateDocumentComplianceSources
+  target:
+    model:
+      name: CerebrateDocumentComplianceSources
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CerebrateDocumentComplianceSourcesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: comment
+  graphql:
+    aggregateFieldName: cerebrateDocumentComplianceSourcesAggregate
+

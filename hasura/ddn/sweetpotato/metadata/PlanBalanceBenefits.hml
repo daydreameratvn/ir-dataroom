@@ -1,0 +1,272 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanBalanceBenefits
+  fields:
+    - name: autoSelected
+      type: Boolean_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: planBalanceId
+      type: Uuid!
+    - name: planInsuredBenefitId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PlanBalanceBenefits
+    inputTypeName: PlanBalanceBenefitsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_balance_benefits
+      fieldMapping:
+        autoSelected:
+          column:
+            name: auto_selected
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        planBalanceId:
+          column:
+            name: plan_balance_id
+        planInsuredBenefitId:
+          column:
+            name: plan_insured_benefit_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanBalanceBenefits
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoSelected
+          - createdAt
+          - deletedAt
+          - id
+          - planBalanceId
+          - planInsuredBenefitId
+          - tenantId
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanBalanceBenefitsBoolExp
+  operand:
+    object:
+      type: PlanBalanceBenefits
+      comparableFields:
+        - fieldName: autoSelected
+          booleanExpressionType: BoolBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planBalanceId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planInsuredBenefitId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: planBalance
+        - relationshipName: planInsuredBenefit
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanBalanceBenefitsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanBalanceBenefitsAggExp
+  operand:
+    object:
+      aggregatedType: PlanBalanceBenefits
+      aggregatableFields:
+        - fieldName: autoSelected
+          aggregateExpression: BoolAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: planBalanceId
+          aggregateExpression: UuidAggExp
+        - fieldName: planInsuredBenefitId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanBalanceBenefitsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanBalanceBenefitsOrderByExp
+  operand:
+    object:
+      orderedType: PlanBalanceBenefits
+      orderableFields:
+        - fieldName: autoSelected
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: planBalanceId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planInsuredBenefitId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: planBalance
+        - relationshipName: planInsuredBenefit
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: PlanBalanceBenefitsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanBalanceBenefits
+  objectType: PlanBalanceBenefits
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_balance_benefits
+  filterExpressionType: PlanBalanceBenefitsBoolExp
+  aggregateExpression: PlanBalanceBenefitsAggExp
+  orderByExpression: PlanBalanceBenefitsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planBalanceBenefits
+      subscription:
+        rootField: planBalanceBenefits
+    selectUniques:
+      - queryRootField: planBalanceBenefitsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: planBalanceBenefitsById
+      - queryRootField: planBalanceBenefitsByPlanInsuredBenefitIdPlanBalanceIdDeletedAtKey
+        uniqueIdentifier:
+          - deletedAt
+          - planBalanceId
+          - planInsuredBenefitId
+        subscription:
+          rootField: planBalanceBenefitsByPlanInsuredBenefitIdPlanBalanceIdDeletedAtKey
+    filterInputTypeName: PlanBalanceBenefitsFilterInput
+    aggregate:
+      queryRootField: planBalanceBenefitsAggregate
+      subscription:
+        rootField: planBalanceBenefitsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanBalanceBenefits
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planBalance
+  sourceType: PlanBalanceBenefits
+  target:
+    model:
+      name: PlanBalances
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planBalanceId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planInsuredBenefit
+  sourceType: PlanBalanceBenefits
+  target:
+    model:
+      name: PlanInsuredBenefits
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planInsuredBenefitId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: PlanBalanceBenefits
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

@@ -1,0 +1,172 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornPipelineExecutionStatuses
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: HawthornPipelineExecutionStatuses
+    inputTypeName: HawthornPipelineExecutionStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_pipeline_execution_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornPipelineExecutionStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornPipelineExecutionStatusesBoolExp
+  operand:
+    object:
+      type: HawthornPipelineExecutionStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornPipelineExecutions
+        - relationshipName: hawthornPipelineStepExecutions
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornPipelineExecutionStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornPipelineExecutionStatusesAggExp
+  operand:
+    object:
+      aggregatedType: HawthornPipelineExecutionStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornPipelineExecutionStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornPipelineExecutionStatusesOrderByExp
+  operand:
+    object:
+      orderedType: HawthornPipelineExecutionStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: HawthornPipelineExecutionStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornPipelineExecutionStatuses
+  objectType: HawthornPipelineExecutionStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_pipeline_execution_statuses
+  filterExpressionType: HawthornPipelineExecutionStatusesBoolExp
+  aggregateExpression: HawthornPipelineExecutionStatusesAggExp
+  orderByExpression: HawthornPipelineExecutionStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornPipelineExecutionStatuses
+      subscription:
+        rootField: hawthornPipelineExecutionStatuses
+    selectUniques:
+      - queryRootField: hawthornPipelineExecutionStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: hawthornPipelineExecutionStatusesByValue
+    filterInputTypeName: HawthornPipelineExecutionStatusesFilterInput
+    aggregate:
+      queryRootField: hawthornPipelineExecutionStatusesAggregate
+      subscription:
+        rootField: hawthornPipelineExecutionStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornPipelineExecutionStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPipelineExecutions
+  sourceType: HawthornPipelineExecutionStatuses
+  target:
+    model:
+      name: HawthornPipelineExecutions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornPipelineExecutionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: hawthornPipelineExecutionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornPipelineStepExecutions
+  sourceType: HawthornPipelineExecutionStatuses
+  target:
+    model:
+      name: HawthornPipelineStepExecutions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: HawthornPipelineStepExecutionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: hawthornPipelineStepExecutionsAggregate
+

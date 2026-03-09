@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutBeneficiaryPapersByPaymentRequestItemIdResponse
+  description: Responses from the
+    'delete_payout_beneficiary_papers_by_payment_request_item_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutBeneficiaryPapers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutBeneficiaryPapersByPaymentRequestItemIdResponse
+    inputTypeName: DeletePayoutBeneficiaryPapersByPaymentRequestItemIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_beneficiary_papers_by_payment_request_item_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutBeneficiaryPapersByPaymentRequestItemIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutBeneficiaryPapersByPaymentRequestItemId
+  outputType: DeletePayoutBeneficiaryPapersByPaymentRequestItemIdResponse!
+  arguments:
+    - name: keyPaymentRequestItemId
+      type: Uuid
+    - name: preCheck
+      type: PayoutBeneficiaryPapersBoolExp
+      description: Delete permission predicate over the 'payout_beneficiary_papers'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_beneficiary_papers_by_payment_request_item_id
+    argumentMapping:
+      keyPaymentRequestItemId: key_payment_request_item_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutBeneficiaryPapersByPaymentRequestItemId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_beneficiary_papers' collection using
+    the 'payment_request_item_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutBeneficiaryPapersByPaymentRequestItemId
+  permissions:
+    - role: admin
+      allowExecution: true
+

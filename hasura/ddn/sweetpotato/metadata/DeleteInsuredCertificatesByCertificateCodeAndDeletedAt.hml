@@ -1,0 +1,77 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredCertificatesByCertificateCodeAndDeletedAtResponse
+  description: Responses from the
+    'delete_insured_certificates_by_certificate_code_and_deleted_at' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificates!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredCertificatesByCertificateCodeAndDeletedAtResponse
+    inputTypeName: DeleteInsuredCertificatesByCertificateCodeAndDeletedAtResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_certificates_by_certificate_code_and_deleted_at_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredCertificatesByCertificateCodeAndDeletedAtResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredCertificatesByCertificateCodeAndDeletedAt
+  outputType: DeleteInsuredCertificatesByCertificateCodeAndDeletedAtResponse!
+  arguments:
+    - name: keyCertificateCode
+      type: String_1!
+    - name: keyDeletedAt
+      type: Timestamptz
+    - name: preCheck
+      type: InsuredCertificatesBoolExp
+      description: Delete permission predicate over the 'insured_certificates' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_certificates_by_certificate_code_and_deleted_at
+    argumentMapping:
+      keyCertificateCode: key_certificate_code
+      keyDeletedAt: key_deleted_at
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredCertificatesByCertificateCodeAndDeletedAt
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_certificates' collection using the
+    'certificate_code' and 'deleted_at' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredCertificatesByCertificateCodeAndDeletedAt
+  permissions:
+    - role: admin
+      allowExecution: true
+

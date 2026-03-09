@@ -1,0 +1,153 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PtiDiseaseGroups
+  description: Field value cần remove 'G_' khi xuất hoặc gửi report để lấy đúng
+    giá trị Nhóm bệnh của PTI
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PtiDiseaseGroups
+    inputTypeName: PtiDiseaseGroupsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: pti_disease_groups
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PtiDiseaseGroups
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PtiDiseaseGroupsBoolExp
+  operand:
+    object:
+      type: PtiDiseaseGroups
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: ptiClaimCases
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PtiDiseaseGroupsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PtiDiseaseGroupsAggExp
+  operand:
+    object:
+      aggregatedType: PtiDiseaseGroups
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PtiDiseaseGroupsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PtiDiseaseGroupsOrderByExp
+  operand:
+    object:
+      orderedType: PtiDiseaseGroups
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PtiDiseaseGroupsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PtiDiseaseGroups
+  objectType: PtiDiseaseGroups
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: pti_disease_groups
+  filterExpressionType: PtiDiseaseGroupsBoolExp
+  aggregateExpression: PtiDiseaseGroupsAggExp
+  orderByExpression: PtiDiseaseGroupsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: ptiDiseaseGroups
+      subscription:
+        rootField: ptiDiseaseGroups
+    selectUniques:
+      - queryRootField: ptiDiseaseGroupsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: ptiDiseaseGroupsByValue
+    filterInputTypeName: PtiDiseaseGroupsFilterInput
+    aggregate:
+      queryRootField: ptiDiseaseGroupsAggregate
+      subscription:
+        rootField: ptiDiseaseGroupsAggregate
+  description: Field value cần remove 'G_' khi xuất hoặc gửi report để lấy đúng
+    giá trị Nhóm bệnh của PTI
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PtiDiseaseGroups
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: ptiClaimCases
+  sourceType: PtiDiseaseGroups
+  target:
+    model:
+      name: PtiClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PtiClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: diseaseGroup
+  graphql:
+    aggregateFieldName: ptiClaimCasesAggregate
+

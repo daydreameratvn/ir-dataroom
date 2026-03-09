@@ -1,0 +1,218 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: KumquatOauthAuditLogs
+  description: Audit log for OAuth authentication events
+  fields:
+    - name: action
+      type: String_1!
+      description: "Event type: TOKEN_ISSUED, TOKEN_REFRESHED, TOKEN_REVOKED,
+        AUTH_FAILED, etc."
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: ipAddress
+      type: Json
+    - name: metadata
+      type: Json
+      description: Additional event context (e.g., error details, policy number)
+    - name: oauthClientId
+      type: Uuid
+    - name: userAgent
+      type: String_1
+  graphql:
+    typeName: KumquatOauthAuditLogs
+    inputTypeName: KumquatOauthAuditLogsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: kumquat_oauth_audit_logs
+      fieldMapping:
+        action:
+          column:
+            name: action
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        ipAddress:
+          column:
+            name: ip_address
+        metadata:
+          column:
+            name: metadata
+        oauthClientId:
+          column:
+            name: oauth_client_id
+        userAgent:
+          column:
+            name: user_agent
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: KumquatOauthAuditLogs
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - createdAt
+          - id
+          - ipAddress
+          - metadata
+          - oauthClientId
+          - userAgent
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: KumquatOauthAuditLogsBoolExp
+  operand:
+    object:
+      type: KumquatOauthAuditLogs
+      comparableFields:
+        - fieldName: action
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: ipAddress
+          booleanExpressionType: InetBoolExp
+        - fieldName: metadata
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: oauthClientId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userAgent
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: kumquatOauthClient
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: KumquatOauthAuditLogsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: KumquatOauthAuditLogsAggExp
+  operand:
+    object:
+      aggregatedType: KumquatOauthAuditLogs
+      aggregatableFields:
+        - fieldName: action
+          aggregateExpression: VarcharAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: ipAddress
+          aggregateExpression: InetAggExp
+        - fieldName: metadata
+          aggregateExpression: JsonbAggExp
+        - fieldName: oauthClientId
+          aggregateExpression: UuidAggExp
+        - fieldName: userAgent
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: KumquatOauthAuditLogsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: KumquatOauthAuditLogsOrderByExp
+  operand:
+    object:
+      orderedType: KumquatOauthAuditLogs
+      orderableFields:
+        - fieldName: action
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: ipAddress
+          orderByExpression: JsonOrderByExp
+        - fieldName: metadata
+          orderByExpression: JsonOrderByExp
+        - fieldName: oauthClientId
+          orderByExpression: UuidOrderByExp
+        - fieldName: userAgent
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: kumquatOauthClient
+  graphql:
+    expressionTypeName: KumquatOauthAuditLogsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: KumquatOauthAuditLogs
+  objectType: KumquatOauthAuditLogs
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: kumquat_oauth_audit_logs
+  filterExpressionType: KumquatOauthAuditLogsBoolExp
+  aggregateExpression: KumquatOauthAuditLogsAggExp
+  orderByExpression: KumquatOauthAuditLogsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: kumquatOauthAuditLogs
+      subscription:
+        rootField: kumquatOauthAuditLogs
+    selectUniques:
+      - queryRootField: kumquatOauthAuditLogsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: kumquatOauthAuditLogsById
+    filterInputTypeName: KumquatOauthAuditLogsFilterInput
+    aggregate:
+      queryRootField: kumquatOauthAuditLogsAggregate
+      subscription:
+        rootField: kumquatOauthAuditLogsAggregate
+  description: Audit log for OAuth authentication events
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: KumquatOauthAuditLogs
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: kumquatOauthClient
+  sourceType: KumquatOauthAuditLogs
+  target:
+    model:
+      name: KumquatOauthClients
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: oauthClientId
+      target:
+        modelField:
+          - fieldName: id
+

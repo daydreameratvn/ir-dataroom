@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteClaimCaseBeneficiaryWarningCodesByValueResponse
+  description: Responses from the
+    'delete_claim_case_beneficiary_warning_codes_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimCaseBeneficiaryWarningCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteClaimCaseBeneficiaryWarningCodesByValueResponse
+    inputTypeName: DeleteClaimCaseBeneficiaryWarningCodesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_claim_case_beneficiary_warning_codes_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteClaimCaseBeneficiaryWarningCodesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteClaimCaseBeneficiaryWarningCodesByValue
+  outputType: DeleteClaimCaseBeneficiaryWarningCodesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: ClaimCaseBeneficiaryWarningCodesBoolExp
+      description: Delete permission predicate over the
+        'claim_case_beneficiary_warning_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_claim_case_beneficiary_warning_codes_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteClaimCaseBeneficiaryWarningCodesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'claim_case_beneficiary_warning_codes'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteClaimCaseBeneficiaryWarningCodesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

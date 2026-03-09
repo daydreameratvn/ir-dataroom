@@ -1,0 +1,277 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredPersonRemarks
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1!
+    - name: id
+      type: Uuid!
+    - name: insuredBenefitType
+      type: String_1
+    - name: insuredPersonId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: value
+      type: String_1
+  graphql:
+    typeName: InsuredPersonRemarks
+    inputTypeName: InsuredPersonRemarksInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_person_remarks
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        id:
+          column:
+            name: id
+        insuredBenefitType:
+          column:
+            name: insured_benefit_type
+        insuredPersonId:
+          column:
+            name: insured_person_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredPersonRemarks
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - description
+          - id
+          - insuredBenefitType
+          - insuredPersonId
+          - tenantId
+          - updatedAt
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredPersonRemarksBoolExp
+  operand:
+    object:
+      type: InsuredPersonRemarks
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredBenefitType
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: insuredPersonId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: value
+          booleanExpressionType: VarcharBoolExp
+      comparableRelationships:
+        - relationshipName: insuredBenefitTypeByInsuredBenefitType
+        - relationshipName: insuredPerson
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredPersonRemarksBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredPersonRemarksAggExp
+  operand:
+    object:
+      aggregatedType: InsuredPersonRemarks
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: VarcharAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredBenefitType
+          aggregateExpression: VarcharAggExp
+        - fieldName: insuredPersonId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: value
+          aggregateExpression: VarcharAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredPersonRemarksAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredPersonRemarksOrderByExp
+  operand:
+    object:
+      orderedType: InsuredPersonRemarks
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredBenefitType
+          orderByExpression: String1OrderByExp
+        - fieldName: insuredPersonId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: insuredBenefitTypeByInsuredBenefitType
+        - relationshipName: insuredPerson
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: InsuredPersonRemarksOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredPersonRemarks
+  objectType: InsuredPersonRemarks
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_person_remarks
+  filterExpressionType: InsuredPersonRemarksBoolExp
+  aggregateExpression: InsuredPersonRemarksAggExp
+  orderByExpression: InsuredPersonRemarksOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredPersonRemarks
+      subscription:
+        rootField: insuredPersonRemarks
+    selectUniques:
+      - queryRootField: insuredPersonRemarksById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: insuredPersonRemarksById
+    filterInputTypeName: InsuredPersonRemarksFilterInput
+    aggregate:
+      queryRootField: insuredPersonRemarksAggregate
+      subscription:
+        rootField: insuredPersonRemarksAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredPersonRemarks
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredBenefitTypeByInsuredBenefitType
+  sourceType: InsuredPersonRemarks
+  target:
+    model:
+      name: InsuredBenefitTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredBenefitType
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredPerson
+  sourceType: InsuredPersonRemarks
+  target:
+    model:
+      name: InsuredPersons
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredPersonId
+      target:
+        modelField:
+          - fieldName: insuredPersonId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: InsuredPersonRemarks
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

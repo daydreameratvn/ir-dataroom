@@ -1,0 +1,120 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimExclusionsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: email
+      type: String_1!
+    - name: id
+      type: Uuid
+  graphql:
+    typeName: InsertClaimExclusionsObject
+    inputTypeName: InsertClaimExclusionsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_exclusions_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        email:
+          column:
+            name: email
+        id:
+          column:
+            name: id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimExclusionsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - email
+          - id
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimExclusionsResponse
+  description: Responses from the 'insert_claim_exclusions' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimExclusions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimExclusionsResponse
+    inputTypeName: InsertClaimExclusionsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_exclusions_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimExclusionsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimExclusions
+  outputType: InsertClaimExclusionsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimExclusionsObject!]!"
+    - name: postCheck
+      type: ClaimExclusionsBoolExp
+      description: Insert permission predicate over the 'claim_exclusions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_exclusions
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimExclusions
+    rootFieldKind: Mutation
+  description: Insert into the claim_exclusions table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimExclusions
+  permissions:
+    - role: admin
+      allowExecution: true
+

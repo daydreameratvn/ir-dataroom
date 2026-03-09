@@ -1,0 +1,193 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMetaReferencesByMetaReferenceIdUpdateColumns
+  description: Update the columns of the 'meta_references' collection
+  fields:
+    - name: booleanValue
+      type: UpdateColumnMetaReferencesBooleanValue
+      description: Update the 'boolean_value' column in the 'meta_references' collection.
+    - name: correspondenceTemplateReceiverValue
+      type: UpdateColumnMetaReferencesCorrespondenceTemplateReceiverValue
+      description: Update the 'correspondence_template_receiver_value' column in the
+        'meta_references' collection.
+    - name: createdAt
+      type: UpdateColumnMetaReferencesCreatedAt
+      description: Update the 'created_at' column in the 'meta_references' collection.
+    - name: deletedAt
+      type: UpdateColumnMetaReferencesDeletedAt
+      description: Update the 'deleted_at' column in the 'meta_references' collection.
+    - name: id
+      type: UpdateColumnMetaReferencesId
+      description: Update the 'id' column in the 'meta_references' collection.
+    - name: metaReferenceId
+      type: UpdateColumnMetaReferencesMetaReferenceId
+      description: Update the 'meta_reference_id' column in the 'meta_references'
+        collection.
+    - name: numberValue
+      type: UpdateColumnMetaReferencesNumberValue
+      description: Update the 'number_value' column in the 'meta_references' collection.
+    - name: objectKey
+      type: UpdateColumnMetaReferencesObjectKey
+      description: Update the 'object_key' column in the 'meta_references' collection.
+    - name: refId
+      type: UpdateColumnMetaReferencesRefId
+      description: Update the 'ref_id' column in the 'meta_references' collection.
+    - name: stringValue
+      type: UpdateColumnMetaReferencesStringValue
+      description: Update the 'string_value' column in the 'meta_references' collection.
+    - name: tenantId
+      type: UpdateColumnMetaReferencesTenantId
+      description: Update the 'tenant_id' column in the 'meta_references' collection.
+    - name: updatedAt
+      type: UpdateColumnMetaReferencesUpdatedAt
+      description: Update the 'updated_at' column in the 'meta_references' collection.
+  graphql:
+    typeName: UpdateMetaReferencesByMetaReferenceIdUpdateColumns
+    inputTypeName: UpdateMetaReferencesByMetaReferenceIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_meta_references_by_meta_reference_id_update_columns
+      fieldMapping:
+        booleanValue:
+          column:
+            name: boolean_value
+        correspondenceTemplateReceiverValue:
+          column:
+            name: correspondence_template_receiver_value
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        metaReferenceId:
+          column:
+            name: meta_reference_id
+        numberValue:
+          column:
+            name: number_value
+        objectKey:
+          column:
+            name: object_key
+        refId:
+          column:
+            name: ref_id
+        stringValue:
+          column:
+            name: string_value
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMetaReferencesByMetaReferenceIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - booleanValue
+          - correspondenceTemplateReceiverValue
+          - createdAt
+          - deletedAt
+          - id
+          - metaReferenceId
+          - numberValue
+          - objectKey
+          - refId
+          - stringValue
+          - tenantId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateMetaReferencesByMetaReferenceIdResponse
+  description: Responses from the 'update_meta_references_by_meta_reference_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetaReferences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateMetaReferencesByMetaReferenceIdResponse
+    inputTypeName: UpdateMetaReferencesByMetaReferenceIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_meta_references_by_meta_reference_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateMetaReferencesByMetaReferenceIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateMetaReferencesByMetaReferenceId
+  outputType: UpdateMetaReferencesByMetaReferenceIdResponse!
+  arguments:
+    - name: keyMetaReferenceId
+      type: Uuid
+    - name: postCheck
+      type: MetaReferencesBoolExp
+      description: Update permission post-condition predicate over the
+        'meta_references' collection
+    - name: preCheck
+      type: MetaReferencesBoolExp
+      description: Update permission pre-condition predicate over the
+        'meta_references' collection
+    - name: updateColumns
+      type: UpdateMetaReferencesByMetaReferenceIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_meta_references_by_meta_reference_id
+    argumentMapping:
+      keyMetaReferenceId: key_meta_reference_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateMetaReferencesByMetaReferenceId
+    rootFieldKind: Mutation
+  description: Update any row on the 'meta_references' collection using the
+    'meta_reference_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateMetaReferencesByMetaReferenceId
+  permissions:
+    - role: admin
+      allowExecution: true
+

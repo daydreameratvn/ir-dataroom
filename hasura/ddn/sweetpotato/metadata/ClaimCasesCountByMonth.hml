@@ -1,0 +1,121 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCasesCountByMonth
+  fields:
+    - name: count
+      type: Int64
+    - name: month
+      type: Timestamptz
+  graphql:
+    typeName: ClaimCasesCountByMonth
+    inputTypeName: ClaimCasesCountByMonthInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_cases_count_by_month
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCasesCountByMonth
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - count
+          - month
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCasesCountByMonthBoolExp
+  operand:
+    object:
+      type: ClaimCasesCountByMonth
+      comparableFields:
+        - fieldName: count
+          booleanExpressionType: Int8BoolExp
+        - fieldName: month
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCasesCountByMonthBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCasesCountByMonthAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCasesCountByMonth
+      aggregatableFields:
+        - fieldName: count
+          aggregateExpression: Int8AggExp
+        - fieldName: month
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCasesCountByMonthAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCasesCountByMonthOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCasesCountByMonth
+      orderableFields:
+        - fieldName: count
+          orderByExpression: Int64OrderByExp
+        - fieldName: month
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ClaimCasesCountByMonthOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCasesCountByMonth
+  objectType: ClaimCasesCountByMonth
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_cases_count_by_month
+  filterExpressionType: ClaimCasesCountByMonthBoolExp
+  aggregateExpression: ClaimCasesCountByMonthAggExp
+  orderByExpression: ClaimCasesCountByMonthOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCasesCountByMonth
+      subscription:
+        rootField: claimCasesCountByMonth
+    selectUniques: []
+    filterInputTypeName: ClaimCasesCountByMonthFilterInput
+    aggregate:
+      queryRootField: claimCasesCountByMonthAggregate
+      subscription:
+        rootField: claimCasesCountByMonthAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCasesCountByMonth
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyCoPaymentApplyRangeTypesObject
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertPolicyCoPaymentApplyRangeTypesObject
+    inputTypeName: InsertPolicyCoPaymentApplyRangeTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_co_payment_apply_range_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyCoPaymentApplyRangeTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyCoPaymentApplyRangeTypesResponse
+  description: Responses from the 'insert_policy_co_payment_apply_range_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyCoPaymentApplyRangeTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyCoPaymentApplyRangeTypesResponse
+    inputTypeName: InsertPolicyCoPaymentApplyRangeTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_co_payment_apply_range_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyCoPaymentApplyRangeTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyCoPaymentApplyRangeTypes
+  outputType: InsertPolicyCoPaymentApplyRangeTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyCoPaymentApplyRangeTypesObject!]!"
+    - name: postCheck
+      type: PolicyCoPaymentApplyRangeTypesBoolExp
+      description: Insert permission predicate over the
+        'policy_co_payment_apply_range_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_co_payment_apply_range_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyCoPaymentApplyRangeTypes
+    rootFieldKind: Mutation
+  description: Insert into the policy_co_payment_apply_range_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyCoPaymentApplyRangeTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

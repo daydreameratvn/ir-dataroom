@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutDocumentsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: fileId
+      type: Uuid!
+    - name: id
+      type: Uuid
+    - name: mimeType
+      type: String_1!
+    - name: name
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertHazelnutDocumentsObject
+    inputTypeName: InsertHazelnutDocumentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_documents_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        mimeType:
+          column:
+            name: mime_type
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutDocumentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - fileId
+          - id
+          - mimeType
+          - name
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHazelnutDocumentsResponse
+  description: Responses from the 'insert_hazelnut_documents' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HazelnutDocuments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHazelnutDocumentsResponse
+    inputTypeName: InsertHazelnutDocumentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hazelnut_documents_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHazelnutDocumentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHazelnutDocuments
+  outputType: InsertHazelnutDocumentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHazelnutDocumentsObject!]!"
+    - name: postCheck
+      type: HazelnutDocumentsBoolExp
+      description: Insert permission predicate over the 'hazelnut_documents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hazelnut_documents
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHazelnutDocuments
+    rootFieldKind: Mutation
+  description: Insert into the hazelnut_documents table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHazelnutDocuments
+  permissions:
+    - role: admin
+      allowExecution: true
+

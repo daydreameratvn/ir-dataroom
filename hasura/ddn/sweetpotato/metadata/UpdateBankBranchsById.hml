@@ -1,0 +1,169 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateBankBranchsByIdUpdateColumns
+  description: Update the columns of the 'bank_branchs' collection
+  fields:
+    - name: bankId
+      type: UpdateColumnBankBranchsBankId
+      description: Update the 'bank_id' column in the 'bank_branchs' collection.
+    - name: citadCode
+      type: UpdateColumnBankBranchsCitadCode
+      description: Update the 'citad_code' column in the 'bank_branchs' collection.
+    - name: cityId
+      type: UpdateColumnBankBranchsCityId
+      description: Update the 'city_id' column in the 'bank_branchs' collection.
+    - name: createdAt
+      type: UpdateColumnBankBranchsCreatedAt
+      description: Update the 'created_at' column in the 'bank_branchs' collection.
+    - name: enName
+      type: UpdateColumnBankBranchsEnName
+      description: Update the 'en_name' column in the 'bank_branchs' collection.
+    - name: id
+      type: UpdateColumnBankBranchsId
+      description: Update the 'id' column in the 'bank_branchs' collection.
+    - name: isHead
+      type: UpdateColumnBankBranchsIsHead
+      description: Update the 'is_head' column in the 'bank_branchs' collection.
+    - name: updatedAt
+      type: UpdateColumnBankBranchsUpdatedAt
+      description: Update the 'updated_at' column in the 'bank_branchs' collection.
+    - name: vnName
+      type: UpdateColumnBankBranchsVnName
+      description: Update the 'vn_name' column in the 'bank_branchs' collection.
+  graphql:
+    typeName: UpdateBankBranchsByIdUpdateColumns
+    inputTypeName: UpdateBankBranchsByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_bank_branchs_by_id_update_columns
+      fieldMapping:
+        bankId:
+          column:
+            name: bank_id
+        citadCode:
+          column:
+            name: citad_code
+        cityId:
+          column:
+            name: city_id
+        createdAt:
+          column:
+            name: created_at
+        enName:
+          column:
+            name: en_name
+        id:
+          column:
+            name: id
+        isHead:
+          column:
+            name: is_head
+        updatedAt:
+          column:
+            name: updated_at
+        vnName:
+          column:
+            name: vn_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateBankBranchsByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankId
+          - citadCode
+          - cityId
+          - createdAt
+          - enName
+          - id
+          - isHead
+          - updatedAt
+          - vnName
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateBankBranchsByIdResponse
+  description: Responses from the 'update_bank_branchs_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[BankBranchs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateBankBranchsByIdResponse
+    inputTypeName: UpdateBankBranchsByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_bank_branchs_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateBankBranchsByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateBankBranchsById
+  outputType: UpdateBankBranchsByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: BankBranchsBoolExp
+      description: Update permission post-condition predicate over the 'bank_branchs'
+        collection
+    - name: preCheck
+      type: BankBranchsBoolExp
+      description: Update permission pre-condition predicate over the 'bank_branchs'
+        collection
+    - name: updateColumns
+      type: UpdateBankBranchsByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_bank_branchs_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateBankBranchsById
+    rootFieldKind: Mutation
+  description: Update any row on the 'bank_branchs' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateBankBranchsById
+  permissions:
+    - role: admin
+      allowExecution: true
+

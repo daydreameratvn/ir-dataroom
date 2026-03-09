@@ -1,0 +1,72 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeletePayoutFundCodesByValueResponse
+  description: Responses from the 'delete_payout_fund_codes_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutFundCodes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeletePayoutFundCodesByValueResponse
+    inputTypeName: DeletePayoutFundCodesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_payout_fund_codes_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeletePayoutFundCodesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeletePayoutFundCodesByValue
+  outputType: DeletePayoutFundCodesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: PayoutFundCodesBoolExp
+      description: Delete permission predicate over the 'payout_fund_codes' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_payout_fund_codes_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deletePayoutFundCodesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'payout_fund_codes' collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeletePayoutFundCodesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

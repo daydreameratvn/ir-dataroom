@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimDocumentGroupClaimDocumentsObject
+  fields:
+    - name: claimDocumentGroupId
+      type: Uuid!
+    - name: claimDocumentId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: displayOrder
+      type: Int32
+    - name: id
+      type: Uuid
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid!
+  graphql:
+    typeName: InsertClaimDocumentGroupClaimDocumentsObject
+    inputTypeName: InsertClaimDocumentGroupClaimDocumentsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_document_group_claim_documents_object
+      fieldMapping:
+        claimDocumentGroupId:
+          column:
+            name: claim_document_group_id
+        claimDocumentId:
+          column:
+            name: claim_document_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimDocumentGroupClaimDocumentsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimDocumentGroupId
+          - claimDocumentId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - displayOrder
+          - id
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertClaimDocumentGroupClaimDocumentsResponse
+  description: Responses from the 'insert_claim_document_group_claim_documents' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[ClaimDocumentGroupClaimDocuments!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertClaimDocumentGroupClaimDocumentsResponse
+    inputTypeName: InsertClaimDocumentGroupClaimDocumentsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_claim_document_group_claim_documents_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertClaimDocumentGroupClaimDocumentsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertClaimDocumentGroupClaimDocuments
+  outputType: InsertClaimDocumentGroupClaimDocumentsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertClaimDocumentGroupClaimDocumentsObject!]!"
+    - name: postCheck
+      type: ClaimDocumentGroupClaimDocumentsBoolExp
+      description: Insert permission predicate over the
+        'claim_document_group_claim_documents' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_claim_document_group_claim_documents
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertClaimDocumentGroupClaimDocuments
+    rootFieldKind: Mutation
+  description: Insert into the claim_document_group_claim_documents table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertClaimDocumentGroupClaimDocuments
+  permissions:
+    - role: admin
+      allowExecution: true
+

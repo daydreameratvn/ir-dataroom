@@ -1,0 +1,539 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimCaseBeneficiaries
+  fields:
+    - name: bankAccountNumber
+      type: String_1
+    - name: bankBranch
+      type: String_1
+    - name: bankBranchId
+      type: Uuid
+    - name: bankCity
+      type: String_1
+    - name: bankId
+      type: Uuid
+    - name: bankName
+      type: String_1
+    - name: beneficiaryName
+      type: String_1!
+    - name: claimCaseId
+      type: Uuid
+    - name: confirmedAt
+      type: Timestamptz
+    - name: confirmedBy
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: paperId
+      type: String_1
+    - name: paperIssueDate
+      type: Timestamptz
+    - name: paperIssuePlace
+      type: String_1
+    - name: paymentMethod
+      type: String_1!
+    - name: premiumPolicyNumber
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: warningCode
+      type: String_1
+  graphql:
+    typeName: ClaimCaseBeneficiaries
+    inputTypeName: ClaimCaseBeneficiariesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_case_beneficiaries
+      fieldMapping:
+        bankAccountNumber:
+          column:
+            name: bank_account_number
+        bankBranch:
+          column:
+            name: bank_branch
+        bankBranchId:
+          column:
+            name: bank_branch_id
+        bankCity:
+          column:
+            name: bank_city
+        bankId:
+          column:
+            name: bank_id
+        bankName:
+          column:
+            name: bank_name
+        beneficiaryName:
+          column:
+            name: beneficiary_name
+        claimCaseId:
+          column:
+            name: claim_case_id
+        confirmedAt:
+          column:
+            name: confirmed_at
+        confirmedBy:
+          column:
+            name: confirmed_by
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        paperId:
+          column:
+            name: paper_id
+        paperIssueDate:
+          column:
+            name: paper_issue_date
+        paperIssuePlace:
+          column:
+            name: paper_issue_place
+        paymentMethod:
+          column:
+            name: payment_method
+        premiumPolicyNumber:
+          column:
+            name: premium_policy_number
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        warningCode:
+          column:
+            name: warning_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimCaseBeneficiaries
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankAccountNumber
+          - bankBranch
+          - bankBranchId
+          - bankCity
+          - bankId
+          - bankName
+          - beneficiaryName
+          - claimCaseId
+          - confirmedAt
+          - confirmedBy
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - paperId
+          - paperIssueDate
+          - paperIssuePlace
+          - paymentMethod
+          - premiumPolicyNumber
+          - updatedAt
+          - updatedBy
+          - warningCode
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimCaseBeneficiariesBoolExp
+  operand:
+    object:
+      type: ClaimCaseBeneficiaries
+      comparableFields:
+        - fieldName: bankAccountNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: bankBranch
+          booleanExpressionType: TextBoolExp
+        - fieldName: bankBranchId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: bankCity
+          booleanExpressionType: TextBoolExp
+        - fieldName: bankId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: bankName
+          booleanExpressionType: TextBoolExp
+        - fieldName: beneficiaryName
+          booleanExpressionType: TextBoolExp
+        - fieldName: claimCaseId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: confirmedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: confirmedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: paperId
+          booleanExpressionType: TextBoolExp
+        - fieldName: paperIssueDate
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: paperIssuePlace
+          booleanExpressionType: TextBoolExp
+        - fieldName: paymentMethod
+          booleanExpressionType: TextBoolExp
+        - fieldName: premiumPolicyNumber
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: warningCode
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: bankBranchByBankBranchId
+        - relationshipName: bank
+        - relationshipName: identityUser
+        - relationshipName: identityUserByCreatedBy
+        - relationshipName: payoutPaymentMethod
+        - relationshipName: claimCaseBeneficiaryWarningCode
+        - relationshipName: claimCases
+        - relationshipName: originalClaimCases
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimCaseBeneficiariesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimCaseBeneficiariesAggExp
+  operand:
+    object:
+      aggregatedType: ClaimCaseBeneficiaries
+      aggregatableFields:
+        - fieldName: bankAccountNumber
+          aggregateExpression: TextAggExp
+        - fieldName: bankBranch
+          aggregateExpression: TextAggExp
+        - fieldName: bankBranchId
+          aggregateExpression: UuidAggExp
+        - fieldName: bankCity
+          aggregateExpression: TextAggExp
+        - fieldName: bankId
+          aggregateExpression: UuidAggExp
+        - fieldName: bankName
+          aggregateExpression: TextAggExp
+        - fieldName: beneficiaryName
+          aggregateExpression: TextAggExp
+        - fieldName: claimCaseId
+          aggregateExpression: UuidAggExp
+        - fieldName: confirmedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: confirmedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: paperId
+          aggregateExpression: TextAggExp
+        - fieldName: paperIssueDate
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: paperIssuePlace
+          aggregateExpression: TextAggExp
+        - fieldName: paymentMethod
+          aggregateExpression: TextAggExp
+        - fieldName: premiumPolicyNumber
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: warningCode
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimCaseBeneficiariesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimCaseBeneficiariesOrderByExp
+  operand:
+    object:
+      orderedType: ClaimCaseBeneficiaries
+      orderableFields:
+        - fieldName: bankAccountNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: bankBranch
+          orderByExpression: String1OrderByExp
+        - fieldName: bankBranchId
+          orderByExpression: UuidOrderByExp
+        - fieldName: bankCity
+          orderByExpression: String1OrderByExp
+        - fieldName: bankId
+          orderByExpression: UuidOrderByExp
+        - fieldName: bankName
+          orderByExpression: String1OrderByExp
+        - fieldName: beneficiaryName
+          orderByExpression: String1OrderByExp
+        - fieldName: claimCaseId
+          orderByExpression: UuidOrderByExp
+        - fieldName: confirmedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: confirmedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: paperId
+          orderByExpression: String1OrderByExp
+        - fieldName: paperIssueDate
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: paperIssuePlace
+          orderByExpression: String1OrderByExp
+        - fieldName: paymentMethod
+          orderByExpression: String1OrderByExp
+        - fieldName: premiumPolicyNumber
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: warningCode
+          orderByExpression: String1OrderByExp
+      orderableRelationships:
+        - relationshipName: bankBranchByBankBranchId
+        - relationshipName: bank
+        - relationshipName: identityUser
+        - relationshipName: identityUserByCreatedBy
+        - relationshipName: payoutPaymentMethod
+        - relationshipName: claimCaseBeneficiaryWarningCode
+  graphql:
+    expressionTypeName: ClaimCaseBeneficiariesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimCaseBeneficiaries
+  objectType: ClaimCaseBeneficiaries
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_case_beneficiaries
+  filterExpressionType: ClaimCaseBeneficiariesBoolExp
+  aggregateExpression: ClaimCaseBeneficiariesAggExp
+  orderByExpression: ClaimCaseBeneficiariesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimCaseBeneficiaries
+      subscription:
+        rootField: claimCaseBeneficiaries
+    selectUniques:
+      - queryRootField: claimCaseBeneficiariesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: claimCaseBeneficiariesById
+    filterInputTypeName: ClaimCaseBeneficiariesFilterInput
+    aggregate:
+      queryRootField: claimCaseBeneficiariesAggregate
+      subscription:
+        rootField: claimCaseBeneficiariesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimCaseBeneficiaries
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bankBranchByBankBranchId
+  sourceType: ClaimCaseBeneficiaries
+  target:
+    model:
+      name: BankBranchs
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bankBranchId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: bank
+  sourceType: ClaimCaseBeneficiaries
+  target:
+    model:
+      name: Banks
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: bankId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: ClaimCaseBeneficiaries
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: confirmedBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUserByCreatedBy
+  sourceType: ClaimCaseBeneficiaries
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: createdBy
+      target:
+        modelField:
+          - fieldName: userId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payoutPaymentMethod
+  sourceType: ClaimCaseBeneficiaries
+  target:
+    model:
+      name: PayoutPaymentMethods
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: paymentMethod
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCaseBeneficiaryWarningCode
+  sourceType: ClaimCaseBeneficiaries
+  target:
+    model:
+      name: ClaimCaseBeneficiaryWarningCodes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: warningCode
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCases
+  sourceType: ClaimCaseBeneficiaries
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: ClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: beneficiaryId
+  graphql:
+    aggregateFieldName: claimCasesAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: originalClaimCases
+  sourceType: ClaimCaseBeneficiaries
+  target:
+    model:
+      name: OriginalClaimCases
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OriginalClaimCasesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: beneficiaryId
+  graphql:
+    aggregateFieldName: originalClaimCasesAggregate
+

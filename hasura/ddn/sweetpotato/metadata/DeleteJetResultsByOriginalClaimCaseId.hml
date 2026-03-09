@@ -1,0 +1,73 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteJetResultsByOriginalClaimCaseIdResponse
+  description: Responses from the 'delete_jet_results_by_original_claim_case_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[JetResults!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteJetResultsByOriginalClaimCaseIdResponse
+    inputTypeName: DeleteJetResultsByOriginalClaimCaseIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_jet_results_by_original_claim_case_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteJetResultsByOriginalClaimCaseIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteJetResultsByOriginalClaimCaseId
+  outputType: DeleteJetResultsByOriginalClaimCaseIdResponse!
+  arguments:
+    - name: keyOriginalClaimCaseId
+      type: Uuid
+    - name: preCheck
+      type: JetResultsBoolExp
+      description: Delete permission predicate over the 'jet_results' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_jet_results_by_original_claim_case_id
+    argumentMapping:
+      keyOriginalClaimCaseId: key_original_claim_case_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteJetResultsByOriginalClaimCaseId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'jet_results' collection using the
+    'original_claim_case_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteJetResultsByOriginalClaimCaseId
+  permissions:
+    - role: admin
+      allowExecution: true
+

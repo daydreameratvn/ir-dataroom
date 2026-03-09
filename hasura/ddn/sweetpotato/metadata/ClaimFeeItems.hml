@@ -1,0 +1,397 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ClaimFeeItems
+  fields:
+    - name: claimFeeItemId
+      type: Uuid!
+    - name: claimId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: diagnosis
+      type: String_1!
+    - name: endTime
+      type: Timestamptz!
+    - name: icdCodes
+      type: String_1
+    - name: medicineFee
+      type: Bigdecimal
+    - name: numOfInHospitalDays
+      type: Bigdecimal
+    - name: otherFee
+      type: Bigdecimal
+    - name: roomFee
+      type: Bigdecimal
+    - name: startTime
+      type: Timestamptz!
+    - name: surgeryFee
+      type: Bigdecimal
+    - name: tenantId
+      type: Uuid!
+    - name: testFee
+      type: Bigdecimal
+    - name: totalRoomFee
+      type: Bigdecimal
+    - name: treatmentMethod
+      type: String_1!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: ClaimFeeItems
+    inputTypeName: ClaimFeeItemsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: claim_fee_items
+      fieldMapping:
+        claimFeeItemId:
+          column:
+            name: claim_fee_item_id
+        claimId:
+          column:
+            name: claim_id
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        diagnosis:
+          column:
+            name: diagnosis
+        endTime:
+          column:
+            name: end_time
+        icdCodes:
+          column:
+            name: icd_codes
+        medicineFee:
+          column:
+            name: medicine_fee
+        numOfInHospitalDays:
+          column:
+            name: num_of_in_hospital_days
+        otherFee:
+          column:
+            name: other_fee
+        roomFee:
+          column:
+            name: room_fee
+        startTime:
+          column:
+            name: start_time
+        surgeryFee:
+          column:
+            name: surgery_fee
+        tenantId:
+          column:
+            name: tenant_id
+        testFee:
+          column:
+            name: test_fee
+        totalRoomFee:
+          column:
+            name: total_room_fee
+        treatmentMethod:
+          column:
+            name: treatment_method
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ClaimFeeItems
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimFeeItemId
+          - claimId
+          - createdAt
+          - deletedAt
+          - diagnosis
+          - endTime
+          - icdCodes
+          - medicineFee
+          - numOfInHospitalDays
+          - otherFee
+          - roomFee
+          - startTime
+          - surgeryFee
+          - tenantId
+          - testFee
+          - totalRoomFee
+          - treatmentMethod
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ClaimFeeItemsBoolExp
+  operand:
+    object:
+      type: ClaimFeeItems
+      comparableFields:
+        - fieldName: claimFeeItemId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: diagnosis
+          booleanExpressionType: TextBoolExp
+        - fieldName: endTime
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: icdCodes
+          booleanExpressionType: TextBoolExp
+        - fieldName: medicineFee
+          booleanExpressionType: NumericBoolExp
+        - fieldName: numOfInHospitalDays
+          booleanExpressionType: NumericBoolExp
+        - fieldName: otherFee
+          booleanExpressionType: NumericBoolExp
+        - fieldName: roomFee
+          booleanExpressionType: NumericBoolExp
+        - fieldName: startTime
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: surgeryFee
+          booleanExpressionType: NumericBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: testFee
+          booleanExpressionType: NumericBoolExp
+        - fieldName: totalRoomFee
+          booleanExpressionType: NumericBoolExp
+        - fieldName: treatmentMethod
+          booleanExpressionType: TextBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: tenant
+        - relationshipName: claimFeeType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ClaimFeeItemsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ClaimFeeItemsAggExp
+  operand:
+    object:
+      aggregatedType: ClaimFeeItems
+      aggregatableFields:
+        - fieldName: claimFeeItemId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: diagnosis
+          aggregateExpression: TextAggExp
+        - fieldName: endTime
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: icdCodes
+          aggregateExpression: TextAggExp
+        - fieldName: medicineFee
+          aggregateExpression: NumericAggExp
+        - fieldName: numOfInHospitalDays
+          aggregateExpression: NumericAggExp
+        - fieldName: otherFee
+          aggregateExpression: NumericAggExp
+        - fieldName: roomFee
+          aggregateExpression: NumericAggExp
+        - fieldName: startTime
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: surgeryFee
+          aggregateExpression: NumericAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: testFee
+          aggregateExpression: NumericAggExp
+        - fieldName: totalRoomFee
+          aggregateExpression: NumericAggExp
+        - fieldName: treatmentMethod
+          aggregateExpression: TextAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ClaimFeeItemsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ClaimFeeItemsOrderByExp
+  operand:
+    object:
+      orderedType: ClaimFeeItems
+      orderableFields:
+        - fieldName: claimFeeItemId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: diagnosis
+          orderByExpression: String1OrderByExp
+        - fieldName: endTime
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: icdCodes
+          orderByExpression: String1OrderByExp
+        - fieldName: medicineFee
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: numOfInHospitalDays
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: otherFee
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: roomFee
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: startTime
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: surgeryFee
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: testFee
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: totalRoomFee
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: treatmentMethod
+          orderByExpression: String1OrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimCase
+        - relationshipName: tenant
+        - relationshipName: claimFeeType
+  graphql:
+    expressionTypeName: ClaimFeeItemsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: ClaimFeeItems
+  objectType: ClaimFeeItems
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: claim_fee_items
+  filterExpressionType: ClaimFeeItemsBoolExp
+  aggregateExpression: ClaimFeeItemsAggExp
+  orderByExpression: ClaimFeeItemsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: claimFeeItems
+      subscription:
+        rootField: claimFeeItems
+    selectUniques:
+      - queryRootField: claimFeeItemsByClaimFeeItemId
+        uniqueIdentifier:
+          - claimFeeItemId
+        subscription:
+          rootField: claimFeeItemsByClaimFeeItemId
+    filterInputTypeName: ClaimFeeItemsFilterInput
+    aggregate:
+      queryRootField: claimFeeItemsAggregate
+      subscription:
+        rootField: claimFeeItemsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ClaimFeeItems
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimCase
+  sourceType: ClaimFeeItems
+  target:
+    model:
+      name: ClaimCases
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimId
+      target:
+        modelField:
+          - fieldName: claimCaseId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: ClaimFeeItems
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimFeeType
+  sourceType: ClaimFeeItems
+  target:
+    model:
+      name: ClaimFeeTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

@@ -1,0 +1,342 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PlanDetails
+  description: Chi tiết plan
+  fields:
+    - name: code
+      type: String_1
+    - name: coverageDescription
+      type: String_1
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: fee
+      type: String_1
+    - name: id
+      type: Uuid!
+    - name: name
+      type: String_1
+    - name: parentPlanDetailId
+      type: Uuid
+    - name: planDetailId
+      type: Uuid!
+    - name: planId
+      type: Uuid!
+    - name: territorialLimit
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: PlanDetails
+    inputTypeName: PlanDetailsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: plan_details
+      fieldMapping:
+        code:
+          column:
+            name: code
+        coverageDescription:
+          column:
+            name: coverage_description
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        fee:
+          column:
+            name: fee
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        parentPlanDetailId:
+          column:
+            name: parent_plan_detail_id
+        planDetailId:
+          column:
+            name: plan_detail_id
+        planId:
+          column:
+            name: plan_id
+        territorialLimit:
+          column:
+            name: territorial_limit
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PlanDetails
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - coverageDescription
+          - createdAt
+          - createdBy
+          - deletedAt
+          - description
+          - fee
+          - id
+          - name
+          - parentPlanDetailId
+          - planDetailId
+          - planId
+          - territorialLimit
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PlanDetailsBoolExp
+  operand:
+    object:
+      type: PlanDetails
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: coverageDescription
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: description
+          booleanExpressionType: TextBoolExp
+        - fieldName: fee
+          booleanExpressionType: TextBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: name
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: parentPlanDetailId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planDetailId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: planId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: territorialLimit
+          booleanExpressionType: VarcharBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: planDetail
+        - relationshipName: planDetails
+        - relationshipName: plan
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PlanDetailsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PlanDetailsAggExp
+  operand:
+    object:
+      aggregatedType: PlanDetails
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: VarcharAggExp
+        - fieldName: coverageDescription
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: description
+          aggregateExpression: TextAggExp
+        - fieldName: fee
+          aggregateExpression: TextAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: name
+          aggregateExpression: VarcharAggExp
+        - fieldName: parentPlanDetailId
+          aggregateExpression: UuidAggExp
+        - fieldName: planDetailId
+          aggregateExpression: UuidAggExp
+        - fieldName: planId
+          aggregateExpression: UuidAggExp
+        - fieldName: territorialLimit
+          aggregateExpression: VarcharAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PlanDetailsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PlanDetailsOrderByExp
+  operand:
+    object:
+      orderedType: PlanDetails
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: coverageDescription
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: description
+          orderByExpression: String1OrderByExp
+        - fieldName: fee
+          orderByExpression: String1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: parentPlanDetailId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planDetailId
+          orderByExpression: UuidOrderByExp
+        - fieldName: planId
+          orderByExpression: UuidOrderByExp
+        - fieldName: territorialLimit
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: planDetail
+        - relationshipName: plan
+  graphql:
+    expressionTypeName: PlanDetailsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PlanDetails
+  objectType: PlanDetails
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: plan_details
+  filterExpressionType: PlanDetailsBoolExp
+  aggregateExpression: PlanDetailsAggExp
+  orderByExpression: PlanDetailsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: planDetails
+      subscription:
+        rootField: planDetails
+    selectUniques:
+      - queryRootField: planDetailsByPlanDetailId
+        uniqueIdentifier:
+          - planDetailId
+        subscription:
+          rootField: planDetailsByPlanDetailId
+    filterInputTypeName: PlanDetailsFilterInput
+    aggregate:
+      queryRootField: planDetailsAggregate
+      subscription:
+        rootField: planDetailsAggregate
+  description: Chi tiết plan
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PlanDetails
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planDetail
+  sourceType: PlanDetails
+  target:
+    model:
+      name: PlanDetails
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: parentPlanDetailId
+      target:
+        modelField:
+          - fieldName: planDetailId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: planDetails
+  sourceType: PlanDetails
+  target:
+    model:
+      name: PlanDetails
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PlanDetailsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planDetailId
+      target:
+        modelField:
+          - fieldName: parentPlanDetailId
+  graphql:
+    aggregateFieldName: planDetailsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: plan
+  sourceType: PlanDetails
+  target:
+    model:
+      name: Plans
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: planId
+      target:
+        modelField:
+          - fieldName: planId
+

@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertEnumLocalizationsObject
+  fields:
+    - name: enumTranslation
+      type: String_1
+    - name: enumType
+      type: String_1!
+    - name: enumValue
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: locale
+      type: String_1!
+  graphql:
+    typeName: InsertEnumLocalizationsObject
+    inputTypeName: InsertEnumLocalizationsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_enum_localizations_object
+      fieldMapping:
+        enumTranslation:
+          column:
+            name: enum_translation
+        enumType:
+          column:
+            name: enum_type
+        enumValue:
+          column:
+            name: enum_value
+        id:
+          column:
+            name: id
+        locale:
+          column:
+            name: locale
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertEnumLocalizationsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - enumTranslation
+          - enumType
+          - enumValue
+          - id
+          - locale
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertEnumLocalizationsResponse
+  description: Responses from the 'insert_enum_localizations' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[EnumLocalizations!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertEnumLocalizationsResponse
+    inputTypeName: InsertEnumLocalizationsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_enum_localizations_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertEnumLocalizationsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertEnumLocalizations
+  outputType: InsertEnumLocalizationsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertEnumLocalizationsObject!]!"
+    - name: postCheck
+      type: EnumLocalizationsBoolExp
+      description: Insert permission predicate over the 'enum_localizations' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_enum_localizations
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertEnumLocalizations
+    rootFieldKind: Mutation
+  description: Insert into the enum_localizations table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertEnumLocalizations
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,170 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutBankPaymentProvidersByIdUpdateColumns
+  description: Update the columns of the 'payout_bank_payment_providers' collection
+  fields:
+    - name: bankId
+      type: UpdateColumnPayoutBankPaymentProvidersBankId
+      description: Update the 'bank_id' column in the 'payout_bank_payment_providers'
+        collection.
+    - name: createdAt
+      type: UpdateColumnPayoutBankPaymentProvidersCreatedAt
+      description: Update the 'created_at' column in the
+        'payout_bank_payment_providers' collection.
+    - name: flexBankCode
+      type: UpdateColumnPayoutBankPaymentProvidersFlexBankCode
+      description: Update the 'flex_bank_code' column in the
+        'payout_bank_payment_providers' collection.
+    - name: flexBankName
+      type: UpdateColumnPayoutBankPaymentProvidersFlexBankName
+      description: Update the 'flex_bank_name' column in the
+        'payout_bank_payment_providers' collection.
+    - name: flexFastTransferSupported
+      type: UpdateColumnPayoutBankPaymentProvidersFlexFastTransferSupported
+      description: Update the 'flex_fast_transfer_supported' column in the
+        'payout_bank_payment_providers' collection.
+    - name: id
+      type: UpdateColumnPayoutBankPaymentProvidersId
+      description: Update the 'id' column in the 'payout_bank_payment_providers' collection.
+    - name: updatedAt
+      type: UpdateColumnPayoutBankPaymentProvidersUpdatedAt
+      description: Update the 'updated_at' column in the
+        'payout_bank_payment_providers' collection.
+    - name: xenditBankCode
+      type: UpdateColumnPayoutBankPaymentProvidersXenditBankCode
+      description: Update the 'xendit_bank_code' column in the
+        'payout_bank_payment_providers' collection.
+  graphql:
+    typeName: UpdatePayoutBankPaymentProvidersByIdUpdateColumns
+    inputTypeName: UpdatePayoutBankPaymentProvidersByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_bank_payment_providers_by_id_update_columns
+      fieldMapping:
+        bankId:
+          column:
+            name: bank_id
+        createdAt:
+          column:
+            name: created_at
+        flexBankCode:
+          column:
+            name: flex_bank_code
+        flexBankName:
+          column:
+            name: flex_bank_name
+        flexFastTransferSupported:
+          column:
+            name: flex_fast_transfer_supported
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+        xenditBankCode:
+          column:
+            name: xendit_bank_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutBankPaymentProvidersByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankId
+          - createdAt
+          - flexBankCode
+          - flexBankName
+          - flexFastTransferSupported
+          - id
+          - updatedAt
+          - xenditBankCode
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdatePayoutBankPaymentProvidersByIdResponse
+  description: Responses from the 'update_payout_bank_payment_providers_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PayoutBankPaymentProviders!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdatePayoutBankPaymentProvidersByIdResponse
+    inputTypeName: UpdatePayoutBankPaymentProvidersByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_payout_bank_payment_providers_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdatePayoutBankPaymentProvidersByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdatePayoutBankPaymentProvidersById
+  outputType: UpdatePayoutBankPaymentProvidersByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: PayoutBankPaymentProvidersBoolExp
+      description: Update permission post-condition predicate over the
+        'payout_bank_payment_providers' collection
+    - name: preCheck
+      type: PayoutBankPaymentProvidersBoolExp
+      description: Update permission pre-condition predicate over the
+        'payout_bank_payment_providers' collection
+    - name: updateColumns
+      type: UpdatePayoutBankPaymentProvidersByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_payout_bank_payment_providers_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updatePayoutBankPaymentProvidersById
+    rootFieldKind: Mutation
+  description: Update any row on the 'payout_bank_payment_providers' collection
+    using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdatePayoutBankPaymentProvidersById
+  permissions:
+    - role: admin
+      allowExecution: true
+

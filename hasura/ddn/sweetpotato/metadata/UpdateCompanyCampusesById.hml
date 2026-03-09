@@ -1,0 +1,162 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCompanyCampusesByIdUpdateColumns
+  description: Update the columns of the 'company_campuses' collection
+  fields:
+    - name: companyId
+      type: UpdateColumnCompanyCampusesCompanyId
+      description: Update the 'company_id' column in the 'company_campuses' collection.
+    - name: createdAt
+      type: UpdateColumnCompanyCampusesCreatedAt
+      description: Update the 'created_at' column in the 'company_campuses' collection.
+    - name: createdBy
+      type: UpdateColumnCompanyCampusesCreatedBy
+      description: Update the 'created_by' column in the 'company_campuses' collection.
+    - name: deletedAt
+      type: UpdateColumnCompanyCampusesDeletedAt
+      description: Update the 'deleted_at' column in the 'company_campuses' collection.
+    - name: id
+      type: UpdateColumnCompanyCampusesId
+      description: Update the 'id' column in the 'company_campuses' collection.
+    - name: name
+      type: UpdateColumnCompanyCampusesName
+      description: Update the 'name' column in the 'company_campuses' collection.
+    - name: updatedAt
+      type: UpdateColumnCompanyCampusesUpdatedAt
+      description: Update the 'updated_at' column in the 'company_campuses' collection.
+    - name: updatedBy
+      type: UpdateColumnCompanyCampusesUpdatedBy
+      description: Update the 'updated_by' column in the 'company_campuses' collection.
+  graphql:
+    typeName: UpdateCompanyCampusesByIdUpdateColumns
+    inputTypeName: UpdateCompanyCampusesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_company_campuses_by_id_update_columns
+      fieldMapping:
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCompanyCampusesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - companyId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - name
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateCompanyCampusesByIdResponse
+  description: Responses from the 'update_company_campuses_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CompanyCampuses!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateCompanyCampusesByIdResponse
+    inputTypeName: UpdateCompanyCampusesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_company_campuses_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateCompanyCampusesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateCompanyCampusesById
+  outputType: UpdateCompanyCampusesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: CompanyCampusesBoolExp
+      description: Update permission post-condition predicate over the
+        'company_campuses' collection
+    - name: preCheck
+      type: CompanyCampusesBoolExp
+      description: Update permission pre-condition predicate over the
+        'company_campuses' collection
+    - name: updateColumns
+      type: UpdateCompanyCampusesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_company_campuses_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateCompanyCampusesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'company_campuses' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateCompanyCampusesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

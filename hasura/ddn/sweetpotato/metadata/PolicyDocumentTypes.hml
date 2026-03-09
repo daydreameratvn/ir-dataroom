@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyDocumentTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PolicyDocumentTypes
+    inputTypeName: PolicyDocumentTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_document_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyDocumentTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyDocumentTypesBoolExp
+  operand:
+    object:
+      type: PolicyDocumentTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policyDocuments
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyDocumentTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyDocumentTypesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyDocumentTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyDocumentTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyDocumentTypesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyDocumentTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicyDocumentTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyDocumentTypes
+  objectType: PolicyDocumentTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_document_types
+  filterExpressionType: PolicyDocumentTypesBoolExp
+  aggregateExpression: PolicyDocumentTypesAggExp
+  orderByExpression: PolicyDocumentTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyDocumentTypes
+      subscription:
+        rootField: policyDocumentTypes
+    selectUniques:
+      - queryRootField: policyDocumentTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: policyDocumentTypesByValue
+    filterInputTypeName: PolicyDocumentTypesFilterInput
+    aggregate:
+      queryRootField: policyDocumentTypesAggregate
+      subscription:
+        rootField: policyDocumentTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyDocumentTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyDocuments
+  sourceType: PolicyDocumentTypes
+  target:
+    model:
+      name: PolicyDocuments
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyDocumentsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: policyDocumentsAggregate
+

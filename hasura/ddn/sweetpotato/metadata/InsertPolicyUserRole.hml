@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyUserRoleObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: policyId
+      type: Uuid!
+    - name: userRoleId
+      type: Uuid!
+  graphql:
+    typeName: InsertPolicyUserRoleObject
+    inputTypeName: InsertPolicyUserRoleObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_user_role_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        policyId:
+          column:
+            name: policy_id
+        userRoleId:
+          column:
+            name: user_role_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyUserRoleObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - id
+          - policyId
+          - userRoleId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPolicyUserRoleResponse
+  description: Responses from the 'insert_policy_user_role' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PolicyUserRole!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPolicyUserRoleResponse
+    inputTypeName: InsertPolicyUserRoleResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_policy_user_role_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPolicyUserRoleResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPolicyUserRole
+  outputType: InsertPolicyUserRoleResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPolicyUserRoleObject!]!"
+    - name: postCheck
+      type: PolicyUserRoleBoolExp
+      description: Insert permission predicate over the 'policy_user_role' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_policy_user_role
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPolicyUserRole
+    rootFieldKind: Mutation
+  description: Insert into the policy_user_role table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPolicyUserRole
+  permissions:
+    - role: admin
+      allowExecution: true
+

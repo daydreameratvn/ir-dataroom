@@ -1,0 +1,150 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertBankBranchsObject
+  fields:
+    - name: bankId
+      type: Uuid!
+    - name: citadCode
+      type: String_1!
+    - name: cityId
+      type: Int32!
+    - name: createdAt
+      type: Timestamptz
+    - name: enName
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: isHead
+      type: Boolean_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: vnName
+      type: String_1!
+  graphql:
+    typeName: InsertBankBranchsObject
+    inputTypeName: InsertBankBranchsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_bank_branchs_object
+      fieldMapping:
+        bankId:
+          column:
+            name: bank_id
+        citadCode:
+          column:
+            name: citad_code
+        cityId:
+          column:
+            name: city_id
+        createdAt:
+          column:
+            name: created_at
+        enName:
+          column:
+            name: en_name
+        id:
+          column:
+            name: id
+        isHead:
+          column:
+            name: is_head
+        updatedAt:
+          column:
+            name: updated_at
+        vnName:
+          column:
+            name: vn_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertBankBranchsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bankId
+          - citadCode
+          - cityId
+          - createdAt
+          - enName
+          - id
+          - isHead
+          - updatedAt
+          - vnName
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertBankBranchsResponse
+  description: Responses from the 'insert_bank_branchs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[BankBranchs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertBankBranchsResponse
+    inputTypeName: InsertBankBranchsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_bank_branchs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertBankBranchsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertBankBranchs
+  outputType: InsertBankBranchsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertBankBranchsObject!]!"
+    - name: postCheck
+      type: BankBranchsBoolExp
+      description: Insert permission predicate over the 'bank_branchs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_bank_branchs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertBankBranchs
+    rootFieldKind: Mutation
+  description: Insert into the bank_branchs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertBankBranchs
+  permissions:
+    - role: admin
+      allowExecution: true
+

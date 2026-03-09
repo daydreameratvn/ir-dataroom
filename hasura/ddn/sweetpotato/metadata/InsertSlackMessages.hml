@@ -1,0 +1,156 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlackMessagesObject
+  fields:
+    - name: channelId
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: objectId
+      type: Uuid!
+    - name: payload
+      type: Json
+    - name: slackMemberId
+      type: String_1
+    - name: test
+      type: String_1
+    - name: timestamp
+      type: String_1!
+  graphql:
+    typeName: InsertSlackMessagesObject
+    inputTypeName: InsertSlackMessagesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slack_messages_object
+      fieldMapping:
+        channelId:
+          column:
+            name: channel_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        objectId:
+          column:
+            name: object_id
+        payload:
+          column:
+            name: payload
+        slackMemberId:
+          column:
+            name: slack_member_id
+        test:
+          column:
+            name: test
+        timestamp:
+          column:
+            name: timestamp
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlackMessagesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - channelId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - objectId
+          - payload
+          - slackMemberId
+          - test
+          - timestamp
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertSlackMessagesResponse
+  description: Responses from the 'insert_slack_messages' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlackMessages!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertSlackMessagesResponse
+    inputTypeName: InsertSlackMessagesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_slack_messages_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertSlackMessagesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertSlackMessages
+  outputType: InsertSlackMessagesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertSlackMessagesObject!]!"
+    - name: postCheck
+      type: SlackMessagesBoolExp
+      description: Insert permission predicate over the 'slack_messages' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_slack_messages
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertSlackMessages
+    rootFieldKind: Mutation
+  description: Insert into the slack_messages table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertSlackMessages
+  permissions:
+    - role: admin
+      allowExecution: true
+

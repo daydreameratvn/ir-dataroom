@@ -1,0 +1,186 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanBalancesObject
+  fields:
+    - name: allowAssessment
+      type: Boolean_1
+    - name: applyConditionKey
+      type: String_1
+    - name: contractReferencePhrase
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: deletedAt
+      type: Timestamptz
+    - name: description
+      type: String_1
+    - name: diseaseGroupId
+      type: Uuid
+    - name: displayOrder
+      type: Int32
+    - name: id
+      type: Uuid
+    - name: name
+      type: String_1!
+    - name: planId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz
+    - name: value
+      type: Bigdecimal!
+  graphql:
+    typeName: InsertPlanBalancesObject
+    inputTypeName: InsertPlanBalancesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_balances_object
+      fieldMapping:
+        allowAssessment:
+          column:
+            name: allow_assessment
+        applyConditionKey:
+          column:
+            name: apply_condition_key
+        contractReferencePhrase:
+          column:
+            name: contract_reference_phrase
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        description:
+          column:
+            name: description
+        diseaseGroupId:
+          column:
+            name: disease_group_id
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        planId:
+          column:
+            name: plan_id
+        tenantId:
+          column:
+            name: tenant_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanBalancesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - allowAssessment
+          - applyConditionKey
+          - contractReferencePhrase
+          - createdAt
+          - deletedAt
+          - description
+          - diseaseGroupId
+          - displayOrder
+          - id
+          - name
+          - planId
+          - tenantId
+          - type
+          - updatedAt
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertPlanBalancesResponse
+  description: Responses from the 'insert_plan_balances' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[PlanBalances!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertPlanBalancesResponse
+    inputTypeName: InsertPlanBalancesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_plan_balances_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertPlanBalancesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertPlanBalances
+  outputType: InsertPlanBalancesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertPlanBalancesObject!]!"
+    - name: postCheck
+      type: PlanBalancesBoolExp
+      description: Insert permission predicate over the 'plan_balances' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_plan_balances
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertPlanBalances
+    rootFieldKind: Mutation
+  description: Insert into the plan_balances table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertPlanBalances
+  permissions:
+    - role: admin
+      allowExecution: true
+

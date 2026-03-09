@@ -1,0 +1,82 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateResponse
+  description: Responses from the
+    'delete_insured_certificate_histories_by_insured_certificate_id_and_plan_id_and_start_date'
+    procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[InsuredCertificateHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateResponse
+    inputTypeName: DeleteInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_insured_certificate_histories_by_insured_certificate_id_and_plan_id_and_start_date_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDate
+  outputType: DeleteInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDateResponse!
+  arguments:
+    - name: keyInsuredCertificateId
+      type: Uuid!
+    - name: keyPlanId
+      type: Uuid!
+    - name: keyStartDate
+      type: Timestamptz
+    - name: preCheck
+      type: InsuredCertificateHistoriesBoolExp
+      description: Delete permission predicate over the
+        'insured_certificate_histories' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_insured_certificate_histories_by_insured_certificate_id_and_plan_id_and_start_date
+    argumentMapping:
+      keyInsuredCertificateId: key_insured_certificate_id
+      keyPlanId: key_plan_id
+      keyStartDate: key_start_date
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDate
+    rootFieldKind: Mutation
+  description: Delete any row on the 'insured_certificate_histories' collection
+    using the 'insured_certificate_id', 'plan_id' and 'start_date' keys
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteInsuredCertificateHistoriesByInsuredCertificateIdAndPlanIdAndStartDate
+  permissions:
+    - role: admin
+      allowExecution: true
+

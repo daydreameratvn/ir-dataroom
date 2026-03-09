@@ -1,0 +1,239 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MpPresences
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: ip
+      type: String_1!
+    - name: lastPresentAt
+      type: Timestamptz!
+    - name: medicalProviderId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: MpPresences
+    inputTypeName: MpPresencesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: mp_presences
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        ip:
+          column:
+            name: ip
+        lastPresentAt:
+          column:
+            name: last_present_at
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        updatedAt:
+          column:
+            name: updated_at
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MpPresences
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - ip
+          - lastPresentAt
+          - medicalProviderId
+          - updatedAt
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MpPresencesBoolExp
+  operand:
+    object:
+      type: MpPresences
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: ip
+          booleanExpressionType: TextBoolExp
+        - fieldName: lastPresentAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: medicalProviderId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: mpMedicalProvider
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MpPresencesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MpPresencesAggExp
+  operand:
+    object:
+      aggregatedType: MpPresences
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: ip
+          aggregateExpression: TextAggExp
+        - fieldName: lastPresentAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: medicalProviderId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MpPresencesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MpPresencesOrderByExp
+  operand:
+    object:
+      orderedType: MpPresences
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: ip
+          orderByExpression: String1OrderByExp
+        - fieldName: lastPresentAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: medicalProviderId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: mpMedicalProvider
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: MpPresencesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MpPresences
+  objectType: MpPresences
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: mp_presences
+  filterExpressionType: MpPresencesBoolExp
+  aggregateExpression: MpPresencesAggExp
+  orderByExpression: MpPresencesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: mpPresences
+      subscription:
+        rootField: mpPresences
+    selectUniques:
+      - queryRootField: mpPresencesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: mpPresencesById
+      - queryRootField: mpPresencesByPresencesUserIdMedicalProviderIdKey
+        uniqueIdentifier:
+          - medicalProviderId
+          - userId
+        subscription:
+          rootField: mpPresencesByPresencesUserIdMedicalProviderIdKey
+    filterInputTypeName: MpPresencesFilterInput
+    aggregate:
+      queryRootField: mpPresencesAggregate
+      subscription:
+        rootField: mpPresencesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MpPresences
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: mpMedicalProvider
+  sourceType: MpPresences
+  target:
+    model:
+      name: MpMedicalProviders
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: medicalProviderId
+      target:
+        modelField:
+          - fieldName: medicalProviderId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: MpPresences
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

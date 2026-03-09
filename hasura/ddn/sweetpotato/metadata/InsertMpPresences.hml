@@ -1,0 +1,138 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpPresencesObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: ip
+      type: String_1!
+    - name: lastPresentAt
+      type: Timestamptz
+    - name: medicalProviderId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: InsertMpPresencesObject
+    inputTypeName: InsertMpPresencesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_presences_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        ip:
+          column:
+            name: ip
+        lastPresentAt:
+          column:
+            name: last_present_at
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        updatedAt:
+          column:
+            name: updated_at
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpPresencesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - id
+          - ip
+          - lastPresentAt
+          - medicalProviderId
+          - updatedAt
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpPresencesResponse
+  description: Responses from the 'insert_mp_presences' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpPresences!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMpPresencesResponse
+    inputTypeName: InsertMpPresencesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_presences_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpPresencesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMpPresences
+  outputType: InsertMpPresencesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMpPresencesObject!]!"
+    - name: postCheck
+      type: MpPresencesBoolExp
+      description: Insert permission predicate over the 'mp_presences' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_mp_presences
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMpPresences
+    rootFieldKind: Mutation
+  description: Insert into the mp_presences table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMpPresences
+  permissions:
+    - role: admin
+      allowExecution: true
+

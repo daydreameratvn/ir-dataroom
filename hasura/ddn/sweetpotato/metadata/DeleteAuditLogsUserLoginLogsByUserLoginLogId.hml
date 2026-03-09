@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteAuditLogsUserLoginLogsByUserLoginLogIdResponse
+  description: Responses from the
+    'delete_audit_logs_user_login_logs_by_user_login_log_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuditLogsUserLoginLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteAuditLogsUserLoginLogsByUserLoginLogIdResponse
+    inputTypeName: DeleteAuditLogsUserLoginLogsByUserLoginLogIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_audit_logs_user_login_logs_by_user_login_log_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteAuditLogsUserLoginLogsByUserLoginLogIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteAuditLogsUserLoginLogsByUserLoginLogId
+  outputType: DeleteAuditLogsUserLoginLogsByUserLoginLogIdResponse!
+  arguments:
+    - name: keyUserLoginLogId
+      type: Uuid!
+    - name: preCheck
+      type: AuditLogsUserLoginLogsBoolExp
+      description: Delete permission predicate over the 'audit_logs_user_login_logs'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_audit_logs_user_login_logs_by_user_login_log_id
+    argumentMapping:
+      keyUserLoginLogId: key_user_login_log_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteAuditLogsUserLoginLogsByUserLoginLogId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'audit_logs_user_login_logs' collection using
+    the 'user_login_log_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteAuditLogsUserLoginLogsByUserLoginLogId
+  permissions:
+    - role: admin
+      allowExecution: true
+

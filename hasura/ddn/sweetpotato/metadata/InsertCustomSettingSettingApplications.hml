@@ -1,0 +1,145 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCustomSettingSettingApplicationsObject
+  fields:
+    - name: createdAt
+      type: Timestamp
+    - name: fallbackPriority
+      type: Int32!
+    - name: id
+      type: Uuid
+    - name: objectId
+      type: Uuid!
+    - name: objectType
+      type: String_1!
+    - name: overridePriority
+      type: Int32!
+    - name: settingId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertCustomSettingSettingApplicationsObject
+    inputTypeName: InsertCustomSettingSettingApplicationsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_custom_setting_setting_applications_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        fallbackPriority:
+          column:
+            name: fallback_priority
+        id:
+          column:
+            name: id
+        objectId:
+          column:
+            name: object_id
+        objectType:
+          column:
+            name: object_type
+        overridePriority:
+          column:
+            name: override_priority
+        settingId:
+          column:
+            name: setting_id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCustomSettingSettingApplicationsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - fallbackPriority
+          - id
+          - objectId
+          - objectType
+          - overridePriority
+          - settingId
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertCustomSettingSettingApplicationsResponse
+  description: Responses from the 'insert_custom_setting_setting_applications' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[CustomSettingSettingApplications!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertCustomSettingSettingApplicationsResponse
+    inputTypeName: InsertCustomSettingSettingApplicationsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_custom_setting_setting_applications_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertCustomSettingSettingApplicationsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertCustomSettingSettingApplications
+  outputType: InsertCustomSettingSettingApplicationsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertCustomSettingSettingApplicationsObject!]!"
+    - name: postCheck
+      type: CustomSettingSettingApplicationsBoolExp
+      description: Insert permission predicate over the
+        'custom_setting_setting_applications' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_custom_setting_setting_applications
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertCustomSettingSettingApplications
+    rootFieldKind: Mutation
+  description: Insert into the custom_setting_setting_applications table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertCustomSettingSettingApplications
+  permissions:
+    - role: admin
+      allowExecution: true
+

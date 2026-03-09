@@ -1,0 +1,257 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CompanyCampusUsers
+  fields:
+    - name: campus
+      type: String_1!
+    - name: companyId
+      type: Uuid!
+    - name: createdAt
+      type: Timestamptz!
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: CompanyCampusUsers
+    inputTypeName: CompanyCampusUsersInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: company_campus_users
+      fieldMapping:
+        campus:
+          column:
+            name: campus
+        companyId:
+          column:
+            name: company_id
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CompanyCampusUsers
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - campus
+          - companyId
+          - createdAt
+          - createdBy
+          - deletedAt
+          - id
+          - updatedAt
+          - updatedBy
+          - userId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CompanyCampusUsersBoolExp
+  operand:
+    object:
+      type: CompanyCampusUsers
+      comparableFields:
+        - fieldName: campus
+          booleanExpressionType: TextBoolExp
+        - fieldName: companyId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: createdBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: updatedBy
+          booleanExpressionType: UuidBoolExp
+        - fieldName: userId
+          booleanExpressionType: UuidBoolExp
+      comparableRelationships:
+        - relationshipName: company
+        - relationshipName: identityUser
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CompanyCampusUsersBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CompanyCampusUsersAggExp
+  operand:
+    object:
+      aggregatedType: CompanyCampusUsers
+      aggregatableFields:
+        - fieldName: campus
+          aggregateExpression: TextAggExp
+        - fieldName: companyId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: createdBy
+          aggregateExpression: UuidAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: updatedBy
+          aggregateExpression: UuidAggExp
+        - fieldName: userId
+          aggregateExpression: UuidAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CompanyCampusUsersAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CompanyCampusUsersOrderByExp
+  operand:
+    object:
+      orderedType: CompanyCampusUsers
+      orderableFields:
+        - fieldName: campus
+          orderByExpression: String1OrderByExp
+        - fieldName: companyId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: createdBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: updatedBy
+          orderByExpression: UuidOrderByExp
+        - fieldName: userId
+          orderByExpression: UuidOrderByExp
+      orderableRelationships:
+        - relationshipName: company
+        - relationshipName: identityUser
+  graphql:
+    expressionTypeName: CompanyCampusUsersOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CompanyCampusUsers
+  objectType: CompanyCampusUsers
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: company_campus_users
+  filterExpressionType: CompanyCampusUsersBoolExp
+  aggregateExpression: CompanyCampusUsersAggExp
+  orderByExpression: CompanyCampusUsersOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: companyCampusUsers
+      subscription:
+        rootField: companyCampusUsers
+    selectUniques:
+      - queryRootField: companyCampusUsersById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: companyCampusUsersById
+    filterInputTypeName: CompanyCampusUsersFilterInput
+    aggregate:
+      queryRootField: companyCampusUsersAggregate
+      subscription:
+        rootField: companyCampusUsersAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CompanyCampusUsers
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: company
+  sourceType: CompanyCampusUsers
+  target:
+    model:
+      name: Companies
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: companyId
+      target:
+        modelField:
+          - fieldName: companyId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: identityUser
+  sourceType: CompanyCampusUsers
+  target:
+    model:
+      name: IdentityUsers
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+

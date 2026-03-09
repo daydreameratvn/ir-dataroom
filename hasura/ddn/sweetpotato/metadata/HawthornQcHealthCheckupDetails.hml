@@ -1,0 +1,289 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: HawthornQcHealthCheckupDetails
+  fields:
+    - name: afterQcCorrectionResult
+      type: Json
+    - name: beforeQcCorrectionResult
+      type: Json
+    - name: createdAt
+      type: Timestamptz!
+    - name: hasCorrection
+      type: Boolean_1
+    - name: id
+      type: Uuid!
+    - name: qcHealthCheckupId
+      type: Uuid!
+    - name: status
+      type: String_1!
+    - name: targetId
+      type: Uuid!
+    - name: type
+      type: String_1!
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: HawthornQcHealthCheckupDetails
+    inputTypeName: HawthornQcHealthCheckupDetailsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: hawthorn_qc_health_checkup_details
+      fieldMapping:
+        afterQcCorrectionResult:
+          column:
+            name: after_qc_correction_result
+        beforeQcCorrectionResult:
+          column:
+            name: before_qc_correction_result
+        createdAt:
+          column:
+            name: created_at
+        hasCorrection:
+          column:
+            name: has_correction
+        id:
+          column:
+            name: id
+        qcHealthCheckupId:
+          column:
+            name: qc_health_checkup_id
+        status:
+          column:
+            name: status
+        targetId:
+          column:
+            name: target_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: HawthornQcHealthCheckupDetails
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - afterQcCorrectionResult
+          - beforeQcCorrectionResult
+          - createdAt
+          - hasCorrection
+          - id
+          - qcHealthCheckupId
+          - status
+          - targetId
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: HawthornQcHealthCheckupDetailsBoolExp
+  operand:
+    object:
+      type: HawthornQcHealthCheckupDetails
+      comparableFields:
+        - fieldName: afterQcCorrectionResult
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: beforeQcCorrectionResult
+          booleanExpressionType: JsonbBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: hasCorrection
+          booleanExpressionType: BoolBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: qcHealthCheckupId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: status
+          booleanExpressionType: TextBoolExp
+        - fieldName: targetId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: hawthornQcHealthCheckup
+        - relationshipName: hawthornQcStatus
+        - relationshipName: hawthornQcHealthCheckupDetailType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: HawthornQcHealthCheckupDetailsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: HawthornQcHealthCheckupDetailsAggExp
+  operand:
+    object:
+      aggregatedType: HawthornQcHealthCheckupDetails
+      aggregatableFields:
+        - fieldName: afterQcCorrectionResult
+          aggregateExpression: JsonbAggExp
+        - fieldName: beforeQcCorrectionResult
+          aggregateExpression: JsonbAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: hasCorrection
+          aggregateExpression: BoolAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: qcHealthCheckupId
+          aggregateExpression: UuidAggExp
+        - fieldName: status
+          aggregateExpression: TextAggExp
+        - fieldName: targetId
+          aggregateExpression: UuidAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: HawthornQcHealthCheckupDetailsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: HawthornQcHealthCheckupDetailsOrderByExp
+  operand:
+    object:
+      orderedType: HawthornQcHealthCheckupDetails
+      orderableFields:
+        - fieldName: afterQcCorrectionResult
+          orderByExpression: JsonOrderByExp
+        - fieldName: beforeQcCorrectionResult
+          orderByExpression: JsonOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: hasCorrection
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: qcHealthCheckupId
+          orderByExpression: UuidOrderByExp
+        - fieldName: status
+          orderByExpression: String1OrderByExp
+        - fieldName: targetId
+          orderByExpression: UuidOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: hawthornQcHealthCheckup
+        - relationshipName: hawthornQcStatus
+        - relationshipName: hawthornQcHealthCheckupDetailType
+  graphql:
+    expressionTypeName: HawthornQcHealthCheckupDetailsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: HawthornQcHealthCheckupDetails
+  objectType: HawthornQcHealthCheckupDetails
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: hawthorn_qc_health_checkup_details
+  filterExpressionType: HawthornQcHealthCheckupDetailsBoolExp
+  aggregateExpression: HawthornQcHealthCheckupDetailsAggExp
+  orderByExpression: HawthornQcHealthCheckupDetailsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: hawthornQcHealthCheckupDetails
+      subscription:
+        rootField: hawthornQcHealthCheckupDetails
+    selectUniques:
+      - queryRootField: hawthornQcHealthCheckupDetailsById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: hawthornQcHealthCheckupDetailsById
+    filterInputTypeName: HawthornQcHealthCheckupDetailsFilterInput
+    aggregate:
+      queryRootField: hawthornQcHealthCheckupDetailsAggregate
+      subscription:
+        rootField: hawthornQcHealthCheckupDetailsAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: HawthornQcHealthCheckupDetails
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornQcHealthCheckup
+  sourceType: HawthornQcHealthCheckupDetails
+  target:
+    model:
+      name: HawthornQcHealthCheckups
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: qcHealthCheckupId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornQcStatus
+  sourceType: HawthornQcHealthCheckupDetails
+  target:
+    model:
+      name: HawthornQcStatuses
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: status
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: hawthornQcHealthCheckupDetailType
+  sourceType: HawthornQcHealthCheckupDetails
+  target:
+    model:
+      name: HawthornQcHealthCheckupDetailTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

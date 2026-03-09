@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PolicyCoPaymentApplyRangeTypes
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: PolicyCoPaymentApplyRangeTypes
+    inputTypeName: PolicyCoPaymentApplyRangeTypesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: policy_co_payment_apply_range_types
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PolicyCoPaymentApplyRangeTypes
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: PolicyCoPaymentApplyRangeTypesBoolExp
+  operand:
+    object:
+      type: PolicyCoPaymentApplyRangeTypes
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: policyCoPaymentApplyRanges
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: PolicyCoPaymentApplyRangeTypesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: PolicyCoPaymentApplyRangeTypesAggExp
+  operand:
+    object:
+      aggregatedType: PolicyCoPaymentApplyRangeTypes
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: PolicyCoPaymentApplyRangeTypesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: PolicyCoPaymentApplyRangeTypesOrderByExp
+  operand:
+    object:
+      orderedType: PolicyCoPaymentApplyRangeTypes
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: PolicyCoPaymentApplyRangeTypesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: PolicyCoPaymentApplyRangeTypes
+  objectType: PolicyCoPaymentApplyRangeTypes
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: policy_co_payment_apply_range_types
+  filterExpressionType: PolicyCoPaymentApplyRangeTypesBoolExp
+  aggregateExpression: PolicyCoPaymentApplyRangeTypesAggExp
+  orderByExpression: PolicyCoPaymentApplyRangeTypesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: policyCoPaymentApplyRangeTypes
+      subscription:
+        rootField: policyCoPaymentApplyRangeTypes
+    selectUniques:
+      - queryRootField: policyCoPaymentApplyRangeTypesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: policyCoPaymentApplyRangeTypesByValue
+    filterInputTypeName: PolicyCoPaymentApplyRangeTypesFilterInput
+    aggregate:
+      queryRootField: policyCoPaymentApplyRangeTypesAggregate
+      subscription:
+        rootField: policyCoPaymentApplyRangeTypesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PolicyCoPaymentApplyRangeTypes
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: policyCoPaymentApplyRanges
+  sourceType: PolicyCoPaymentApplyRangeTypes
+  target:
+    model:
+      name: PolicyCoPaymentApplyRanges
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: PolicyCoPaymentApplyRangesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: type
+  graphql:
+    aggregateFieldName: policyCoPaymentApplyRangesAggregate
+

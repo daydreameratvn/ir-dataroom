@@ -1,0 +1,140 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuditLogsUserLoginLogsObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: deviceInfo
+      type: Json
+    - name: message
+      type: String_1
+    - name: tenantId
+      type: Uuid
+    - name: userId
+      type: Uuid
+    - name: userInfoSnapshot
+      type: Json!
+      description: a snapshot of user info when they authenticate
+    - name: userLoginLogId
+      type: Uuid
+  graphql:
+    typeName: InsertAuditLogsUserLoginLogsObject
+    inputTypeName: InsertAuditLogsUserLoginLogsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_audit_logs_user_login_logs_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deviceInfo:
+          column:
+            name: device_info
+        message:
+          column:
+            name: message
+        tenantId:
+          column:
+            name: tenant_id
+        userId:
+          column:
+            name: user_id
+        userInfoSnapshot:
+          column:
+            name: user_info_snapshot
+        userLoginLogId:
+          column:
+            name: user_login_log_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuditLogsUserLoginLogsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deviceInfo
+          - message
+          - tenantId
+          - userId
+          - userInfoSnapshot
+          - userLoginLogId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertAuditLogsUserLoginLogsResponse
+  description: Responses from the 'insert_audit_logs_user_login_logs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuditLogsUserLoginLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertAuditLogsUserLoginLogsResponse
+    inputTypeName: InsertAuditLogsUserLoginLogsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_audit_logs_user_login_logs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertAuditLogsUserLoginLogsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertAuditLogsUserLoginLogs
+  outputType: InsertAuditLogsUserLoginLogsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertAuditLogsUserLoginLogsObject!]!"
+    - name: postCheck
+      type: AuditLogsUserLoginLogsBoolExp
+      description: Insert permission predicate over the 'audit_logs_user_login_logs'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_audit_logs_user_login_logs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertAuditLogsUserLoginLogs
+    rootFieldKind: Mutation
+  description: Insert into the audit_logs_user_login_logs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertAuditLogsUserLoginLogs
+  permissions:
+    - role: admin
+      allowExecution: true
+

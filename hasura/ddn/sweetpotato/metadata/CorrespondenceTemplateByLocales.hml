@@ -1,0 +1,332 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CorrespondenceTemplateByLocales
+  fields:
+    - name: content
+      type: String_1!
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: id
+      type: Uuid!
+    - name: locale
+      type: String_1!
+    - name: mjmlContent
+      type: String_1
+    - name: reactEmailContent
+      type: String_1
+    - name: subject
+      type: String_1
+    - name: templateId
+      type: Uuid!
+    - name: type
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz!
+  graphql:
+    typeName: CorrespondenceTemplateByLocales
+    inputTypeName: CorrespondenceTemplateByLocalesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: correspondence_template_by_locales
+      fieldMapping:
+        content:
+          column:
+            name: content
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        id:
+          column:
+            name: id
+        locale:
+          column:
+            name: locale
+        mjmlContent:
+          column:
+            name: mjml_content
+        reactEmailContent:
+          column:
+            name: react_email_content
+        subject:
+          column:
+            name: subject
+        templateId:
+          column:
+            name: template_id
+        type:
+          column:
+            name: type
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CorrespondenceTemplateByLocales
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - content
+          - createdAt
+          - deletedAt
+          - id
+          - locale
+          - mjmlContent
+          - reactEmailContent
+          - subject
+          - templateId
+          - type
+          - updatedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: CorrespondenceTemplateByLocalesBoolExp
+  operand:
+    object:
+      type: CorrespondenceTemplateByLocales
+      comparableFields:
+        - fieldName: content
+          booleanExpressionType: TextBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: locale
+          booleanExpressionType: TextBoolExp
+        - fieldName: mjmlContent
+          booleanExpressionType: TextBoolExp
+        - fieldName: reactEmailContent
+          booleanExpressionType: TextBoolExp
+        - fieldName: subject
+          booleanExpressionType: TextBoolExp
+        - fieldName: templateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: type
+          booleanExpressionType: TextBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: correspondenceTemplateByLocaleVersions
+        - relationshipName: language
+        - relationshipName: correspondenceTemplate
+        - relationshipName: correspondenceTemplateType
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: CorrespondenceTemplateByLocalesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: CorrespondenceTemplateByLocalesAggExp
+  operand:
+    object:
+      aggregatedType: CorrespondenceTemplateByLocales
+      aggregatableFields:
+        - fieldName: content
+          aggregateExpression: TextAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: locale
+          aggregateExpression: TextAggExp
+        - fieldName: mjmlContent
+          aggregateExpression: TextAggExp
+        - fieldName: reactEmailContent
+          aggregateExpression: TextAggExp
+        - fieldName: subject
+          aggregateExpression: TextAggExp
+        - fieldName: templateId
+          aggregateExpression: UuidAggExp
+        - fieldName: type
+          aggregateExpression: TextAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: CorrespondenceTemplateByLocalesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: CorrespondenceTemplateByLocalesOrderByExp
+  operand:
+    object:
+      orderedType: CorrespondenceTemplateByLocales
+      orderableFields:
+        - fieldName: content
+          orderByExpression: String1OrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: locale
+          orderByExpression: String1OrderByExp
+        - fieldName: mjmlContent
+          orderByExpression: String1OrderByExp
+        - fieldName: reactEmailContent
+          orderByExpression: String1OrderByExp
+        - fieldName: subject
+          orderByExpression: String1OrderByExp
+        - fieldName: templateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: type
+          orderByExpression: String1OrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: language
+        - relationshipName: correspondenceTemplate
+        - relationshipName: correspondenceTemplateType
+  graphql:
+    expressionTypeName: CorrespondenceTemplateByLocalesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: CorrespondenceTemplateByLocales
+  objectType: CorrespondenceTemplateByLocales
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: correspondence_template_by_locales
+  filterExpressionType: CorrespondenceTemplateByLocalesBoolExp
+  aggregateExpression: CorrespondenceTemplateByLocalesAggExp
+  orderByExpression: CorrespondenceTemplateByLocalesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: correspondenceTemplateByLocales
+      subscription:
+        rootField: correspondenceTemplateByLocales
+    selectUniques:
+      - queryRootField: correspondenceTemplateByLocalesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: correspondenceTemplateByLocalesById
+      - queryRootField: correspondenceTemplateByLocalesByTemplateByLocalesTemplateIdLocaleTypeDeletedAtKey
+        uniqueIdentifier:
+          - deletedAt
+          - locale
+          - templateId
+          - type
+        subscription:
+          rootField: correspondenceTemplateByLocalesByTemplateByLocalesTemplateIdLocaleTypeDeletedAtKey
+    filterInputTypeName: CorrespondenceTemplateByLocalesFilterInput
+    aggregate:
+      queryRootField: correspondenceTemplateByLocalesAggregate
+      subscription:
+        rootField: correspondenceTemplateByLocalesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: CorrespondenceTemplateByLocales
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceTemplateByLocaleVersions
+  sourceType: CorrespondenceTemplateByLocales
+  target:
+    model:
+      name: CorrespondenceTemplateByLocaleVersions
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: CorrespondenceTemplateByLocaleVersionsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: templateByLocaleId
+  graphql:
+    aggregateFieldName: correspondenceTemplateByLocaleVersionsAggregate
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: language
+  sourceType: CorrespondenceTemplateByLocales
+  target:
+    model:
+      name: Languages
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: locale
+      target:
+        modelField:
+          - fieldName: value
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceTemplate
+  sourceType: CorrespondenceTemplateByLocales
+  target:
+    model:
+      name: CorrespondenceTemplates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: templateId
+      target:
+        modelField:
+          - fieldName: id
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: correspondenceTemplateType
+  sourceType: CorrespondenceTemplateByLocales
+  target:
+    model:
+      name: CorrespondenceTemplateTypes
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: type
+      target:
+        modelField:
+          - fieldName: value
+

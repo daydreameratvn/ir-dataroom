@@ -1,0 +1,245 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FwdClaimDocumentSyncHistories
+  fields:
+    - name: batchId
+      type: Uuid!
+    - name: claimDocumentId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz!
+    - name: errorMessage
+      type: String_1
+    - name: fileId
+      type: Uuid
+    - name: id
+      type: Uuid!
+    - name: isSuccess
+      type: Boolean_1!
+    - name: syncedAt
+      type: Timestamptz!
+  graphql:
+    typeName: FwdClaimDocumentSyncHistories
+    inputTypeName: FwdClaimDocumentSyncHistoriesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: fwd_claim_document_sync_histories
+      fieldMapping:
+        batchId:
+          column:
+            name: batch_id
+        claimDocumentId:
+          column:
+            name: claim_document_id
+        createdAt:
+          column:
+            name: created_at
+        errorMessage:
+          column:
+            name: error_message
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        isSuccess:
+          column:
+            name: is_success
+        syncedAt:
+          column:
+            name: synced_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FwdClaimDocumentSyncHistories
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - batchId
+          - claimDocumentId
+          - createdAt
+          - errorMessage
+          - fileId
+          - id
+          - isSuccess
+          - syncedAt
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: FwdClaimDocumentSyncHistoriesBoolExp
+  operand:
+    object:
+      type: FwdClaimDocumentSyncHistories
+      comparableFields:
+        - fieldName: batchId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: claimDocumentId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: errorMessage
+          booleanExpressionType: TextBoolExp
+        - fieldName: fileId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: isSuccess
+          booleanExpressionType: BoolBoolExp
+        - fieldName: syncedAt
+          booleanExpressionType: TimestamptzBoolExp
+      comparableRelationships:
+        - relationshipName: claimDocument
+        - relationshipName: file
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: FwdClaimDocumentSyncHistoriesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: FwdClaimDocumentSyncHistoriesAggExp
+  operand:
+    object:
+      aggregatedType: FwdClaimDocumentSyncHistories
+      aggregatableFields:
+        - fieldName: batchId
+          aggregateExpression: UuidAggExp
+        - fieldName: claimDocumentId
+          aggregateExpression: UuidAggExp
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: errorMessage
+          aggregateExpression: TextAggExp
+        - fieldName: fileId
+          aggregateExpression: UuidAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: isSuccess
+          aggregateExpression: BoolAggExp
+        - fieldName: syncedAt
+          aggregateExpression: TimestamptzAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: FwdClaimDocumentSyncHistoriesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: FwdClaimDocumentSyncHistoriesOrderByExp
+  operand:
+    object:
+      orderedType: FwdClaimDocumentSyncHistories
+      orderableFields:
+        - fieldName: batchId
+          orderByExpression: UuidOrderByExp
+        - fieldName: claimDocumentId
+          orderByExpression: UuidOrderByExp
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: errorMessage
+          orderByExpression: String1OrderByExp
+        - fieldName: fileId
+          orderByExpression: UuidOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: isSuccess
+          orderByExpression: Boolean1OrderByExp
+        - fieldName: syncedAt
+          orderByExpression: TimestamptzOrderByExp
+      orderableRelationships:
+        - relationshipName: claimDocument
+        - relationshipName: file
+  graphql:
+    expressionTypeName: FwdClaimDocumentSyncHistoriesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: FwdClaimDocumentSyncHistories
+  objectType: FwdClaimDocumentSyncHistories
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: fwd_claim_document_sync_histories
+  filterExpressionType: FwdClaimDocumentSyncHistoriesBoolExp
+  aggregateExpression: FwdClaimDocumentSyncHistoriesAggExp
+  orderByExpression: FwdClaimDocumentSyncHistoriesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: fwdClaimDocumentSyncHistories
+      subscription:
+        rootField: fwdClaimDocumentSyncHistories
+    selectUniques:
+      - queryRootField: fwdClaimDocumentSyncHistoriesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: fwdClaimDocumentSyncHistoriesById
+    filterInputTypeName: FwdClaimDocumentSyncHistoriesFilterInput
+    aggregate:
+      queryRootField: fwdClaimDocumentSyncHistoriesAggregate
+      subscription:
+        rootField: fwdClaimDocumentSyncHistoriesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FwdClaimDocumentSyncHistories
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: claimDocument
+  sourceType: FwdClaimDocumentSyncHistories
+  target:
+    model:
+      name: ClaimDocuments
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: claimDocumentId
+      target:
+        modelField:
+          - fieldName: claimDocumentId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: file
+  sourceType: FwdClaimDocumentSyncHistories
+  target:
+    model:
+      name: Files
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: fileId
+      target:
+        modelField:
+          - fieldName: fileId
+

@@ -1,0 +1,142 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertKumquatOauthAuditLogsObject
+  fields:
+    - name: action
+      type: String_1!
+      description: "Event type: TOKEN_ISSUED, TOKEN_REFRESHED, TOKEN_REVOKED,
+        AUTH_FAILED, etc."
+    - name: createdAt
+      type: Timestamptz
+    - name: id
+      type: Uuid
+    - name: ipAddress
+      type: Json
+    - name: metadata
+      type: Json
+      description: Additional event context (e.g., error details, policy number)
+    - name: oauthClientId
+      type: Uuid
+    - name: userAgent
+      type: String_1
+  graphql:
+    typeName: InsertKumquatOauthAuditLogsObject
+    inputTypeName: InsertKumquatOauthAuditLogsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_kumquat_oauth_audit_logs_object
+      fieldMapping:
+        action:
+          column:
+            name: action
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        ipAddress:
+          column:
+            name: ip_address
+        metadata:
+          column:
+            name: metadata
+        oauthClientId:
+          column:
+            name: oauth_client_id
+        userAgent:
+          column:
+            name: user_agent
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertKumquatOauthAuditLogsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - action
+          - createdAt
+          - id
+          - ipAddress
+          - metadata
+          - oauthClientId
+          - userAgent
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertKumquatOauthAuditLogsResponse
+  description: Responses from the 'insert_kumquat_oauth_audit_logs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[KumquatOauthAuditLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertKumquatOauthAuditLogsResponse
+    inputTypeName: InsertKumquatOauthAuditLogsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_kumquat_oauth_audit_logs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertKumquatOauthAuditLogsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertKumquatOauthAuditLogs
+  outputType: InsertKumquatOauthAuditLogsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertKumquatOauthAuditLogsObject!]!"
+    - name: postCheck
+      type: KumquatOauthAuditLogsBoolExp
+      description: Insert permission predicate over the 'kumquat_oauth_audit_logs'
+        collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_kumquat_oauth_audit_logs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertKumquatOauthAuditLogs
+    rootFieldKind: Mutation
+  description: Insert into the kumquat_oauth_audit_logs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertKumquatOauthAuditLogs
+  permissions:
+    - role: admin
+      allowExecution: true
+

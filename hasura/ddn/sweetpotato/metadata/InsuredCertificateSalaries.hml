@@ -1,0 +1,247 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsuredCertificateSalaries
+  description: Salary histories
+  fields:
+    - name: createdAt
+      type: Timestamptz!
+    - name: deletedAt
+      type: Timestamptz
+    - name: effectiveAt
+      type: Timestamptz!
+    - name: id
+      type: Uuid!
+    - name: insuredCertificateId
+      type: Uuid!
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz!
+    - name: value
+      type: Bigdecimal!
+  graphql:
+    typeName: InsuredCertificateSalaries
+    inputTypeName: InsuredCertificateSalariesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insured_certificate_salaries
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        deletedAt:
+          column:
+            name: deleted_at
+        effectiveAt:
+          column:
+            name: effective_at
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        value:
+          column:
+            name: value
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsuredCertificateSalaries
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - deletedAt
+          - effectiveAt
+          - id
+          - insuredCertificateId
+          - tenantId
+          - updatedAt
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: InsuredCertificateSalariesBoolExp
+  operand:
+    object:
+      type: InsuredCertificateSalaries
+      comparableFields:
+        - fieldName: createdAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: deletedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: effectiveAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: id
+          booleanExpressionType: UuidBoolExp
+        - fieldName: insuredCertificateId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: tenantId
+          booleanExpressionType: UuidBoolExp
+        - fieldName: updatedAt
+          booleanExpressionType: TimestamptzBoolExp
+        - fieldName: value
+          booleanExpressionType: NumericBoolExp
+      comparableRelationships:
+        - relationshipName: insuredCertificate
+        - relationshipName: tenant
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: InsuredCertificateSalariesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: InsuredCertificateSalariesAggExp
+  operand:
+    object:
+      aggregatedType: InsuredCertificateSalaries
+      aggregatableFields:
+        - fieldName: createdAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: deletedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: effectiveAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: id
+          aggregateExpression: UuidAggExp
+        - fieldName: insuredCertificateId
+          aggregateExpression: UuidAggExp
+        - fieldName: tenantId
+          aggregateExpression: UuidAggExp
+        - fieldName: updatedAt
+          aggregateExpression: TimestamptzAggExp
+        - fieldName: value
+          aggregateExpression: NumericAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: InsuredCertificateSalariesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: InsuredCertificateSalariesOrderByExp
+  operand:
+    object:
+      orderedType: InsuredCertificateSalaries
+      orderableFields:
+        - fieldName: createdAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: deletedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: effectiveAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: id
+          orderByExpression: UuidOrderByExp
+        - fieldName: insuredCertificateId
+          orderByExpression: UuidOrderByExp
+        - fieldName: tenantId
+          orderByExpression: UuidOrderByExp
+        - fieldName: updatedAt
+          orderByExpression: TimestamptzOrderByExp
+        - fieldName: value
+          orderByExpression: BigdecimalOrderByExp
+      orderableRelationships:
+        - relationshipName: insuredCertificate
+        - relationshipName: tenant
+  graphql:
+    expressionTypeName: InsuredCertificateSalariesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: InsuredCertificateSalaries
+  objectType: InsuredCertificateSalaries
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: insured_certificate_salaries
+  filterExpressionType: InsuredCertificateSalariesBoolExp
+  aggregateExpression: InsuredCertificateSalariesAggExp
+  orderByExpression: InsuredCertificateSalariesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: insuredCertificateSalaries
+      subscription:
+        rootField: insuredCertificateSalaries
+    selectUniques:
+      - queryRootField: insuredCertificateSalariesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: insuredCertificateSalariesById
+    filterInputTypeName: InsuredCertificateSalariesFilterInput
+    aggregate:
+      queryRootField: insuredCertificateSalariesAggregate
+      subscription:
+        rootField: insuredCertificateSalariesAggregate
+  description: Salary histories
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: InsuredCertificateSalaries
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: insuredCertificate
+  sourceType: InsuredCertificateSalaries
+  target:
+    model:
+      name: InsuredCertificates
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: insuredCertificateId
+      target:
+        modelField:
+          - fieldName: insuredCertificateId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: tenant
+  sourceType: InsuredCertificateSalaries
+  target:
+    model:
+      name: Tenants
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: tenantId
+      target:
+        modelField:
+          - fieldName: id
+

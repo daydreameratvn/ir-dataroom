@@ -1,0 +1,126 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetricClicksObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: feature
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: input
+      type: String_1
+    - name: userId
+      type: Uuid!
+  graphql:
+    typeName: InsertMetricClicksObject
+    inputTypeName: InsertMetricClicksObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_metric_clicks_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        feature:
+          column:
+            name: feature
+        id:
+          column:
+            name: id
+        input:
+          column:
+            name: input
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetricClicksObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - feature
+          - id
+          - input
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMetricClicksResponse
+  description: Responses from the 'insert_metric_clicks' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MetricClicks!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMetricClicksResponse
+    inputTypeName: InsertMetricClicksResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_metric_clicks_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMetricClicksResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMetricClicks
+  outputType: InsertMetricClicksResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMetricClicksObject!]!"
+    - name: postCheck
+      type: MetricClicksBoolExp
+      description: Insert permission predicate over the 'metric_clicks' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_metric_clicks
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMetricClicks
+    rootFieldKind: Mutation
+  description: Insert into the metric_clicks table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMetricClicks
+  permissions:
+    - role: admin
+      allowExecution: true
+

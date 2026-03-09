@@ -1,0 +1,198 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrQcPrescriptionsObject
+  fields:
+    - name: advice
+      type: String_1
+    - name: age
+      type: Bigdecimal
+    - name: createdAt
+      type: Timestamptz
+    - name: diagnosis
+      type: String_1
+    - name: dob
+      type: Timestamptz
+    - name: followUpAt
+      type: Timestamptz
+    - name: gender
+      type: String_1
+    - name: hasSignature
+      type: Boolean_1
+    - name: hasSurgeryKeywords
+      type: Boolean_1
+    - name: icdCodes
+      type: Json
+    - name: id
+      type: Uuid
+    - name: medicalProviderId
+      type: Uuid
+    - name: medicalProviderName
+      type: String_1
+    - name: paperId
+      type: Uuid!
+    - name: patientName
+      type: String_1
+    - name: prescribedAt
+      type: Timestamptz
+    - name: updatedAt
+      type: Timestamptz
+  graphql:
+    typeName: InsertOcrQcPrescriptionsObject
+    inputTypeName: InsertOcrQcPrescriptionsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_qc_prescriptions_object
+      fieldMapping:
+        advice:
+          column:
+            name: advice
+        age:
+          column:
+            name: age
+        createdAt:
+          column:
+            name: created_at
+        diagnosis:
+          column:
+            name: diagnosis
+        dob:
+          column:
+            name: dob
+        followUpAt:
+          column:
+            name: follow_up_at
+        gender:
+          column:
+            name: gender
+        hasSignature:
+          column:
+            name: has_signature
+        hasSurgeryKeywords:
+          column:
+            name: has_surgery_keywords
+        icdCodes:
+          column:
+            name: icd_codes
+        id:
+          column:
+            name: id
+        medicalProviderId:
+          column:
+            name: medical_provider_id
+        medicalProviderName:
+          column:
+            name: medical_provider_name
+        paperId:
+          column:
+            name: paper_id
+        patientName:
+          column:
+            name: patient_name
+        prescribedAt:
+          column:
+            name: prescribed_at
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrQcPrescriptionsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - advice
+          - age
+          - createdAt
+          - diagnosis
+          - dob
+          - followUpAt
+          - gender
+          - hasSignature
+          - hasSurgeryKeywords
+          - icdCodes
+          - id
+          - medicalProviderId
+          - medicalProviderName
+          - paperId
+          - patientName
+          - prescribedAt
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOcrQcPrescriptionsResponse
+  description: Responses from the 'insert_ocr_qc_prescriptions' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OcrQcPrescriptions!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOcrQcPrescriptionsResponse
+    inputTypeName: InsertOcrQcPrescriptionsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_ocr_qc_prescriptions_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOcrQcPrescriptionsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOcrQcPrescriptions
+  outputType: InsertOcrQcPrescriptionsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOcrQcPrescriptionsObject!]!"
+    - name: postCheck
+      type: OcrQcPrescriptionsBoolExp
+      description: Insert permission predicate over the 'ocr_qc_prescriptions' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_ocr_qc_prescriptions
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOcrQcPrescriptions
+    rootFieldKind: Mutation
+  description: Insert into the ocr_qc_prescriptions table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOcrQcPrescriptions
+  permissions:
+    - role: admin
+      allowExecution: true
+

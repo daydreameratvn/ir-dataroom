@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteSlvClaimCaseSameEventGroupsByClaimCaseGroupIdResponse
+  description: Responses from the
+    'delete_slv_claim_case_same_event_groups_by_claim_case_group_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[SlvClaimCaseSameEventGroups!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteSlvClaimCaseSameEventGroupsByClaimCaseGroupIdResponse
+    inputTypeName: DeleteSlvClaimCaseSameEventGroupsByClaimCaseGroupIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_slv_claim_case_same_event_groups_by_claim_case_group_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteSlvClaimCaseSameEventGroupsByClaimCaseGroupIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteSlvClaimCaseSameEventGroupsByClaimCaseGroupId
+  outputType: DeleteSlvClaimCaseSameEventGroupsByClaimCaseGroupIdResponse!
+  arguments:
+    - name: keyClaimCaseGroupId
+      type: Uuid!
+    - name: preCheck
+      type: SlvClaimCaseSameEventGroupsBoolExp
+      description: Delete permission predicate over the
+        'slv_claim_case_same_event_groups' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_slv_claim_case_same_event_groups_by_claim_case_group_id
+    argumentMapping:
+      keyClaimCaseGroupId: key_claim_case_group_id
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteSlvClaimCaseSameEventGroupsByClaimCaseGroupId
+    rootFieldKind: Mutation
+  description: Delete any row on the 'slv_claim_case_same_event_groups' collection
+    using the 'claim_case_group_id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteSlvClaimCaseSameEventGroupsByClaimCaseGroupId
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpMedicalProviderWorkingTimeTypesObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertMpMedicalProviderWorkingTimeTypesObject
+    inputTypeName: InsertMpMedicalProviderWorkingTimeTypesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_medical_provider_working_time_types_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpMedicalProviderWorkingTimeTypesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMpMedicalProviderWorkingTimeTypesResponse
+  description: Responses from the 'insert_mp_medical_provider_working_time_types' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MpMedicalProviderWorkingTimeTypes!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMpMedicalProviderWorkingTimeTypesResponse
+    inputTypeName: InsertMpMedicalProviderWorkingTimeTypesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_mp_medical_provider_working_time_types_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMpMedicalProviderWorkingTimeTypesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMpMedicalProviderWorkingTimeTypes
+  outputType: InsertMpMedicalProviderWorkingTimeTypesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMpMedicalProviderWorkingTimeTypesObject!]!"
+    - name: postCheck
+      type: MpMedicalProviderWorkingTimeTypesBoolExp
+      description: Insert permission predicate over the
+        'mp_medical_provider_working_time_types' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_mp_medical_provider_working_time_types
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMpMedicalProviderWorkingTimeTypes
+    rootFieldKind: Mutation
+  description: Insert into the mp_medical_provider_working_time_types table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMpMedicalProviderWorkingTimeTypes
+  permissions:
+    - role: admin
+      allowExecution: true
+

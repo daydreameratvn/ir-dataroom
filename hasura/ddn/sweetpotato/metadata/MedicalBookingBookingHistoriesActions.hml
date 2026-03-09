@@ -1,0 +1,151 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: MedicalBookingBookingHistoriesActions
+  description: booking_histories_actions
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: MedicalBookingBookingHistoriesActions
+    inputTypeName: MedicalBookingBookingHistoriesActionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: medical_booking_booking_histories_actions
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: MedicalBookingBookingHistoriesActions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: MedicalBookingBookingHistoriesActionsBoolExp
+  operand:
+    object:
+      type: MedicalBookingBookingHistoriesActions
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: medicalBookingBookingHistories
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: MedicalBookingBookingHistoriesActionsBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: MedicalBookingBookingHistoriesActionsAggExp
+  operand:
+    object:
+      aggregatedType: MedicalBookingBookingHistoriesActions
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: MedicalBookingBookingHistoriesActionsAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: MedicalBookingBookingHistoriesActionsOrderByExp
+  operand:
+    object:
+      orderedType: MedicalBookingBookingHistoriesActions
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: MedicalBookingBookingHistoriesActionsOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: MedicalBookingBookingHistoriesActions
+  objectType: MedicalBookingBookingHistoriesActions
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: medical_booking_booking_histories_actions
+  filterExpressionType: MedicalBookingBookingHistoriesActionsBoolExp
+  aggregateExpression: MedicalBookingBookingHistoriesActionsAggExp
+  orderByExpression: MedicalBookingBookingHistoriesActionsOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: medicalBookingBookingHistoriesActions
+      subscription:
+        rootField: medicalBookingBookingHistoriesActions
+    selectUniques:
+      - queryRootField: medicalBookingBookingHistoriesActionsByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: medicalBookingBookingHistoriesActionsByValue
+    filterInputTypeName: MedicalBookingBookingHistoriesActionsFilterInput
+    aggregate:
+      queryRootField: medicalBookingBookingHistoriesActionsAggregate
+      subscription:
+        rootField: medicalBookingBookingHistoriesActionsAggregate
+  description: booking_histories_actions
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: MedicalBookingBookingHistoriesActions
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: medicalBookingBookingHistories
+  sourceType: MedicalBookingBookingHistoriesActions
+  target:
+    model:
+      name: MedicalBookingBookingHistories
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: MedicalBookingBookingHistoriesAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: action
+  graphql:
+    aggregateFieldName: medicalBookingBookingHistoriesAggregate
+

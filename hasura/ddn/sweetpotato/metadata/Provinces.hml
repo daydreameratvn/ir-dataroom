@@ -1,0 +1,222 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Provinces
+  fields:
+    - name: code
+      type: String_1!
+    - name: countryCode
+      type: String_1!
+    - name: displayOrder
+      type: Bigdecimal!
+    - name: id
+      type: Bigdecimal!
+    - name: name
+      type: String_1!
+    - name: placeType
+      type: String_1!
+    - name: shortName
+      type: String_1!
+  graphql:
+    typeName: Provinces
+    inputTypeName: ProvincesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: provinces
+      fieldMapping:
+        code:
+          column:
+            name: code
+        countryCode:
+          column:
+            name: country_code
+        displayOrder:
+          column:
+            name: display_order
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        placeType:
+          column:
+            name: place_type
+        shortName:
+          column:
+            name: short_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Provinces
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - code
+          - countryCode
+          - displayOrder
+          - id
+          - name
+          - placeType
+          - shortName
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: ProvincesBoolExp
+  operand:
+    object:
+      type: Provinces
+      comparableFields:
+        - fieldName: code
+          booleanExpressionType: TextBoolExp
+        - fieldName: countryCode
+          booleanExpressionType: TextBoolExp
+        - fieldName: displayOrder
+          booleanExpressionType: NumericBoolExp
+        - fieldName: id
+          booleanExpressionType: NumericBoolExp
+        - fieldName: name
+          booleanExpressionType: TextBoolExp
+        - fieldName: placeType
+          booleanExpressionType: TextBoolExp
+        - fieldName: shortName
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: wardsV2S
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: ProvincesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: ProvincesAggExp
+  operand:
+    object:
+      aggregatedType: Provinces
+      aggregatableFields:
+        - fieldName: code
+          aggregateExpression: TextAggExp
+        - fieldName: countryCode
+          aggregateExpression: TextAggExp
+        - fieldName: displayOrder
+          aggregateExpression: NumericAggExp
+        - fieldName: id
+          aggregateExpression: NumericAggExp
+        - fieldName: name
+          aggregateExpression: TextAggExp
+        - fieldName: placeType
+          aggregateExpression: TextAggExp
+        - fieldName: shortName
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: ProvincesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: ProvincesOrderByExp
+  operand:
+    object:
+      orderedType: Provinces
+      orderableFields:
+        - fieldName: code
+          orderByExpression: String1OrderByExp
+        - fieldName: countryCode
+          orderByExpression: String1OrderByExp
+        - fieldName: displayOrder
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: id
+          orderByExpression: BigdecimalOrderByExp
+        - fieldName: name
+          orderByExpression: String1OrderByExp
+        - fieldName: placeType
+          orderByExpression: String1OrderByExp
+        - fieldName: shortName
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: ProvincesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: Provinces
+  objectType: Provinces
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: provinces
+  filterExpressionType: ProvincesBoolExp
+  aggregateExpression: ProvincesAggExp
+  orderByExpression: ProvincesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: provinces
+      subscription:
+        rootField: provinces
+    selectUniques:
+      - queryRootField: provincesByProvincesCountryCodeCodeKey
+        uniqueIdentifier:
+          - code
+          - countryCode
+        subscription:
+          rootField: provincesByProvincesCountryCodeCodeKey
+      - queryRootField: provincesById
+        uniqueIdentifier:
+          - id
+        subscription:
+          rootField: provincesById
+    filterInputTypeName: ProvincesFilterInput
+    aggregate:
+      queryRootField: provincesAggregate
+      subscription:
+        rootField: provincesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Provinces
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: wardsV2S
+  sourceType: Provinces
+  target:
+    model:
+      name: WardsV2
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: WardsV2AggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: id
+      target:
+        modelField:
+          - fieldName: provinceId
+  graphql:
+    aggregateFieldName: wardsV2SAggregate
+

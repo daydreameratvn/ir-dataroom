@@ -1,0 +1,102 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingScheduleTimePeriodsObject
+  fields:
+    - name: comment
+      type: String_1
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: InsertMedicalBookingScheduleTimePeriodsObject
+    inputTypeName: InsertMedicalBookingScheduleTimePeriodsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_schedule_time_periods_object
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingScheduleTimePeriodsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertMedicalBookingScheduleTimePeriodsResponse
+  description: Responses from the 'insert_medical_booking_schedule_time_periods' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[MedicalBookingScheduleTimePeriods!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertMedicalBookingScheduleTimePeriodsResponse
+    inputTypeName: InsertMedicalBookingScheduleTimePeriodsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_medical_booking_schedule_time_periods_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertMedicalBookingScheduleTimePeriodsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertMedicalBookingScheduleTimePeriods
+  outputType: InsertMedicalBookingScheduleTimePeriodsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertMedicalBookingScheduleTimePeriodsObject!]!"
+    - name: postCheck
+      type: MedicalBookingScheduleTimePeriodsBoolExp
+      description: Insert permission predicate over the
+        'medical_booking_schedule_time_periods' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_medical_booking_schedule_time_periods
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertMedicalBookingScheduleTimePeriods
+    rootFieldKind: Mutation
+  description: Insert into the medical_booking_schedule_time_periods table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertMedicalBookingScheduleTimePeriods
+  permissions:
+    - role: admin
+      allowExecution: true
+

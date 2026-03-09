@@ -1,0 +1,139 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHdbCatalogEventInvocationLogsObject
+  fields:
+    - name: createdAt
+      type: Timestamp
+    - name: eventId
+      type: String_1
+    - name: id
+      type: String_1
+    - name: request
+      type: Json
+    - name: response
+      type: Json
+    - name: status
+      type: Int32
+    - name: triggerName
+      type: String_1
+  graphql:
+    typeName: InsertHdbCatalogEventInvocationLogsObject
+    inputTypeName: InsertHdbCatalogEventInvocationLogsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hdb_catalog_event_invocation_logs_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        eventId:
+          column:
+            name: event_id
+        id:
+          column:
+            name: id
+        request:
+          column:
+            name: request
+        response:
+          column:
+            name: response
+        status:
+          column:
+            name: status
+        triggerName:
+          column:
+            name: trigger_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHdbCatalogEventInvocationLogsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - eventId
+          - id
+          - request
+          - response
+          - status
+          - triggerName
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertHdbCatalogEventInvocationLogsResponse
+  description: Responses from the 'insert_hdb_catalog_event_invocation_logs' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[HdbCatalogEventInvocationLogs!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertHdbCatalogEventInvocationLogsResponse
+    inputTypeName: InsertHdbCatalogEventInvocationLogsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_hdb_catalog_event_invocation_logs_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertHdbCatalogEventInvocationLogsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertHdbCatalogEventInvocationLogs
+  outputType: InsertHdbCatalogEventInvocationLogsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertHdbCatalogEventInvocationLogsObject!]!"
+    - name: postCheck
+      type: HdbCatalogEventInvocationLogsBoolExp
+      description: Insert permission predicate over the
+        'hdb_catalog_event_invocation_logs' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_hdb_catalog_event_invocation_logs
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertHdbCatalogEventInvocationLogs
+    rootFieldKind: Mutation
+  description: Insert into the hdb_catalog_event_invocation_logs table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertHdbCatalogEventInvocationLogs
+  permissions:
+    - role: admin
+      allowExecution: true
+

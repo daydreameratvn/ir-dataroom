@@ -1,0 +1,149 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: OverlordApiLogStatuses
+  fields:
+    - name: comment
+      type: String_1!
+    - name: value
+      type: String_1!
+  graphql:
+    typeName: OverlordApiLogStatuses
+    inputTypeName: OverlordApiLogStatusesInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: overlord_api_log_statuses
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: OverlordApiLogStatuses
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comment
+          - value
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: OverlordApiLogStatusesBoolExp
+  operand:
+    object:
+      type: OverlordApiLogStatuses
+      comparableFields:
+        - fieldName: comment
+          booleanExpressionType: TextBoolExp
+        - fieldName: value
+          booleanExpressionType: TextBoolExp
+      comparableRelationships:
+        - relationshipName: overlordApiLogs
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: OverlordApiLogStatusesBoolExp
+
+---
+kind: AggregateExpression
+version: v1
+definition:
+  name: OverlordApiLogStatusesAggExp
+  operand:
+    object:
+      aggregatedType: OverlordApiLogStatuses
+      aggregatableFields:
+        - fieldName: comment
+          aggregateExpression: TextAggExp
+        - fieldName: value
+          aggregateExpression: TextAggExp
+  count:
+    enable: true
+    returnType: Int64
+  graphql:
+    selectTypeName: OverlordApiLogStatusesAggExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: OverlordApiLogStatusesOrderByExp
+  operand:
+    object:
+      orderedType: OverlordApiLogStatuses
+      orderableFields:
+        - fieldName: comment
+          orderByExpression: String1OrderByExp
+        - fieldName: value
+          orderByExpression: String1OrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: OverlordApiLogStatusesOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: OverlordApiLogStatuses
+  objectType: OverlordApiLogStatuses
+  source:
+    dataConnectorName: sweetpotato_pg
+    collection: overlord_api_log_statuses
+  filterExpressionType: OverlordApiLogStatusesBoolExp
+  aggregateExpression: OverlordApiLogStatusesAggExp
+  orderByExpression: OverlordApiLogStatusesOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: overlordApiLogStatuses
+      subscription:
+        rootField: overlordApiLogStatuses
+    selectUniques:
+      - queryRootField: overlordApiLogStatusesByValue
+        uniqueIdentifier:
+          - value
+        subscription:
+          rootField: overlordApiLogStatusesByValue
+    filterInputTypeName: OverlordApiLogStatusesFilterInput
+    aggregate:
+      queryRootField: overlordApiLogStatusesAggregate
+      subscription:
+        rootField: overlordApiLogStatusesAggregate
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: OverlordApiLogStatuses
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: overlordApiLogs
+  sourceType: OverlordApiLogStatuses
+  target:
+    model:
+      name: OverlordApiLogs
+      relationshipType: Array
+      aggregate:
+        aggregateExpression: OverlordApiLogsAggExp
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: value
+      target:
+        modelField:
+          - fieldName: status
+  graphql:
+    aggregateFieldName: overlordApiLogsAggregate
+

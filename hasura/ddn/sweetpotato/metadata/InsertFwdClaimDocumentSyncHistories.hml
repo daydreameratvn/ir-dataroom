@@ -1,0 +1,145 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdClaimDocumentSyncHistoriesObject
+  fields:
+    - name: batchId
+      type: Uuid!
+    - name: claimDocumentId
+      type: Uuid
+    - name: createdAt
+      type: Timestamptz
+    - name: errorMessage
+      type: String_1
+    - name: fileId
+      type: Uuid
+    - name: id
+      type: Uuid
+    - name: isSuccess
+      type: Boolean_1!
+    - name: syncedAt
+      type: Timestamptz!
+  graphql:
+    typeName: InsertFwdClaimDocumentSyncHistoriesObject
+    inputTypeName: InsertFwdClaimDocumentSyncHistoriesObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_claim_document_sync_histories_object
+      fieldMapping:
+        batchId:
+          column:
+            name: batch_id
+        claimDocumentId:
+          column:
+            name: claim_document_id
+        createdAt:
+          column:
+            name: created_at
+        errorMessage:
+          column:
+            name: error_message
+        fileId:
+          column:
+            name: file_id
+        id:
+          column:
+            name: id
+        isSuccess:
+          column:
+            name: is_success
+        syncedAt:
+          column:
+            name: synced_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdClaimDocumentSyncHistoriesObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - batchId
+          - claimDocumentId
+          - createdAt
+          - errorMessage
+          - fileId
+          - id
+          - isSuccess
+          - syncedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertFwdClaimDocumentSyncHistoriesResponse
+  description: Responses from the 'insert_fwd_claim_document_sync_histories' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[FwdClaimDocumentSyncHistories!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertFwdClaimDocumentSyncHistoriesResponse
+    inputTypeName: InsertFwdClaimDocumentSyncHistoriesResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_fwd_claim_document_sync_histories_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertFwdClaimDocumentSyncHistoriesResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertFwdClaimDocumentSyncHistories
+  outputType: InsertFwdClaimDocumentSyncHistoriesResponse!
+  arguments:
+    - name: objects
+      type: "[InsertFwdClaimDocumentSyncHistoriesObject!]!"
+    - name: postCheck
+      type: FwdClaimDocumentSyncHistoriesBoolExp
+      description: Insert permission predicate over the
+        'fwd_claim_document_sync_histories' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_fwd_claim_document_sync_histories
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertFwdClaimDocumentSyncHistories
+    rootFieldKind: Mutation
+  description: Insert into the fwd_claim_document_sync_histories table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertFwdClaimDocumentSyncHistories
+  permissions:
+    - role: admin
+      allowExecution: true
+

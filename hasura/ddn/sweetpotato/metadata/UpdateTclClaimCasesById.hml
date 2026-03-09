@@ -1,0 +1,134 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateTclClaimCasesByIdUpdateColumns
+  description: Update the columns of the 'tcl_claim_cases' collection
+  fields:
+    - name: claimCaseId
+      type: UpdateColumnTclClaimCasesClaimCaseId
+      description: Update the 'claim_case_id' column in the 'tcl_claim_cases' collection.
+    - name: createdAt
+      type: UpdateColumnTclClaimCasesCreatedAt
+      description: Update the 'created_at' column in the 'tcl_claim_cases' collection.
+    - name: id
+      type: UpdateColumnTclClaimCasesId
+      description: Update the 'id' column in the 'tcl_claim_cases' collection.
+    - name: updatedAt
+      type: UpdateColumnTclClaimCasesUpdatedAt
+      description: Update the 'updated_at' column in the 'tcl_claim_cases' collection.
+  graphql:
+    typeName: UpdateTclClaimCasesByIdUpdateColumns
+    inputTypeName: UpdateTclClaimCasesByIdUpdateColumnsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_tcl_claim_cases_by_id_update_columns
+      fieldMapping:
+        claimCaseId:
+          column:
+            name: claim_case_id
+        createdAt:
+          column:
+            name: created_at
+        id:
+          column:
+            name: id
+        updatedAt:
+          column:
+            name: updated_at
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateTclClaimCasesByIdUpdateColumns
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - claimCaseId
+          - createdAt
+          - id
+          - updatedAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: UpdateTclClaimCasesByIdResponse
+  description: Responses from the 'update_tcl_claim_cases_by_id' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[TclClaimCases!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: UpdateTclClaimCasesByIdResponse
+    inputTypeName: UpdateTclClaimCasesByIdResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: update_tcl_claim_cases_by_id_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: UpdateTclClaimCasesByIdResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateTclClaimCasesById
+  outputType: UpdateTclClaimCasesByIdResponse!
+  arguments:
+    - name: keyId
+      type: Uuid!
+    - name: postCheck
+      type: TclClaimCasesBoolExp
+      description: Update permission post-condition predicate over the
+        'tcl_claim_cases' collection
+    - name: preCheck
+      type: TclClaimCasesBoolExp
+      description: Update permission pre-condition predicate over the
+        'tcl_claim_cases' collection
+    - name: updateColumns
+      type: UpdateTclClaimCasesByIdUpdateColumns!
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: update_tcl_claim_cases_by_id
+    argumentMapping:
+      keyId: key_id
+      postCheck: post_check
+      preCheck: pre_check
+      updateColumns: update_columns
+  graphql:
+    rootFieldName: updateTclClaimCasesById
+    rootFieldKind: Mutation
+  description: Update any row on the 'tcl_claim_cases' collection using the 'id' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateTclClaimCasesById
+  permissions:
+    - role: admin
+      allowExecution: true
+

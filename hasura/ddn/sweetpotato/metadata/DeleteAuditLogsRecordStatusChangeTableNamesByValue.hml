@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DeleteAuditLogsRecordStatusChangeTableNamesByValueResponse
+  description: Responses from the
+    'delete_audit_logs_record_status_change_table_names_by_value' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[AuditLogsRecordStatusChangeTableNames!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: DeleteAuditLogsRecordStatusChangeTableNamesByValueResponse
+    inputTypeName: DeleteAuditLogsRecordStatusChangeTableNamesByValueResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: delete_audit_logs_record_status_change_table_names_by_value_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DeleteAuditLogsRecordStatusChangeTableNamesByValueResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: DeleteAuditLogsRecordStatusChangeTableNamesByValue
+  outputType: DeleteAuditLogsRecordStatusChangeTableNamesByValueResponse!
+  arguments:
+    - name: keyValue
+      type: String_1!
+    - name: preCheck
+      type: AuditLogsRecordStatusChangeTableNamesBoolExp
+      description: Delete permission predicate over the
+        'audit_logs_record_status_change_table_names' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: delete_audit_logs_record_status_change_table_names_by_value
+    argumentMapping:
+      keyValue: key_value
+      preCheck: pre_check
+  graphql:
+    rootFieldName: deleteAuditLogsRecordStatusChangeTableNamesByValue
+    rootFieldKind: Mutation
+  description: Delete any row on the 'audit_logs_record_status_change_table_names'
+    collection using the 'value' key
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: DeleteAuditLogsRecordStatusChangeTableNamesByValue
+  permissions:
+    - role: admin
+      allowExecution: true
+

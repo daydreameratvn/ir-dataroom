@@ -1,0 +1,199 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOverlordEarlyAccessRequestsObject
+  fields:
+    - name: approvalStatus
+      type: String_1
+    - name: companyName
+      type: String_1
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: email
+      type: String_1
+    - name: id
+      type: Uuid
+    - name: insuredCertificateId
+      type: Uuid
+    - name: name
+      type: String_1
+    - name: note
+      type: String_1
+    - name: phone
+      type: String_1
+    - name: position
+      type: Int32
+    - name: positionInCompany
+      type: String_1
+    - name: referralSource
+      type: String_1
+    - name: source
+      type: String_1
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+  graphql:
+    typeName: InsertOverlordEarlyAccessRequestsObject
+    inputTypeName: InsertOverlordEarlyAccessRequestsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_overlord_early_access_requests_object
+      fieldMapping:
+        approvalStatus:
+          column:
+            name: approval_status
+        companyName:
+          column:
+            name: company_name
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        email:
+          column:
+            name: email
+        id:
+          column:
+            name: id
+        insuredCertificateId:
+          column:
+            name: insured_certificate_id
+        name:
+          column:
+            name: name
+        note:
+          column:
+            name: note
+        phone:
+          column:
+            name: phone
+        position:
+          column:
+            name: position
+        positionInCompany:
+          column:
+            name: position_in_company
+        referralSource:
+          column:
+            name: referral_source
+        source:
+          column:
+            name: source
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOverlordEarlyAccessRequestsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - approvalStatus
+          - companyName
+          - createdAt
+          - createdBy
+          - deletedAt
+          - email
+          - id
+          - insuredCertificateId
+          - name
+          - note
+          - phone
+          - position
+          - positionInCompany
+          - referralSource
+          - source
+          - updatedAt
+          - updatedBy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertOverlordEarlyAccessRequestsResponse
+  description: Responses from the 'insert_overlord_early_access_requests' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[OverlordEarlyAccessRequests!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertOverlordEarlyAccessRequestsResponse
+    inputTypeName: InsertOverlordEarlyAccessRequestsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: sweetpotato_pg
+      dataConnectorObjectType: insert_overlord_early_access_requests_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertOverlordEarlyAccessRequestsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertOverlordEarlyAccessRequests
+  outputType: InsertOverlordEarlyAccessRequestsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertOverlordEarlyAccessRequestsObject!]!"
+    - name: postCheck
+      type: OverlordEarlyAccessRequestsBoolExp
+      description: Insert permission predicate over the
+        'overlord_early_access_requests' collection
+  source:
+    dataConnectorName: sweetpotato_pg
+    dataConnectorCommand:
+      procedure: insert_overlord_early_access_requests
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertOverlordEarlyAccessRequests
+    rootFieldKind: Mutation
+  description: Insert into the overlord_early_access_requests table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertOverlordEarlyAccessRequests
+  permissions:
+    - role: admin
+      allowExecution: true
+
