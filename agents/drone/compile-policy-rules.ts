@@ -53,7 +53,7 @@ const { values: args } = parseArgs({
 // ============================================================================
 
 const DEFAULT_TENANT_ID = "00000000-0000-0000-0000-000000000001";
-const EXTRACTION_MODEL = "gemini-2.5-flash";
+const EXTRACTION_MODEL = "gemini-3-flash-preview";
 
 const VALID_CATEGORIES = new Set([
   "benefit_schedule", "exclusion", "drug_rule", "test_rule", "copay",
@@ -316,55 +316,10 @@ Do not summarize or skip any content — extract EVERYTHING.`,
 }
 
 // ============================================================================
-// Step 4: Compile rules via Gemini
+// Step 4: Agentic rule extraction via Gemini (multi-turn with reasoning)
 // ============================================================================
 
-async function compileRules(
-  insurerName: string,
-  companyName: string,
-  sources: Array<{ fileName: string; category: string; rawText: string; isShared: boolean }>,
-  gemini: GoogleGenAI,
-): Promise<ExtractedRule[]> {
-  console.log(`  🧠 Compiling rules for "${companyName}" (${insurerName}) from ${sources.length} sources...`);
-
-  const sourceTexts = sources.map(s =>
-    `[Source: ${s.fileName} (${s.category}${s.isShared ? ", SHARED INSURER T&C" : ""})]
-${s.rawText}`,
-  ).join("\n\n---\n\n");
-
-  const prompt = `You are a Vietnamese insurance policy analyst. Extract ALL rules from the following policy documents into structured JSON.
-
-These documents are for the company "${companyName}" insured by "${insurerName}".
-Some documents are company-specific contracts/amendments, others are shared insurer-level Terms & Conditions that apply to all companies under this insurer.
-
-Documents provided:
-${sourceTexts}
-
-Extract EVERY rule, clause, limit, and condition. Do not summarize or skip anything.
-
-Output a JSON array where each element is:
-{
-  "category": one of: "benefit_schedule", "exclusion", "drug_rule", "test_rule", "copay", "deductible", "waiting_period", "network", "authorization", "special_clause", "general_condition", "amendment_override",
-  "benefit_type": "OutPatient" | "Inpatient" | "Dental" | "Maternity" | "Surgical" | null (null = applies to all),
-  "rule_key": machine-readable dotted key, e.g. "outpatient.per_visit_limit", "exclusion.pre_existing_12mo",
-  "rule_value": structured object (schema depends on category — see examples below),
-  "description": the original Vietnamese text describing this rule,
-  "source_file": which source document this came from,
-  "source_page": page number (if identifiable from [Page X] markers, else null)
-}
-
-IMPORTANT:
-- Extract ALL benefit limits (per visit, annual, sub-limits for drugs/imaging/lab)
-- Extract ALL exclusions (general + specific conditions + drugs + procedures)
-- Extract ALL copay rates (by benefit type, by network status)
-- Extract ALL drug rules (registration, formulary, generic substitution)
-- Extract ALL waiting periods
-- For amendments: set category="amendment_override" and reference what base rule it overrides via "overrides_rule_key" in rule_value
-- If a rule is ambiguous, extract it as "general_condition" with full Vietnamese text
-- Numbers must be in raw form (1200000 not "1.2 triệu")
-
-Category-specific rule_value schemas:
-
+const RULE_VALUE_SCHEMAS = `
 benefit_schedule: { "per_visit_limit": 1200000, "annual_limit": 50000000, "currency": "VND", "sub_limits": [{ "item": "imaging", "limit": 500000 }] }
 exclusion: { "type": "condition|drug|procedure|test|general", "items": ["pre-existing < 12 months"], "icd_codes": [], "exceptions": [] }
 drug_rule: { "registration_required": true, "registration_formats": ["VN-", "VD-", "VS-"], "generic_substitution": "allowed|required|not_allowed", "formulary": "open|restricted", "excluded_categories": [], "social_insurance_deduction": true }
@@ -376,40 +331,168 @@ network: { "required": true, "out_of_network_coverage": 0.5, "preferred_provider
 authorization: { "required_for": ["inpatient", "surgery", "mri"], "process": "description" }
 special_clause: { "type": "maternity|dental_frequency|chronic_management|mental_health", "details": {} }
 amendment_override: { "overrides_rule_key": "outpatient.per_visit_limit", "new_value": { "per_visit_limit": 1500000 }, "effective_date": "2025-01-01", "amendment_number": "PL-001" }
-general_condition: { "condition": "description of any other policy condition" }
+general_condition: { "condition": "description of any other policy condition" }`;
 
-Output ONLY the JSON array, no markdown fences, no explanatory text.`;
+const EXTRACTION_SYSTEM_PROMPT = `You are a Vietnamese insurance policy analyst specializing in extracting structured rules from policy documents.
 
-  const result = await gemini.models.generateContent({
-    model: EXTRACTION_MODEL,
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-    config: {
-      responseMimeType: "application/json",
-    },
-  });
+You work in multiple passes to ensure completeness and accuracy:
+1. ANALYZE: Read through all documents, identify document types and their relationships
+2. EXTRACT: Extract rules document-by-document, category-by-category
+3. RECONCILE: Check for conflicts between base T&C and company-specific contracts/amendments
+4. VALIDATE: Self-check for completeness — did you cover all benefit types, all exclusion categories?
 
-  const responseText = result.text ?? "[]";
+You use extended thinking to reason through ambiguous clauses, Vietnamese legal terminology, and conditional rules before outputting structured data.
 
-  let rules: ExtractedRule[];
+Rule output schema:
+{
+  "category": one of: "benefit_schedule", "exclusion", "drug_rule", "test_rule", "copay", "deductible", "waiting_period", "network", "authorization", "special_clause", "general_condition", "amendment_override",
+  "benefit_type": "OutPatient" | "Inpatient" | "Dental" | "Maternity" | "Surgical" | null (null = applies to all),
+  "rule_key": machine-readable dotted key, e.g. "outpatient.per_visit_limit", "exclusion.pre_existing_12mo",
+  "rule_value": structured object (schema depends on category),
+  "description": the original Vietnamese text describing this rule,
+  "source_file": which source document this came from,
+  "source_page": page number (if identifiable from [Page X] markers, else null)
+}
+
+Category-specific rule_value schemas:
+${RULE_VALUE_SCHEMAS}
+
+CRITICAL RULES:
+- Numbers must be in raw form (1200000 not "1.2 triệu")
+- For amendments: set category="amendment_override" and reference what base rule it overrides via "overrides_rule_key" in rule_value
+- If a rule is ambiguous, extract it as "general_condition" with full Vietnamese text
+- NEVER skip a rule because it seems redundant — extract everything`;
+
+function parseJsonFromResponse(text: string): ExtractedRule[] | null {
+  // Try direct parse
   try {
-    rules = JSON.parse(responseText);
-  } catch {
-    const match = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
-    if (match) {
-      rules = JSON.parse(match[1]!);
-    } else {
-      console.error(`  ❌ Failed to parse Gemini response as JSON`);
-      console.error(`  Response (first 500 chars): ${responseText.slice(0, 500)}`);
-      return [];
-    }
+    const parsed = JSON.parse(text);
+    if (Array.isArray(parsed)) return parsed;
+  } catch {}
+
+  // Try extracting from markdown fences
+  const match = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (match) {
+    try {
+      const parsed = JSON.parse(match[1]!);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {}
   }
 
-  if (!Array.isArray(rules)) {
-    console.error(`  ❌ Gemini response is not an array`);
+  return null;
+}
+
+async function compileRules(
+  insurerName: string,
+  companyName: string,
+  sources: Array<{ fileName: string; category: string; rawText: string; isShared: boolean }>,
+  gemini: GoogleGenAI,
+): Promise<ExtractedRule[]> {
+  console.log(`  🧠 Agentic extraction for "${companyName}" (${insurerName}) from ${sources.length} sources...`);
+
+  const sourceTexts = sources.map(s =>
+    `[Source: ${s.fileName} (${s.category}${s.isShared ? ", SHARED INSURER T&C" : ""})]
+${s.rawText}`,
+  ).join("\n\n---\n\n");
+
+  // Turn 1: Analyze documents and extract initial rules
+  const turn1Prompt = `Analyze the following policy documents for company "${companyName}" insured by "${insurerName}".
+
+Documents:
+${sourceTexts}
+
+STEP 1 — Document Analysis:
+First, identify each document's type and purpose (contract, T&C, amendment, benefit schedule, etc.).
+Note which documents are company-specific vs shared insurer T&C.
+
+STEP 2 — Extract ALL rules:
+Go through each document section-by-section. For each clause, article, or table row that defines a rule, limit, exclusion, or condition, extract it as a structured rule object.
+
+Pay special attention to:
+- Benefit schedule tables (per-visit limits, annual limits, sub-limits per category)
+- Exclusion lists (general exclusions, specific conditions, drug exclusions, procedure exclusions)
+- Copay/co-insurance rates (may differ by benefit type or network status)
+- Drug rules (registration requirements, formulary restrictions, generic substitution policies)
+- Diagnostic test rules (negative test policies, indication requirements)
+- Waiting periods (different for different benefit types)
+- Amendment overrides (what base rules they replace)
+
+Output a JSON array of ALL extracted rules. Include every single rule — do not summarize or skip.`;
+
+  console.log(`    Turn 1: Analyzing documents and extracting rules...`);
+  const turn1Result = await gemini.models.generateContent({
+    model: EXTRACTION_MODEL,
+    config: {
+      systemInstruction: EXTRACTION_SYSTEM_PROMPT,
+      thinkingConfig: { thinkingBudget: 8192 },
+      responseMimeType: "application/json",
+    },
+    contents: [{ role: "user", parts: [{ text: turn1Prompt }] }],
+  });
+
+  const turn1Text = turn1Result.text ?? "[]";
+  const initialRules = parseJsonFromResponse(turn1Text);
+
+  if (!initialRules) {
+    console.error(`  ❌ Failed to parse turn 1 response as JSON`);
+    console.error(`  Response (first 500 chars): ${turn1Text.slice(0, 500)}`);
     return [];
   }
 
-  const validRules = rules.filter((rule, i) => {
+  console.log(`    Turn 1: ${initialRules.length} rules extracted`);
+
+  // Turn 2: Self-review for completeness and accuracy
+  const categoryCounts: Record<string, number> = {};
+  for (const r of initialRules) {
+    categoryCounts[r.category] = (categoryCounts[r.category] ?? 0) + 1;
+  }
+  const categoryBreakdown = Object.entries(categoryCounts)
+    .map(([cat, count]) => `${cat}: ${count}`)
+    .join(", ");
+
+  const turn2Prompt = `You extracted ${initialRules.length} rules from the policy documents.
+Breakdown by category: ${categoryBreakdown}
+
+Now perform a COMPLETENESS REVIEW:
+
+1. MISSING RULES CHECK — Go back through each source document section-by-section. For every clause or table entry, verify it was captured. List any that were missed.
+
+2. ACCURACY CHECK — For each rule with numeric values (limits, rates, amounts), verify the number matches the source text exactly. Flag any mismatches.
+
+3. AMENDMENT RECONCILIATION — For any amendment_override rules, verify the overrides_rule_key references an actual extracted base rule. If an amendment changes a rule not yet extracted, extract the base rule too.
+
+4. BENEFIT TYPE COVERAGE — Verify you have rules for ALL benefit types mentioned in the documents (OutPatient, Inpatient, Dental, Maternity, Surgical, etc.). If a benefit type appears in the documents but has no rules, extract them.
+
+Output a JSON array containing ONLY the NEW or CORRECTED rules that need to be added. If no fixes are needed, output an empty array [].
+Do NOT re-output rules that are already correct.`;
+
+  console.log(`    Turn 2: Self-reviewing for completeness...`);
+  const turn2Result = await gemini.models.generateContent({
+    model: EXTRACTION_MODEL,
+    config: {
+      systemInstruction: EXTRACTION_SYSTEM_PROMPT,
+      thinkingConfig: { thinkingBudget: 8192 },
+      responseMimeType: "application/json",
+    },
+    contents: [
+      { role: "user", parts: [{ text: turn1Prompt }] },
+      { role: "model", parts: [{ text: turn1Text }] },
+      { role: "user", parts: [{ text: turn2Prompt }] },
+    ],
+  });
+
+  const turn2Text = turn2Result.text ?? "[]";
+  const additionalRules = parseJsonFromResponse(turn2Text);
+
+  if (additionalRules && additionalRules.length > 0) {
+    console.log(`    Turn 2: ${additionalRules.length} additional/corrected rules found`);
+    initialRules.push(...additionalRules);
+  } else {
+    console.log(`    Turn 2: No additional rules needed`);
+  }
+
+  // Validate all rules
+  const validRules = initialRules.filter((rule, i) => {
     if (!VALID_CATEGORIES.has(rule.category)) {
       console.warn(`  ⚠️ Rule ${i}: invalid category "${rule.category}", skipping`);
       return false;
@@ -421,8 +504,16 @@ Output ONLY the JSON array, no markdown fences, no explanatory text.`;
     return true;
   });
 
-  console.log(`  ✅ Compiled ${validRules.length} rules (${rules.length - validRules.length} invalid/skipped)`);
-  return validRules;
+  // Deduplicate by rule_key + benefit_type (keep last = corrected version)
+  const ruleMap = new Map<string, ExtractedRule>();
+  for (const rule of validRules) {
+    const key = `${rule.rule_key}::${rule.benefit_type ?? "all"}`;
+    ruleMap.set(key, rule);
+  }
+  const dedupedRules = [...ruleMap.values()];
+
+  console.log(`  ✅ Compiled ${dedupedRules.length} rules (${validRules.length - dedupedRules.length} deduped, ${initialRules.length - validRules.length} invalid/skipped)`);
+  return dedupedRules;
 }
 
 // ============================================================================
