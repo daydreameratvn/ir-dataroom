@@ -8,6 +8,7 @@ RUN cd auth && bun install --production
 
 # Install root dependencies (needed by agents imported from auth routes)
 COPY package.json bun.lock* ./
+COPY patches/ ./patches/
 RUN bun install --frozen-lockfile --production
 
 # Copy source
