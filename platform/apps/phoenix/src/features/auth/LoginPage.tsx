@@ -116,7 +116,7 @@ export default function LoginPage() {
       </div>
 
       <p className="mt-6 text-xs text-gray-400">
-        Powered by Papaya Insurance Technology
+        Powered by Papaya
       </p>
     </div>
   );

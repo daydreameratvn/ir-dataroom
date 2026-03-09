@@ -15,7 +15,7 @@ describe('TenantBranding', () => {
       </TestWrapper>,
     );
 
-    // Default tenant is "Papaya Insurance", so shows "P"
+    // Default tenant is "Papaya", so shows "P"
     expect(screen.getByText('P')).toBeInTheDocument();
   });
 

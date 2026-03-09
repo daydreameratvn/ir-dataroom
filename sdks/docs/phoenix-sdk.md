@@ -1,6 +1,6 @@
 # Phoenix Claims SDK
 
-**Version 0.0.1** | Papaya Insurance Infrastructure
+**Version 0.0.1** | Papaya Infrastructure
 
 ---
 

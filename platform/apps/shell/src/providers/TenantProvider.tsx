@@ -10,7 +10,7 @@ interface TenantContextValue {
 const defaultTenant: Tenant = {
   id: 'papaya-demo',
   slug: 'papaya-demo',
-  name: 'Papaya Insurance',
+  name: 'Papaya',
   logoUrl: undefined,
   faviconUrl: undefined,
   primaryColor: undefined,

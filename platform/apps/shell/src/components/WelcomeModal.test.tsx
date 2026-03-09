@@ -87,7 +87,7 @@ describe('WelcomeModal', () => {
       </TestWrapper>,
     );
 
-    // Default tenant is "Papaya Insurance"
-    expect(screen.getByText(/papaya insurance/i)).toBeInTheDocument();
+    // Default tenant is "Papaya"
+    expect(screen.getByText(/papaya/i)).toBeInTheDocument();
   });
 });

@@ -104,7 +104,7 @@ export const authConfig = {
   refreshTokenDays: 30,
   otpExpiry: 10 * 60 * 1000, // 10 minutes
   otpMaxAttempts: 5,
-  rpName: "Papaya Insurance",
+  rpName: "Papaya",
   rpId: process.env.RP_ID || "papaya.asia",
   rpOrigin: process.env.RP_ORIGIN || "https://oasis.papaya.asia",
 };
