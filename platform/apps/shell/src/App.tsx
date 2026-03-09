@@ -6,26 +6,35 @@ import { RefreshCw } from 'lucide-react';
 import AppSidebar from './components/AppSidebar';
 import TopBar from './components/TopBar';
 import ImpersonationBanner from './components/ImpersonationBanner';
+import WelcomeModal from './components/WelcomeModal';
 import CommandPalette from './features/command-palette/CommandPalette';
 import FatimaPanel from './features/fatima/FatimaPanel';
 import { useNewVersion } from './hooks/useNewVersion';
 
 export default function App() {
   const [fatimaOpen, setFatimaOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
   const { isImpersonating, preferences, updatePreferences } = useAuth();
   const hasNewVersion = useNewVersion();
   const welcomeHandled = useRef(false);
 
-  // Auto-open Fatima for first-time users
+  // Show welcome modal for first-time users
   useEffect(() => {
     if (welcomeHandled.current) return;
     if (!preferences) return; // Not loaded yet
     if (preferences.hasSeenWelcome) return; // Already seen
 
     welcomeHandled.current = true;
-    setFatimaOpen(true);
+    setWelcomeOpen(true);
+  }, [preferences]);
+
+  // Handle welcome modal completion
+  const handleWelcomeComplete = () => {
+    setWelcomeOpen(false);
     updatePreferences({ hasSeenWelcome: true });
-  }, [preferences, updatePreferences]);
+    // Open Fatima panel after welcome modal closes
+    setFatimaOpen(true);
+  };
 
   // Global ⌘J shortcut to toggle Fatima panel
   useEffect(() => {
@@ -66,6 +75,7 @@ export default function App() {
 
         <CommandPalette onOpenFatima={() => setFatimaOpen(true)} />
         <FatimaPanel open={fatimaOpen} onClose={() => setFatimaOpen(false)} />
+        <WelcomeModal open={welcomeOpen} onComplete={handleWelcomeComplete} />
       </div>
     </>
   );
