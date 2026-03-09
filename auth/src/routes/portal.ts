@@ -750,29 +750,29 @@ portal.get("/portal/analytics", async (c) => {
   try {
     // Outcome distribution — claims grouped by status
     const statusData = await gqlQuery<{
-      approved: { aggregate: { count: number } };
-      denied: { aggregate: { count: number } };
-      processing: { aggregate: { count: number } };
-      submitted: { aggregate: { count: number } };
-      error: { aggregate: { count: number } };
-      waitingForApproval: { aggregate: { count: number } };
+      approved: { _count: number };
+      denied: { _count: number };
+      processing: { _count: number };
+      submitted: { _count: number };
+      error: { _count: number };
+      waitingForApproval: { _count: number };
     }>(`
       query PortalAnalyticsOutcome {
-        approved: claimsAggregate(where: { status: { _eq: "APPROVED" } }) { aggregate { count } }
-        denied: claimsAggregate(where: { status: { _eq: "DENIED" } }) { aggregate { count } }
-        processing: claimsAggregate(where: { status: { _in: ["PROCESSING", "SUBMITTED"] } }) { aggregate { count } }
-        submitted: claimsAggregate(where: { status: { _eq: "SUBMITTED" } }) { aggregate { count } }
-        error: claimsAggregate(where: { status: { _eq: "ERROR" } }) { aggregate { count } }
-        waitingForApproval: claimsAggregate(where: { status: { _eq: "WAITING_FOR_APPROVAL" } }) { aggregate { count } }
+        approved: claimsAggregate(filter_input: { where: { status: { _eq: "APPROVED" } } }) { _count }
+        denied: claimsAggregate(filter_input: { where: { status: { _eq: "DENIED" } } }) { _count }
+        processing: claimsAggregate(filter_input: { where: { status: { _in: ["PROCESSING", "SUBMITTED"] } } }) { _count }
+        submitted: claimsAggregate(filter_input: { where: { status: { _eq: "SUBMITTED" } } }) { _count }
+        error: claimsAggregate(filter_input: { where: { status: { _eq: "ERROR" } } }) { _count }
+        waitingForApproval: claimsAggregate(filter_input: { where: { status: { _eq: "WAITING_FOR_APPROVAL" } } }) { _count }
       }
     `);
 
     const outcomeDistribution = [
-      { status: "APPROVED", count: statusData.approved.aggregate.count },
-      { status: "DENIED", count: statusData.denied.aggregate.count },
-      { status: "PROCESSING", count: statusData.processing.aggregate.count },
-      { status: "WAITING_FOR_APPROVAL", count: statusData.waitingForApproval.aggregate.count },
-      { status: "ERROR", count: statusData.error.aggregate.count },
+      { status: "APPROVED", count: statusData.approved._count },
+      { status: "DENIED", count: statusData.denied._count },
+      { status: "PROCESSING", count: statusData.processing._count },
+      { status: "WAITING_FOR_APPROVAL", count: statusData.waitingForApproval._count },
+      { status: "ERROR", count: statusData.error._count },
     ].filter((d) => d.count > 0);
 
     // Claims over time — recent claims with dates for grouping on frontend
@@ -1020,12 +1020,12 @@ portal.get("/portal/fwa-analytics", async (c) => {
   /* ── Real data path (disabled for demo) ──────────────────────────────────
   try {
     const data = await gqlQuery<{
-      totalCases: { aggregate: { count: number } };
-      confirmedCases: { aggregate: { count: number } };
-      clearedCases: { aggregate: { count: number } };
-      underInvestigation: { aggregate: { count: number } };
-      totalFlaggedAmount: { aggregate: { sum: { flaggedAmount: number | null } } };
-      totalConfirmedAmount: { aggregate: { sum: { flaggedAmount: number | null } } };
+      totalCases: { _count: number };
+      confirmedCases: { _count: number };
+      clearedCases: { _count: number };
+      underInvestigation: { _count: number };
+      totalFlaggedAmount: { totalFlaggedAmount: { sum: number | null } };
+      totalConfirmedAmount: { totalFlaggedAmount: { sum: number | null } };
       allCases: Array<{
         riskLevel: string | null;
         status: string;
@@ -1042,12 +1042,12 @@ portal.get("/portal/fwa-analytics", async (c) => {
       }>;
     }>(`
       query PortalFWAAnalytics {
-        totalCases: fwaCasesAggregate(where: { deletedAt: { _is_null: true } }) { aggregate { count } }
-        confirmedCases: fwaCasesAggregate(where: { status: { _eq: "CONFIRMED" }, deletedAt: { _is_null: true } }) { aggregate { count } }
-        clearedCases: fwaCasesAggregate(where: { status: { _eq: "CLEARED" }, deletedAt: { _is_null: true } }) { aggregate { count } }
-        underInvestigation: fwaCasesAggregate(where: { status: { _eq: "UNDER_INVESTIGATION" }, deletedAt: { _is_null: true } }) { aggregate { count } }
-        totalFlaggedAmount: fwaCasesAggregate(where: { deletedAt: { _is_null: true } }) { aggregate { sum { flaggedAmount } } }
-        totalConfirmedAmount: fwaCasesAggregate(where: { status: { _eq: "CONFIRMED" }, deletedAt: { _is_null: true } }) { aggregate { sum { flaggedAmount } } }
+        totalCases: fwaCasesAggregate(filter_input: { where: { deletedAt: { _is_null: true } } }) { _count }
+        confirmedCases: fwaCasesAggregate(filter_input: { where: { status: { _eq: "CONFIRMED" }, deletedAt: { _is_null: true } } }) { _count }
+        clearedCases: fwaCasesAggregate(filter_input: { where: { status: { _eq: "CLEARED" }, deletedAt: { _is_null: true } } }) { _count }
+        underInvestigation: fwaCasesAggregate(filter_input: { where: { status: { _eq: "UNDER_INVESTIGATION" }, deletedAt: { _is_null: true } } }) { _count }
+        totalFlaggedAmount: fwaCasesAggregate(filter_input: { where: { deletedAt: { _is_null: true } } }) { totalFlaggedAmount { sum } }
+        totalConfirmedAmount: fwaCasesAggregate(filter_input: { where: { status: { _eq: "CONFIRMED" }, deletedAt: { _is_null: true } } }) { totalFlaggedAmount { sum } }
         allCases: fwaCases(where: { deletedAt: { _is_null: true } }, limit: 500, order_by: { createdAt: Desc }) {
           riskLevel
           status
@@ -1117,10 +1117,10 @@ portal.get("/portal/fwa-analytics", async (c) => {
       .map(([date, counts]) => ({ date, ...counts }))
       .sort((a, b) => a.date.localeCompare(b.date));
 
-    const totalDetected = data.totalCases.aggregate.count;
-    const totalConfirmed = data.confirmedCases.aggregate.count;
-    const totalFlagged = data.totalFlaggedAmount.aggregate.sum.flaggedAmount ?? 0;
-    const totalConfirmedAmt = data.totalConfirmedAmount.aggregate.sum.flaggedAmount ?? 0;
+    const totalDetected = data.totalCases._count;
+    const totalConfirmed = data.confirmedCases._count;
+    const totalFlagged = data.totalFlaggedAmount.totalFlaggedAmount.sum ?? 0;
+    const totalConfirmedAmt = data.totalConfirmedAmount.totalFlaggedAmount.sum ?? 0;
 
     // High + Critical count
     const highCriticalCount = data.allCases.filter(

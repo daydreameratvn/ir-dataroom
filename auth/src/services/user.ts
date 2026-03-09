@@ -372,14 +372,14 @@ export async function listUsers(opts: ListUsersOptions): Promise<ListUsersResult
     usersAggregate: { _count: number };
     users: GqlAdminUserRow[];
   }>(`
-    query ListUsers($where: UsersBoolExp!, $limit: Int!, $offset: Int!) {
-      usersAggregate(where: $where) { _count }
+    query ListUsers($where: UsersBoolExp!, $limit: Int!, $offset: Int!, $filterInput: UsersFilterInput) {
+      usersAggregate(filter_input: $filterInput) { _count }
       users(
         where: $where, limit: $limit, offset: $offset,
         order_by: [{ createdAt: Desc }]
       ) { ${ADMIN_USER_GQL_FIELDS} }
     }
-  `, { where, limit, offset });
+  `, { where, limit, offset, filterInput: { where } });
 
   const total = data.usersAggregate._count;
   const users = data.users.map(gqlRowToAdminUser);
