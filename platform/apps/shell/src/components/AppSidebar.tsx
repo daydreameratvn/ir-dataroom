@@ -30,6 +30,7 @@ import type { NavItem, NavGroup } from '@papaya/shared-types';
 import { useTenant } from '@/providers/TenantProvider';
 import { navigationGroups } from '@/config/navigation';
 import IRFlyoutContent from '@/features/ir/components/IRFlyoutContent';
+import TenantBranding from './TenantBranding';
 
 const iconMap: Record<string, LucideIcon> = {
   LayoutDashboard,
@@ -114,14 +115,12 @@ export default function AppSidebar({ onOpenFatima }: AppSidebarProps) {
       <div className="relative flex h-screen flex-shrink-0">
         {/* Icon Rail — always visible, 48px */}
         <aside className="flex h-screen w-12 flex-col border-r bg-background">
-          {/* Logo */}
+          {/* Tenant Logo */}
           <Link
             to="/"
             className="flex h-14 items-center justify-center border-b"
           >
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-papaya text-white font-bold text-xs shadow-sm">
-              O
-            </div>
+            <TenantBranding size="sm" />
           </Link>
 
           {/* Navigation icons */}

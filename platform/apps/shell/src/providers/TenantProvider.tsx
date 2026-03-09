@@ -45,6 +45,29 @@ export interface TenantProviderProps {
   children: ReactNode;
 }
 
+/**
+ * Updates the document favicon with the tenant's custom favicon URL.
+ */
+function applyFavicon(faviconUrl: string | undefined) {
+  const defaultFavicon = '/favicon.ico';
+  const url = faviconUrl || defaultFavicon;
+
+  let link = document.querySelector<HTMLLinkElement>("link[rel~='icon']");
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.head.appendChild(link);
+  }
+  link.href = url;
+}
+
+/**
+ * Updates the document title with the tenant name.
+ */
+function applyDocumentTitle(tenantName: string) {
+  document.title = `${tenantName} | Oasis`;
+}
+
 export default function TenantProvider({ children }: TenantProviderProps) {
   const [tenant, setTenant] = useState<Tenant>(defaultTenant);
 
@@ -58,6 +81,12 @@ export default function TenantProvider({ children }: TenantProviderProps) {
       }
     } catch { /* localStorage unavailable */ }
   }, [tenant.defaultLocale]);
+
+  // Apply tenant branding when tenant changes
+  useEffect(() => {
+    applyFavicon(tenant.faviconUrl);
+    applyDocumentTitle(tenant.name);
+  }, [tenant.faviconUrl, tenant.name]);
 
   return (
     <TenantContext.Provider value={{ tenant, setTenant }}>

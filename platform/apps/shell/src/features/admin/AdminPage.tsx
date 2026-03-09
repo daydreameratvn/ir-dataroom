@@ -12,6 +12,7 @@ import IdentityProviders from './components/IdentityProviders';
 import MembersTable from './components/MembersTable';
 import DomainsManager from './components/DomainsManager';
 import AuditLogTable from './components/AuditLogTable';
+import TenantBrandingSettings from './components/TenantBrandingSettings';
 
 export default function AdminPage() {
   const { t } = useTranslation();
@@ -27,6 +28,7 @@ export default function AdminPage() {
           <TabsTrigger value="users">{t('nav.adminUsers')}</TabsTrigger>
           <TabsTrigger value="members">Members</TabsTrigger>
           <TabsTrigger value="domains">Domains</TabsTrigger>
+          <TabsTrigger value="branding">Branding</TabsTrigger>
           <TabsTrigger value="settings">{t('nav.adminSettings')}</TabsTrigger>
           <TabsTrigger value="audit">{t('nav.adminAudit')}</TabsTrigger>
           <TabsTrigger value="errors">Errors</TabsTrigger>
@@ -39,6 +41,9 @@ export default function AdminPage() {
         </TabsContent>
         <TabsContent value="domains" className="mt-4">
           <DomainsManager />
+        </TabsContent>
+        <TabsContent value="branding" className="mt-4">
+          <TenantBrandingSettings />
         </TabsContent>
         <TabsContent value="settings" className="mt-4">
           <IdentityProviders />

@@ -69,13 +69,23 @@ vi.mock('./error-api', () => ({
   }),
 }));
 
+// Mock branding API (used by TenantBrandingSettings)
+vi.mock('./branding-api', () => ({
+  getTenantBranding: vi.fn().mockResolvedValue({
+    logoUrl: '',
+    faviconUrl: '',
+    primaryColor: '#ED1B55',
+  }),
+  updateTenantBranding: vi.fn().mockResolvedValue({ success: true }),
+}));
+
 beforeEach(async () => {
   vi.clearAllMocks();
   await ensureI18n();
 });
 
 describe('AdminPage', () => {
-  it('renders page with six tabs', () => {
+  it('renders page with seven tabs', () => {
     render(
       <TestWrapper>
         <AdminPage />
@@ -83,7 +93,7 @@ describe('AdminPage', () => {
     );
 
     const tabs = screen.getAllByRole('tab');
-    expect(tabs).toHaveLength(6);
+    expect(tabs).toHaveLength(7);
   });
 
   it('renders the settings tab trigger', () => {
@@ -93,8 +103,8 @@ describe('AdminPage', () => {
       </TestWrapper>,
     );
 
-    // Settings tab is at index 3 (Users, Members, Domains, Settings, Audit, Errors)
-    const settingsTab = screen.getAllByRole('tab')[3]!;
+    // Settings tab should exist (uses i18n key nav.adminSettings)
+    const settingsTab = screen.getByRole('tab', { name: /settings/i });
     expect(settingsTab).toBeDefined();
   });
 
@@ -107,8 +117,8 @@ describe('AdminPage', () => {
       </TestWrapper>,
     );
 
-    // Click the fourth tab (Settings - index 3)
-    const settingsTab = screen.getAllByRole('tab')[3]!;
+    // Click the Settings tab by name
+    const settingsTab = screen.getByRole('tab', { name: /settings/i });
     await user.click(settingsTab);
 
     expect(settingsTab).toHaveAttribute('aria-selected', 'true');
@@ -128,13 +138,34 @@ describe('AdminPage', () => {
       </TestWrapper>,
     );
 
-    const settingsTab = screen.getAllByRole('tab')[3]!;
+    const settingsTab = screen.getByRole('tab', { name: /settings/i });
     await user.click(settingsTab);
 
     await waitFor(() => {
       expect(
         screen.getByRole('button', { name: /connect google workspace/i }),
       ).toBeInTheDocument();
+    });
+  });
+
+  it('renders the branding tab', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <TestWrapper>
+        <AdminPage />
+      </TestWrapper>,
+    );
+
+    // Click the Branding tab
+    const brandingTab = screen.getByRole('tab', { name: /branding/i });
+    await user.click(brandingTab);
+
+    expect(brandingTab).toHaveAttribute('aria-selected', 'true');
+
+    // TenantBrandingSettings should render
+    await waitFor(() => {
+      expect(screen.getByText('Tenant Branding')).toBeInTheDocument();
     });
   });
 });
