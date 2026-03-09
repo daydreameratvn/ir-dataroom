@@ -1,5 +1,6 @@
 import { createClaimSubmissionAgent } from "./agent.ts";
 import { createSSEResponse } from "../shared/sse-stream.ts";
+import type { DocumentInfo } from "./tools/index.ts";
 
 /**
  * Handler for the claim submission agent.
@@ -7,6 +8,7 @@ import { createSSEResponse } from "../shared/sse-stream.ts";
 export async function handleClaimSubmission(request: {
   allowedCertificateIds?: string[];
   documentAnalysis: string;
+  documents?: DocumentInfo[];
   pageCount: number;
 }) {
   const agent = await createClaimSubmissionAgent(request);
