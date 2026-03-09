@@ -153,8 +153,14 @@ export interface RefreshTokenResponse {
   token: string;
 }
 
-export function requestOtp(email: string): Promise<void> {
-  return apiFetch('/otp/request', {
+export interface RequestOtpResponse {
+  success?: boolean;
+  error?: string;
+  message?: string;
+}
+
+export function requestOtp(email: string): Promise<RequestOtpResponse> {
+  return apiFetch<RequestOtpResponse>('/otp/request', {
     method: 'POST',
     body: JSON.stringify({ email }),
   });
