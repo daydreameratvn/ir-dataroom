@@ -27,8 +27,10 @@ import {
   type PolicyFile,
   fuzzyMatch,
   listCompanyFolders,
+  listDirectFiles,
   listFilesInFolder,
   listInsurerFolderNames,
+  listSubfolders,
 } from "../shared/services/google-drive.ts";
 
 // ============================================================================
@@ -75,9 +77,10 @@ interface ExtractedRule {
   source_page: number | null;
 }
 
-interface CompanyFiles {
+interface PolicyFolderFiles {
   insurerName: string;
   companyName: string;
+  policyNumber: string;
   files: PolicyFile[];
   sharedFiles: PolicyFile[];
 }
@@ -111,11 +114,11 @@ const INSERT_RULE = `
 `;
 
 const FIND_EXISTING_RULE_SETS = `
-  query FindExistingRuleSets($insurerName: String_1!, $companyName: String_1!) {
+  query FindExistingRuleSets($insurerName: String_1!, $policyNumber: String_1!) {
     policyRuleSets(
       where: {
         insurerName: { _eq: $insurerName }
-        companyName: { _eq: $companyName }
+        policyNumber: { _eq: $policyNumber }
         deletedAt: { _is_null: true }
       }
       order_by: [{ createdAt: Desc }]
@@ -123,6 +126,7 @@ const FIND_EXISTING_RULE_SETS = `
       id
       insurerName
       companyName
+      policyNumber
       status
       policyRuleSources {
         driveFileId
@@ -138,6 +142,7 @@ const FIND_RULE_SET_BY_ID = `
       id
       insurerName
       companyName
+      policyNumber
       status
     }
   }
@@ -180,44 +185,94 @@ const UPDATE_RULE_SET_STATUS = `
 `;
 
 // ============================================================================
-// Step 1: Scan Drive for company files + shared insurer T&C
+// Step 1: Scan Drive for policy folders + shared insurer T&C
+//
+// Drive structure: Root / Insurer / Company / [Policy Number Folder] / PDFs
+// The policy number IS the folder name under each company.
 // ============================================================================
 
 function isSharedTcFolder(companyName: string, insurerName: string): boolean {
   return fuzzyMatch(companyName, insurerName);
 }
 
-async function scanCompanyFiles(
-  insurerName: string,
-  companyFolder: CompanyFolder,
-  sharedTcFolders: CompanyFolder[],
-): Promise<CompanyFiles> {
-  console.log(`  📂 Scanning "${companyFolder.companyName}"...`);
+const PDF_MIME = "application/pdf";
 
-  const allFiles = await listFilesInFolder(companyFolder.folderId);
-  const relevantCategories = new Set(["contracts", "terms_and_conditions", "amendments", "other"]);
-  const companyPdfs = allFiles.filter(
-    f => f.mimeType === "application/pdf" && relevantCategories.has(f.category),
-  );
-
+async function collectSharedPdfs(sharedTcFolders: CompanyFolder[]): Promise<PolicyFile[]> {
   const sharedPdfs: PolicyFile[] = [];
   for (const sharedFolder of sharedTcFolders) {
     const sharedFiles = await listFilesInFolder(sharedFolder.folderId);
-    const pdfs = sharedFiles.filter(
-      f => f.mimeType === "application/pdf" && relevantCategories.has(f.category),
-    );
-    sharedPdfs.push(...pdfs);
+    sharedPdfs.push(...sharedFiles.filter(f => f.mimeType === PDF_MIME));
+  }
+  return sharedPdfs;
+}
+
+/**
+ * Scan a company folder to find policy number subfolders.
+ * Returns one PolicyFolderFiles per policy folder found.
+ * If no subfolders exist (files directly in company folder), creates one entry with companyName as policyNumber.
+ */
+async function scanPolicyFolders(
+  insurerName: string,
+  companyFolder: CompanyFolder,
+  sharedPdfs: PolicyFile[],
+): Promise<PolicyFolderFiles[]> {
+  console.log(`  📂 Scanning "${companyFolder.companyName}"...`);
+
+  const subfolders = await listSubfolders(companyFolder.folderId);
+  const results: PolicyFolderFiles[] = [];
+
+  if (subfolders.length === 0) {
+    // No subfolders — files are directly in the company folder
+    const files = await listDirectFiles(companyFolder.folderId);
+    const pdfs = files.filter(f => f.mimeType === PDF_MIME);
+    if (pdfs.length > 0) {
+      console.log(`    📄 No policy subfolders — ${pdfs.length} PDFs directly in company folder`);
+      results.push({
+        insurerName,
+        companyName: companyFolder.companyName,
+        policyNumber: companyFolder.companyName, // no policy folder, use company name
+        files: pdfs,
+        sharedFiles: sharedPdfs,
+      });
+    }
+    return results;
   }
 
-  console.log(`  📄 ${companyPdfs.length} company PDFs + ${sharedPdfs.length} shared T&C PDFs`);
-  return { insurerName, companyName: companyFolder.companyName, files: companyPdfs, sharedFiles: sharedPdfs };
+  // Each subfolder is a policy number folder
+  for (const policyFolder of subfolders) {
+    const allFiles = await listFilesInFolder(policyFolder.folderId);
+    const pdfs = allFiles.filter(f => f.mimeType === PDF_MIME);
+    if (pdfs.length === 0) continue;
+
+    console.log(`    📄 Policy "${policyFolder.name}": ${pdfs.length} PDFs + ${sharedPdfs.length} shared T&C`);
+    results.push({
+      insurerName,
+      companyName: companyFolder.companyName,
+      policyNumber: policyFolder.name,
+      files: pdfs,
+      sharedFiles: sharedPdfs,
+    });
+  }
+
+  // Also check for loose files directly in the company folder (not in any subfolder)
+  const directFiles = await listDirectFiles(companyFolder.folderId);
+  const directPdfs = directFiles.filter(f => f.mimeType === PDF_MIME);
+  if (directPdfs.length > 0) {
+    // Attach loose company-level files to ALL policy folders as shared
+    console.log(`    📄 ${directPdfs.length} loose PDFs at company level — attaching to all policies`);
+    for (const entry of results) {
+      entry.sharedFiles = [...entry.sharedFiles, ...directPdfs];
+    }
+  }
+
+  return results;
 }
 
 // ============================================================================
 // Step 2: Check existing extractions
 // ============================================================================
 
-async function getExistingExtraction(insurerName: string, companyName: string): Promise<{
+async function getExistingExtraction(insurerName: string, policyNumber: string): Promise<{
   ruleSetId: string | null;
   extractedFileIds: Set<string>;
   extractedTimes: Map<string, string>;
@@ -228,7 +283,7 @@ async function getExistingExtraction(insurerName: string, companyName: string): 
       status: string;
       policyRuleSources: Array<{ driveFileId: string; extractedAt: string }>;
     }>;
-  }>(FIND_EXISTING_RULE_SETS, { insurerName, companyName });
+  }>(FIND_EXISTING_RULE_SETS, { insurerName, policyNumber });
 
   const sets = result?.policyRuleSets ?? [];
   if (sets.length === 0) {
@@ -521,7 +576,7 @@ Do NOT re-output rules that are already correct.`;
 // ============================================================================
 
 async function writeToDb(
-  companyFiles: CompanyFiles,
+  policyFiles: PolicyFolderFiles,
   sources: Array<{ file: PolicyFile; rawText: string; pageCount: number; isShared: boolean }>,
   rules: ExtractedRule[],
 ): Promise<string> {
@@ -532,13 +587,14 @@ async function writeToDb(
   }>(INSERT_RULE_SET, {
     object: {
       tenantId: DEFAULT_TENANT_ID,
-      insurerName: companyFiles.insurerName,
-      companyName: companyFiles.companyName,
+      insurerName: policyFiles.insurerName,
+      companyName: policyFiles.companyName,
+      policyNumber: policyFiles.policyNumber,
       status: "draft",
       metadata: {
         extractedAt: now,
-        companyFileCount: companyFiles.files.length,
-        sharedFileCount: companyFiles.sharedFiles.length,
+        policyFileCount: policyFiles.files.length,
+        sharedFileCount: policyFiles.sharedFiles.length,
         ruleCount: rules.length,
       },
     },
@@ -636,7 +692,7 @@ async function activateRuleSet(ruleSetId: string): Promise<void> {
   const now = new Date().toISOString();
 
   const result = await gqlQuery<{
-    policyRuleSetsById: { id: string; insurerName: string; companyName: string | null; status: string } | null;
+    policyRuleSetsById: { id: string; insurerName: string; companyName: string | null; policyNumber: string | null; status: string } | null;
   }>(FIND_RULE_SET_BY_ID, { id: ruleSetId });
 
   const ruleSet = result?.policyRuleSetsById;
@@ -650,10 +706,10 @@ async function activateRuleSet(ruleSetId: string): Promise<void> {
     return;
   }
 
-  if (ruleSet.companyName) {
+  if (ruleSet.policyNumber) {
     const existing = await gqlQuery<{
       policyRuleSets: Array<{ id: string; status: string }>;
-    }>(FIND_EXISTING_RULE_SETS, { insurerName: ruleSet.insurerName, companyName: ruleSet.companyName });
+    }>(FIND_EXISTING_RULE_SETS, { insurerName: ruleSet.insurerName, policyNumber: ruleSet.policyNumber });
 
     for (const existingSet of existing?.policyRuleSets ?? []) {
       if (existingSet.id !== ruleSetId && existingSet.status === "active") {
@@ -664,42 +720,32 @@ async function activateRuleSet(ruleSetId: string): Promise<void> {
   }
 
   await gqlQuery(UPDATE_RULE_SET_STATUS, { id: ruleSetId, status: "active", now });
-  console.log(`✅ Activated rule set ${ruleSetId} for "${ruleSet.insurerName}" / "${ruleSet.companyName}"`);
+  console.log(`✅ Activated rule set ${ruleSetId} for "${ruleSet.insurerName}" / "${ruleSet.companyName}" / policy "${ruleSet.policyNumber}"`);
 }
 
 // ============================================================================
-// Main: Process one company under an insurer
+// Main: Process one policy folder
 // ============================================================================
 
-async function processCompany(
-  insurerName: string,
-  companyFolder: CompanyFolder,
-  sharedTcFolders: CompanyFolder[],
+async function processPolicy(
+  policyFiles: PolicyFolderFiles,
   gemini: GoogleGenAI,
   options: { dryRun: boolean; force: boolean },
 ): Promise<{ ruleSetId: string | null; ruleCount: number }> {
   console.log(`\n${"─".repeat(60)}`);
-  console.log(`Company: ${companyFolder.companyName} (${insurerName})`);
+  console.log(`Policy: ${policyFiles.policyNumber} | Company: ${policyFiles.companyName} | Insurer: ${policyFiles.insurerName}`);
   console.log("─".repeat(60));
 
-  let companyFiles: CompanyFiles;
-  try {
-    companyFiles = await scanCompanyFiles(insurerName, companyFolder, sharedTcFolders);
-  } catch (err) {
-    console.error(`  ❌ Failed to scan Drive: ${err}`);
-    return { ruleSetId: null, ruleCount: 0 };
-  }
-
-  const totalPdfs = companyFiles.files.length + companyFiles.sharedFiles.length;
+  const totalPdfs = policyFiles.files.length + policyFiles.sharedFiles.length;
   if (totalPdfs === 0) {
     console.log(`  ⏭️ No PDF files found, skipping`);
     return { ruleSetId: null, ruleCount: 0 };
   }
 
   if (!options.force) {
-    const existing = await getExistingExtraction(insurerName, companyFolder.companyName);
+    const existing = await getExistingExtraction(policyFiles.insurerName, policyFiles.policyNumber);
     if (existing.ruleSetId) {
-      const allFiles = [...companyFiles.files, ...companyFiles.sharedFiles];
+      const allFiles = [...policyFiles.files, ...policyFiles.sharedFiles];
       const newFiles = allFiles.filter(f => {
         if (!existing.extractedFileIds.has(f.id)) return true;
         const extractedAt = existing.extractedTimes.get(f.id);
@@ -720,7 +766,7 @@ async function processCompany(
   // Extract text from each PDF
   const extractedSources: Array<{ file: PolicyFile; rawText: string; pageCount: number; isShared: boolean }> = [];
 
-  for (const file of companyFiles.files) {
+  for (const file of policyFiles.files) {
     try {
       const { rawText, pageCount } = await extractTextFromPdf(file, gemini);
       if (rawText.trim().length > 0) {
@@ -733,7 +779,7 @@ async function processCompany(
     }
   }
 
-  for (const file of companyFiles.sharedFiles) {
+  for (const file of policyFiles.sharedFiles) {
     try {
       const { rawText, pageCount } = await extractTextFromPdf(file, gemini);
       if (rawText.trim().length > 0) {
@@ -753,8 +799,8 @@ async function processCompany(
 
   // Compile rules
   const rules = await compileRules(
-    insurerName,
-    companyFolder.companyName,
+    policyFiles.insurerName,
+    policyFiles.companyName,
     extractedSources.map(s => ({
       fileName: s.file.name,
       category: s.file.category,
@@ -772,7 +818,7 @@ async function processCompany(
   // Write to DB
   if (options.dryRun) {
     console.log(`\n  🔍 DRY RUN — would write:`);
-    console.log(`    • 1 rule set for "${companyFolder.companyName}" (${insurerName})`);
+    console.log(`    • 1 rule set: policy="${policyFiles.policyNumber}" company="${policyFiles.companyName}" insurer="${policyFiles.insurerName}"`);
     console.log(`    • ${extractedSources.length} rule sources`);
     console.log(`    • ${rules.length} rules`);
     const catCounts: Record<string, number> = {};
@@ -785,21 +831,21 @@ async function processCompany(
     return { ruleSetId: null, ruleCount: rules.length };
   }
 
-  const ruleSetId = await writeToDb(companyFiles, extractedSources, rules);
+  const ruleSetId = await writeToDb(policyFiles, extractedSources, rules);
 
   console.log(`\n  ✅ Done: ${rules.length} rules → rule set ${ruleSetId} (status: draft)`);
   return { ruleSetId, ruleCount: rules.length };
 }
 
 // ============================================================================
-// Main: Process all companies under an insurer
+// Main: Process all policy folders under an insurer
 // ============================================================================
 
 async function processInsurer(
   insurerName: string,
   gemini: GoogleGenAI,
   options: { dryRun: boolean; force: boolean; companyFilter?: string },
-): Promise<Array<{ company: string; ruleSetId: string | null; ruleCount: number }>> {
+): Promise<Array<{ company: string; policyNumber: string; ruleSetId: string | null; ruleCount: number }>> {
   console.log(`\n${"=".repeat(60)}`);
   console.log(`Insurer: ${insurerName}`);
   console.log("=".repeat(60));
@@ -831,10 +877,34 @@ async function processInsurer(
     console.log(`Filtered to: ${targetCompanies.map(f => f.companyName).join(", ")}`);
   }
 
-  const results: Array<{ company: string; ruleSetId: string | null; ruleCount: number }> = [];
+  // Collect shared T&C PDFs once (reused for all companies/policies)
+  const sharedPdfs = await collectSharedPdfs(sharedTcFolders);
+  if (sharedPdfs.length > 0) {
+    console.log(`Shared T&C: ${sharedPdfs.length} PDFs`);
+  }
+
+  const results: Array<{ company: string; policyNumber: string; ruleSetId: string | null; ruleCount: number }> = [];
   for (const company of targetCompanies) {
-    const result = await processCompany(insurerName, company, sharedTcFolders, gemini, options);
-    results.push({ company: company.companyName, ...result });
+    // Scan for policy folders under this company
+    let policyFolders: PolicyFolderFiles[];
+    try {
+      policyFolders = await scanPolicyFolders(insurerName, company, sharedPdfs);
+    } catch (err) {
+      console.error(`  ❌ Failed to scan Drive for "${company.companyName}": ${err}`);
+      continue;
+    }
+
+    if (policyFolders.length === 0) {
+      console.log(`  ⏭️ No policy folders with PDFs found for "${company.companyName}"`);
+      continue;
+    }
+
+    console.log(`  Found ${policyFolders.length} policy folder(s) under "${company.companyName}"`);
+
+    for (const policyFiles of policyFolders) {
+      const result = await processPolicy(policyFiles, gemini, options);
+      results.push({ company: company.companyName, policyNumber: policyFiles.policyNumber, ...result });
+    }
   }
 
   return results;
@@ -876,7 +946,7 @@ async function main() {
 
   if (args["rule-set-id"]) {
     const result = await gqlQuery<{
-      policyRuleSetsById: { id: string; insurerName: string; companyName: string | null } | null;
+      policyRuleSetsById: { id: string; insurerName: string; companyName: string | null; policyNumber: string | null } | null;
     }>(FIND_RULE_SET_BY_ID, { id: args["rule-set-id"] });
 
     if (!result?.policyRuleSetsById) {
@@ -896,7 +966,7 @@ async function main() {
     console.log(`Found ${insurerNames.length} insurer folders: ${insurerNames.join(", ")}\n`);
   }
 
-  const allResults: Array<{ insurer: string; company: string; ruleSetId: string | null; ruleCount: number }> = [];
+  const allResults: Array<{ insurer: string; company: string; policyNumber: string; ruleSetId: string | null; ruleCount: number }> = [];
 
   for (const insurerName of insurerNames) {
     const results = await processInsurer(insurerName, gemini, options);
@@ -914,9 +984,9 @@ async function main() {
   const processed = allResults.filter(r => r.ruleCount > 0).length;
   const skipped = allResults.filter(r => r.ruleCount === 0).length;
 
-  console.log(`Companies processed: ${processed}`);
-  console.log(`Companies skipped:   ${skipped}`);
-  console.log(`Total rules:         ${totalRules}`);
+  console.log(`Policies processed: ${processed}`);
+  console.log(`Policies skipped:   ${skipped}`);
+  console.log(`Total rules:        ${totalRules}`);
 
   if (!options.dryRun && processed > 0) {
     console.log(`\nNext steps:`);

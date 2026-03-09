@@ -282,6 +282,41 @@ export async function listFilesInFolder(folderId: string): Promise<PolicyFile[]>
   return collectFilesRecursive(drive, folderId, "root");
 }
 
+export interface SubFolder {
+  name: string;
+  folderId: string;
+}
+
+/**
+ * List immediate subfolders of a given folder.
+ * Used by the compiler to find policy number folders under a company.
+ */
+export async function listSubfolders(folderId: string): Promise<SubFolder[]> {
+  const drive = await getDriveClient();
+  const children = await listChildren(drive, folderId);
+  return children
+    .filter(f => f.mimeType === "application/vnd.google-apps.folder")
+    .map(f => ({ name: f.name!, folderId: f.id! }));
+}
+
+/**
+ * List only direct (non-folder) files in a folder — not recursive.
+ */
+export async function listDirectFiles(folderId: string): Promise<PolicyFile[]> {
+  const drive = await getDriveClient();
+  const children = await listChildren(drive, folderId);
+  return children
+    .filter(f => f.mimeType !== "application/vnd.google-apps.folder")
+    .map(f => ({
+      id: f.id!,
+      name: f.name ?? "unknown",
+      mimeType: f.mimeType ?? "unknown",
+      size: f.size ?? null,
+      category: "other",
+      modifiedTime: f.modifiedTime ?? null,
+    }));
+}
+
 export async function listPolicyDocuments(params: {
   insurerName: string;
   companyName?: string;

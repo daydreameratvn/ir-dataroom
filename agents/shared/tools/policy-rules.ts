@@ -59,43 +59,18 @@ interface GroupedRules {
 // ============================================================================
 
 /**
- * Primary matching: find rule set by searching source filenames for the policy number.
- * This is precise because contract PDFs contain the policy number in their filename.
+ * Primary matching: find rule set by policy number.
+ * The policy number is stored directly on the rule set (from the Drive folder name).
+ * Uses ILIKE for fuzzy matching (claim may have "33.02.01.0107.25" while folder is "HD33.02.01.0107.25").
  */
 const FIND_RULE_SET_BY_POLICY_NUMBER = `
-  query FindRuleSetByPolicyNumber($insurerName: String_1!, $policyNumber: String_1!) {
+  query FindRuleSetByPolicyNumber($policyNumber: String_1!) {
     policyRuleSets(
       where: {
-        insurerName: { _ilike: $insurerName }
+        policyNumber: { _ilike: $policyNumber }
         deletedAt: { _is_null: true }
-        policyRuleSources: {
-          fileName: { _ilike: $policyNumber }
-          deletedAt: { _is_null: true }
-        }
       }
       order_by: [{ status: Asc }]
-      limit: 1
-    ) {
-      id
-      insurerName
-      companyName
-      policyNumber
-      status
-    }
-  }
-`;
-
-/**
- * Fallback: find any active rule set for this insurer.
- */
-const FIND_ACTIVE_RULE_SET = `
-  query FindActiveRuleSet($insurerName: String_1!) {
-    policyRuleSets(
-      where: {
-        insurerName: { _ilike: $insurerName }
-        status: { _eq: "active" }
-        deletedAt: { _is_null: true }
-      }
       limit: 1
     ) {
       id
@@ -255,33 +230,29 @@ export const policyRulesTool: AgentTool = {
       };
     }
 
-    // 2. Find rule set — try matching by policy number in source filenames first
+    // 2. Find rule set by policy number
     try {
       type RuleSetResult = { id: string; insurerName: string; companyName: string | null; policyNumber: string | null; status: string };
       let ruleSet: RuleSetResult | null = null;
 
-      // Primary: match by policy number via source filenames
-      if (policyNumber) {
-        const result = await gqlQuery<{
-          policyRuleSets: RuleSetResult[];
-        }>(FIND_RULE_SET_BY_POLICY_NUMBER, {
-          insurerName: `%${insurerName}%`,
-          policyNumber: `%${policyNumber}%`,
-        });
-        ruleSet = result?.policyRuleSets?.[0] ?? null;
+      if (!policyNumber) {
+        return {
+          content: [{ type: "text", text: `STOP ASSESSMENT: No policy number found for claim "${params.claimCode}". Cannot look up policy rules without a policy number.` }],
+          details: { noRules: true, insurerName },
+          isError: true,
+        };
       }
 
-      // Fallback: any active rule set for this insurer
-      if (!ruleSet) {
-        const fallbackResult = await gqlQuery<{
-          policyRuleSets: RuleSetResult[];
-        }>(FIND_ACTIVE_RULE_SET, { insurerName: `%${insurerName}%` });
-        ruleSet = fallbackResult?.policyRuleSets?.[0] ?? null;
-      }
+      const result = await gqlQuery<{
+        policyRuleSets: RuleSetResult[];
+      }>(FIND_RULE_SET_BY_POLICY_NUMBER, {
+        policyNumber: `%${policyNumber}%`,
+      });
+      ruleSet = result?.policyRuleSets?.[0] ?? null;
 
       if (!ruleSet) {
         return {
-          content: [{ type: "text", text: `STOP ASSESSMENT: No policy rules found for insurer "${insurerName}" / policy "${policyNumber}". Policy rules have not been compiled for this insurer/company yet. Cannot proceed without policy rules.` }],
+          content: [{ type: "text", text: `STOP ASSESSMENT: No policy rules found for policy "${policyNumber}" (insurer: "${insurerName}"). Policy rules have not been compiled for this policy yet. Cannot proceed without policy rules.` }],
           details: { noRules: true, insurerName, policyNumber },
           isError: true,
         };
