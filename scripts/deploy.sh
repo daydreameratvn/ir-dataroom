@@ -152,7 +152,8 @@ deploy_frontend() {
   echo ">>> Building frontend..."
   cd "$REPO_ROOT/platform"
   bun install
-  bun run build
+  bun run --filter './libs/*' build
+  bun run --filter shell build
 
   local BUCKET="banyan-prod-frontend"
   local CF_ID="E1SZ4G9NL7U0ZA"
