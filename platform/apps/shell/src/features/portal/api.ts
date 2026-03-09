@@ -82,6 +82,17 @@ export async function reprocessClaim(id: string): Promise<void> {
   }
 }
 
+export async function reprocessFWA(id: string): Promise<void> {
+  const response = await fetch(`${BASE}/claims/${id}/reprocess-fwa`, {
+    method: 'POST',
+    headers: getHeaders(),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(String((body as Record<string, unknown>).error ?? response.statusText));
+  }
+}
+
 export async function saveExpenses(
   claimId: string,
   data: Record<string, unknown>,

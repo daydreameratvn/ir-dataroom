@@ -476,11 +476,26 @@ export interface ImageForensicsAnomaly {
   location?: string;
 }
 
+export interface ImageForensicsRiskyField {
+  type: string;
+  text: string;
+  anomalyScore: number;
+}
+
 export interface ImageForensicsDocumentFinding {
   documentType: string;
   pageNumbers: number[];
   verdict: ImageForensicsVerdict;
   anomalies: ImageForensicsAnomaly[];
+  /** Raw 0-1 score from forensics engine (0 = authentic, 1 = tampered) */
+  overallScore?: number;
+  riskLevel?: string;
+  truforGlobalScore?: number;
+  fieldsAnalyzed?: number;
+  /** Top risky fields sorted by anomaly score desc */
+  topRiskyFields?: ImageForensicsRiskyField[];
+  /** Base64-encoded heatmap summary image */
+  heatmapBase64?: string | null;
 }
 
 export interface ImageForensicsResult {

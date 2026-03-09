@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldX, AlertTriangle, FileText, Loader2, ExternalLink, Flag, Link2 } from 'lucide-react';
+import { ShieldX, AlertTriangle, FileText, Loader2, ExternalLink, Flag, Link2, RefreshCw } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -13,6 +14,7 @@ import { useTranslation } from '@papaya/i18n';
 import type { FWAResultData, ImageForensicsResult, FWAClassificationType } from '../types';
 import { FWA_CLASSIFICATION_CONFIG } from '../types';
 import { useClaimFWACaseLink, useCreateFWACase, useFlagClaimForReview } from '../hooks/useFWACases';
+import { reprocessFWA } from '../api';
 import ImageForensicsSection from './ImageForensicsSection';
 
 interface FWAViewProps {
@@ -63,6 +65,22 @@ function FWAActionsBar({ claimId }: { claimId: string }) {
   const { data: linkData, isLoading } = useClaimFWACaseLink(claimId);
   const createCase = useCreateFWACase();
   const flagForReview = useFlagClaimForReview();
+  const [reprocessingFwa, setReprocessingFwa] = useState(false);
+  const [reprocessFwaResult, setReprocessFwaResult] = useState<'success' | 'error' | null>(null);
+
+  async function handleReprocessFwa() {
+    if (reprocessingFwa) return;
+    setReprocessingFwa(true);
+    setReprocessFwaResult(null);
+    try {
+      await reprocessFWA(claimId);
+      setReprocessFwaResult('success');
+    } catch {
+      setReprocessFwaResult('error');
+    } finally {
+      setReprocessingFwa(false);
+    }
+  }
 
   async function handleCreateCase() {
     try {
@@ -143,6 +161,28 @@ function FWAActionsBar({ claimId }: { claimId: string }) {
       {flagForReview.isSuccess && (
         <span className="text-xs text-emerald-600">{t('portal.fwaTab.flaggedSuccess')}</span>
       )}
+      <div className="ml-auto border-l pl-3">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleReprocessFwa}
+          disabled={reprocessingFwa}
+          className="text-xs"
+        >
+          {reprocessingFwa ? (
+            <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
+          ) : (
+            <RefreshCw className="mr-1.5 h-3 w-3" />
+          )}
+          Reprocess FWA Only
+        </Button>
+        {reprocessFwaResult === 'success' && (
+          <span className="ml-2 text-xs text-emerald-600">Triggered</span>
+        )}
+        {reprocessFwaResult === 'error' && (
+          <span className="ml-2 text-xs text-red-600">Failed</span>
+        )}
+      </div>
     </div>
   );
 }
