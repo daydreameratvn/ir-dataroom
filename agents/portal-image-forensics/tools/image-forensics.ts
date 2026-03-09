@@ -2,6 +2,38 @@ import { Type } from "@mariozechner/pi-ai";
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { gqlQuery } from "../../shared/graphql-client.ts";
 import { mergeExtractedData, parseExtractedData, getExtractedField } from "../../portal-extraction/tools/claims.ts";
+import type { DocumentForensicsResult } from "../../document-forensics/types.ts";
+
+// ─── Forensics API Client ───────────────────────────────────────────────────
+
+const FORENSICS_API_URL = process.env.FORENSICS_API_URL ?? "https://prod.banyan.services.papaya.asia";
+
+export type ForensicsApiResponse = DocumentForensicsResult;
+
+/**
+ * Calls the document forensics API with a base64-encoded image.
+ * Returns the forensics analysis result.
+ */
+export async function callForensicsApi(
+  imageBase64: string,
+  market: string,
+): Promise<DocumentForensicsResult> {
+  const response = await fetch(`${FORENSICS_API_URL}/forensics/analyze`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      image_base64: imageBase64,
+      market,
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => "");
+    throw new Error(`Forensics API returned ${response.status}: ${body}`);
+  }
+
+  return response.json() as Promise<DocumentForensicsResult>;
+}
 
 // ─── GraphQL Queries ─────────────────────────────────────────────────────────
 

@@ -19,7 +19,7 @@ const STEPS: StepDef[] = [
   { id: 'assessment', labelKey: 'portal.pipeline.assessment' },
   { id: 'medicalNecessity', labelKey: 'portal.pipeline.medicalNecessity' },
   { id: 'preExisting', labelKey: 'portal.pipeline.preExisting' },
-  // { id: 'imageForensics', labelKey: 'portal.pipeline.imageForensics' }, // hidden until forensic agent is integrated
+  { id: 'imageForensics', labelKey: 'portal.pipeline.imageForensics' },
   { id: 'fwa', labelKey: 'portal.pipeline.fwa' },
 ];
 

@@ -17,7 +17,7 @@ export const usePortalConfig = create<PortalConfigState>((set, get) => ({
       assessment: true,
       medical_necessity: true,
       pre_existing: true,
-      image_forensics: false,
+      image_forensics: true,
       fwa: true,
     },
   } as PortalTenantConfig,

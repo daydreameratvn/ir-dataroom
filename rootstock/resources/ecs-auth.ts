@@ -241,6 +241,7 @@ export const banyanAuthTaskDef = new aws.ecs.TaskDefinition("banyan-prod-auth-ta
             { name: "JWT_SECRET_NAME", value: "banyan-prod-jwt-secret" },
             { name: "DRIVE_POLICY_ROOT_ID", value: "1HeLlO86_ZlhtQJCWy9NK_zSk7aOoghuZ" },
             { name: "HASURA_ADMIN_TOKEN", value: adminToken },
+            { name: "FORENSICS_API_URL", value: "https://prod.banyan.services.papaya.asia" },
           ],
           logConfiguration: {
             logDriver: "awslogs",

@@ -1912,7 +1912,7 @@ const AGENT_TIMEOUTS: Record<PortalAgentType, number> = {
   "assessment": 5 * 60_000,        // 5 min
   "medical-necessity": 5 * 60_000,
   "pre-existing": 5 * 60_000,
-  "image-forensics": 3 * 60_000,   // 3 min (stub — increase for real impl)
+  "image-forensics": 5 * 60_000,   // 5 min (S3 download + forensics API per document)
   "fwa": 8 * 60_000,               // 8 min (cross-claim analysis)
 };
 

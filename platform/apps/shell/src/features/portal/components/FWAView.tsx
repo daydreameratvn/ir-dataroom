@@ -335,8 +335,8 @@ export default function FWAView({ data, claimId, imageForensicsData }: FWAViewPr
         </Card>
       )}
 
-      {/* Section 5 — Image Forensics (hidden until forensic agent is integrated) */}
-      {/* <ImageForensicsSection data={imageForensicsData} /> */}
+      {/* Section 5 — Image Forensics */}
+      <ImageForensicsSection data={imageForensicsData} />
 
       {/* Section 6 — Summary Callout */}
       {data.summary && (

@@ -179,6 +179,7 @@ ECS Cluster `banyan-prod-cluster` with Container Insights enabled. CloudWatch lo
 * **Load Balancing:** ALB listener rule `/auth/*` (priority 100, both HTTP and HTTPS listeners).
 * **Security Group:** `banyan-prod-auth-sg` — inbound TCP 4000 from ALB SG, outbound all.
 * **IAM Permissions:** SES, SNS, SSM, Bedrock (InvokeModel, InvokeModelWithResponseStream), S3 (GetObject, PutObject, DeleteObject on `banyan-portal-documents/*`).
+* **Environment:** `FORENSICS_API_URL=https://prod.banyan.services.papaya.asia` — used by portal-image-forensics agent to call the document forensics service via ALB.
 
 ### 2.9 Document Forensics Service (ECS Fargate)
 
