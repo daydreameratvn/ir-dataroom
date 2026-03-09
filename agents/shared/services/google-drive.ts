@@ -1,7 +1,8 @@
 import { SSMClient, GetParameterCommand } from "@aws-sdk/client-ssm";
 import { google, type drive_v3 } from "googleapis";
 import { GoogleAuth } from "google-auth-library";
-import { PDFParse } from "pdf-parse";
+// pdf-parse v2 has no default ESM export; use require() for Bun compat
+const { PDFParse } = require("pdf-parse") as typeof import("pdf-parse");
 
 // ============================================================================
 // Constants
