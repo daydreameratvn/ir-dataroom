@@ -502,23 +502,22 @@ describe('PhoenixClient', () => {
       client.setToken('tok');
       mockFetch.mockResolvedValueOnce(jsonResponse(mockResult));
 
-      const result = await client.uploadDocument('c1', { fileName: 'empty.txt', fileType: 'text/plain', fileSize: 0 });
+      const result = await client.uploadDocument('c1', { fileName: 'empty.txt', fileType: 'text/plain' });
 
       const [, init] = mockFetch.mock.calls[0]!;
-      expect(JSON.parse(init.body)).toEqual({ fileName: 'empty.txt', fileType: 'text/plain', fileSize: 0 });
+      expect(JSON.parse(init.body)).toEqual({ fileName: 'empty.txt', fileType: 'text/plain' });
       expect(result).toEqual(mockResult);
     });
 
-    it('handles large file size in uploadDocument', async () => {
+    it('handles large file name in uploadDocument', async () => {
       const mockResult = { uploadUrl: 'https://s3.example.com/upload', document: { id: 'doc1', fileName: 'large.pdf' } };
       client.setToken('tok');
       mockFetch.mockResolvedValueOnce(jsonResponse(mockResult));
 
-      const largeFileSize = 50 * 1024 * 1024; // 50MB
-      const result = await client.uploadDocument('c1', { fileName: 'large.pdf', fileType: 'application/pdf', fileSize: largeFileSize });
+      const result = await client.uploadDocument('c1', { fileName: 'large.pdf', fileType: 'application/pdf' });
 
       const [, init] = mockFetch.mock.calls[0]!;
-      expect(JSON.parse(init.body).fileSize).toBe(largeFileSize);
+      expect(JSON.parse(init.body).fileName).toBe('large.pdf');
       expect(result).toEqual(mockResult);
     });
   });

@@ -75,7 +75,7 @@ beforeEach(async () => {
 });
 
 describe('AdminPage', () => {
-  it('renders page with four tabs', () => {
+  it('renders page with six tabs', () => {
     render(
       <TestWrapper>
         <AdminPage />
@@ -83,7 +83,7 @@ describe('AdminPage', () => {
     );
 
     const tabs = screen.getAllByRole('tab');
-    expect(tabs).toHaveLength(4);
+    expect(tabs).toHaveLength(6);
   });
 
   it('renders the settings tab trigger', () => {
@@ -93,8 +93,8 @@ describe('AdminPage', () => {
       </TestWrapper>,
     );
 
-    // Tab text may be i18n key or translated value
-    const settingsTab = screen.getAllByRole('tab')[1]!;
+    // Settings tab is at index 3 (Users, Members, Domains, Settings, Audit, Errors)
+    const settingsTab = screen.getAllByRole('tab')[3]!;
     expect(settingsTab).toBeDefined();
   });
 
@@ -107,8 +107,8 @@ describe('AdminPage', () => {
       </TestWrapper>,
     );
 
-    // Click the second tab (Settings)
-    const settingsTab = screen.getAllByRole('tab')[1]!;
+    // Click the fourth tab (Settings - index 3)
+    const settingsTab = screen.getAllByRole('tab')[3]!;
     await user.click(settingsTab);
 
     expect(settingsTab).toHaveAttribute('aria-selected', 'true');
@@ -128,7 +128,7 @@ describe('AdminPage', () => {
       </TestWrapper>,
     );
 
-    const settingsTab = screen.getAllByRole('tab')[1]!;
+    const settingsTab = screen.getAllByRole('tab')[3]!;
     await user.click(settingsTab);
 
     await waitFor(() => {
