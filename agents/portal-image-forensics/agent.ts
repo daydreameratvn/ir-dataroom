@@ -299,6 +299,10 @@ export async function createPortalAgent(claimId: string) {
         (getExtractedField(extractedData, "extraction", "classifiedDocuments") as ClassifiedDocument[] | null) ?? [];
       const claimDocuments: ClaimDocument[] = claim.claimDocuments ?? [];
 
+      console.log(`[image-forensics] Claim ${claimId}: ${classifiedDocuments.length} classified docs, ${claimDocuments.length} claim docs`);
+      console.log(`[image-forensics] Claim docs:`, claimDocuments.map(d => `${d.fileName} (${d.documentType})`));
+      console.log(`[image-forensics] Classified docs:`, classifiedDocuments.map(d => d.type));
+
       emit({ type: "tool_execution_end", toolName: "fetch_documents_for_analysis" });
 
       // 2. Match classified documents with their file URLs and filter to images
@@ -328,6 +332,8 @@ export async function createPortalAgent(claimId: string) {
           }
         }
       }
+
+      console.log(`[image-forensics] Documents to analyze: ${documentsToAnalyze.length}`, documentsToAnalyze.map(d => d.claimDoc.fileName));
 
       // 3. Call forensics API for each document image
       const findings: DocumentFinding[] = [];
