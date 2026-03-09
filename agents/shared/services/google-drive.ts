@@ -1,7 +1,7 @@
 import { SSMClient, GetParameterCommand } from "@aws-sdk/client-ssm";
 import { google, type drive_v3 } from "googleapis";
 import { GoogleAuth } from "google-auth-library";
-import pdfParse from "pdf-parse";
+import { PDFParse } from "pdf-parse";
 
 // ============================================================================
 // Constants
@@ -339,7 +339,9 @@ export async function extractPdfText(fileId: string): Promise<string> {
   );
 
   const buffer = Buffer.from(resp.data as ArrayBuffer);
-  const parsed = await pdfParse(buffer);
+  const parser = new PDFParse({ data: buffer });
+  await parser.load();
+  const parsed = await parser.getText();
   const text = parsed.text.slice(0, MAX_PDF_TEXT_LENGTH);
 
   setCached(pdfTextCache, fileId, text, PDF_CACHE_TTL_MS);
