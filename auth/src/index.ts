@@ -21,6 +21,7 @@ import portal from "./routes/portal.ts";
 import members from "./routes/members.ts";
 import domains from "./routes/domains.ts";
 import activityLogs from "./routes/activity-logs.ts";
+import { claimSubmission } from "./routes/claim-submission.ts";
 import { startSyncScheduler } from "./services/sync-scheduler.ts";
 
 const app = new Hono();
@@ -33,6 +34,7 @@ app.use(
     credentials: true,
     allowHeaders: ["Content-Type", "Authorization", "x-tenant-id"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    exposeHeaders: ["X-Session-Id"],
   })
 );
 app.use("*", logger());
@@ -77,6 +79,7 @@ app.route("/auth", portal);
 app.route("/auth", members);
 app.route("/auth", domains);
 app.route("/auth", activityLogs);
+app.route("/auth", claimSubmission);
 
 // ---------------------------------------------------------------------------
 // Global error handler — distinguishes DB outages from other errors

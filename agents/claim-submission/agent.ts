@@ -1,5 +1,6 @@
 import type { AgentMessage } from "@mariozechner/pi-agent-core";
 import { Agent } from "@mariozechner/pi-agent-core";
+import type { ImageContent } from "@mariozechner/pi-ai";
 import dedent from "dedent";
 
 import { bedrockSonnet } from "../shared/model.ts";
@@ -18,10 +19,40 @@ import type { DocumentInfo } from "./tools/index.ts";
 
 type ClaimSubmissionAgentParams = {
   allowedCertificateIds?: string[];
-  documentAnalysis: string;
+  documentAnalysis?: string;
   documents?: DocumentInfo[];
-  pageCount: number;
+  pageCount?: number;
+  /** Pre-downloaded image blocks for vision analysis (avoids re-downloading on each turn) */
+  imageBlocks?: ImageContent[];
+  /** Pre-filled messages for session resumption */
+  resumeMessages?: AgentMessage[];
 };
+
+/**
+ * Download document images and convert to pi-ai ImageContent blocks.
+ * Call this once at session creation and cache the result.
+ */
+export async function downloadDocumentImages(documents: DocumentInfo[]): Promise<ImageContent[]> {
+  const blocks: ImageContent[] = [];
+  for (const doc of documents) {
+    try {
+      const response = await fetch(doc.fileUrl);
+      if (!response.ok) {
+        console.warn(`[agent] Failed to download ${doc.fileUrl}: ${response.status}`);
+        continue;
+      }
+      const buffer = await response.arrayBuffer();
+      blocks.push({
+        type: "image",
+        data: Buffer.from(buffer).toString("base64"),
+        mimeType: doc.fileType || "image/jpeg",
+      });
+    } catch (err) {
+      console.warn(`[agent] Error downloading ${doc.fileUrl}:`, err instanceof Error ? err.message : err);
+    }
+  }
+  return blocks;
+}
 
 /**
  * Creates a claim submission agent that extracts information from documents
@@ -32,7 +63,10 @@ export async function createClaimSubmissionAgent({
   documentAnalysis,
   documents = [],
   pageCount,
+  imageBlocks,
+  resumeMessages,
 }: ClaimSubmissionAgentParams) {
+  const effectivePageCount = pageCount ?? documents.length;
   const certificateRestriction = allowedCertificateIds?.length
     ? `\n      **Certificate Restriction**:
         - You can ONLY submit claims for the following insured certificate IDs: ${allowedCertificateIds.join(", ")}
@@ -74,7 +108,7 @@ export async function createClaimSubmissionAgent({
       - A "claim group" is a unique combination of: insured person + medical event date + medical provider.
       - Before submitting, present a summary listing all identified claim groups.
 
-    **Document Pages**: The uploaded documents have ${pageCount} pages (0-indexed).
+    **Document Pages**: The uploaded documents have ${effectivePageCount} pages (0-indexed).
 
     **Submission Order** (ALWAYS complete steps 1-5 in a SINGLE turn — do NOT stop and wait for user confirmation):
       1. Analyze ALL documents and identify ALL claim groups.
@@ -98,7 +132,8 @@ export async function createClaimSubmissionAgent({
   // Build tools list — uploadDocuments is a factory that captures the documents array
   const uploadDocumentsTool = createUploadDocumentsTool(documents);
 
-  let documentInjected = false;
+  // If resuming, skip document injection (it's already in the messages)
+  let documentInjected = (resumeMessages?.length ?? 0) > 0;
 
   const agent = new Agent({
     initialState: {
@@ -119,20 +154,38 @@ export async function createClaimSubmissionAgent({
         uploadDocumentsTool,
       ],
       thinkingLevel: "medium",
+      messages: resumeMessages ?? [],
     },
 
     transformContext: async (messages: AgentMessage[]): Promise<AgentMessage[]> => {
       const result = [...messages];
 
-      if (!documentInjected && documentAnalysis) {
+      if (!documentInjected) {
         const userMessageCount = messages.filter((m) => "role" in m && m.role === "user").length;
         if (userMessageCount <= 1) {
           documentInjected = true;
-          result.push({
-            role: "user",
-            content: `[DOCUMENT ANALYSIS]\n\n${documentAnalysis}\n\n[END DOCUMENT ANALYSIS]\n\nPlease analyze the above medical documents and extract all information needed to submit insurance claims.`,
-            timestamp: Date.now(),
-          });
+
+          if (documentAnalysis) {
+            // Inject pre-analyzed text
+            result.push({
+              role: "user",
+              content: `[DOCUMENT ANALYSIS]\n\n${documentAnalysis}\n\n[END DOCUMENT ANALYSIS]\n\nPlease analyze the above medical documents and extract all information needed to submit insurance claims.`,
+              timestamp: Date.now(),
+            });
+          } else if (imageBlocks && imageBlocks.length > 0) {
+            // Inject document images for vision analysis
+            result.push({
+              role: "user",
+              content: [
+                ...imageBlocks,
+                {
+                  type: "text" as const,
+                  text: `These are ${imageBlocks.length} medical document images. Analyze them thoroughly and extract all information needed to submit insurance claims. Extract: patient name, ID, DOB, medical provider, examination dates, diagnoses, treatment methods, amounts, and any ICD codes.`,
+                },
+              ],
+              timestamp: Date.now(),
+            });
+          }
         }
       }
 
