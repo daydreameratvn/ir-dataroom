@@ -1,6 +1,6 @@
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client/core";
 
-const GRAPHQL_ENDPOINT = process.env.HASURA_GRAPHQL_ENDPOINT ?? "https://banyan-prod.ddn.hasura.app/graphql";
+const GRAPHQL_ENDPOINT = process.env.HASURA_GRAPHQL_ENDPOINT ?? "https://banyan.services.papaya.asia/graphql";
 
 // DDN Cloud uses Bearer JWT auth instead of x-hasura-admin-secret.
 // HASURA_ADMIN_TOKEN is a pre-signed JWT stored in SSM /banyan/hasura/admin-token.

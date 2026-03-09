@@ -1,5 +1,5 @@
 const HASURA_ENDPOINT =
-  process.env.BANYAN_DDN_ENDPOINT ?? process.env.HASURA_GRAPHQL_ENDPOINT ?? "https://banyan-prod.ddn.hasura.app/graphql";
+  process.env.BANYAN_DDN_ENDPOINT ?? process.env.HASURA_GRAPHQL_ENDPOINT ?? "https://banyan.services.papaya.asia/graphql";
 
 const HASURA_AUTH: Record<string, string> = process.env.HASURA_ADMIN_TOKEN
   ? { Authorization: `Bearer ${process.env.HASURA_ADMIN_TOKEN}` }

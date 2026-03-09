@@ -51,7 +51,7 @@ async function checkDatabase(): Promise<ServiceHealth> {
 async function checkHasura(): Promise<ServiceHealth> {
   const endpoint =
     process.env.HASURA_ENDPOINT ||
-    "https://banyan-prod.ddn.hasura.app/graphql";
+    "https://banyan.services.papaya.asia/graphql";
   const start = Date.now();
   try {
     const controller = new AbortController();

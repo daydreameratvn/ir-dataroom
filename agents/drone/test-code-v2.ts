@@ -47,7 +47,7 @@ const appleAdminSecret = requireParam(params, "apple-admin-secret");
 const ddnAdminToken = requireParam(params, "admin-token");
 
 const APPLE_ENDPOINT = "https://prod.apple.papaya.services/v1/graphql";
-const DDN_ENDPOINT = "https://banyan-prod.ddn.hasura.app/graphql";
+const DDN_ENDPOINT = "https://banyan.services.papaya.asia/graphql";
 
 /** Query Apple Hasura v2 directly (where agents connect) */
 async function queryApple(query: string, variables: Record<string, unknown>) {

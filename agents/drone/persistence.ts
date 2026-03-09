@@ -13,7 +13,7 @@ import { ApolloClient, HttpLink, InMemoryCache, gql } from "@apollo/client/core"
 // Banyan DDN Client
 // ---------------------------------------------------------------------------
 
-const BANYAN_ENDPOINT = process.env.BANYAN_DDN_ENDPOINT ?? "https://banyan-prod.ddn.hasura.app/graphql";
+const BANYAN_ENDPOINT = process.env.BANYAN_DDN_ENDPOINT ?? "https://banyan.services.papaya.asia/graphql";
 const BANYAN_TOKEN = process.env.HASURA_ADMIN_TOKEN;
 
 if (!BANYAN_TOKEN) {
