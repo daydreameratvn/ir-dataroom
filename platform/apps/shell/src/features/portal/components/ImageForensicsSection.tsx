@@ -79,7 +79,7 @@ function DocumentFindingCard({ finding }: { finding: ImageForensicsDocumentFindi
         )}
       </div>
 
-      {/* Stats row — score, TruFor, fields */}
+      {/* Stats row — score, heatmap, fields */}
       {hasEnrichedData && (
         <div className="grid grid-cols-3 gap-3 mb-3">
           <div className="rounded-md bg-background/60 p-2 text-center">
@@ -90,7 +90,7 @@ function DocumentFindingCard({ finding }: { finding: ImageForensicsDocumentFindi
           </div>
           {finding.truforGlobalScore != null && (
             <div className="rounded-md bg-background/60 p-2 text-center">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">TruFor</p>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Heatmap</p>
               <p className={cn('text-lg font-bold tabular-nums', getScoreColor(finding.truforGlobalScore))}>
                 {finding.truforGlobalScore.toFixed(3)}
               </p>
