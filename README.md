@@ -24,27 +24,34 @@ Banyan brings together the full product stack: AI agents, a micro frontend web p
 ## Architecture
 
 ```
-                    ┌─────────────────────────────────────────────┐
-                    │              Partner SDKs                    │
-                    │   Node  ·  React  ·  RN  ·  iOS  ·  Android │
-                    └──────────────────┬──────────────────────────┘
-                                       │
-         ┌─────────────┐        ┌──────┴──────┐        ┌──────────────┐
-         │   Mobile     │        │   Platform   │        │   Agents     │
-         │  (Expo RN)   │        │  (Micro FE)  │        │  (AI/LLM)    │
-         └──────┬──────┘        └──────┬──────┘        └──────┬───────┘
-                │                      │                      │
-                └──────────────┬───────┘                      │
-                               │                              │
-                        ┌──────┴──────┐                       │
-                        │   Hasura    │◄──────────────────────┘
-                        │  DDN (v3)   │
-                        └──────┬──────┘
-                               │
-                        ┌──────┴──────┐
-                        │  PostgreSQL  │
-                        │   (RDS)     │
-                        └─────────────┘
+                ┌───────────────────────────────────────────────────┐
+                │                  Partner SDKs                     │
+                │     Node  ·  React  ·  RN  ·  iOS  ·  Android    │
+                └────────────────────────┬──────────────────────────┘
+                                         │
+       ┌──────────────┐          ┌───────┴───────┐          ┌──────────────┐
+       │    Mobile     │          │   Platform     │          │    Agents    │
+       │   (Expo RN)   │          │   (Micro FE)   │          │   (AI/LLM)  │
+       └───────┬──────┘          └───────┬───────┘          └──────┬───────┘
+               │                         │                         │
+               │            ┌────────────┼────────────┐            │
+               │            │            │            │            │
+               │       ┌────┴────┐  ┌────┴────┐  ┌───┴────┐       │
+               │       │  Shell   │  │Investor │  │Phoenix │       │
+               │       │ (Oasis)  │  │ Portal  │  │        │       │
+               │       └─────────┘  └─────────┘  └────────┘       │
+               │                         │                         │
+               └────────────┬────────────┘                         │
+                            │                                      │
+                     ┌──────┴──────┐          ┌──────────────┐     │
+                     │    Auth     │          │    Hasura     │◄────┘
+                     │   (ECS)    │          │   DDN (v3)    │
+                     └─────────────┘          └──────┬───────┘
+                                                     │
+                                              ┌──────┴───────┐
+                                              │  PostgreSQL   │
+                                              │    (RDS)      │
+                                              └──────────────┘
 ```
 
 ---
@@ -54,12 +61,13 @@ Banyan brings together the full product stack: AI agents, a micro frontend web p
 ```
 banyan/
 ├── agents/          AI agents — Claude-powered claim adjudication & FWA detection
+├── auth/            Auth service — passwordless (email OTP + WebAuthn), ECS Fargate
 ├── platform/        Web frontend — Vite micro frontend with Module Federation
 ├── mobile/          Mobile app — Expo + React Native (iOS & Android)
 ├── sdks/            Partner SDKs — Node, React, React Native, Swift, Kotlin
 ├── hasura/          GraphQL API — Hasura DDN v3 metadata & migrations
 ├── rootstock/       Infrastructure — Pulumi IaC for AWS (VPC, RDS, ECS, ALB)
-├── scripts/         Tooling — onboard script, CI helpers
+├── scripts/         Tooling — onboard, deploy, CI helpers
 └── CLAUDE.md        AI coding guidelines for Claude Code
 ```
 
@@ -119,12 +127,16 @@ Micro frontend architecture using [Module Federation 2.0](https://module-federat
 ```
 platform/
 ├── apps/
-│   ├── shell/          MF host — sidebar, auth, layout (port 3000)
-│   └── sample/         MF remote template — copy to create new apps (port 3001)
+│   ├── shell/              MF host — sidebar, auth, layout (oasis.papaya.asia)
+│   ├── investor-portal/    Standalone — investor dataroom & NDA (investors.papaya.asia)
+│   ├── phoenix/            Standalone — partner claims portal (phoenix.papaya.asia)
+│   └── sample/             MF remote template — copy to create new apps
 ├── libs/
-│   ├── shared-ui/      shadcn/ui components + composites (DataTable, MarkdownRenderer)
-│   ├── shared-types/   TypeScript interfaces for API contracts
-│   └── api-client/     HTTP client for Hasura/backend
+│   ├── shared-ui/          shadcn/ui components + composites (DataTable, MarkdownRenderer)
+│   ├── shared-types/       TypeScript interfaces for API contracts
+│   ├── api-client/         HTTP client for Hasura/backend
+│   ├── auth/               Auth provider + hooks
+│   └── i18n/               Internationalization (en, vi, zh)
 ```
 
 ```bash
@@ -220,11 +232,13 @@ AWS infrastructure defined with [Pulumi](https://www.pulumi.com) (TypeScript). P
 |----------|---------|
 | **Networking** | VPC `10.68.0.0/16`, 2 AZs, 6 subnets (public/private/isolated) |
 | **Database** | RDS PostgreSQL 17, `db.t4g.medium`, 50GB gp3 |
-| **Compute** | ECS Fargate — Hasura v3 Engine + NDC Postgres connector |
+| **Compute** | ECS Fargate — Auth service, Hasura v3 Engine, NDC Postgres, Forensics |
+| **Frontend** | CloudFront + S3 — Shell, Investor Portal, Phoenix |
 | **Load Balancer** | ALB with HTTPS (TLS 1.3) |
 | **Service Discovery** | AWS Cloud Map (`ddn.internal`) |
+| **CI/CD** | GitHub Actions — path-based deploys with OIDC auth |
 | **Access** | SSM Session Manager (no SSH) |
-| **Auth** | JWT (HS256) via Secrets Manager |
+| **Auth** | Passwordless (email OTP + WebAuthn), JWT via Secrets Manager |
 
 ---
 
