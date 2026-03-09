@@ -7,7 +7,7 @@ import { getClient, gqlQuery } from "../graphql-client.ts";
 const client = getClient();
 
 // ============================================================================
-// GraphQL: Resolve claim code → insurer name
+// GraphQL: Resolve claim code → insurer name + policy number
 // ============================================================================
 
 const ClaimPolicyContextDocument = graphql(`
@@ -47,6 +47,7 @@ interface PolicyRule {
 interface GroupedRules {
   ruleSetId: string;
   insurerName: string;
+  companyName: string | null;
   policyNumber: string | null;
   status: string;
   rules: Record<string, PolicyRule[]>;
@@ -57,6 +58,36 @@ interface GroupedRules {
 // GraphQL queries via fetch (avoids Apollo DDN type mismatches)
 // ============================================================================
 
+/**
+ * Primary matching: find rule set by searching source filenames for the policy number.
+ * This is precise because contract PDFs contain the policy number in their filename.
+ */
+const FIND_RULE_SET_BY_POLICY_NUMBER = `
+  query FindRuleSetByPolicyNumber($insurerName: String_1!, $policyNumber: String_1!) {
+    policyRuleSets(
+      where: {
+        insurerName: { _ilike: $insurerName }
+        deletedAt: { _is_null: true }
+        policyRuleSources: {
+          fileName: { _ilike: $policyNumber }
+          deletedAt: { _is_null: true }
+        }
+      }
+      order_by: [{ status: Asc }]
+      limit: 1
+    ) {
+      id
+      insurerName
+      companyName
+      policyNumber
+      status
+    }
+  }
+`;
+
+/**
+ * Fallback: find any active rule set for this insurer.
+ */
 const FIND_ACTIVE_RULE_SET = `
   query FindActiveRuleSet($insurerName: String_1!) {
     policyRuleSets(
@@ -69,26 +100,7 @@ const FIND_ACTIVE_RULE_SET = `
     ) {
       id
       insurerName
-      policyNumber
-      status
-    }
-  }
-`;
-
-const FIND_RULE_SET_BY_INSURER = `
-  query FindRuleSetByInsurer($insurerName: String_1!) {
-    policyRuleSets(
-      where: {
-        insurerName: { _ilike: $insurerName }
-        deletedAt: { _is_null: true }
-      }
-      order_by: [
-        { status: Asc }
-      ]
-      limit: 1
-    ) {
-      id
-      insurerName
+      companyName
       policyNumber
       status
     }
@@ -145,13 +157,11 @@ const GET_ALL_POLICY_RULES = `
 // ============================================================================
 
 function applyAmendmentOverrides(rules: PolicyRule[]): PolicyRule[] {
-  // Separate amendments from base rules
   const amendments = rules.filter(r => r.category === "amendment_override");
   const baseRules = rules.filter(r => r.category !== "amendment_override");
 
   if (amendments.length === 0) return baseRules;
 
-  // For each amendment, find and replace the base rule it overrides
   const overriddenKeys = new Set<string>();
   for (const amendment of amendments) {
     const value = amendment.ruleValue as Record<string, unknown>;
@@ -161,9 +171,7 @@ function applyAmendmentOverrides(rules: PolicyRule[]): PolicyRule[] {
     }
   }
 
-  // Filter out overridden base rules, keep amendments as regular rules
   const filtered = baseRules.filter(r => !overriddenKeys.has(r.ruleKey));
-  // Add amendments back (they contain the new_value)
   return [...filtered, ...amendments];
 }
 
@@ -211,7 +219,7 @@ export const policyRulesTool: AgentTool = {
     ),
   }),
   execute: async (toolCallId, params) => {
-    // 1. Resolve claim → insurer name
+    // 1. Resolve claim → insurer name + policy number
     let insurerName: string | null = null;
     let policyNumber: string | null = null;
 
@@ -247,27 +255,34 @@ export const policyRulesTool: AgentTool = {
       };
     }
 
-    // 2. Find active rule set for this insurer
+    // 2. Find rule set — try matching by policy number in source filenames first
     try {
-      // Try exact active match first
-      const result = await gqlQuery<{
-        policyRuleSets: Array<{ id: string; insurerName: string; policyNumber: string | null; status: string }>;
-      }>(FIND_ACTIVE_RULE_SET, { insurerName: `%${insurerName}%` });
+      type RuleSetResult = { id: string; insurerName: string; companyName: string | null; policyNumber: string | null; status: string };
+      let ruleSet: RuleSetResult | null = null;
 
-      let ruleSet = result?.policyRuleSets?.[0] ?? null;
+      // Primary: match by policy number via source filenames
+      if (policyNumber) {
+        const result = await gqlQuery<{
+          policyRuleSets: RuleSetResult[];
+        }>(FIND_RULE_SET_BY_POLICY_NUMBER, {
+          insurerName: `%${insurerName}%`,
+          policyNumber: `%${policyNumber}%`,
+        });
+        ruleSet = result?.policyRuleSets?.[0] ?? null;
+      }
 
-      // If no active rule set, try any status (draft/reviewed)
+      // Fallback: any active rule set for this insurer
       if (!ruleSet) {
         const fallbackResult = await gqlQuery<{
-          policyRuleSets: Array<{ id: string; insurerName: string; policyNumber: string | null; status: string }>;
-        }>(FIND_RULE_SET_BY_INSURER, { insurerName: `%${insurerName}%` });
+          policyRuleSets: RuleSetResult[];
+        }>(FIND_ACTIVE_RULE_SET, { insurerName: `%${insurerName}%` });
         ruleSet = fallbackResult?.policyRuleSets?.[0] ?? null;
       }
 
       if (!ruleSet) {
         return {
-          content: [{ type: "text", text: `No policy rules compiled for insurer "${insurerName}". Fall back to policyDocSearch + policyDocFetch for on-demand extraction.` }],
-          details: { noRules: true, insurerName },
+          content: [{ type: "text", text: `No policy rules found for insurer "${insurerName}" / policy "${policyNumber}". Fall back to policyDocSearch + policyDocFetch.` }],
+          details: { noRules: true, insurerName, policyNumber },
           isError: false,
         };
       }
@@ -309,6 +324,7 @@ export const policyRulesTool: AgentTool = {
       const grouped: GroupedRules = {
         ruleSetId: ruleSet.id,
         insurerName: ruleSet.insurerName,
+        companyName: ruleSet.companyName,
         policyNumber: ruleSet.policyNumber,
         status: ruleSet.status,
         rules: groupByCategory(rules),
@@ -320,6 +336,7 @@ export const policyRulesTool: AgentTool = {
         details: {
           ruleSetId: ruleSet.id,
           insurerName: ruleSet.insurerName,
+          companyName: ruleSet.companyName,
           status: ruleSet.status,
           totalRules: rules.length,
           categories: Object.keys(grouped.rules),

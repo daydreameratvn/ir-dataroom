@@ -36,6 +36,7 @@ async function inspectRuleSet(ruleSetId: string): Promise<void> {
     policyRuleSetsById: {
       id: string;
       insurerName: string;
+      companyName: string | null;
       status: string;
       createdAt: string;
       policyRuleSources: Array<{
@@ -51,6 +52,7 @@ async function inspectRuleSet(ruleSetId: string): Promise<void> {
       policyRuleSetsById(id: $id) {
         id
         insurerName
+        companyName
         status
         createdAt
         policyRuleSources(where: { deletedAt: { _is_null: true } }) {
@@ -71,6 +73,7 @@ async function inspectRuleSet(ruleSetId: string): Promise<void> {
   }
 
   console.log(`Insurer:  ${ruleSet.insurerName}`);
+  console.log(`Company:  ${ruleSet.companyName ?? "(none)"}`);
   console.log(`Status:   ${ruleSet.status}`);
   console.log(`Created:  ${ruleSet.createdAt}`);
   console.log(`Sources:  ${ruleSet.policyRuleSources.length}`);
@@ -118,7 +121,7 @@ async function inspectRuleSet(ruleSetId: string): Promise<void> {
     console.log(`  ${cat}: ${count}`);
   }
 
-  // Print first few rules per category
+  // Print first rule per category
   console.log("\nSample rules:\n");
   const printed = new Set<string>();
   for (const rule of rules) {
@@ -160,18 +163,17 @@ async function testPolicyRulesTool(claimCode: string): Promise<void> {
   const data = JSON.parse(text);
   console.log(`Rule set: ${data.ruleSetId}`);
   console.log(`Insurer:  ${data.insurerName}`);
+  console.log(`Company:  ${data.companyName ?? "(none)"}`);
   console.log(`Status:   ${data.status}`);
   console.log(`Total:    ${data.totalRules} rules`);
   console.log(`Categories: ${Object.keys(data.rules).join(", ")}`);
 
-  // Check performance requirement
   if (duration < 500) {
     console.log(`\n✅ Performance OK: ${duration}ms < 500ms target`);
   } else {
     console.log(`\n⚠️ Performance WARNING: ${duration}ms > 500ms target`);
   }
 
-  // Print summary per category
   console.log("\nRules by category:");
   for (const [category, rules] of Object.entries(data.rules) as Array<[string, any[]]>) {
     console.log(`  ${category}: ${rules.length} rules`);
@@ -188,7 +190,6 @@ async function testFullAgent(claimCode: string): Promise<void> {
   const { createDroneAgent } = await import("./agent.ts");
   const agent = await createDroneAgent(claimCode, { skipCompliance: true, tier: 1 });
 
-  // Track tool calls
   const toolCalls: string[] = [];
   agent.subscribe((e) => {
     if (e.type === "tool_execution_start") {
@@ -198,7 +199,6 @@ async function testFullAgent(claimCode: string): Promise<void> {
     }
   });
 
-  // Run agent
   console.log("Starting agent...\n");
   await agent.run({
     role: "user",

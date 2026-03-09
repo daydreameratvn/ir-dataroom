@@ -250,6 +250,38 @@ export async function listInsurerFolderNames(): Promise<string[]> {
     .filter(Boolean);
 }
 
+export interface CompanyFolder {
+  companyName: string;
+  folderId: string;
+}
+
+/**
+ * List company subfolders under an insurer folder.
+ * Returns the folder name and ID for each company.
+ */
+export async function listCompanyFolders(insurerName: string): Promise<CompanyFolder[]> {
+  const drive = await getDriveClient();
+  const rootChildren = await listChildren(drive, DRIVE_POLICY_ROOT_ID);
+  const insurerFolder = findMatchingFolder(rootChildren, insurerName);
+  if (!insurerFolder) {
+    throw new Error(`Insurer "${insurerName}" not found in Drive.`);
+  }
+
+  const children = await listChildren(drive, insurerFolder.id!);
+  return children
+    .filter(f => f.mimeType === "application/vnd.google-apps.folder")
+    .map(f => ({ companyName: f.name!, folderId: f.id! }));
+}
+
+/**
+ * Collect all PDF files from a specific folder (recursively).
+ * Used by the compiler to get files for a specific company.
+ */
+export async function listFilesInFolder(folderId: string): Promise<PolicyFile[]> {
+  const drive = await getDriveClient();
+  return collectFilesRecursive(drive, folderId, "root");
+}
+
 export async function listPolicyDocuments(params: {
   insurerName: string;
   companyName?: string;
