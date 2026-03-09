@@ -21,7 +21,7 @@ import type { ClaimData } from '@papaya/sample';
 const defaultConfig = { apiKey: 'test-key', baseUrl: 'https://api.test.com' };
 
 function wrapper({ children }: { children: ReactNode }) {
-  return createElement(PapayaProvider, { config: defaultConfig }, children);
+  return createElement(PapayaProvider, { config: defaultConfig, children });
 }
 
 const mockClaim: ClaimData = {
