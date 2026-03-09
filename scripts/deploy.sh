@@ -78,7 +78,7 @@ deploy_auth() {
     | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
 
   # Build from repo root (Dockerfile references auth/, agents/, and platform/)
-  docker build --platform linux/amd64 -t "$ECR_URL:latest" -f "$REPO_ROOT/auth/Dockerfile" "$REPO_ROOT"
+  docker build --no-cache --platform linux/amd64 -t "$ECR_URL:latest" -f "$REPO_ROOT/auth/Dockerfile" "$REPO_ROOT"
 
   echo ">>> Pushing to ECR..."
   docker push "$ECR_URL:latest"

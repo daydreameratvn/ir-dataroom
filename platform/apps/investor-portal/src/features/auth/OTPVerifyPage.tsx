@@ -105,9 +105,7 @@ export default function OTPVerifyPage() {
       <div className="w-full max-w-md">
         {/* Logo / Branding */}
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-primary">
-            <span className="text-2xl font-bold text-primary-foreground">P</span>
-          </div>
+          <img src="/papaya-logo.png" alt="Papaya" className="mx-auto mb-4 h-10" />
           <h1 className="text-2xl font-bold text-foreground">Verify Your Email</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Enter the 6-digit code sent to{' '}
