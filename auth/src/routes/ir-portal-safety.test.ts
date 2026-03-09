@@ -49,7 +49,8 @@ describe("Portal routes never return 403 or 404", () => {
     expect(res.headers.get("content-type")).toContain("application/json");
     if (res.status === 400) {
       const body = await res.json();
-      expect(body.error).toContain("khanh@papaya.asia");
+      // Error should contain a contact email (not hardcoded to a specific person)
+      expect(body.error).toMatch(/@papaya\.asia/);
     }
   });
 

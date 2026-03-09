@@ -83,78 +83,68 @@ drone.get("/drone/runs", async (c) => {
   const page = parseInt(c.req.query("page") || "1", 10);
   const pageSize = parseInt(c.req.query("pageSize") || c.req.query("limit") || "20", 10);
 
-  try {
-    const result = await listDroneRuns(page, pageSize);
-    return c.json({
-      data: result.runs,
-      total: result.total,
-      page: result.page,
-      pageSize: result.pageSize,
-    });
-  } catch (err) {
-    console.error("[Drone API] Error listing runs:", err);
-    return c.json({ error: "Failed to list drone runs" }, 500);
-  }
+  const result = await listDroneRuns(page, pageSize);
+  return c.json({
+    data: result.runs,
+    total: result.total,
+    page: result.page,
+    pageSize: result.pageSize,
+  });
 });
 
 // ── POST /drone/runs — Start a new drone run ────────────────────────────────
 
 drone.post("/drone/runs", async (c) => {
-  try {
-    const user = c.get("user");
-    const body = await c.req.json<{
-      tier: DroneTier;
-      batchSize: number;
-      claimCodes?: string[];
-      claimCaseIds?: string[];
-    }>();
+  const user = c.get("user");
+  const body = await c.req.json<{
+    tier: DroneTier;
+    batchSize: number;
+    claimCodes?: string[];
+    claimCaseIds?: string[];
+  }>();
 
-    if (!body.tier || ![1, 2].includes(body.tier)) {
-      return c.json({ error: "tier must be 1 or 2" }, 400);
-    }
-
-    if (!body.batchSize || body.batchSize < 1 || body.batchSize > 500) {
-      return c.json({ error: "batchSize must be between 1 and 500" }, 400);
-    }
-
-    // Determine which claims to process
-    let claimsToProcess: { id: string; code: string }[];
-
-    // Accept both claimCodes and claimCaseIds from frontend
-    const specificIds = body.claimCaseIds ?? body.claimCodes;
-
-    if (specificIds && specificIds.length > 0) {
-      claimsToProcess = specificIds.map((idOrCode) => ({ id: idOrCode, code: idOrCode }));
-    } else {
-      claimsToProcess = await fetchDroneEligibleClaims(body.batchSize, body.tier);
-    }
-
-    if (claimsToProcess.length === 0) {
-      return c.json({ error: "No eligible claims found for the given tier" }, 404);
-    }
-
-    // Create the run record
-    const runId = await createDroneRun({
-      runType: specificIds ? "manual" : "manual",
-      tier: body.tier,
-      batchSize: body.batchSize,
-      totalClaims: claimsToProcess.length,
-      triggeredBy: user.sub,
-    });
-
-    // Set up abort controller for cancellation
-    const abortController = new AbortController();
-    activeRunAbortControllers.set(runId, abortController);
-
-    // Fire-and-forget: process claims in the background
-    processRunInBackground(runId, claimsToProcess, body.tier, abortController.signal);
-
-    // Return shape matching DroneRun (frontend expects .id)
-    return c.json({ id: runId, runId, totalClaims: claimsToProcess.length }, 201);
-  } catch (err) {
-    console.error("[Drone] Start run failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  if (!body.tier || ![1, 2].includes(body.tier)) {
+    return c.json({ error: "tier must be 1 or 2" }, 400);
   }
+
+  if (!body.batchSize || body.batchSize < 1 || body.batchSize > 500) {
+    return c.json({ error: "batchSize must be between 1 and 500" }, 400);
+  }
+
+  // Determine which claims to process
+  let claimsToProcess: { id: string; code: string }[];
+
+  // Accept both claimCodes and claimCaseIds from frontend
+  const specificIds = body.claimCaseIds ?? body.claimCodes;
+
+  if (specificIds && specificIds.length > 0) {
+    claimsToProcess = specificIds.map((idOrCode) => ({ id: idOrCode, code: idOrCode }));
+  } else {
+    claimsToProcess = await fetchDroneEligibleClaims(body.batchSize, body.tier);
+  }
+
+  if (claimsToProcess.length === 0) {
+    return c.json({ error: "No eligible claims found for the given tier" }, 404);
+  }
+
+  // Create the run record
+  const runId = await createDroneRun({
+    runType: specificIds ? "manual" : "manual",
+    tier: body.tier,
+    batchSize: body.batchSize,
+    totalClaims: claimsToProcess.length,
+    triggeredBy: user.sub,
+  });
+
+  // Set up abort controller for cancellation
+  const abortController = new AbortController();
+  activeRunAbortControllers.set(runId, abortController);
+
+  // Fire-and-forget: process claims in the background
+  processRunInBackground(runId, claimsToProcess, body.tier, abortController.signal);
+
+  // Return shape matching DroneRun (frontend expects .id)
+  return c.json({ id: runId, runId, totalClaims: claimsToProcess.length }, 201);
 });
 
 // ── GET /drone/runs/:id — Get run details ───────────────────────────────────
@@ -162,16 +152,11 @@ drone.post("/drone/runs", async (c) => {
 drone.get("/drone/runs/:id", async (c) => {
   const id = c.req.param("id");
 
-  try {
-    const run = await getDroneRunById(id);
-    if (!run) {
-      return c.json({ error: "Run not found" }, 404);
-    }
-    return c.json(run);
-  } catch (err) {
-    console.error("[Drone API] Error fetching run:", err);
-    return c.json({ error: "Failed to fetch drone run" }, 500);
+  const run = await getDroneRunById(id);
+  if (!run) {
+    return c.json({ error: "Run not found" }, 404);
   }
+  return c.json(run);
 });
 
 // ── GET /drone/runs/:id/results — Get run results (paginated) ───────────────
@@ -181,118 +166,98 @@ drone.get("/drone/runs/:id/results", async (c) => {
   const page = parseInt(c.req.query("page") || "1", 10);
   const pageSize = parseInt(c.req.query("pageSize") || c.req.query("limit") || "100", 10);
 
-  try {
-    const result = await listDroneRunResults(id, page, pageSize);
-    return c.json({
-      data: result.results,
-      total: result.total,
-      page: result.page,
-      pageSize: result.pageSize,
-    });
-  } catch (err) {
-    console.error("[Drone API] Error fetching run results:", err);
-    return c.json({ error: "Failed to fetch run results" }, 500);
-  }
+  const result = await listDroneRunResults(id, page, pageSize);
+  return c.json({
+    data: result.results,
+    total: result.total,
+    page: result.page,
+    pageSize: result.pageSize,
+  });
 });
 
 // ── GET /drone/runs/:id/stream — SSE stream for real-time progress ──────────
 
 drone.get("/drone/runs/:id/stream", async (c) => {
-  try {
-    const id = c.req.param("id");
+  const id = c.req.param("id");
 
-    const run = await getDroneRunById(id);
-    if (!run) {
-      return c.json({ error: "Run not found" }, 404);
-    }
+  const run = await getDroneRunById(id);
+  if (!run) {
+    return c.json({ error: "Run not found" }, 404);
+  }
 
-    return streamSSE(c, async (stream) => {
-      const emitter = getOrCreateEmitter(id);
+  return streamSSE(c, async (stream) => {
+    const emitter = getOrCreateEmitter(id);
 
-      const onEvent = (event: DroneSSEEvent) => {
-        stream.writeSSE({
-          event: event.type,
-          data: JSON.stringify(event),
-        }).catch(() => {
-          // Client disconnected
-        });
+    const onEvent = (event: DroneSSEEvent) => {
+      stream.writeSSE({
+        event: event.type,
+        data: JSON.stringify(event),
+      }).catch(() => {
+        // Client disconnected
+      });
+    };
+
+    emitter.on("event", onEvent);
+
+    c.req.raw.signal.addEventListener("abort", () => {
+      emitter.off("event", onEvent);
+    });
+
+    await new Promise<void>((resolve) => {
+      const onComplete = (event: DroneSSEEvent) => {
+        if (event.type === "run_completed") {
+          emitter.off("event", onComplete);
+          setTimeout(resolve, 100);
+        }
       };
-
-      emitter.on("event", onEvent);
+      emitter.on("event", onComplete);
 
       c.req.raw.signal.addEventListener("abort", () => {
-        emitter.off("event", onEvent);
-      });
-
-      await new Promise<void>((resolve) => {
-        const onComplete = (event: DroneSSEEvent) => {
-          if (event.type === "run_completed") {
-            emitter.off("event", onComplete);
-            setTimeout(resolve, 100);
-          }
-        };
-        emitter.on("event", onComplete);
-
-        c.req.raw.signal.addEventListener("abort", () => {
-          emitter.off("event", onComplete);
-          resolve();
-        });
+        emitter.off("event", onComplete);
+        resolve();
       });
     });
-  } catch (err) {
-    console.error("[Drone] Stream run progress failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
-  }
+  });
 });
 
 // ── POST /drone/runs/:id/cancel — Cancel a running drone run ────────────────
 
 drone.post("/drone/runs/:id/cancel", async (c) => {
-  try {
-    const id = c.req.param("id");
+  const id = c.req.param("id");
 
-    const run = await getDroneRunById(id);
-    if (!run) {
-      return c.json({ error: "Run not found" }, 404);
-    }
-
-    if (run.status !== "running") {
-      return c.json({ error: "Run is not currently running" }, 400);
-    }
-
-    const abortController = activeRunAbortControllers.get(id);
-    if (abortController) {
-      abortController.abort();
-    }
-
-    return c.json({ success: true, message: "Run cancellation requested" });
-  } catch (err) {
-    console.error("[Drone] Cancel run failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  const run = await getDroneRunById(id);
+  if (!run) {
+    return c.json({ error: "Run not found" }, 404);
   }
+
+  if (run.status !== "running") {
+    return c.json({ error: "Run is not currently running" }, 400);
+  }
+
+  const abortController = activeRunAbortControllers.get(id);
+  if (abortController) {
+    abortController.abort();
+  }
+
+  return c.json({ success: true, message: "Run cancellation requested" });
 });
 
 // Keep DELETE as alias for backward compatibility
 drone.delete("/drone/runs/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
+  const id = c.req.param("id");
 
-    const run = await getDroneRunById(id);
-    if (!run) {
-      return c.json({ error: "Run not found" }, 404);
-    }
-    if (run.status !== "running") {
-      return c.json({ error: "Run is not currently running" }, 400);
-    }
-    const abortController = activeRunAbortControllers.get(id);
-    if (abortController) {
-      abortController.abort();
-    }
-    return c.json({ success: true, message: "Run cancellation requested" });
-  } catch (err) {
-    console.error("[Drone] Cancel run (DELETE) failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  const run = await getDroneRunById(id);
+  if (!run) {
+    return c.json({ error: "Run not found" }, 404);
   }
+  if (run.status !== "running") {
+    return c.json({ error: "Run is not currently running" }, 400);
+  }
+  const abortController = activeRunAbortControllers.get(id);
+  if (abortController) {
+    abortController.abort();
+  }
+  return c.json({ success: true, message: "Run cancellation requested" });
 });
 
 // ── GET /drone/eligible — Preview eligible claims ───────────────────────────
@@ -305,156 +270,121 @@ drone.get("/drone/eligible", async (c) => {
     return c.json({ error: "tier must be 1 or 2" }, 400);
   }
 
-  try {
-    const eligible = await fetchDroneEligibleClaims(batchSize, tier);
-    // Map to frontend's expected shape
-    const data = eligible.map((claim) => ({
-      claimCaseId: claim.id,
-      claimCode: claim.code,
-      benefitType: claim.benefitType ?? "OutPatient",
-      icdCodes: claim.icdCodes ?? [],
-    }));
-    return c.json({ data });
-  } catch (err) {
-    console.error("[Drone API] Error fetching eligible claims:", err);
-    return c.json({ error: "Failed to fetch eligible claims" }, 500);
-  }
+  const eligible = await fetchDroneEligibleClaims(batchSize, tier);
+  // Map to frontend's expected shape
+  const data = eligible.map((claim) => ({
+    claimCaseId: claim.id,
+    claimCode: claim.code,
+    benefitType: claim.benefitType ?? "OutPatient",
+    icdCodes: claim.icdCodes ?? [],
+  }));
+  return c.json({ data });
 });
 
 // Keep POST as alias for backward compatibility
 drone.post("/drone/eligible", async (c) => {
-  try {
-    const body = await c.req.json<{ tier: DroneTier; batchSize?: number }>();
+  const body = await c.req.json<{ tier: DroneTier; batchSize?: number }>();
 
-    if (!body.tier || ![1, 2].includes(body.tier)) {
-      return c.json({ error: "tier must be 1 or 2" }, 400);
-    }
-
-    const eligible = await fetchDroneEligibleClaims(body.batchSize ?? 20, body.tier);
-    const data = eligible.map((claim) => ({
-      claimCaseId: claim.id,
-      claimCode: claim.code,
-      benefitType: claim.benefitType ?? "OutPatient",
-      icdCodes: claim.icdCodes ?? [],
-    }));
-    return c.json({ data });
-  } catch (err) {
-    console.error("[Drone] Fetch eligible claims (POST) failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  if (!body.tier || ![1, 2].includes(body.tier)) {
+    return c.json({ error: "tier must be 1 or 2" }, 400);
   }
+
+  const eligible = await fetchDroneEligibleClaims(body.batchSize ?? 20, body.tier);
+  const data = eligible.map((claim) => ({
+    claimCaseId: claim.id,
+    claimCode: claim.code,
+    benefitType: claim.benefitType ?? "OutPatient",
+    icdCodes: claim.icdCodes ?? [],
+  }));
+  return c.json({ data });
 });
 
 // ── GET /drone/schedules — List schedules ───────────────────────────────────
 
 drone.get("/drone/schedules", async (c) => {
-  try {
-    const schedules = await listDroneSchedules();
-    return c.json({ data: schedules });
-  } catch (err) {
-    console.error("[Drone API] Error listing schedules:", err);
-    return c.json({ error: "Failed to list schedules" }, 500);
-  }
+  const schedules = await listDroneSchedules();
+  return c.json({ data: schedules });
 });
 
 // ── POST /drone/schedules — Create schedule ─────────────────────────────────
 
 drone.post("/drone/schedules", async (c) => {
-  try {
-    const body = await c.req.json<{
-      name: string;
-      description?: string;
-      tier: number;
-      batchSize: number;
-      cronExpression: string;
-      timezone?: string;
-      slackChannel?: string;
-    }>();
+  const body = await c.req.json<{
+    name: string;
+    description?: string;
+    tier: number;
+    batchSize: number;
+    cronExpression: string;
+    timezone?: string;
+    slackChannel?: string;
+  }>();
 
-    if (!body.name || !body.cronExpression) {
-      return c.json({ error: "name and cronExpression are required" }, 400);
-    }
-
-    if (!body.tier || ![1, 2].includes(body.tier)) {
-      return c.json({ error: "tier must be 1 or 2" }, 400);
-    }
-
-    if (!body.batchSize || body.batchSize < 1 || body.batchSize > 100) {
-      return c.json({ error: "batchSize must be between 1 and 100" }, 400);
-    }
-
-    const id = await createDroneSchedule({
-      name: body.name,
-      description: body.description,
-      tier: body.tier,
-      batchSize: body.batchSize,
-      cronExpression: body.cronExpression,
-      timezone: body.timezone,
-      slackChannel: body.slackChannel,
-    });
-    return c.json({ id }, 201);
-  } catch (err) {
-    console.error("[Drone] Create schedule failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  if (!body.name || !body.cronExpression) {
+    return c.json({ error: "name and cronExpression are required" }, 400);
   }
+
+  if (!body.tier || ![1, 2].includes(body.tier)) {
+    return c.json({ error: "tier must be 1 or 2" }, 400);
+  }
+
+  if (!body.batchSize || body.batchSize < 1 || body.batchSize > 100) {
+    return c.json({ error: "batchSize must be between 1 and 100" }, 400);
+  }
+
+  const id = await createDroneSchedule({
+    name: body.name,
+    description: body.description,
+    tier: body.tier,
+    batchSize: body.batchSize,
+    cronExpression: body.cronExpression,
+    timezone: body.timezone,
+    slackChannel: body.slackChannel,
+  });
+  return c.json({ id }, 201);
 });
 
 // ── PUT /drone/schedules/:id — Update schedule ──────────────────────────────
 
 drone.put("/drone/schedules/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const body = await c.req.json<{
-      name?: string;
-      description?: string;
-      tier?: number;
-      batchSize?: number;
-      cronExpression?: string;
-      timezone?: string;
-      slackChannel?: string;
-      enabled?: boolean;
-    }>();
+  const id = c.req.param("id");
+  const body = await c.req.json<{
+    name?: string;
+    description?: string;
+    tier?: number;
+    batchSize?: number;
+    cronExpression?: string;
+    timezone?: string;
+    slackChannel?: string;
+    enabled?: boolean;
+  }>();
 
-    if (body.tier !== undefined && ![1, 2].includes(body.tier)) {
-      return c.json({ error: "tier must be 1 or 2" }, 400);
-    }
-
-    if (body.batchSize !== undefined && (body.batchSize < 1 || body.batchSize > 100)) {
-      return c.json({ error: "batchSize must be between 1 and 100" }, 400);
-    }
-
-    await updateDroneSchedule(id, body);
-    return c.json({ success: true });
-  } catch (err) {
-    console.error("[Drone] Update schedule failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  if (body.tier !== undefined && ![1, 2].includes(body.tier)) {
+    return c.json({ error: "tier must be 1 or 2" }, 400);
   }
+
+  if (body.batchSize !== undefined && (body.batchSize < 1 || body.batchSize > 100)) {
+    return c.json({ error: "batchSize must be between 1 and 100" }, 400);
+  }
+
+  await updateDroneSchedule(id, body);
+  return c.json({ success: true });
 });
 
 // ── DELETE /drone/schedules/:id — Soft-delete schedule ──────────────────────
 
 drone.delete("/drone/schedules/:id", async (c) => {
-  try {
-    const user = c.get("user");
-    const id = c.req.param("id");
+  const user = c.get("user");
+  const id = c.req.param("id");
 
-    await softDeleteDroneSchedule(id, user.sub);
-    return c.json({ success: true });
-  } catch (err) {
-    console.error("[Drone] Delete schedule failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
-  }
+  await softDeleteDroneSchedule(id, user.sub);
+  return c.json({ success: true });
 });
 
 // ── GET /drone/stats — Aggregate stats ──────────────────────────────────────
 
 drone.get("/drone/stats", async (c) => {
-  try {
-    const stats = await getDroneStats();
-    return c.json(stats);
-  } catch (err) {
-    console.error("[Drone API] Error fetching stats:", err);
-    return c.json({ error: "Failed to fetch drone stats" }, 500);
-  }
+  const stats = await getDroneStats();
+  return c.json(stats);
 });
 
 // ---------------------------------------------------------------------------

@@ -11,7 +11,14 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 // ---------------------------------------------------------------------------
 
 const REGION = process.env.AWS_REGION || "ap-southeast-1";
-const BUCKET = process.env.IR_S3_BUCKET || "papaya-ir-dataroom";
+
+function getBucket(): string {
+  const bucket = process.env.IR_S3_BUCKET;
+  if (!bucket) {
+    throw new Error("IR_S3_BUCKET environment variable is required");
+  }
+  return bucket;
+}
 
 let _s3: S3Client | null = null;
 function getS3(): S3Client {
@@ -56,14 +63,14 @@ export async function generateUploadUrl(params: {
   const expiresIn = params.expiresIn ?? 3600; // 1 hour default
 
   const command = new PutObjectCommand({
-    Bucket: BUCKET,
+    Bucket: getBucket(),
     Key: s3Key,
     ContentType: params.mimeType,
   });
 
   const uploadUrl = await getSignedUrl(getS3(), command, { expiresIn });
 
-  return { uploadUrl, s3Key, s3Bucket: BUCKET };
+  return { uploadUrl, s3Key, s3Bucket: getBucket() };
 }
 
 /**
@@ -81,7 +88,7 @@ export async function uploadToS3(params: {
   const s3Key = buildS3Key(params.tenantId, params.roundId, params.docId, params.fileName);
 
   const command = new PutObjectCommand({
-    Bucket: BUCKET,
+    Bucket: getBucket(),
     Key: s3Key,
     ContentType: params.mimeType,
     Body: params.body,
@@ -89,7 +96,7 @@ export async function uploadToS3(params: {
 
   await getS3().send(command);
 
-  return { s3Key, s3Bucket: BUCKET };
+  return { s3Key, s3Bucket: getBucket() };
 }
 
 /**
@@ -103,7 +110,7 @@ export async function generateViewUrl(params: {
   downloadAs?: string;
   contentType?: string;
 }): Promise<string> {
-  const bucket = params.s3Bucket || BUCKET;
+  const bucket = params.s3Bucket || getBucket();
   const expiresIn = params.expiresIn ?? 3600;
 
   const commandInput: Record<string, unknown> = {
@@ -130,7 +137,7 @@ export async function downloadFileBuffer(params: {
   s3Key: string;
   s3Bucket?: string;
 }): Promise<{ buffer: Buffer; contentType: string | undefined }> {
-  const bucket = params.s3Bucket || BUCKET;
+  const bucket = params.s3Bucket || getBucket();
 
   const command = new GetObjectCommand({
     Bucket: bucket,
@@ -153,7 +160,7 @@ export async function deleteS3File(params: {
   s3Key: string;
   s3Bucket?: string;
 }): Promise<void> {
-  const bucket = params.s3Bucket || BUCKET;
+  const bucket = params.s3Bucket || getBucket();
 
   const command = new DeleteObjectCommand({
     Bucket: bucket,

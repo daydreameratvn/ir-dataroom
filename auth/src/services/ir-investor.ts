@@ -321,7 +321,8 @@ export interface UpdateInvestorData {
 export async function updateInvestor(
   id: string,
   data: UpdateInvestorData,
-  userId: string
+  userId: string,
+  tenantId?: string
 ): Promise<Investor | null> {
   const setClauses: string[] = ["updated_at = now()", "updated_by = $2"];
   const params: unknown[] = [id, userId];
@@ -349,10 +350,14 @@ export async function updateInvestor(
     return getInvestorById(id);
   }
 
+  // Scope to tenant if provided to prevent cross-tenant access
+  const tenantClause = tenantId ? ` AND tenant_id = $${paramIdx}` : "";
+  if (tenantId) params.push(tenantId);
+
   const result = await query<InvestorRow>(
     `UPDATE ir_investors
      SET ${setClauses.join(", ")}
-     WHERE id = $1 AND deleted_at IS NULL
+     WHERE id = $1 AND deleted_at IS NULL${tenantClause}
      RETURNING ${INVESTOR_COLUMNS}`,
     params
   );

@@ -118,13 +118,13 @@ export async function watermarkVideo(
     return null;
   }
 
-  // Resolve ffmpeg binary: prefer system install, fall back to ffmpeg-static
-  let ffmpegPath = "ffmpeg";
+  // Require system ffmpeg (installed via Dockerfile)
+  const ffmpegPath = "ffmpeg";
   try {
     const check = Bun.spawnSync(["which", "ffmpeg"]);
     if (check.exitCode !== 0) {
-      const mod = await import("ffmpeg-static");
-      ffmpegPath = (mod.default ?? mod) as string;
+      console.warn("[IR Watermark] ffmpeg not installed, skipping video watermark");
+      return null;
     }
   } catch {
     console.warn("[IR Watermark] ffmpeg not available, skipping video watermark");

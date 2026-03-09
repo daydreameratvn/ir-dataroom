@@ -33,7 +33,8 @@ export function resetPool(): void {
   }
 }
 
-const CONNECTION_ERROR_RE =
+/** Matches common DB connection error messages and error codes */
+export const CONNECTION_ERROR_RE =
   /ECONNREFUSED|ETIMEDOUT|ENOTFOUND|connection terminated|Connection terminated|cannot connect|too many clients|timeout expired/i;
 
 export async function query<T extends pg.QueryResultRow = pg.QueryResultRow>(

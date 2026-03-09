@@ -376,6 +376,7 @@ ir.delete("/ir/rounds/:rid/investors/:iid", async (c) => {
 
 ir.put("/ir/rounds/:rid/investors/:iid/nda-mode", async (c) => {
   const user = c.get("user");
+  const tenantId = getEffectiveTenantId(c);
   const investorRoundId = c.req.param("iid");
   const body = await c.req.json<{ ndaMode: "digital" | "offline" }>();
 
@@ -384,12 +385,15 @@ ir.put("/ir/rounds/:rid/investors/:iid/nda-mode", async (c) => {
   }
 
   try {
-    await query(
+    const result = await query(
       `UPDATE ir_investor_rounds
        SET nda_mode = $1, nda_required = $2, updated_by = $3, updated_at = now()
-       WHERE id = $4 AND deleted_at IS NULL`,
-      [body.ndaMode, body.ndaMode === "digital", user.sub, investorRoundId]
+       WHERE id = $4 AND tenant_id = $5 AND deleted_at IS NULL`,
+      [body.ndaMode, body.ndaMode === "digital", user.sub, investorRoundId, tenantId]
     );
+    if (result.rowCount === 0) {
+      return c.json({ error: "Investor round not found" }, 404);
+    }
     return c.json({ success: true });
   } catch (err) {
     console.error("[IR API] Error updating NDA mode:", err);
@@ -401,6 +405,7 @@ ir.put("/ir/rounds/:rid/investors/:iid/nda-mode", async (c) => {
 
 ir.put("/ir/investors/:id", async (c) => {
   const user = c.get("user");
+  const tenantId = getEffectiveTenantId(c);
   const id = c.req.param("id");
   const body = await c.req.json<{ name?: string; firm?: string; title?: string }>();
 
@@ -409,7 +414,7 @@ ir.put("/ir/investors/:id", async (c) => {
   }
 
   try {
-    const updated = await updateInvestor(id, body, user.sub);
+    const updated = await updateInvestor(id, body, user.sub, tenantId);
     if (!updated) {
       return c.json({ error: "Investor not found" }, 404);
     }

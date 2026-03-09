@@ -109,6 +109,9 @@ function handler(event) {
   var uri = request.uri;
   // Pass through requests with file extensions (JS, CSS, images, fonts, etc.)
   if (uri.includes('.')) return request;
+  // Safety: never rewrite API paths — they should be handled by ordered behaviors,
+  // but guard here in case a new API prefix is added without its own behavior.
+  if (uri.startsWith('/auth/') || uri.startsWith('/api/')) return request;
   // SPA fallback: rewrite to /index.html
   request.uri = '/index.html';
   return request;

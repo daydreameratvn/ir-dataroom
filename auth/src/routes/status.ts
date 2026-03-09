@@ -239,183 +239,133 @@ admin.use("*", requireAuth, requireAdmin);
 
 // GET /incidents — List incidents (paginated)
 admin.get("/", async (c) => {
-  try {
-    const statusFilter = c.req.query("status");
-    const severity = c.req.query("severity");
-    const page = parseInt(c.req.query("page") ?? "1", 10);
-    const limit = parseInt(c.req.query("limit") ?? "20", 10);
+  const statusFilter = c.req.query("status");
+  const severity = c.req.query("severity");
+  const page = parseInt(c.req.query("page") ?? "1", 10);
+  const limit = parseInt(c.req.query("limit") ?? "20", 10);
 
-    const result = await listIncidents({ status: statusFilter, severity, page, limit });
-    return c.json(result);
-  } catch (err) {
-    console.error("[Status] List incidents failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
-  }
+  const result = await listIncidents({ status: statusFilter, severity, page, limit });
+  return c.json(result);
 });
 
 // POST /incidents — Create incident
 admin.post("/", async (c) => {
-  try {
-    const body = await c.req.json<{
-      title: string;
-      description?: string;
-      severity: string;
-      affectedServices: string[];
-      startedAt?: string;
-    }>();
+  const body = await c.req.json<{
+    title: string;
+    description?: string;
+    severity: string;
+    affectedServices: string[];
+    startedAt?: string;
+  }>();
 
-    if (!body.title || !body.severity || !body.affectedServices) {
-      return c.json({ error: "title, severity, and affectedServices are required" }, 400);
-    }
-
-    const user = c.get("user");
-    const incident = await createIncident(body, user.sub);
-    return c.json(incident, 201);
-  } catch (err) {
-    console.error("[Status] Create incident failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  if (!body.title || !body.severity || !body.affectedServices) {
+    return c.json({ error: "title, severity, and affectedServices are required" }, 400);
   }
+
+  const user = c.get("user");
+  const incident = await createIncident(body, user.sub);
+  return c.json(incident, 201);
 });
 
 // GET /incidents/overrides — List active overrides
 admin.get("/overrides", async (c) => {
-  try {
-    const result = await getActiveOverrides();
-    return c.json({ overrides: result });
-  } catch (err) {
-    console.error("[Status] List overrides failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
-  }
+  const result = await getActiveOverrides();
+  return c.json({ overrides: result });
 });
 
 // POST /incidents/overrides — Set service override
 admin.post("/overrides", async (c) => {
-  try {
-    const body = await c.req.json<{
-      serviceName: string;
-      status: string;
-      reason?: string;
-      startsAt?: string;
-      endsAt?: string;
-    }>();
+  const body = await c.req.json<{
+    serviceName: string;
+    status: string;
+    reason?: string;
+    startsAt?: string;
+    endsAt?: string;
+  }>();
 
-    if (!body.serviceName || !body.status) {
-      return c.json({ error: "serviceName and status are required" }, 400);
-    }
-
-    const user = c.get("user");
-    const override = await setOverride(body, user.sub);
-    return c.json(override, 201);
-  } catch (err) {
-    console.error("[Status] Set override failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  if (!body.serviceName || !body.status) {
+    return c.json({ error: "serviceName and status are required" }, 400);
   }
+
+  const user = c.get("user");
+  const override = await setOverride(body, user.sub);
+  return c.json(override, 201);
 });
 
 // DELETE /incidents/overrides/:serviceName — Clear override
 admin.delete("/overrides/:serviceName", async (c) => {
-  try {
-    const serviceName = c.req.param("serviceName");
-    const user = c.get("user");
-    const cleared = await clearOverride(serviceName, user.sub);
-    if (!cleared) {
-      return c.json({ error: "No active override found" }, 404);
-    }
-    return c.json({ ok: true });
-  } catch (err) {
-    console.error("[Status] Clear override failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  const serviceName = c.req.param("serviceName");
+  const user = c.get("user");
+  const cleared = await clearOverride(serviceName, user.sub);
+  if (!cleared) {
+    return c.json({ error: "No active override found" }, 404);
   }
+  return c.json({ ok: true });
 });
 
 // GET /incidents/:id — Get incident with updates
 admin.get("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const incident = await getIncidentById(id);
-    if (!incident) {
-      return c.json({ error: "Incident not found" }, 404);
-    }
-    return c.json(incident);
-  } catch (err) {
-    console.error("[Status] Get incident failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  const id = c.req.param("id");
+  const incident = await getIncidentById(id);
+  if (!incident) {
+    return c.json({ error: "Incident not found" }, 404);
   }
+  return c.json(incident);
 });
 
 // PUT /incidents/:id — Update incident metadata
 admin.put("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const body = await c.req.json<{
-      title?: string;
-      description?: string;
-      severity?: string;
-      affectedServices?: string[];
-      status?: string;
-    }>();
+  const id = c.req.param("id");
+  const body = await c.req.json<{
+    title?: string;
+    description?: string;
+    severity?: string;
+    affectedServices?: string[];
+    status?: string;
+  }>();
 
-    const user = c.get("user");
-    const incident = await updateIncident(id, body, user.sub);
-    if (!incident) {
-      return c.json({ error: "Incident not found" }, 404);
-    }
-    return c.json(incident);
-  } catch (err) {
-    console.error("[Status] Update incident failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  const user = c.get("user");
+  const incident = await updateIncident(id, body, user.sub);
+  if (!incident) {
+    return c.json({ error: "Incident not found" }, 404);
   }
+  return c.json(incident);
 });
 
 // POST /incidents/:id/updates — Post timeline update
 admin.post("/:id/updates", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const body = await c.req.json<{ status: string; message: string }>();
+  const id = c.req.param("id");
+  const body = await c.req.json<{ status: string; message: string }>();
 
-    if (!body.status || !body.message) {
-      return c.json({ error: "status and message are required" }, 400);
-    }
-
-    const user = c.get("user");
-    const update = await postUpdate(id, body.status, body.message, user.sub);
-    return c.json(update, 201);
-  } catch (err) {
-    console.error("[Status] Post update failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  if (!body.status || !body.message) {
+    return c.json({ error: "status and message are required" }, 400);
   }
+
+  const user = c.get("user");
+  const update = await postUpdate(id, body.status, body.message, user.sub);
+  return c.json(update, 201);
 });
 
 // POST /incidents/:id/resolve — Resolve incident
 admin.post("/:id/resolve", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const user = c.get("user");
-    const incident = await resolveIncident(id, user.sub);
-    if (!incident) {
-      return c.json({ error: "Incident not found" }, 404);
-    }
-    return c.json(incident);
-  } catch (err) {
-    console.error("[Status] Resolve incident failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  const id = c.req.param("id");
+  const user = c.get("user");
+  const incident = await resolveIncident(id, user.sub);
+  if (!incident) {
+    return c.json({ error: "Incident not found" }, 404);
   }
+  return c.json(incident);
 });
 
 // DELETE /incidents/:id — Soft delete
 admin.delete("/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const user = c.get("user");
-    const deleted = await softDeleteIncident(id, user.sub);
-    if (!deleted) {
-      return c.json({ error: "Incident not found" }, 404);
-    }
-    return c.json({ ok: true });
-  } catch (err) {
-    console.error("[Status] Delete incident failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  const id = c.req.param("id");
+  const user = c.get("user");
+  const deleted = await softDeleteIncident(id, user.sub);
+  if (!deleted) {
+    return c.json({ error: "Incident not found" }, 404);
   }
+  return c.json({ ok: true });
 });
 
 // Mount admin routes under /incidents

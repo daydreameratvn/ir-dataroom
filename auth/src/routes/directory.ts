@@ -18,211 +18,181 @@ directory.use("/admin/directory/*", requireAuth, requireAdmin);
 
 // ── List providers for tenant ──
 directory.get("/admin/directory/providers", async (c) => {
-  try {
-    const tenantId = getEffectiveTenantId(c);
+  const tenantId = getEffectiveTenantId(c);
 
-    const result = await query(
-      `SELECT id, tenant_id, provider_type, display_name, domains,
-              auto_join_enabled, auto_join_user_type, auto_join_user_level,
-              auto_offboard_enabled, admin_email, google_customer_id,
-              last_sync_at, last_sync_status, last_sync_error, is_active,
-              created_at, updated_at
-       FROM tenant_identity_providers
-       WHERE tenant_id = $1 AND deleted_at IS NULL
-       ORDER BY created_at DESC`,
-      [tenantId]
-    );
+  const result = await query(
+    `SELECT id, tenant_id, provider_type, display_name, domains,
+            auto_join_enabled, auto_join_user_type, auto_join_user_level,
+            auto_offboard_enabled, admin_email, google_customer_id,
+            last_sync_at, last_sync_status, last_sync_error, is_active,
+            created_at, updated_at
+     FROM tenant_identity_providers
+     WHERE tenant_id = $1 AND deleted_at IS NULL
+     ORDER BY created_at DESC`,
+    [tenantId]
+  );
 
-    return c.json({ data: result.rows });
-  } catch (err) {
-    console.error("[Directory] List providers failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
-  }
+  return c.json({ data: result.rows });
 });
 
 // ── Create provider ──
 directory.post("/admin/directory/providers", async (c) => {
-  try {
-    const user = c.get("user");
-    const tenantId = getEffectiveTenantId(c);
-    const body = await c.req.json<{
-      providerType: string;
-      displayName: string;
-      domains?: string[];
-      autoJoinEnabled?: boolean;
-      autoJoinUserType?: string;
-      autoJoinUserLevel?: string;
-      autoOffboardEnabled?: boolean;
-    }>();
+  const user = c.get("user");
+  const tenantId = getEffectiveTenantId(c);
+  const body = await c.req.json<{
+    providerType: string;
+    displayName: string;
+    domains?: string[];
+    autoJoinEnabled?: boolean;
+    autoJoinUserType?: string;
+    autoJoinUserLevel?: string;
+    autoOffboardEnabled?: boolean;
+  }>();
 
-    const id = crypto.randomUUID();
-    const result = await query(
-      `INSERT INTO tenant_identity_providers
-         (id, tenant_id, provider_type, display_name, domains,
-          auto_join_enabled, auto_join_user_type, auto_join_user_level,
-          auto_offboard_enabled, created_by, updated_by)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
-       RETURNING *`,
-      [
-        id,
-        tenantId,
-        body.providerType,
-        body.displayName,
-        body.domains ?? [],
-        body.autoJoinEnabled ?? false,
-        body.autoJoinUserType ?? null,
-        body.autoJoinUserLevel ?? null,
-        body.autoOffboardEnabled ?? false,
-        user.sub,
-      ]
-    );
+  const id = crypto.randomUUID();
+  const result = await query(
+    `INSERT INTO tenant_identity_providers
+       (id, tenant_id, provider_type, display_name, domains,
+        auto_join_enabled, auto_join_user_type, auto_join_user_level,
+        auto_offboard_enabled, created_by, updated_by)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
+     RETURNING *`,
+    [
+      id,
+      tenantId,
+      body.providerType,
+      body.displayName,
+      body.domains ?? [],
+      body.autoJoinEnabled ?? false,
+      body.autoJoinUserType ?? null,
+      body.autoJoinUserLevel ?? null,
+      body.autoOffboardEnabled ?? false,
+      user.sub,
+    ]
+  );
 
-    return c.json(result.rows[0], 201);
-  } catch (err) {
-    console.error("[Directory] Create provider failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
-  }
+  return c.json(result.rows[0], 201);
 });
 
 // ── Get provider details ──
 directory.get("/admin/directory/providers/:id", async (c) => {
-  try {
-    const tenantId = getEffectiveTenantId(c);
-    const id = c.req.param("id");
+  const tenantId = getEffectiveTenantId(c);
+  const id = c.req.param("id");
 
-    const result = await query(
-      `SELECT id, tenant_id, provider_type, display_name, domains,
-              auto_join_enabled, auto_join_user_type, auto_join_user_level,
-              auto_offboard_enabled, admin_email, google_customer_id,
-              last_sync_at, last_sync_status, last_sync_error, is_active,
-              created_at, updated_at
-       FROM tenant_identity_providers
-       WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
-      [id, tenantId]
-    );
+  const result = await query(
+    `SELECT id, tenant_id, provider_type, display_name, domains,
+            auto_join_enabled, auto_join_user_type, auto_join_user_level,
+            auto_offboard_enabled, admin_email, google_customer_id,
+            last_sync_at, last_sync_status, last_sync_error, is_active,
+            created_at, updated_at
+     FROM tenant_identity_providers
+     WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
+    [id, tenantId]
+  );
 
-    if (!result.rows[0]) {
-      return c.json({ error: "Provider not found" }, 404);
-    }
-
-    return c.json(result.rows[0]);
-  } catch (err) {
-    console.error("[Directory] Get provider failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  if (!result.rows[0]) {
+    return c.json({ error: "Provider not found" }, 404);
   }
+
+  return c.json(result.rows[0]);
 });
 
 // ── Update provider config ──
 directory.put("/admin/directory/providers/:id", async (c) => {
-  try {
-    const user = c.get("user");
-    const tenantId = getEffectiveTenantId(c);
-    const id = c.req.param("id");
-    const body = await c.req.json<{
-      displayName?: string;
-      domains?: string[];
-      autoJoinEnabled?: boolean;
-      autoJoinUserType?: string;
-      autoJoinUserLevel?: string;
-      autoOffboardEnabled?: boolean;
-      isActive?: boolean;
-    }>();
+  const user = c.get("user");
+  const tenantId = getEffectiveTenantId(c);
+  const id = c.req.param("id");
+  const body = await c.req.json<{
+    displayName?: string;
+    domains?: string[];
+    autoJoinEnabled?: boolean;
+    autoJoinUserType?: string;
+    autoJoinUserLevel?: string;
+    autoOffboardEnabled?: boolean;
+    isActive?: boolean;
+  }>();
 
-    const setClauses: string[] = ["updated_at = now()", "updated_by = $3"];
-    const params: unknown[] = [id, tenantId, user.sub];
-    let paramIdx = 4;
+  const setClauses: string[] = ["updated_at = now()", "updated_by = $3"];
+  const params: unknown[] = [id, tenantId, user.sub];
+  let paramIdx = 4;
 
-    const fieldMap: Record<string, string> = {
-      displayName: "display_name",
-      domains: "domains",
-      autoJoinEnabled: "auto_join_enabled",
-      autoJoinUserType: "auto_join_user_type",
-      autoJoinUserLevel: "auto_join_user_level",
-      autoOffboardEnabled: "auto_offboard_enabled",
-      isActive: "is_active",
-    };
+  const fieldMap: Record<string, string> = {
+    displayName: "display_name",
+    domains: "domains",
+    autoJoinEnabled: "auto_join_enabled",
+    autoJoinUserType: "auto_join_user_type",
+    autoJoinUserLevel: "auto_join_user_level",
+    autoOffboardEnabled: "auto_offboard_enabled",
+    isActive: "is_active",
+  };
 
-    for (const [key, column] of Object.entries(fieldMap)) {
-      const value = body[key as keyof typeof body];
-      if (value !== undefined) {
-        setClauses.push(`${column} = $${paramIdx}`);
-        params.push(value);
-        paramIdx++;
-      }
+  for (const [key, column] of Object.entries(fieldMap)) {
+    const value = body[key as keyof typeof body];
+    if (value !== undefined) {
+      setClauses.push(`${column} = $${paramIdx}`);
+      params.push(value);
+      paramIdx++;
     }
-
-    const result = await query(
-      `UPDATE tenant_identity_providers
-       SET ${setClauses.join(", ")}
-       WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL
-       RETURNING *`,
-      params
-    );
-
-    if (!result.rows[0]) {
-      return c.json({ error: "Provider not found" }, 404);
-    }
-
-    return c.json(result.rows[0]);
-  } catch (err) {
-    console.error("[Directory] Update provider failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
   }
+
+  const result = await query(
+    `UPDATE tenant_identity_providers
+     SET ${setClauses.join(", ")}
+     WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL
+     RETURNING *`,
+    params
+  );
+
+  if (!result.rows[0]) {
+    return c.json({ error: "Provider not found" }, 404);
+  }
+
+  return c.json(result.rows[0]);
 });
 
 // ── Soft-delete provider ──
 directory.delete("/admin/directory/providers/:id", async (c) => {
-  try {
-    const user = c.get("user");
-    const tenantId = getEffectiveTenantId(c);
-    const id = c.req.param("id");
+  const user = c.get("user");
+  const tenantId = getEffectiveTenantId(c);
+  const id = c.req.param("id");
 
-    const result = await query(
-      `UPDATE tenant_identity_providers
-       SET deleted_at = now(), deleted_by = $3, updated_at = now(), updated_by = $3
-       WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
-      [id, tenantId, user.sub]
-    );
+  const result = await query(
+    `UPDATE tenant_identity_providers
+     SET deleted_at = now(), deleted_by = $3, updated_at = now(), updated_by = $3
+     WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
+    [id, tenantId, user.sub]
+  );
 
-    if (result.rowCount === 0) {
-      return c.json({ error: "Provider not found" }, 404);
-    }
-
-    return c.json({ success: true });
-  } catch (err) {
-    console.error("[Directory] Delete provider failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  if (result.rowCount === 0) {
+    return c.json({ error: "Provider not found" }, 404);
   }
+
+  return c.json({ success: true });
 });
 
 // ── Google admin consent: redirect ──
 directory.get("/admin/directory/connect/google", async (c) => {
-  try {
-    const user = c.get("user");
-    const tenantId = getEffectiveTenantId(c);
-    const providerId = c.req.query("provider_id");
+  const user = c.get("user");
+  const tenantId = getEffectiveTenantId(c);
+  const providerId = c.req.query("provider_id");
 
-    if (!providerId) {
-      return c.json({ error: "provider_id is required" }, 400);
-    }
-
-    const key = await getJwtKey();
-    const statePayload = JSON.stringify({
-      tenantId,
-      providerId,
-      userId: user.sub,
-      ts: Date.now(),
-    });
-    const encoded = Buffer.from(statePayload).toString("base64url");
-    const sig = createHmac("sha256", key).update(encoded).digest("base64url");
-    const state = `${encoded}.${sig}`;
-
-    const url = await getAdminConsentUrl(state);
-    return c.json({ url });
-  } catch (err) {
-    console.error("[Directory] Google connect failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  if (!providerId) {
+    return c.json({ error: "provider_id is required" }, 400);
   }
+
+  const key = await getJwtKey();
+  const statePayload = JSON.stringify({
+    tenantId,
+    providerId,
+    userId: user.sub,
+    ts: Date.now(),
+  });
+  const encoded = Buffer.from(statePayload).toString("base64url");
+  const sig = createHmac("sha256", key).update(encoded).digest("base64url");
+  const state = `${encoded}.${sig}`;
+
+  const url = await getAdminConsentUrl(state);
+  return c.json({ url });
 });
 
 // ── Google admin consent: callback ──
@@ -309,69 +279,59 @@ directory.get("/admin/directory/callback/google", async (c) => {
 
 // ── Trigger manual sync ──
 directory.post("/admin/directory/providers/:id/sync", async (c) => {
-  try {
-    const user = c.get("user");
-    const tenantId = getEffectiveTenantId(c);
-    const id = c.req.param("id");
+  const user = c.get("user");
+  const tenantId = getEffectiveTenantId(c);
+  const id = c.req.param("id");
 
-    // Verify provider belongs to tenant
-    const check = await query(
-      `SELECT id FROM tenant_identity_providers
-       WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL AND is_active = true`,
-      [id, tenantId]
-    );
-    if (!check.rows[0]) {
-      return c.json({ error: "Provider not found" }, 404);
-    }
-
-    const result = await syncGoogleDirectory(id, user.sub, "manual");
-    return c.json(result);
-  } catch (err) {
-    console.error("[Directory] Sync failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  // Verify provider belongs to tenant
+  const check = await query(
+    `SELECT id FROM tenant_identity_providers
+     WHERE id = $1 AND tenant_id = $2 AND deleted_at IS NULL AND is_active = true`,
+    [id, tenantId]
+  );
+  if (!check.rows[0]) {
+    return c.json({ error: "Provider not found" }, 404);
   }
+
+  const result = await syncGoogleDirectory(id, user.sub, "manual");
+  return c.json(result);
 });
 
 // ── Get sync logs ──
 directory.get("/admin/directory/providers/:id/logs", async (c) => {
-  try {
-    const tenantId = getEffectiveTenantId(c);
-    const providerId = c.req.param("id");
-    const page = parseInt(c.req.query("page") || "1", 10);
-    const limit = Math.min(parseInt(c.req.query("limit") || "20", 10), 100);
-    const offset = (page - 1) * limit;
+  const tenantId = getEffectiveTenantId(c);
+  const providerId = c.req.param("id");
+  const page = parseInt(c.req.query("page") || "1", 10);
+  const limit = Math.min(parseInt(c.req.query("limit") || "20", 10), 100);
+  const offset = (page - 1) * limit;
 
-    const countResult = await query<{ count: string }>(
-      `SELECT COUNT(*) as count FROM directory_sync_logs
-       WHERE provider_id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
-      [providerId, tenantId]
-    );
-    const total = parseInt(countResult.rows[0]!.count, 10);
+  const countResult = await query<{ count: string }>(
+    `SELECT COUNT(*) as count FROM directory_sync_logs
+     WHERE provider_id = $1 AND tenant_id = $2 AND deleted_at IS NULL`,
+    [providerId, tenantId]
+  );
+  const total = parseInt(countResult.rows[0]!.count, 10);
 
-    const result = await query(
-      `SELECT id, trigger_type, triggered_by, status,
-              users_fetched, users_created, users_updated,
-              users_deactivated, users_skipped, errors_count,
-              started_at, completed_at, duration_ms,
-              error_message, error_details
-       FROM directory_sync_logs
-       WHERE provider_id = $1 AND tenant_id = $2 AND deleted_at IS NULL
-       ORDER BY started_at DESC
-       LIMIT $3 OFFSET $4`,
-      [providerId, tenantId, limit, offset]
-    );
+  const result = await query(
+    `SELECT id, trigger_type, triggered_by, status,
+            users_fetched, users_created, users_updated,
+            users_deactivated, users_skipped, errors_count,
+            started_at, completed_at, duration_ms,
+            error_message, error_details
+     FROM directory_sync_logs
+     WHERE provider_id = $1 AND tenant_id = $2 AND deleted_at IS NULL
+     ORDER BY started_at DESC
+     LIMIT $3 OFFSET $4`,
+    [providerId, tenantId, limit, offset]
+  );
 
-    return c.json({
-      data: result.rows,
-      total,
-      page,
-      pageSize: limit,
-      hasMore: page * limit < total,
-    });
-  } catch (err) {
-    console.error("[Directory] Get sync logs failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
-  }
+  return c.json({
+    data: result.rows,
+    total,
+    page,
+    pageSize: limit,
+    hasMore: page * limit < total,
+  });
 });
 
 export default directory;

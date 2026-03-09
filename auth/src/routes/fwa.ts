@@ -66,28 +66,23 @@ fwa.post("/fwa/assess", async (c) => {
     return c.json({ error: "claimCode is required" }, 400);
   }
 
-  try {
-    // If chatId exists, resume existing session
-    if (body.chatId && body.text) {
-      const session = agentStore.get(body.chatId);
-      if (session) {
-        session.agent.prompt(body.text).catch(console.error);
-        return createSSEResponse(session.agent);
-      }
+  // If chatId exists, resume existing session
+  if (body.chatId && body.text) {
+    const session = agentStore.get(body.chatId);
+    if (session) {
+      session.agent.prompt(body.text).catch(console.error);
+      return createSSEResponse(session.agent);
     }
-
-    // Start new assessment
-    const response = await handleClaimAssessor({
-      claimCode: body.claimCode,
-      text: body.text,
-    });
-
-    // The response is an SSE Response from createSSEResponse
-    return response;
-  } catch (err) {
-    console.error("[FWA API] Error in assess:", err);
-    return c.json({ error: "Failed to start assessment" }, 500);
   }
+
+  // Start new assessment
+  const response = await handleClaimAssessor({
+    claimCode: body.claimCode,
+    text: body.text,
+  });
+
+  // The response is an SSE Response from createSSEResponse
+  return response;
 });
 
 // ── POST /fwa/assess/approve — Respond to approval request ───────────────
@@ -109,80 +104,70 @@ fwa.post("/fwa/assess/approve", async (c) => {
     return c.json({ error: "Session not found or expired" }, 404);
   }
 
-  try {
-    if (body.approved) {
-      // Find the tool and execute the real implementation
-      const tool = session.tools.find((t) => t.name === body.toolName) as
-        | (AgentTool & { _realExecute?: AgentTool["execute"] })
-        | undefined;
-      if (!tool) {
-        return c.json({ error: `Tool ${body.toolName} not found` }, 404);
-      }
+  if (body.approved) {
+    // Find the tool and execute the real implementation
+    const tool = session.tools.find((t) => t.name === body.toolName) as
+      | (AgentTool & { _realExecute?: AgentTool["execute"] })
+      | undefined;
+    if (!tool) {
+      return c.json({ error: `Tool ${body.toolName} not found` }, 404);
+    }
 
-      // Get the original params from the agent's message history
-      const messages = session.agent.state.messages;
-      let params: unknown = {};
-      for (const msg of messages) {
-        if ("role" in msg && msg.role === "assistant" && Array.isArray(msg.content)) {
-          for (const part of msg.content) {
-            if (
-              (part as any).type === "toolCall" &&
-              (part as any).id === body.toolCallId
-            ) {
-              params = (part as any).args;
-            }
+    // Get the original params from the agent's message history
+    const messages = session.agent.state.messages;
+    let params: unknown = {};
+    for (const msg of messages) {
+      if ("role" in msg && msg.role === "assistant" && Array.isArray(msg.content)) {
+        for (const part of msg.content) {
+          if (
+            (part as any).type === "toolCall" &&
+            (part as any).id === body.toolCallId
+          ) {
+            params = (part as any).args;
           }
         }
       }
-
-      const result = await executeApprovedTool(tool, body.toolCallId, params);
-
-      // Feed the result back to the agent to continue
-      session.agent.prompt(
-        `Tool ${body.toolName} was approved and executed. Result: ${JSON.stringify(result.content)}`,
-      ).catch(console.error);
-
-      return createSSEResponse(session.agent);
-    } else {
-      // Denied — tell the agent
-      session.agent.prompt(
-        `Tool ${body.toolName} (${body.toolCallId}) was DENIED by the user. Adjust your approach accordingly.`,
-      ).catch(console.error);
-
-      return createSSEResponse(session.agent);
     }
-  } catch (err) {
-    console.error("[FWA API] Error in approve:", err);
-    return c.json({ error: "Failed to process approval" }, 500);
+
+    const result = await executeApprovedTool(tool, body.toolCallId, params);
+
+    // Feed the result back to the agent to continue
+    session.agent.prompt(
+      `Tool ${body.toolName} was approved and executed. Result: ${JSON.stringify(result.content)}`,
+    ).catch(console.error);
+
+    return createSSEResponse(session.agent);
+  } else {
+    // Denied — tell the agent
+    session.agent.prompt(
+      `Tool ${body.toolName} (${body.toolCallId}) was DENIED by the user. Adjust your approach accordingly.`,
+    ).catch(console.error);
+
+    return createSSEResponse(session.agent);
   }
 });
 
 // ── GET /fwa/pending — List pending approval assessments ─────────────────
 
 fwa.get("/fwa/pending", async (c) => {
-  try {
-    const pending: Array<{
-      chatId: string;
-      claimCode: string;
-      createdAt: number;
-    }> = [];
+  const pending: Array<{
+    chatId: string;
+    claimCode: string;
+    createdAt: number;
+  }> = [];
 
-    for (const [chatId, session] of agentStore) {
-      pending.push({
-        chatId,
-        claimCode: session.claimCode,
-        createdAt: session.createdAt,
-      });
-    }
-
-    // Sort newest first
-    pending.sort((a, b) => b.createdAt - a.createdAt);
-
-    return c.json({ data: pending });
-  } catch (err) {
-    console.error("[FWA] List pending sessions failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  for (const [chatId, session] of agentStore) {
+    pending.push({
+      chatId,
+      claimCode: session.claimCode,
+      createdAt: session.createdAt,
+    });
   }
+
+  // Sort newest first
+  pending.sort((a, b) => b.createdAt - a.createdAt);
+
+  return c.json({ data: pending });
 });
 
 // ── POST /fwa/compliance — Start compliance check (SSE stream) ───────────
@@ -194,13 +179,8 @@ fwa.post("/fwa/compliance", async (c) => {
     return c.json({ error: "claimCode is required" }, 400);
   }
 
-  try {
-    const response = await handleComplianceCheck({ claimCode: body.claimCode });
-    return response;
-  } catch (err) {
-    console.error("[FWA API] Error in compliance check:", err);
-    return c.json({ error: "Failed to start compliance check" }, 500);
-  }
+  const response = await handleComplianceCheck({ claimCode: body.claimCode });
+  return response;
 });
 
 // ── GET /fwa/compliance — Quick non-streaming compliance check ───────────
@@ -212,47 +192,42 @@ fwa.get("/fwa/compliance", async (c) => {
     return c.json({ error: "claimCode query parameter is required" }, 400);
   }
 
-  try {
-    // Start compliance check and collect the full result
-    const response = await handleComplianceCheck({ claimCode });
+  // Start compliance check and collect the full result
+  const response = await handleComplianceCheck({ claimCode });
 
-    // Read the SSE stream and extract the final text
-    const reader = response.body?.getReader();
-    if (!reader) {
-      return c.json({ error: "No response body" }, 500);
-    }
+  // Read the SSE stream and extract the final text
+  const reader = response.body?.getReader();
+  if (!reader) {
+    return c.json({ error: "No response body" }, 500);
+  }
 
-    const decoder = new TextDecoder();
-    let fullText = "";
+  const decoder = new TextDecoder();
+  let fullText = "";
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
 
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split("\n");
+    const chunk = decoder.decode(value, { stream: true });
+    const lines = chunk.split("\n");
 
-      for (const line of lines) {
-        if (line.startsWith("data: ") && line !== "data: [DONE]") {
-          try {
-            const event = JSON.parse(line.slice(6));
-            if (event.type === "text_delta") {
-              fullText += event.delta;
-            } else if (event.type === "message_end") {
-              fullText = event.text;
-            }
-          } catch {
-            // Skip malformed events
+    for (const line of lines) {
+      if (line.startsWith("data: ") && line !== "data: [DONE]") {
+        try {
+          const event = JSON.parse(line.slice(6));
+          if (event.type === "text_delta") {
+            fullText += event.delta;
+          } else if (event.type === "message_end") {
+            fullText = event.text;
           }
+        } catch {
+          // Skip malformed events
         }
       }
     }
-
-    return c.json({ claimCode, result: fullText });
-  } catch (err) {
-    console.error("[FWA API] Error in quick compliance check:", err);
-    return c.json({ error: "Failed to run compliance check" }, 500);
   }
+
+  return c.json({ claimCode, result: fullText });
 });
 
 // ── POST /fwa/scourge — Start scourge job (SSE stream of progress) ───────
@@ -353,48 +328,38 @@ fwa.post("/fwa/scourge", async (c) => {
 // ── GET /fwa/scourge — List scourge jobs ─────────────────────────────────
 
 fwa.get("/fwa/scourge", async (c) => {
-  try {
-    const jobs = Array.from(scourgeStore.values()).map((job) => ({
-      id: job.id,
-      claimCode: job.claimCode,
-      status: job.status,
-      createdAt: job.createdAt,
-      documentCount: job.result?.documents.length ?? 0,
-    }));
+  const jobs = Array.from(scourgeStore.values()).map((job) => ({
+    id: job.id,
+    claimCode: job.claimCode,
+    status: job.status,
+    createdAt: job.createdAt,
+    documentCount: job.result?.documents.length ?? 0,
+  }));
 
-    // Sort newest first
-    jobs.sort((a, b) => b.createdAt - a.createdAt);
+  // Sort newest first
+  jobs.sort((a, b) => b.createdAt - a.createdAt);
 
-    return c.json({ data: jobs });
-  } catch (err) {
-    console.error("[FWA] List scourge jobs failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
-  }
+  return c.json({ data: jobs });
 });
 
 // ── GET /fwa/scourge/:id — Get scourge job detail ────────────────────────
 
 fwa.get("/fwa/scourge/:id", async (c) => {
-  try {
-    const id = c.req.param("id");
-    const job = scourgeStore.get(id);
+  const id = c.req.param("id");
+  const job = scourgeStore.get(id);
 
-    if (!job) {
-      return c.json({ error: "Job not found" }, 404);
-    }
-
-    return c.json({
-      id: job.id,
-      claimCode: job.claimCode,
-      status: job.status,
-      createdAt: job.createdAt,
-      documentCount: job.result?.documents.length ?? 0,
-      result: job.result ?? null,
-    });
-  } catch (err) {
-    console.error("[FWA] Get scourge job detail failed:", (err as Error).message);
-    return c.json({ error: "Service temporarily unavailable" }, 503);
+  if (!job) {
+    return c.json({ error: "Job not found" }, 404);
   }
+
+  return c.json({
+    id: job.id,
+    claimCode: job.claimCode,
+    status: job.status,
+    createdAt: job.createdAt,
+    documentCount: job.result?.documents.length ?? 0,
+    result: job.result ?? null,
+  });
 });
 
 export default fwa;
