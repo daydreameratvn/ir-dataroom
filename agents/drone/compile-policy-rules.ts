@@ -839,6 +839,13 @@ async function processPolicy(
 
 // ============================================================================
 // Main: Process all policy folders under an insurer
+//
+// Handles two Drive structures:
+//   Flat:   Insurer / Company / PolicyFolder / PDFs
+//   Nested: Insurer / SubInsurer / Company / PolicyFolder / PDFs
+//
+// Detection: try scanPolicyFolders on each subfolder. If no policy folders
+// found, treat it as a sub-insurer and go one level deeper.
 // ============================================================================
 
 async function processInsurer(
@@ -850,60 +857,101 @@ async function processInsurer(
   console.log(`Insurer: ${insurerName}`);
   console.log("=".repeat(60));
 
-  const companyFolders = await listCompanyFolders(insurerName);
-  console.log(`Found ${companyFolders.length} company folders`);
+  const topFolders = await listCompanyFolders(insurerName);
+  console.log(`Found ${topFolders.length} subfolders under insurer`);
 
-  // Separate shared T&C folders (match insurer name) from actual company folders
-  const sharedTcFolders = companyFolders.filter(f => isSharedTcFolder(f.companyName, insurerName));
-  const actualCompanies = companyFolders.filter(f => !isSharedTcFolder(f.companyName, insurerName));
+  // Separate shared T&C folders (match insurer name) from the rest
+  const sharedTcFolders = topFolders.filter(f => isSharedTcFolder(f.companyName, insurerName));
+  const otherFolders = topFolders.filter(f => !isSharedTcFolder(f.companyName, insurerName));
 
   if (sharedTcFolders.length > 0) {
     console.log(`Shared T&C folders: ${sharedTcFolders.map(f => f.companyName).join(", ")}`);
   }
-  console.log(`Companies to process: ${actualCompanies.length}`);
 
-  let targetCompanies = actualCompanies;
-  if (options.companyFilter) {
-    targetCompanies = actualCompanies.filter(f =>
-      fuzzyMatch(f.companyName, options.companyFilter!),
-    );
-    if (targetCompanies.length === 0) {
-      console.error(`Company "${options.companyFilter}" not found. Available:`);
-      for (const c of actualCompanies) {
-        console.log(`  • ${c.companyName}`);
-      }
-      return [];
-    }
-    console.log(`Filtered to: ${targetCompanies.map(f => f.companyName).join(", ")}`);
-  }
-
-  // Collect shared T&C PDFs once (reused for all companies/policies)
+  // Collect insurer-level shared T&C PDFs once
   const sharedPdfs = await collectSharedPdfs(sharedTcFolders);
   if (sharedPdfs.length > 0) {
     console.log(`Shared T&C: ${sharedPdfs.length} PDFs`);
   }
 
+  // Resolve company folders — handling both flat and nested structures
+  // A "company folder" is one that contains policy subfolders (with PDFs).
+  // If a folder has no policy subfolders, it might be a sub-insurer containing companies.
+  const companyEntries: Array<{ company: CompanyFolder; extraSharedPdfs: PolicyFile[] }> = [];
+
+  for (const folder of otherFolders) {
+    const policyFolders = await scanPolicyFolders(insurerName, folder, []);
+    if (policyFolders.length > 0) {
+      // Direct company folder — has policy subfolders
+      companyEntries.push({ company: folder, extraSharedPdfs: [] });
+    } else {
+      // No policy folders — this is likely a sub-insurer level
+      // Go one level deeper to find actual company folders
+      console.log(`  📁 "${folder.companyName}" has no policy folders — scanning as sub-insurer...`);
+      const subFolders = await listSubfolders(folder.folderId);
+
+      // Sub-insurer may have its own shared T&C
+      const subSharedTcFolders = subFolders.filter(f => isSharedTcFolder(f.name, folder.companyName));
+      const subCompanyFolders = subFolders.filter(f => !isSharedTcFolder(f.name, folder.companyName));
+
+      const subSharedPdfs = await collectSharedPdfs(
+        subSharedTcFolders.map(f => ({ companyName: f.name, folderId: f.folderId })),
+      );
+      if (subSharedPdfs.length > 0) {
+        console.log(`    Sub-insurer shared T&C: ${subSharedPdfs.length} PDFs`);
+      }
+
+      for (const subFolder of subCompanyFolders) {
+        companyEntries.push({
+          company: { companyName: subFolder.name, folderId: subFolder.folderId },
+          extraSharedPdfs: subSharedPdfs,
+        });
+      }
+      console.log(`    Found ${subCompanyFolders.length} companies under sub-insurer "${folder.companyName}"`);
+    }
+  }
+
+  console.log(`Total companies to process: ${companyEntries.length}`);
+
+  // Apply company filter
+  let targetEntries = companyEntries;
+  if (options.companyFilter) {
+    targetEntries = companyEntries.filter(e =>
+      fuzzyMatch(e.company.companyName, options.companyFilter!),
+    );
+    if (targetEntries.length === 0) {
+      console.error(`Company "${options.companyFilter}" not found. Available:`);
+      for (const e of companyEntries) {
+        console.log(`  • ${e.company.companyName}`);
+      }
+      return [];
+    }
+    console.log(`Filtered to: ${targetEntries.map(e => e.company.companyName).join(", ")}`);
+  }
+
   const results: Array<{ company: string; policyNumber: string; ruleSetId: string | null; ruleCount: number }> = [];
-  for (const company of targetCompanies) {
-    // Scan for policy folders under this company
+  for (const entry of targetEntries) {
+    // Combine insurer-level shared PDFs + sub-insurer-level shared PDFs
+    const allSharedPdfs = [...sharedPdfs, ...entry.extraSharedPdfs];
+
     let policyFolders: PolicyFolderFiles[];
     try {
-      policyFolders = await scanPolicyFolders(insurerName, company, sharedPdfs);
+      policyFolders = await scanPolicyFolders(insurerName, entry.company, allSharedPdfs);
     } catch (err) {
-      console.error(`  ❌ Failed to scan Drive for "${company.companyName}": ${err}`);
+      console.error(`  ❌ Failed to scan Drive for "${entry.company.companyName}": ${err}`);
       continue;
     }
 
     if (policyFolders.length === 0) {
-      console.log(`  ⏭️ No policy folders with PDFs found for "${company.companyName}"`);
+      console.log(`  ⏭️ No policy folders with PDFs found for "${entry.company.companyName}"`);
       continue;
     }
 
-    console.log(`  Found ${policyFolders.length} policy folder(s) under "${company.companyName}"`);
+    console.log(`  Found ${policyFolders.length} policy folder(s) under "${entry.company.companyName}"`);
 
     for (const policyFiles of policyFolders) {
       const result = await processPolicy(policyFiles, gemini, options);
-      results.push({ company: company.companyName, policyNumber: policyFiles.policyNumber, ...result });
+      results.push({ company: entry.company.companyName, policyNumber: policyFiles.policyNumber, ...result });
     }
   }
 
