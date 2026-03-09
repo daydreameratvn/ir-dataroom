@@ -50,7 +50,7 @@ export function PhoenixProvider({
     const c = new PhoenixClient(config);
     if (tenantId) c.setTenantId(tenantId);
     return c;
-  }, [config.baseUrl, tenantId]);
+  }, [config.baseUrl, config.graphqlUrl, tenantId]);
 
   const eventsRef = useRef(new PhoenixEventEmitter());
   const events = eventsRef.current;

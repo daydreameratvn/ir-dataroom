@@ -1,5 +1,8 @@
 export interface PhoenixConfig {
+  /** Auth service base URL for login, OTP, and token refresh. */
   baseUrl: string;
+  /** Hasura GraphQL endpoint for data queries/mutations. Defaults to `https://banyan.services.papaya.asia/graphql`. */
+  graphqlUrl?: string;
   timeout?: number;
 }
 

@@ -23,15 +23,28 @@ function errorResponse(status: number, statusText = 'Error') {
   });
 }
 
+/** Helper: build a successful GraphQL JSON response. */
+function gqlResponse(data: unknown) {
+  return jsonResponse({ data });
+}
+
+/** Helper: build a GraphQL response with errors. */
+function gqlErrorResponse(message: string) {
+  return jsonResponse({ errors: [{ message }] });
+}
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
+
+const BASE_URL = 'https://phoenix.papaya.asia';
+const GQL_URL = 'https://banyan.services.papaya.asia/graphql';
 
 describe('PhoenixClient', () => {
   let client: PhoenixClient;
 
   beforeEach(() => {
-    client = new PhoenixClient({ baseUrl: 'https://phoenix.papaya.asia' });
+    client = new PhoenixClient({ baseUrl: BASE_URL, graphqlUrl: GQL_URL });
     mockFetch.mockReset();
   });
 
@@ -54,9 +67,30 @@ describe('PhoenixClient', () => {
       );
     });
 
+    it('strips trailing slash from graphqlUrl', () => {
+      const c = new PhoenixClient({ baseUrl: BASE_URL, graphqlUrl: 'https://gql.example.com/' });
+      c.setToken('tok');
+      mockFetch.mockResolvedValueOnce(gqlResponse({ claims: [] }));
+      c.listClaims();
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://gql.example.com',
+        expect.any(Object),
+      );
+    });
+
+    it('uses default graphqlUrl when not provided', () => {
+      const c = new PhoenixClient({ baseUrl: BASE_URL });
+      c.setToken('tok');
+      mockFetch.mockResolvedValueOnce(gqlResponse({ claims: [] }));
+      c.listClaims();
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://banyan.services.papaya.asia/graphql',
+        expect.any(Object),
+      );
+    });
+
     it('uses default timeout of 30 seconds', () => {
       const c = new PhoenixClient({ baseUrl: 'https://example.com' });
-      // Access private property via type assertion to test default
       expect((c as any).timeout).toBe(30_000);
     });
 
@@ -81,7 +115,7 @@ describe('PhoenixClient', () => {
 
     it('sends Authorization header when token is set', async () => {
       client.setToken('my-jwt');
-      mockFetch.mockResolvedValueOnce(jsonResponse({ data: [] }));
+      mockFetch.mockResolvedValueOnce(gqlResponse({ claims: [] }));
       await client.listClaims();
 
       const [, init] = mockFetch.mock.calls[0]!;
@@ -159,27 +193,48 @@ describe('PhoenixClient', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // listClaims
+  // listClaims (GraphQL)
   // ═══════════════════════════════════════════════════════════════════════════
 
   describe('listClaims', () => {
-    it('gets /auth/phoenix/claims and unwraps data', async () => {
-      const claims = [
-        { id: 'c1', claimNumber: 'CLM-001', status: 'submitted', claimantName: 'Test', providerName: null, amountClaimed: 1000, amountApproved: null, amountPaid: null, currency: 'VND', dateOfLoss: null, dateOfService: null, createdAt: '2026-01-01' },
-      ];
+    it('sends GraphQL query to graphqlUrl', async () => {
       client.setToken('tok');
-      mockFetch.mockResolvedValueOnce(jsonResponse({ data: claims }));
+      mockFetch.mockResolvedValueOnce(gqlResponse({ claims: [] }));
+
+      await client.listClaims();
+
+      const [url, init] = mockFetch.mock.calls[0]!;
+      expect(url).toBe(GQL_URL);
+      expect(init.method).toBe('POST');
+      const body = JSON.parse(init.body);
+      expect(body.query).toContain('ListClaims');
+      expect(body.variables.where).toEqual({ deletedAt: { _is_null: true } });
+    });
+
+    it('maps Hasura Bigdecimal strings to numbers', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(gqlResponse({
+        claims: [{
+          id: 'c1', claimNumber: 'CLM-001', status: 'submitted', policyId: 'p1',
+          claimantName: 'Test', providerName: null,
+          amountClaimed: '1000000', amountApproved: '500000', amountPaid: null,
+          currency: 'VND', dateOfLoss: null, dateOfService: null,
+          aiSummary: null, aiRecommendation: null,
+          createdAt: '2026-01-01', updatedAt: '2026-01-01',
+        }],
+      }));
 
       const result = await client.listClaims();
 
-      const [url] = mockFetch.mock.calls[0]!;
-      expect(url).toBe('https://phoenix.papaya.asia/auth/phoenix/claims');
-      expect(result).toEqual(claims);
+      expect(result).toHaveLength(1);
+      expect(result[0]!.amountClaimed).toBe(1000000);
+      expect(result[0]!.amountApproved).toBe(500000);
+      expect(result[0]!.amountPaid).toBeNull();
     });
 
     it('returns empty array when no claims', async () => {
       client.setToken('tok');
-      mockFetch.mockResolvedValueOnce(jsonResponse({ data: [] }));
+      mockFetch.mockResolvedValueOnce(gqlResponse({ claims: [] }));
 
       const result = await client.listClaims();
       expect(result).toEqual([]);
@@ -187,46 +242,136 @@ describe('PhoenixClient', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // getClaim
+  // getClaim (GraphQL)
   // ═══════════════════════════════════════════════════════════════════════════
 
   describe('getClaim', () => {
-    it('gets /auth/phoenix/claims/:id', async () => {
-      const detail = { id: 'c1', claimNumber: 'CLM-001', status: 'submitted', documents: [], notes: [], aiSummary: null, aiRecommendation: null };
+    it('sends GraphQL query with claim ID', async () => {
       client.setToken('tok');
-      mockFetch.mockResolvedValueOnce(jsonResponse(detail));
+      mockFetch.mockResolvedValueOnce(gqlResponse({
+        claimsById: {
+          id: 'c1', claimNumber: 'CLM-001', status: 'submitted', policyId: 'p1',
+          claimantName: 'Test', providerName: null,
+          amountClaimed: '1000', amountApproved: null, amountPaid: null,
+          currency: 'VND', dateOfLoss: null, dateOfService: null,
+          aiSummary: 'AI summary', aiRecommendation: 'Approve',
+          createdAt: '2026-01-01', updatedAt: '2026-01-01',
+          claimDocuments: [], claimNotes: [],
+        },
+      }));
 
       const result = await client.getClaim('c1');
 
-      const [url] = mockFetch.mock.calls[0]!;
-      expect(url).toBe('https://phoenix.papaya.asia/auth/phoenix/claims/c1');
-      expect(result).toEqual(detail);
+      const [url, init] = mockFetch.mock.calls[0]!;
+      expect(url).toBe(GQL_URL);
+      const body = JSON.parse(init.body);
+      expect(body.query).toContain('GetClaimDetail');
+      expect(body.variables).toEqual({ id: 'c1' });
+      expect(result.id).toBe('c1');
+      expect(result.documents).toEqual([]);
+      expect(result.notes).toEqual([]);
+      expect(result.aiSummary).toBe('AI summary');
+      expect(result.aiRecommendation).toBe('Approve');
+    });
+
+    it('throws when claim not found', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(gqlResponse({ claimsById: null }));
+
+      await expect(client.getClaim('nonexistent')).rejects.toThrow('Claim nonexistent not found');
+    });
+
+    it('maps nested documents and notes', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(gqlResponse({
+        claimsById: {
+          id: 'c1', claimNumber: 'CLM-001', status: 'submitted', policyId: 'p1',
+          claimantName: 'Test', providerName: 'Hospital A',
+          amountClaimed: '5000', amountApproved: '4000', amountPaid: '4000',
+          currency: 'VND', dateOfLoss: '2026-01-01', dateOfService: '2026-01-02',
+          aiSummary: null, aiRecommendation: null,
+          createdAt: '2026-01-01', updatedAt: '2026-01-02',
+          claimDocuments: [{
+            id: 'doc1', claimId: 'c1', fileName: 'receipt.pdf',
+            fileType: 'application/pdf', fileUrl: 'https://s3.example.com/doc1',
+            fileSizeBytes: '102400', documentType: 'receipt', createdAt: '2026-01-01',
+          }],
+          claimNotes: [{
+            id: 'note1', claimId: 'c1', agentName: 'Agent A',
+            content: 'Looks good', noteType: 'review', createdAt: '2026-01-01',
+          }],
+        },
+      }));
+
+      const result = await client.getClaim('c1');
+
+      expect(result.documents).toHaveLength(1);
+      expect(result.documents[0]!.fileName).toBe('receipt.pdf');
+      expect(result.documents[0]!.fileSizeBytes).toBe(102400);
+      expect(result.notes).toHaveLength(1);
+      expect(result.notes[0]!.content).toBe('Looks good');
     });
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // submitClaim
+  // submitClaim (GraphQL)
   // ═══════════════════════════════════════════════════════════════════════════
 
   describe('submitClaim', () => {
-    it('posts to /auth/phoenix/claims', async () => {
-      const newClaim = { id: 'c2', claimNumber: 'CLM-002', status: 'submitted' };
+    it('sends GraphQL mutation with claim data', async () => {
       client.setToken('tok');
-      mockFetch.mockResolvedValueOnce(jsonResponse(newClaim));
+      mockFetch.mockResolvedValueOnce(gqlResponse({
+        insertClaims: {
+          returning: [{
+            id: 'c2', claimNumber: 'CLM-123', status: 'submitted', policyId: 'p1',
+            claimantName: 'Test', providerName: 'Hospital',
+            amountClaimed: '5000', amountApproved: null, amountPaid: null,
+            currency: 'VND', dateOfLoss: null, dateOfService: null,
+            aiSummary: null, aiRecommendation: null,
+            createdAt: '2026-01-01', updatedAt: '2026-01-01',
+          }],
+        },
+      }));
 
-      const input = { claimantName: 'Test', amountClaimed: 5000, currency: 'VND' };
+      const input = { claimantName: 'Test', amountClaimed: 5000, currency: 'VND', providerName: 'Hospital' };
       const result = await client.submitClaim(input);
 
       const [url, init] = mockFetch.mock.calls[0]!;
-      expect(url).toBe('https://phoenix.papaya.asia/auth/phoenix/claims');
+      expect(url).toBe(GQL_URL);
       expect(init.method).toBe('POST');
-      expect(JSON.parse(init.body)).toEqual(input);
-      expect(result).toEqual(newClaim);
+      const body = JSON.parse(init.body);
+      expect(body.query).toContain('CreateClaim');
+      expect(body.variables.objects[0].claimantName).toBe('Test');
+      expect(body.variables.objects[0].amountClaimed).toBe(5000);
+      expect(body.variables.objects[0].status).toBe('submitted');
+      expect(result.id).toBe('c2');
+      expect(result.amountClaimed).toBe(5000);
+    });
+
+    it('generates a claim number starting with CLM-', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(gqlResponse({
+        insertClaims: {
+          returning: [{
+            id: 'c2', claimNumber: 'CLM-123', status: 'submitted', policyId: 'p1',
+            claimantName: 'Test', providerName: null,
+            amountClaimed: '1000', amountApproved: null, amountPaid: null,
+            currency: 'VND', dateOfLoss: null, dateOfService: null,
+            aiSummary: null, aiRecommendation: null,
+            createdAt: '2026-01-01', updatedAt: '2026-01-01',
+          }],
+        },
+      }));
+
+      await client.submitClaim({ claimantName: 'Test', amountClaimed: 1000 });
+
+      const body = JSON.parse(mockFetch.mock.calls[0]![1].body);
+      expect(body.variables.objects[0].claimNumber).toMatch(/^CLM-/);
     });
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // uploadDocument
+  // uploadDocument (REST)
   // ═══════════════════════════════════════════════════════════════════════════
 
   describe('uploadDocument', () => {
@@ -245,28 +390,35 @@ describe('PhoenixClient', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // getClaimDocuments
+  // getClaimDocuments (GraphQL)
   // ═══════════════════════════════════════════════════════════════════════════
 
   describe('getClaimDocuments', () => {
-    it('gets /auth/phoenix/claims/:id/documents and unwraps data', async () => {
-      const documents = [
-        { id: 'doc1', fileName: 'receipt.pdf', fileType: 'application/pdf', uploadedAt: '2026-01-01', downloadUrl: 'https://s3.example.com/doc1' },
-        { id: 'doc2', fileName: 'photo.jpg', fileType: 'image/jpeg', uploadedAt: '2026-01-02', downloadUrl: 'https://s3.example.com/doc2' },
-      ];
+    it('sends GraphQL query filtering by claimId', async () => {
       client.setToken('tok');
-      mockFetch.mockResolvedValueOnce(jsonResponse({ data: documents }));
+      mockFetch.mockResolvedValueOnce(gqlResponse({
+        claimDocuments: [{
+          id: 'doc1', claimId: 'c1', fileName: 'receipt.pdf',
+          fileType: 'application/pdf', fileUrl: 'https://s3.example.com/doc1',
+          fileSizeBytes: '204800', documentType: 'receipt', createdAt: '2026-01-01',
+        }],
+      }));
 
       const result = await client.getClaimDocuments('c1');
 
-      const [url] = mockFetch.mock.calls[0]!;
-      expect(url).toBe('https://phoenix.papaya.asia/auth/phoenix/claims/c1/documents');
-      expect(result).toEqual(documents);
+      const [url, init] = mockFetch.mock.calls[0]!;
+      expect(url).toBe(GQL_URL);
+      const body = JSON.parse(init.body);
+      expect(body.query).toContain('GetClaimDocuments');
+      expect(body.variables.where.claimId).toEqual({ _eq: 'c1' });
+      expect(result).toHaveLength(1);
+      expect(result[0]!.fileName).toBe('receipt.pdf');
+      expect(result[0]!.fileSizeBytes).toBe(204800);
     });
 
     it('returns empty array when no documents', async () => {
       client.setToken('tok');
-      mockFetch.mockResolvedValueOnce(jsonResponse({ data: [] }));
+      mockFetch.mockResolvedValueOnce(gqlResponse({ claimDocuments: [] }));
 
       const result = await client.getClaimDocuments('c1');
       expect(result).toEqual([]);
@@ -274,28 +426,25 @@ describe('PhoenixClient', () => {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // deleteDocument
+  // deleteDocument (GraphQL)
   // ═══════════════════════════════════════════════════════════════════════════
 
   describe('deleteDocument', () => {
-    it('deletes /auth/phoenix/claims/:id/documents/:docId', async () => {
+    it('sends soft-delete mutation setting deletedAt', async () => {
       client.setToken('tok');
-      mockFetch.mockResolvedValueOnce(jsonResponse({ success: true }));
+      mockFetch.mockResolvedValueOnce(gqlResponse({
+        updateClaimDocumentsById: { returning: [{ id: 'doc1' }] },
+      }));
 
       const result = await client.deleteDocument('c1', 'doc1');
 
       const [url, init] = mockFetch.mock.calls[0]!;
-      expect(url).toBe('https://phoenix.papaya.asia/auth/phoenix/claims/c1/documents/doc1');
-      expect(init.method).toBe('DELETE');
+      expect(url).toBe(GQL_URL);
+      const body = JSON.parse(init.body);
+      expect(body.query).toContain('SoftDeleteDocument');
+      expect(body.variables.keyId).toBe('doc1');
+      expect(body.variables.updateColumns.deletedAt).toBeDefined();
       expect(result.success).toBe(true);
-    });
-
-    it('handles delete failure response', async () => {
-      client.setToken('tok');
-      mockFetch.mockResolvedValueOnce(jsonResponse({ success: false }));
-
-      const result = await client.deleteDocument('c1', 'doc1');
-      expect(result.success).toBe(false);
     });
   });
 
@@ -346,28 +495,35 @@ describe('PhoenixClient', () => {
       client.setToken('tok');
       mockFetch.mockResolvedValueOnce(errorResponse(500, 'Internal Server Error'));
 
-      await expect(client.listClaims()).rejects.toThrow('Phoenix API error: 500');
+      await expect(client.refreshToken()).rejects.toThrow('Phoenix API error: 500');
     });
 
-    it('throws on 404 response with custom message', async () => {
+    it('throws on non-OK GraphQL HTTP response', async () => {
       client.setToken('tok');
-      mockFetch.mockResolvedValueOnce(errorResponse(404, 'Not Found'));
+      mockFetch.mockResolvedValueOnce(errorResponse(500, 'Internal Server Error'));
 
-      await expect(client.getClaim('nonexistent')).rejects.toThrow('Phoenix API error: 404 Not Found');
+      await expect(client.listClaims()).rejects.toThrow('Phoenix GraphQL error: 500');
     });
 
-    it('throws on 403 response', async () => {
+    it('throws on GraphQL errors in response body', async () => {
       client.setToken('tok');
-      mockFetch.mockResolvedValueOnce(errorResponse(403, 'Forbidden'));
+      mockFetch.mockResolvedValueOnce(gqlErrorResponse('permission denied'));
 
-      await expect(client.listClaims()).rejects.toThrow('Phoenix API error: 403 Forbidden');
+      await expect(client.listClaims()).rejects.toThrow('Phoenix GraphQL error: permission denied');
+    });
+
+    it('throws on 404 claim not found', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(gqlResponse({ claimsById: null }));
+
+      await expect(client.getClaim('nonexistent')).rejects.toThrow('Claim nonexistent not found');
     });
 
     it('throws on 422 validation error', async () => {
       client.setToken('tok');
       mockFetch.mockResolvedValueOnce(errorResponse(422, 'Unprocessable Entity'));
 
-      await expect(client.submitClaim({ claimantName: '', amountClaimed: -1, currency: 'USD' })).rejects.toThrow('Phoenix API error: 422 Unprocessable Entity');
+      await expect(client.login(['X'])).rejects.toThrow('Phoenix API error: 422 Unprocessable Entity');
     });
 
     it('throws on network error', async () => {
@@ -439,19 +595,6 @@ describe('PhoenixClient', () => {
       expect(results).toEqual([]);
     });
 
-    it('handles very long claim ID in getClaim', async () => {
-      const longId = 'c'.repeat(100);
-      const detail = { id: longId, claimNumber: 'CLM-001', status: 'submitted', documents: [], notes: [], aiSummary: null, aiRecommendation: null };
-      client.setToken('tok');
-      mockFetch.mockResolvedValueOnce(jsonResponse(detail));
-
-      const result = await client.getClaim(longId);
-
-      const [url] = mockFetch.mock.calls[0]!;
-      expect(url).toBe(`https://phoenix.papaya.asia/auth/phoenix/claims/${longId}`);
-      expect(result).toEqual(detail);
-    });
-
     it('handles special characters in OTP code', async () => {
       client.setToken('tok');
       mockFetch.mockResolvedValueOnce(jsonResponse({ success: true, verified: true }));
@@ -466,9 +609,9 @@ describe('PhoenixClient', () => {
     it('sends both Authorization and x-tenant-id headers when both are set', async () => {
       client.setToken('my-jwt');
       client.setTenantId('tenant-123');
-      mockFetch.mockResolvedValueOnce(jsonResponse({ data: [] }));
+      mockFetch.mockResolvedValueOnce(jsonResponse({ results: [] }));
 
-      await client.listClaims();
+      await client.login(['X']);
 
       const [, init] = mockFetch.mock.calls[0]!;
       expect(init.headers['Authorization']).toBe('Bearer my-jwt');
@@ -478,7 +621,7 @@ describe('PhoenixClient', () => {
     it('overwrites token when setToken is called multiple times', async () => {
       client.setToken('first-token');
       client.setToken('second-token');
-      mockFetch.mockResolvedValueOnce(jsonResponse({ data: [] }));
+      mockFetch.mockResolvedValueOnce(gqlResponse({ claims: [] }));
 
       await client.listClaims();
 
@@ -520,6 +663,38 @@ describe('PhoenixClient', () => {
       expect(JSON.parse(init.body).fileName).toBe('large.pdf');
       expect(result).toEqual(mockResult);
     });
+
+    it('maps null amountClaimed to 0', async () => {
+      client.setToken('tok');
+      mockFetch.mockResolvedValueOnce(gqlResponse({
+        claims: [{
+          id: 'c1', claimNumber: 'CLM-001', status: 'submitted', policyId: 'p1',
+          claimantName: null, providerName: null,
+          amountClaimed: null, amountApproved: null, amountPaid: null,
+          currency: null, dateOfLoss: null, dateOfService: null,
+          aiSummary: null, aiRecommendation: null,
+          createdAt: '2026-01-01', updatedAt: '2026-01-01',
+        }],
+      }));
+
+      const result = await client.listClaims();
+      expect(result[0]!.amountClaimed).toBe(0);
+      expect(result[0]!.claimantName).toBe('');
+      expect(result[0]!.currency).toBe('VND');
+    });
+
+    it('GraphQL calls go to graphqlUrl, REST calls go to baseUrl', async () => {
+      client.setToken('tok');
+      // GraphQL call
+      mockFetch.mockResolvedValueOnce(gqlResponse({ claims: [] }));
+      await client.listClaims();
+      expect(mockFetch.mock.calls[0]![0]).toBe(GQL_URL);
+
+      // REST call
+      mockFetch.mockResolvedValueOnce(jsonResponse({ success: true }));
+      await client.requestOtp('c1');
+      expect(mockFetch.mock.calls[1]![0]).toBe(`${BASE_URL}/auth/phoenix/claims/c1/otp/request`);
+    });
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -531,31 +706,36 @@ describe('PhoenixClient', () => {
       client.setToken('test-token');
     });
 
-    it('uses GET for listClaims', async () => {
-      mockFetch.mockResolvedValueOnce(jsonResponse({ data: [] }));
-
+    it('uses POST for all GraphQL data operations', async () => {
+      // listClaims
+      mockFetch.mockResolvedValueOnce(gqlResponse({ claims: [] }));
       await client.listClaims();
+      expect(mockFetch.mock.calls[0]![1].method).toBe('POST');
 
-      const [, init] = mockFetch.mock.calls[0]!;
-      expect(init.method).toBeUndefined(); // GET is default, so method is not set
-    });
-
-    it('uses GET for getClaim', async () => {
-      mockFetch.mockResolvedValueOnce(jsonResponse({ id: 'c1', status: 'submitted' }));
-
+      // getClaim
+      mockFetch.mockResolvedValueOnce(gqlResponse({
+        claimsById: {
+          id: 'c1', claimNumber: 'CLM-001', status: 'submitted', policyId: 'p1',
+          claimantName: 'Test', providerName: null,
+          amountClaimed: '0', amountApproved: null, amountPaid: null,
+          currency: 'VND', dateOfLoss: null, dateOfService: null,
+          aiSummary: null, aiRecommendation: null,
+          createdAt: '2026-01-01', updatedAt: '2026-01-01',
+          claimDocuments: [], claimNotes: [],
+        },
+      }));
       await client.getClaim('c1');
+      expect(mockFetch.mock.calls[1]![1].method).toBe('POST');
 
-      const [, init] = mockFetch.mock.calls[0]!;
-      expect(init.method).toBeUndefined(); // GET is default
-    });
-
-    it('uses GET for getClaimDocuments', async () => {
-      mockFetch.mockResolvedValueOnce(jsonResponse({ data: [] }));
-
+      // getClaimDocuments
+      mockFetch.mockResolvedValueOnce(gqlResponse({ claimDocuments: [] }));
       await client.getClaimDocuments('c1');
+      expect(mockFetch.mock.calls[2]![1].method).toBe('POST');
 
-      const [, init] = mockFetch.mock.calls[0]!;
-      expect(init.method).toBeUndefined(); // GET is default
+      // deleteDocument
+      mockFetch.mockResolvedValueOnce(gqlResponse({ updateClaimDocumentsById: { returning: [{ id: 'doc1' }] } }));
+      await client.deleteDocument('c1', 'doc1');
+      expect(mockFetch.mock.calls[3]![1].method).toBe('POST');
     });
 
     it('uses POST for login', async () => {
@@ -577,7 +757,18 @@ describe('PhoenixClient', () => {
     });
 
     it('uses POST for submitClaim', async () => {
-      mockFetch.mockResolvedValueOnce(jsonResponse({ id: 'c1' }));
+      mockFetch.mockResolvedValueOnce(gqlResponse({
+        insertClaims: {
+          returning: [{
+            id: 'c1', claimNumber: 'CLM-001', status: 'submitted', policyId: 'p1',
+            claimantName: 'Test', providerName: null,
+            amountClaimed: '1000', amountApproved: null, amountPaid: null,
+            currency: 'USD', dateOfLoss: null, dateOfService: null,
+            aiSummary: null, aiRecommendation: null,
+            createdAt: '2026-01-01', updatedAt: '2026-01-01',
+          }],
+        },
+      }));
 
       await client.submitClaim({ claimantName: 'Test', amountClaimed: 1000, currency: 'USD' });
 
@@ -610,15 +801,6 @@ describe('PhoenixClient', () => {
 
       const [, init] = mockFetch.mock.calls[0]!;
       expect(init.method).toBe('POST');
-    });
-
-    it('uses DELETE for deleteDocument', async () => {
-      mockFetch.mockResolvedValueOnce(jsonResponse({ success: true }));
-
-      await client.deleteDocument('c1', 'doc1');
-
-      const [, init] = mockFetch.mock.calls[0]!;
-      expect(init.method).toBe('DELETE');
     });
   });
 });
