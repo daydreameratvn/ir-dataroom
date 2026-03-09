@@ -1,8 +1,7 @@
 import { SSMClient, GetParameterCommand } from "@aws-sdk/client-ssm";
 import { google, type drive_v3 } from "googleapis";
 import { GoogleAuth } from "google-auth-library";
-// pdf-parse v2 has no default ESM export; use require() for Bun compat
-const { PDFParse } = require("pdf-parse") as typeof import("pdf-parse");
+import * as mupdf from "mupdf";
 
 // ============================================================================
 // Constants
@@ -11,7 +10,8 @@ const { PDFParse } = require("pdf-parse") as typeof import("pdf-parse");
 const DRIVE_POLICY_ROOT_ID = process.env.DRIVE_POLICY_ROOT_ID ?? "1HeLlO86_ZlhtQJCWy9NK_zSk7aOoghuZ";
 const SSM_KEY_PATH = "/banyan/drive/service-account-key";
 const AWS_REGION = "ap-southeast-1";
-const MAX_PDF_TEXT_LENGTH = 100_000;
+const MAX_PDF_PAGES = 20;
+const PDF_RENDER_SCALE = 1.5; // ~150 DPI — readable for LLM vision
 
 // Cache TTLs
 const FOLDER_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -56,8 +56,13 @@ interface CacheEntry<T> {
 // In-memory Cache
 // ============================================================================
 
+export interface DocumentPage {
+  data: string; // base64-encoded PNG
+  mimeType: "image/png";
+}
+
 const folderCache = new Map<string, CacheEntry<drive_v3.Schema$File[]>>();
-const pdfTextCache = new Map<string, CacheEntry<string>>();
+const pdfPagesCache = new Map<string, CacheEntry<DocumentPage[]>>();
 
 function getCached<T>(cache: Map<string, CacheEntry<T>>, key: string): T | null {
   const entry = cache.get(key);
@@ -326,25 +331,39 @@ export async function listPolicyDocuments(params: {
   };
 }
 
-export async function extractPdfText(fileId: string): Promise<string> {
-  // Check cache first
-  const cached = getCached(pdfTextCache, fileId);
+export async function downloadDocumentPages(fileId: string): Promise<DocumentPage[]> {
+  const cached = getCached(pdfPagesCache, fileId);
   if (cached) return cached;
 
   const drive = await getDriveClient();
 
-  // Download PDF content
   const resp = await drive.files.get(
     { fileId, alt: "media" },
     { responseType: "arraybuffer" },
   );
 
   const buffer = Buffer.from(resp.data as ArrayBuffer);
-  const parser = new PDFParse({ data: buffer });
-  await parser.load();
-  const parsed = await parser.getText();
-  const text = parsed.text.slice(0, MAX_PDF_TEXT_LENGTH);
 
-  setCached(pdfTextCache, fileId, text, PDF_CACHE_TTL_MS);
-  return text;
+  // Render PDF pages as PNG images using MuPDF (WASM)
+  const doc = mupdf.Document.openDocument(buffer, "application/pdf");
+  const pageCount = Math.min(doc.countPages(), MAX_PDF_PAGES);
+  const pages: DocumentPage[] = [];
+
+  for (let i = 0; i < pageCount; i++) {
+    const page = doc.loadPage(i);
+    const pixmap = page.toPixmap(
+      mupdf.Matrix.scale(PDF_RENDER_SCALE, PDF_RENDER_SCALE),
+      mupdf.ColorSpace.DeviceRGB,
+      false,
+      true,
+    );
+    const png = pixmap.asPNG();
+    pages.push({
+      data: Buffer.from(png).toString("base64"),
+      mimeType: "image/png",
+    });
+  }
+
+  setCached(pdfPagesCache, fileId, pages, PDF_CACHE_TTL_MS);
+  return pages;
 }

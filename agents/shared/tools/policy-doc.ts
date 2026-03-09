@@ -3,7 +3,7 @@ import { Type } from "@mariozechner/pi-ai";
 import { graphql } from "@papaya/graphql/sdk";
 
 import { getClient } from "../graphql-client.ts";
-import { extractPdfText, listPolicyDocuments } from "../services/google-drive.ts";
+import { downloadDocumentPages, listPolicyDocuments } from "../services/google-drive.ts";
 
 const client = getClient();
 
@@ -121,29 +121,29 @@ export const policyDocFetchTool: AgentTool = {
   name: "policyDocFetch",
   label: "Fetch Policy Document",
   description:
-    "Download a specific PDF document from Drive and extract its text content. " +
-    "Use the file ID from policyDocSearch results. Returns extracted text truncated to 100K characters. " +
-    "Results are cached for 24 hours.",
+    "Download a PDF document from Drive and return its pages as images for visual analysis. " +
+    "Use the file ID from policyDocSearch results. These are scanned documents — read the images " +
+    "to extract terms, conditions, coverage details, exclusions, and other policy information. " +
+    "Returns up to 20 pages. Results are cached for 24 hours.",
   parameters: Type.Object({
     fileId: Type.String({ description: "Google Drive file ID of the document to fetch (from policyDocSearch results)" }),
     fileName: Type.Optional(Type.String({ description: "File name for logging/display purposes" })),
   }),
   execute: async (toolCallId, { fileId, fileName }) => {
     try {
-      const text = await extractPdfText(fileId);
+      const pages = await downloadDocumentPages(fileId);
       return {
-        content: [{ type: "text", text }],
+        content: pages.map((p) => ({ type: "image" as const, data: p.data, mimeType: p.mimeType })),
         details: {
           fileId,
           fileName: fileName ?? null,
-          textLength: text.length,
-          truncated: text.length >= 100_000,
+          pageCount: pages.length,
         },
       };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       return {
-        content: [{ type: "text", text: `ERROR: Failed to extract text from file ${fileId}${fileName ? ` (${fileName})` : ""}: ${message}` }],
+        content: [{ type: "text", text: `ERROR: Failed to fetch document ${fileId}${fileName ? ` (${fileName})` : ""}: ${message}` }],
         details: { error: true, fileId },
         isError: true,
       };

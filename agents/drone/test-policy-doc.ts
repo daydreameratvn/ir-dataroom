@@ -14,7 +14,7 @@
  *   CLAIM_CODE=RE-25-XXXXXX  — run drone on a specific claim (skips Phase 2 auto-fetch)
  *   SKIP_DRONE=1              — only run Phase 1 (Drive tests)
  */
-import { listPolicyDocuments, extractPdfText } from "../shared/services/google-drive.ts";
+import { listPolicyDocuments, downloadDocumentPages } from "../shared/services/google-drive.ts";
 import { createDroneAgent } from "./agent.ts";
 
 // ─── Phase 1: Drive Service Tests ──────────────────────────────────────────
@@ -95,20 +95,24 @@ if (testInsurer) {
   console.log("  ⚠ No insurers found in root folder — skipping");
 }
 
-// Test 3: Extract PDF text
+// Test 3: Download PDF pages as images (for LLM vision extraction)
 if (testFileId) {
-  console.log(`\n[3/3] Extracting text from PDF: "${testFileName}" (${testFileId})...`);
+  console.log(`\n[3/3] Downloading PDF pages: "${testFileName}" (${testFileId})...`);
   try {
-    const text = await extractPdfText(testFileId);
-    console.log(`  ✓ Extracted ${text.length} characters`);
-    // Show first 300 chars
-    const preview = text.slice(0, 300).replace(/\n/g, "\\n");
-    console.log(`  Preview: "${preview}..."`);
+    const pages = await downloadDocumentPages(testFileId);
+    console.log(`  ✓ Rendered ${pages.length} page(s) as PNG images`);
+    for (let i = 0; i < Math.min(pages.length, 3); i++) {
+      const sizeKB = Math.round((pages[i]!.data.length * 3) / 4 / 1024); // base64 → bytes
+      console.log(`    Page ${i + 1}: ~${sizeKB}KB (${pages[i]!.mimeType})`);
+    }
+    if (pages.length > 3) {
+      console.log(`    ... and ${pages.length - 3} more page(s)`);
+    }
   } catch (err) {
-    console.error(`  ✗ PDF extraction failed:`, err instanceof Error ? err.message : String(err));
+    console.error(`  ✗ PDF page download failed:`, err instanceof Error ? err.message : String(err));
   }
 } else {
-  console.log("\n[3/3] Skipping PDF extraction — no PDF files found in test insurer folder");
+  console.log("\n[3/3] Skipping PDF page download — no PDF files found in test insurer folder");
 }
 
 // ─── Phase 2: Drone Agent with Policy Doc Tools ────────────────────────────
