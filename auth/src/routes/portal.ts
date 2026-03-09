@@ -496,6 +496,55 @@ portal.post("/portal/claims/:id/reprocess", async (c) => {
   }
 });
 
+// ── POST /portal/claims/:id/reprocess-fwa ────────────────────────────────
+// Debug endpoint: re-runs only image-forensics + FWA agents (skips extraction/assessment)
+
+portal.post("/portal/claims/:id/reprocess-fwa", async (c) => {
+  const id = c.req.param("id");
+
+  try {
+    const check = await gqlQuery<{ claimsById: { status: string } | null }>(
+      `query CheckClaimStatus($id: Uuid!) { claimsById(id: $id) { status } }`,
+      { id },
+    );
+    if (!check.claimsById) return c.json({ error: "Claim not found" }, 404);
+
+    // Fire-and-forget: run image-forensics + FWA only
+    (async () => {
+      try {
+        // Image forensics (parallel-safe, non-fatal)
+        await updatePipelineStatus(id, "imageForensics", "running");
+        try {
+          await runPortalAgent("image-forensics", id);
+          await updatePipelineStatus(id, "imageForensics", "completed");
+        } catch (err) {
+          console.warn(`[Portal API] Image forensics reprocess failed for ${id}:`, err);
+          await updatePipelineStatus(id, "imageForensics", "error",
+            err instanceof Error ? err.message : String(err));
+        }
+
+        // FWA
+        await updatePipelineStatus(id, "fwa", "running");
+        await runPortalAgent("fwa", id);
+        await updatePipelineStatus(id, "fwa", "completed");
+
+        // Auto-route
+        try { await autoRouteFWAResults(id); }
+        catch (err) { console.warn(`[Portal API] Auto-route failed (non-fatal):`, err); }
+      } catch (err) {
+        console.error(`[Portal API] Reprocess-FWA pipeline failed for claim ${id}:`, err);
+        await updatePipelineStatus(id, "fwa", "error",
+          err instanceof Error ? err.message : String(err));
+      }
+    })();
+
+    return c.json({ success: true });
+  } catch (err) {
+    console.error("[Portal API] Error reprocessing FWA:", err);
+    return c.json({ error: "Failed to reprocess FWA" }, 500);
+  }
+});
+
 // ── POST /portal/claims/:id/approve ───────────────────────────────────────
 
 portal.post("/portal/claims/:id/approve", async (c) => {
