@@ -112,11 +112,16 @@ async function extractImage<T extends Record<string, unknown>>(
   }
 
   // JSON body (base64 or image_path)
-  const body = (await req.json()) as T & { image_base64?: string };
+  const body = (await req.json()) as T & { image_base64?: string; content_type?: string };
   if (!body.image_path && body.image_base64) {
-    const tempFile = writeTempFile(Buffer.from(body.image_base64, "base64"), ".img");
+    const buf = Buffer.from(body.image_base64, "base64");
+    const ext = body.content_type
+      ? extFromMime(body.content_type)
+      : detectImageExt(buf);
+    const tempFile = writeTempFile(buf, ext || ".png");
     (body as Record<string, unknown>).image_path = tempFile;
     delete body.image_base64;
+    delete body.content_type;
     return { opts: body, tempFile };
   }
 
@@ -130,6 +135,17 @@ function extFromMime(mime: string): string {
   if (mime.includes("pdf")) return ".pdf";
   if (mime.includes("tiff")) return ".tiff";
   return "";
+}
+
+/** Detect image format from magic bytes */
+function detectImageExt(buf: Buffer): string {
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return ".png";
+  if (buf[0] === 0xff && buf[1] === 0xd8) return ".jpg";
+  if (buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46) return ".webp";
+  if (buf[0] === 0x25 && buf[1] === 0x50 && buf[2] === 0x44 && buf[3] === 0x46) return ".pdf";
+  if ((buf[0] === 0x49 && buf[1] === 0x49) || (buf[0] === 0x4d && buf[1] === 0x4d)) return ".tiff";
+  if (buf[0] === 0x42 && buf[1] === 0x4d) return ".bmp";
+  return ".png"; // default fallback
 }
 
 function extFromName(name: string): string {
