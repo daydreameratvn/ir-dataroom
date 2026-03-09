@@ -1,7 +1,5 @@
 import { getAccessToken } from '@papaya/auth';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-
 export interface TenantBranding {
   logoUrl?: string;
   faviconUrl?: string;
@@ -10,14 +8,14 @@ export interface TenantBranding {
 
 export async function getTenantBranding(): Promise<TenantBranding> {
   const token = getAccessToken();
-  const res = await fetch(`${API_BASE}/api/tenant/branding`, {
+  const res = await fetch(`/auth/admin/tenant/branding`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
   if (!res.ok) {
-    console.warn(`[branding-api] GET /api/tenant/branding failed: ${res.status} ${res.statusText}`);
+    console.warn(`[branding-api] GET /auth/admin/tenant/branding failed: ${res.status} ${res.statusText}`);
     return {
       logoUrl: '',
       faviconUrl: '',
@@ -32,7 +30,7 @@ export async function updateTenantBranding(
   branding: TenantBranding,
 ): Promise<{ success: boolean }> {
   const token = getAccessToken();
-  const res = await fetch(`${API_BASE}/api/tenant/branding`, {
+  const res = await fetch(`/auth/admin/tenant/branding`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,

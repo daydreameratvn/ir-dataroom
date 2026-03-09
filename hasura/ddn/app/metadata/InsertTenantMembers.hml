@@ -1,0 +1,192 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertTenantMembersObject
+  fields:
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: email
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: invitedAt
+      type: Timestamptz
+    - name: invitedBy
+      type: Uuid
+    - name: joinedAt
+      type: Timestamptz
+    - name: removedAt
+      type: Timestamptz
+    - name: source
+      type: String_1
+    - name: status
+      type: String_1
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: userId
+      type: Uuid
+  graphql:
+    typeName: InsertTenantMembersObject
+    inputTypeName: InsertTenantMembersObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_tenant_members_object
+      fieldMapping:
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        email:
+          column:
+            name: email
+        id:
+          column:
+            name: id
+        invitedAt:
+          column:
+            name: invited_at
+        invitedBy:
+          column:
+            name: invited_by
+        joinedAt:
+          column:
+            name: joined_at
+        removedAt:
+          column:
+            name: removed_at
+        source:
+          column:
+            name: source
+        status:
+          column:
+            name: status
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        userId:
+          column:
+            name: user_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertTenantMembersObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - email
+          - id
+          - invitedAt
+          - invitedBy
+          - joinedAt
+          - removedAt
+          - source
+          - status
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - userId
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertTenantMembersResponse
+  description: Responses from the 'insert_tenant_members' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[TenantMembers!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertTenantMembersResponse
+    inputTypeName: InsertTenantMembersResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_tenant_members_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertTenantMembersResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertTenantMembers
+  outputType: InsertTenantMembersResponse!
+  arguments:
+    - name: objects
+      type: "[InsertTenantMembersObject!]!"
+    - name: postCheck
+      type: TenantMembersBoolExp
+      description: Insert permission predicate over the 'tenant_members' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_tenant_members
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertTenantMembers
+    rootFieldKind: Mutation
+  description: Insert into the tenant_members table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertTenantMembers
+  permissions:
+    - role: admin
+      allowExecution: true
+

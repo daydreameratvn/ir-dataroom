@@ -1,0 +1,168 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertTenantDomainsObject
+  fields:
+    - name: autoAdmit
+      type: Boolean_1
+    - name: createdAt
+      type: Timestamptz
+    - name: createdBy
+      type: Uuid
+    - name: deletedAt
+      type: Timestamptz
+    - name: deletedBy
+      type: Uuid
+    - name: domain
+      type: String_1!
+    - name: id
+      type: Uuid
+    - name: tenantId
+      type: Uuid!
+    - name: updatedAt
+      type: Timestamptz
+    - name: updatedBy
+      type: Uuid
+    - name: verificationToken
+      type: String_1
+    - name: verified
+      type: Boolean_1
+  graphql:
+    typeName: InsertTenantDomainsObject
+    inputTypeName: InsertTenantDomainsObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_tenant_domains_object
+      fieldMapping:
+        autoAdmit:
+          column:
+            name: auto_admit
+        createdAt:
+          column:
+            name: created_at
+        createdBy:
+          column:
+            name: created_by
+        deletedAt:
+          column:
+            name: deleted_at
+        deletedBy:
+          column:
+            name: deleted_by
+        domain:
+          column:
+            name: domain
+        id:
+          column:
+            name: id
+        tenantId:
+          column:
+            name: tenant_id
+        updatedAt:
+          column:
+            name: updated_at
+        updatedBy:
+          column:
+            name: updated_by
+        verificationToken:
+          column:
+            name: verification_token
+        verified:
+          column:
+            name: verified
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertTenantDomainsObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - autoAdmit
+          - createdAt
+          - createdBy
+          - deletedAt
+          - deletedBy
+          - domain
+          - id
+          - tenantId
+          - updatedAt
+          - updatedBy
+          - verificationToken
+          - verified
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: InsertTenantDomainsResponse
+  description: Responses from the 'insert_tenant_domains' procedure
+  fields:
+    - name: affectedRows
+      type: Int32!
+      description: The number of rows affected by the mutation
+    - name: returning
+      type: "[TenantDomains!]!"
+      description: Data from rows affected by the mutation
+  graphql:
+    typeName: InsertTenantDomainsResponse
+    inputTypeName: InsertTenantDomainsResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: banyan_pg
+      dataConnectorObjectType: insert_tenant_domains_response
+      fieldMapping:
+        affectedRows:
+          column:
+            name: affected_rows
+        returning:
+          column:
+            name: returning
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: InsertTenantDomainsResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - affectedRows
+          - returning
+
+---
+kind: Command
+version: v1
+definition:
+  name: InsertTenantDomains
+  outputType: InsertTenantDomainsResponse!
+  arguments:
+    - name: objects
+      type: "[InsertTenantDomainsObject!]!"
+    - name: postCheck
+      type: TenantDomainsBoolExp
+      description: Insert permission predicate over the 'tenant_domains' collection
+  source:
+    dataConnectorName: banyan_pg
+    dataConnectorCommand:
+      procedure: insert_tenant_domains
+    argumentMapping:
+      objects: objects
+      postCheck: post_check
+  graphql:
+    rootFieldName: insertTenantDomains
+    rootFieldKind: Mutation
+  description: Insert into the tenant_domains table
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: InsertTenantDomains
+  permissions:
+    - role: admin
+      allowExecution: true
+

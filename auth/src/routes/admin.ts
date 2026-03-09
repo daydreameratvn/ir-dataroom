@@ -31,6 +31,7 @@ import {
 } from "../services/session.ts";
 import { logImpersonation } from "../services/impersonation.ts";
 import { getCookie } from "hono/cookie";
+import { gqlQuery } from "../services/gql.ts";
 
 const admin = new Hono();
 
@@ -449,6 +450,96 @@ admin.post("/admin/impersonate/end", async (c) => {
     "Set-Cookie",
     "impersonation_refresh_token=; HttpOnly; Secure; SameSite=Strict; Path=/auth; Max-Age=0"
   );
+
+  return c.json({ success: true });
+});
+
+// GET /auth/admin/tenant/branding — Get tenant branding
+admin.get("/admin/tenant/branding", async (c) => {
+  const tenantId = getEffectiveTenantId(c);
+
+  const data = await gqlQuery<{
+    tenants: Array<{
+      id: string;
+      configuration: Record<string, unknown> | null;
+    }>;
+  }>(`
+    query GetTenantBranding($tenantId: Uuid!) {
+      tenants(
+        where: { id: { _eq: $tenantId }, deletedAt: { _is_null: true } }
+        limit: 1
+      ) { id configuration }
+    }
+  `, { tenantId });
+
+  const tenant = data.tenants[0];
+  if (!tenant) {
+    return c.json({ error: "Tenant not found" }, 404);
+  }
+
+  const config = tenant.configuration ?? {};
+
+  return c.json({
+    logoUrl: config.logoUrl ?? "",
+    faviconUrl: config.faviconUrl ?? "",
+    primaryColor: config.primaryColor ?? "",
+  });
+});
+
+// PUT /auth/admin/tenant/branding — Update tenant branding
+admin.put("/admin/tenant/branding", async (c) => {
+  const user = c.get("user");
+  const tenantId = getEffectiveTenantId(c);
+
+  const body = await c.req.json<{
+    logoUrl?: string;
+    faviconUrl?: string;
+    primaryColor?: string;
+  }>();
+
+  // Fetch existing configuration to merge
+  const existing = await gqlQuery<{
+    tenants: Array<{
+      id: string;
+      configuration: Record<string, unknown> | null;
+    }>;
+  }>(`
+    query GetTenantConfig($tenantId: Uuid!) {
+      tenants(
+        where: { id: { _eq: $tenantId }, deletedAt: { _is_null: true } }
+        limit: 1
+      ) { id configuration }
+    }
+  `, { tenantId });
+
+  const tenant = existing.tenants[0];
+  if (!tenant) {
+    return c.json({ error: "Tenant not found" }, 404);
+  }
+
+  const currentConfig = tenant.configuration ?? {};
+  const updatedConfig = {
+    ...currentConfig,
+    ...(body.logoUrl !== undefined && { logoUrl: body.logoUrl }),
+    ...(body.faviconUrl !== undefined && { faviconUrl: body.faviconUrl }),
+    ...(body.primaryColor !== undefined && { primaryColor: body.primaryColor }),
+  };
+
+  const now = new Date().toISOString();
+
+  await gqlQuery(`
+    mutation UpdateTenantBranding($keyId: Uuid!, $updateColumns: UpdateTenantsByIdUpdateColumnsInput!) {
+      updateTenantsById(keyId: $keyId, updateColumns: $updateColumns) {
+        affectedRows
+      }
+    }
+  `, {
+    keyId: tenantId,
+    updateColumns: {
+      configuration: { set: updatedConfig },
+      updatedAt: { set: now },
+    },
+  });
 
   return c.json({ success: true });
 });
