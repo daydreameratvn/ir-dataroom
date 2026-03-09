@@ -303,7 +303,7 @@ async function runHybridForensics(
   }
 
   // Step 4: Compute verdict from ALL fields
-  const { verdict, overall_score, risk_level } = computeVerdict(allScoredFields);
+  let { verdict, overall_score, risk_level } = computeVerdict(allScoredFields);
 
   // For Gemini: filter to key fields only. For EasyOCR: keep all fields (no semantic labels).
   const keyFields = ocrEngine === 'gemini'
@@ -355,6 +355,30 @@ async function runHybridForensics(
       const totalAbnormal = scoredTables?.reduce((s, t) => s + (t.abnormal_cells?.length ?? 0), 0) ?? 0;
       const suspCount = geminiResult.suspicious_regions.length;
       console.log(`[forensics] Gemini analysis: ${geminiResult.tables.length} tables, ${totalAbnormal} abnormal cells, ${suspCount} suspicious regions`);
+
+      // Re-compute verdict factoring in Gemini findings.
+      // Suspicious regions and abnormal cells are strong signals that the
+      // heatmap-only scoring misses (heatmap may be low-intensity but Gemini
+      // can identify the semantic meaning of those regions).
+      if (suspCount > 0 || totalAbnormal > 0) {
+        // Gemini boost: each suspicious region adds 0.06, each abnormal cell adds 0.04
+        const geminiBoost = Math.min(0.35, suspCount * 0.06 + totalAbnormal * 0.04);
+        const boostedScore = Math.min(1, overall_score + geminiBoost);
+
+        // Determine boosted max for verdict thresholds
+        const boostedMax = Math.min(1, (overall_score / 0.6) * 0.6 + geminiBoost);
+        // Re-derive verdict with boosted score
+        if (boostedMax >= 0.50) {
+          verdict = 'TAMPERED';
+        } else if (boostedMax >= 0.40) {
+          verdict = 'SUSPICIOUS';
+        }
+
+        overall_score = Math.round(boostedScore * 10000) / 10000;
+        risk_level = overall_score > 0.45 ? 'high' : overall_score > 0.25 ? 'medium' : 'low';
+
+        console.log(`[forensics] Verdict boosted by Gemini: +${geminiBoost.toFixed(2)} → score=${overall_score} verdict=${verdict}`);
+      }
     } catch (err) {
       console.warn(`[forensics] Gemini analysis skipped: ${err instanceof Error ? err.message : err}`);
     }
@@ -401,9 +425,14 @@ async function runHybridForensics(
     console.error('[forensics] Summary generation failed:', vizErr instanceof Error ? vizErr.message : vizErr);
   }
 
+  const handwrittenFields = allScoredFields.filter((f) => f.handwritten);
   const notes: string[] = [
     `${ocrEngine} extracted ${extractedFields.length} fields, ${keyFields.length} key regions`,
   ];
+  if (handwrittenFields.length > 0) {
+    const hwLabels = handwrittenFields.map((f) => `${f.type}:"${f.text.slice(0, 20)}"`).join(', ');
+    notes.push(`Handwritten fields (score discounted): ${hwLabels}`);
+  }
   if (scoredTables && scoredTables.length > 0) {
     for (const t of scoredTables) {
       const hdrs = t.gemini_headers ?? t.headers;

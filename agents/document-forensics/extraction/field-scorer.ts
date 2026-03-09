@@ -64,10 +64,42 @@ function extractRegionStats(
   return { mean, max, std };
 }
 
+// ── Handwriting detection ─────────────────────────────────────────────────────
+
+/**
+ * Discount factor applied to anomaly scores for handwritten fields.
+ * Handwriting naturally produces high heatmap noise (irregular strokes,
+ * variable ink density) which inflates anomaly scores without indicating
+ * tampering.
+ */
+const HANDWRITING_DISCOUNT = 0.4;
+
+/**
+ * Heuristic: a field is likely handwritten if:
+ * - OCR confidence is low (EasyOCR struggles with handwriting), AND
+ * - Heatmap std is high relative to mean (noisy, variable ink patterns)
+ *
+ * OR if the heatmap std/mean ratio alone is very high (clear handwriting signal
+ * regardless of OCR confidence).
+ */
+function isLikelyHandwritten(ocrConfidence: number, stats: RegionStats): boolean {
+  if (stats.mean <= 0) return false;
+  const stdMeanRatio = stats.std / stats.mean;
+
+  // Strong signal: very high variance + low OCR confidence
+  if (ocrConfidence < 0.6 && stdMeanRatio > 0.5) return true;
+
+  // Moderate signal: moderate confidence + very high variance
+  if (ocrConfidence < 0.75 && stdMeanRatio > 0.7) return true;
+
+  return false;
+}
+
 // ── Anomaly scoring ───────────────────────────────────────────────────────────
 
-function calcAnomalyScore(stats: RegionStats, riskWeight: number): number {
-  return (stats.mean * 0.3 + stats.max * 0.5 + stats.std * 0.2) * riskWeight;
+function calcAnomalyScore(stats: RegionStats, riskWeight: number, handwritingDiscount: boolean = false): number {
+  const raw = (stats.mean * 0.3 + stats.max * 0.5 + stats.std * 0.2) * riskWeight;
+  return handwritingDiscount ? raw * HANDWRITING_DISCOUNT : raw;
 }
 
 // ── Public API ────────────────────────────────────────────────────────────────
@@ -90,6 +122,8 @@ export function scoreFieldsAgainstHeatmap(
     let heatmapMean = 0;
     let heatmapMax = 0;
 
+    let handwritten = false;
+
     if (field.bbox && heatmap.length > 0) {
       const stats = extractRegionStats(
         heatmap,
@@ -99,7 +133,8 @@ export function scoreFieldsAgainstHeatmap(
         imageW,
         imageH,
       );
-      anomaly = calcAnomalyScore(stats, riskWeight);
+      handwritten = isLikelyHandwritten(field.confidence, stats);
+      anomaly = calcAnomalyScore(stats, riskWeight, handwritten);
       heatmapMean = stats.mean;
       heatmapMax = stats.max;
     }
@@ -115,6 +150,7 @@ export function scoreFieldsAgainstHeatmap(
         heatmap_mean: Math.round(heatmapMean * 10000) / 10000,
         heatmap_max: Math.round(heatmapMax * 10000) / 10000,
       },
+      ...(handwritten ? { handwritten: true } : {}),
     };
   });
 }
@@ -141,7 +177,8 @@ export function scoreTablesAgainstHeatmap(
 
       if (cell.bbox && heatmap.length > 0) {
         const stats = extractRegionStats(heatmap, heatmapW, heatmapH, cell.bbox, imageW, imageH);
-        anomaly = calcAnomalyScore(stats, cellRiskWeight);
+        const hw = isLikelyHandwritten(cell.confidence, stats);
+        anomaly = calcAnomalyScore(stats, cellRiskWeight, hw);
         heatmapMean = stats.mean;
         heatmapMax = stats.max;
       }

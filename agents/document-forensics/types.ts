@@ -13,6 +13,8 @@ export interface FieldResult {
     heatmap_mean: number;
     heatmap_max: number;
   };
+  /** True if the field was detected as handwritten (anomaly score discounted). */
+  handwritten?: boolean;
 }
 
 /** A scored table cell with heatmap anomaly data. */
