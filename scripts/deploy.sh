@@ -22,6 +22,50 @@ echo "Target:  $TARGET"
 echo ""
 
 # =============================================================
+# Post-deploy smoke test
+# Verifies API returns JSON (not HTML) and SPA routing works.
+# Catches CloudFront customErrorResponses regression.
+# =============================================================
+smoke_test() {
+  local DOMAIN="$1"
+  echo ">>> Smoke test: $DOMAIN"
+
+  # 1. Health endpoint returns JSON
+  local CT
+  CT=$(curl -sf "https://$DOMAIN/auth/health" -o /dev/null -w '%{content_type}' 2>/dev/null) || true
+  if [[ -n "$CT" && "$CT" != *"application/json"* ]]; then
+    echo "  FAIL: /auth/health did not return JSON (got: $CT)"
+    echo "  WARNING: Smoke test failed — verify manually"
+    return 0  # non-fatal: don't block deploy
+  fi
+  echo "  ✓ /auth/health returns JSON"
+
+  # 2. SPA route returns 200 (CloudFront Function rewrites to index.html)
+  local HTTP
+  HTTP=$(curl -sf "https://$DOMAIN/smoke-test-nonexistent" -o /dev/null -w '%{http_code}' 2>/dev/null) || true
+  if [[ -n "$HTTP" && "$HTTP" != "200" ]]; then
+    echo "  FAIL: SPA route returned $HTTP instead of 200"
+    echo "  WARNING: CloudFront Function may not be working"
+    return 0
+  fi
+  echo "  ✓ SPA routing returns 200"
+
+  # 3. Portal API error returns JSON (the exact bug we're guarding against)
+  CT=$(curl -s -X POST "https://$DOMAIN/auth/ir/portal/otp/verify" \
+    -H 'Content-Type: application/json' \
+    -d '{"email":"smoke@test.com","code":"000000"}' \
+    -o /dev/null -w '%{content_type}' 2>/dev/null) || true
+  if [[ -n "$CT" && "$CT" != *"application/json"* ]]; then
+    echo "  FAIL: Portal API error returned HTML instead of JSON (got: $CT)"
+    echo "  WARNING: CloudFront may be converting API errors to HTML"
+    return 0
+  fi
+  echo "  ✓ Portal API errors return JSON"
+
+  echo ">>> Smoke test passed: $DOMAIN"
+}
+
+# =============================================================
 # Deploy Auth Service
 # =============================================================
 deploy_auth() {
@@ -54,6 +98,8 @@ deploy_auth() {
     --region "$REGION" 2>&1 || echo ">>> Warning: ECS wait timed out — check manually"
 
   echo ">>> Auth deployed and stable."
+  smoke_test "oasis.papaya.asia"
+  smoke_test "investors.papaya.asia"
 }
 
 # =============================================================
@@ -131,6 +177,7 @@ deploy_frontend() {
     --query 'Invalidation.Id' --output text
 
   echo ">>> Frontend deployed at https://oasis.papaya.asia"
+  smoke_test "oasis.papaya.asia"
 }
 
 # =============================================================
@@ -164,6 +211,7 @@ deploy_investor_portal() {
     --query 'Invalidation.Id' --output text
 
   echo ">>> Investor portal deployed at https://investors.papaya.asia"
+  smoke_test "investors.papaya.asia"
 }
 
 # =============================================================

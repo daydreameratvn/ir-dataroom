@@ -847,11 +847,17 @@ ir.post("/ir/portal/otp/request", async (c) => {
   const tenantId = getTenantId(c);
 
   try {
-    // Verify investor exists
+    // Verify investor exists — closed portal, no need to hide existence
     const investor = await getInvestorByEmail(tenantId, body.email);
     if (!investor) {
-      // Return success even if not found (don't leak existence)
-      return c.json({ success: true, message: "If an account exists, an OTP has been sent" });
+      return c.json({ error: "Looks like you don't have access yet — reach out to khanh@papaya.asia and we'll get you set up 🙌" }, 400);
+    }
+
+    // Check active rounds before sending OTP (avoid sending useless emails)
+    const investorRounds = await listRoundsForInvestor(investor.id);
+    const hasActiveRound = investorRounds.some((ir) => ir.status !== "dropped");
+    if (!hasActiveRound) {
+      return c.json({ error: "Looks like you don't have access yet — reach out to khanh@papaya.asia and we'll get you set up 🙌" }, 422);
     }
 
     // Create and send OTP
@@ -894,7 +900,7 @@ ir.post("/ir/portal/otp/verify", async (c) => {
     const investor = await getInvestorByEmail(tenantId, body.email);
     if (!investor) {
       // Use 400 instead of 404 — CloudFront converts 404 to 200+HTML
-      return c.json({ error: "Investor not found" }, 400);
+      return c.json({ error: "Looks like you don't have access yet — reach out to khanh@papaya.asia and we'll get you set up 🙌" }, 400);
     }
 
     // Check that investor has at least one non-dropped round
@@ -902,7 +908,7 @@ ir.post("/ir/portal/otp/verify", async (c) => {
     const hasActiveRound = investorRounds.some((ir) => ir.status !== "dropped");
     if (!hasActiveRound) {
       // Use 422 instead of 403 — CloudFront converts 403 to 200+HTML
-      return c.json({ error: "No active rounds found for this investor" }, 422);
+      return c.json({ error: "Looks like you don't have access yet — reach out to khanh@papaya.asia and we'll get you set up 🙌" }, 422);
     }
 
     // Sign investor JWT
