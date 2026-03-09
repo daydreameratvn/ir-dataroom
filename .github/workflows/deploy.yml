@@ -8,6 +8,9 @@ concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: false
 
+env:
+  SLACK_CHANNEL_ID: C0AK8U09TEX
+
 jobs:
   detect-changes:
     name: Detect Changes
@@ -66,6 +69,26 @@ jobs:
       - name: Deploy auth
         run: bash scripts/deploy.sh auth
 
+      - name: Post success to Slack
+        if: success()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ✅ Auth deployed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
+      - name: Post failure to Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ❌ Auth deploy failed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
   deploy-frontend:
     name: Deploy Frontend
     needs: detect-changes
@@ -88,6 +111,26 @@ jobs:
 
       - name: Deploy frontend
         run: bash scripts/deploy.sh frontend
+
+      - name: Post success to Slack
+        if: success()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ✅ Frontend deployed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
+      - name: Post failure to Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ❌ Frontend deploy failed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
 
   deploy-investor-portal:
     name: Deploy Investor Portal
@@ -112,6 +155,26 @@ jobs:
       - name: Deploy investor portal
         run: bash scripts/deploy.sh investor-portal
 
+      - name: Post success to Slack
+        if: success()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ✅ Investor Portal deployed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
+      - name: Post failure to Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ❌ Investor Portal deploy failed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
   deploy-phoenix:
     name: Deploy Phoenix
     needs: detect-changes
@@ -135,6 +198,26 @@ jobs:
       - name: Deploy phoenix
         run: bash scripts/deploy.sh phoenix
 
+      - name: Post success to Slack
+        if: success()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ✅ Phoenix deployed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
+      - name: Post failure to Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ❌ Phoenix deploy failed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
   deploy-forensics:
     name: Deploy Forensics
     needs: detect-changes
@@ -156,6 +239,26 @@ jobs:
       - name: Deploy forensics
         run: bash scripts/deploy.sh forensics
 
+      - name: Post success to Slack
+        if: success()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ✅ Forensics deployed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
+      - name: Post failure to Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ❌ Forensics deploy failed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
   deploy-forensics-gpu:
     name: Deploy Forensics GPU
     needs: detect-changes
@@ -176,3 +279,23 @@ jobs:
 
       - name: Deploy forensics GPU
         run: bash scripts/deploy.sh forensics-gpu
+
+      - name: Post success to Slack
+        if: success()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ✅ Forensics GPU deployed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
+      - name: Post failure to Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ❌ Forensics GPU deploy failed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"

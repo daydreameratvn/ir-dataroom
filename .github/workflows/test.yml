@@ -10,6 +10,9 @@ concurrency:
   group: test-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
+env:
+  SLACK_CHANNEL_ID: C0AK8U09TEX
+
 jobs:
   detect-changes:
     name: Detect Changes
@@ -41,6 +44,26 @@ jobs:
       - run: cd platform && bun run typecheck
       - run: cd platform && bun run test
 
+      - name: Post success to Slack
+        if: success() && github.ref == 'refs/heads/main'
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ✅ Platform Tests passed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
+      - name: Post failure to Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ❌ Platform Tests failed\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
   test-sdks:
     name: SDK Tests
     needs: detect-changes
@@ -53,3 +76,23 @@ jobs:
       - run: cd sdks && bun install
       - run: cd sdks && bun run typecheck
       - run: cd sdks && bun run test
+
+      - name: Post success to Slack
+        if: success() && github.ref == 'refs/heads/main'
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ✅ SDK Tests passed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
+
+      - name: Post failure to Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "[Banyan] ❌ SDK Tests failed\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view details>"
