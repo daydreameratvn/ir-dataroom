@@ -253,9 +253,12 @@ export default function FWAView({ data, claimId, imageForensicsData }: FWAViewPr
 
   if (!data) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-        <ShieldX className="h-12 w-12 mb-3 opacity-40" />
-        <p className="text-sm">{t('portal.fwaTab.noData')}</p>
+      <div className="space-y-3">
+        {claimId && <FWAActionsBar claimId={claimId} />}
+        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+          <ShieldX className="h-12 w-12 mb-3 opacity-40" />
+          <p className="text-sm">{t('portal.fwaTab.noData')}</p>
+        </div>
       </div>
     );
   }
