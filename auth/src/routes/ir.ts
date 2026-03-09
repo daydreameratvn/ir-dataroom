@@ -893,14 +893,16 @@ ir.post("/ir/portal/otp/verify", async (c) => {
     // Look up investor
     const investor = await getInvestorByEmail(tenantId, body.email);
     if (!investor) {
-      return c.json({ error: "Investor not found" }, 404);
+      // Use 400 instead of 404 — CloudFront converts 404 to 200+HTML
+      return c.json({ error: "Investor not found" }, 400);
     }
 
     // Check that investor has at least one non-dropped round
     const investorRounds = await listRoundsForInvestor(investor.id);
     const hasActiveRound = investorRounds.some((ir) => ir.status !== "dropped");
     if (!hasActiveRound) {
-      return c.json({ error: "No active rounds found for this investor" }, 403);
+      // Use 422 instead of 403 — CloudFront converts 403 to 200+HTML
+      return c.json({ error: "No active rounds found for this investor" }, 422);
     }
 
     // Sign investor JWT
@@ -994,11 +996,11 @@ ir.get("/ir/portal/rounds/:slug", async (c) => {
 
   try {
     const round = await getRoundBySlug(investor.tenantId, slug);
-    if (!round) return c.json({ error: "Round not found" }, 404);
+    if (!round) return c.json({ error: "Round not found" }, 400);
 
     // Verify investor has access
     const investorRound = await getInvestorRound(investor.sub, round.id);
-    if (!investorRound) return c.json({ error: "Access denied" }, 403);
+    if (!investorRound) return c.json({ error: "Access denied" }, 422);
 
     // Record access
     await recordInvestorAccess(investorRound.id).catch(() => {});
@@ -1027,10 +1029,10 @@ ir.post("/ir/portal/rounds/:slug/nda/accept", async (c) => {
 
   try {
     const round = await getRoundBySlug(investor.tenantId, slug);
-    if (!round) return c.json({ error: "Round not found" }, 404);
+    if (!round) return c.json({ error: "Round not found" }, 400);
 
     const investorRound = await getInvestorRound(investor.sub, round.id);
-    if (!investorRound) return c.json({ error: "Access denied" }, 403);
+    if (!investorRound) return c.json({ error: "Access denied" }, 422);
 
     if (investorRound.ndaAcceptedAt) {
       return c.json({ error: "NDA already accepted" }, 400);
@@ -1061,14 +1063,14 @@ ir.get("/ir/portal/rounds/:slug/documents", async (c) => {
 
   try {
     const round = await getRoundBySlug(investor.tenantId, slug);
-    if (!round) return c.json({ error: "Round not found" }, 404);
+    if (!round) return c.json({ error: "Round not found" }, 400);
 
     const investorRound = await getInvestorRound(investor.sub, round.id);
-    if (!investorRound) return c.json({ error: "Access denied" }, 403);
+    if (!investorRound) return c.json({ error: "Access denied" }, 422);
 
     // Check NDA requirement (per-investor flag)
     if (investorRound.ndaRequired && !investorRound.ndaAcceptedAt) {
-      return c.json({ error: "NDA must be accepted first" }, 403);
+      return c.json({ error: "NDA must be accepted first" }, 422);
     }
 
     const result = await listDocuments(round.id, { category });
@@ -1097,18 +1099,18 @@ ir.get("/ir/portal/rounds/:slug/documents/:docId/view", async (c) => {
 
   try {
     const round = await getRoundBySlug(investor.tenantId, slug);
-    if (!round) return c.json({ error: "Round not found" }, 404);
+    if (!round) return c.json({ error: "Round not found" }, 400);
 
     const investorRound = await getInvestorRound(investor.sub, round.id);
-    if (!investorRound) return c.json({ error: "Access denied" }, 403);
+    if (!investorRound) return c.json({ error: "Access denied" }, 422);
 
     // Check NDA requirement
     if (investorRound.ndaRequired && !investorRound.ndaAcceptedAt) {
-      return c.json({ error: "NDA must be accepted first" }, 403);
+      return c.json({ error: "NDA must be accepted first" }, 422);
     }
 
     const doc = await getDocumentById(docId);
-    if (!doc || doc.roundId !== round.id) return c.json({ error: "Document not found" }, 404);
+    if (!doc || doc.roundId !== round.id) return c.json({ error: "Document not found" }, 400);
 
     // Auto-promote investor to 'active' on first file access
     await promoteToViewingIfNeeded(investorRound.id).catch(() => {});
@@ -1155,24 +1157,24 @@ ir.get("/ir/portal/rounds/:slug/documents/:docId/download", async (c) => {
 
   try {
     const round = await getRoundBySlug(investor.tenantId, slug);
-    if (!round) return c.json({ error: "Round not found" }, 404);
+    if (!round) return c.json({ error: "Round not found" }, 400);
 
     // Check download allowed
     const allowDownload = (round.configuration as Record<string, unknown>)?.allowDownload !== false;
     if (!allowDownload) {
-      return c.json({ error: "Downloads are not enabled for this round" }, 403);
+      return c.json({ error: "Downloads are not enabled for this round" }, 422);
     }
 
     const investorRound = await getInvestorRound(investor.sub, round.id);
-    if (!investorRound) return c.json({ error: "Access denied" }, 403);
+    if (!investorRound) return c.json({ error: "Access denied" }, 422);
 
     // Check NDA requirement
     if (investorRound.ndaRequired && !investorRound.ndaAcceptedAt) {
-      return c.json({ error: "NDA must be accepted first" }, 403);
+      return c.json({ error: "NDA must be accepted first" }, 422);
     }
 
     const doc = await getDocumentById(docId);
-    if (!doc || doc.roundId !== round.id) return c.json({ error: "Document not found" }, 404);
+    if (!doc || doc.roundId !== round.id) return c.json({ error: "Document not found" }, 400);
 
     // Auto-promote investor to 'active' on first file access
     await promoteToViewingIfNeeded(investorRound.id).catch(() => {});
@@ -1275,10 +1277,10 @@ ir.get("/ir/portal/rounds/:slug/nda/download", requireInvestor, async (c) => {
 
   try {
     const round = await getRoundBySlug(investor.tenantId, slug);
-    if (!round) return c.json({ error: "Round not found" }, 404);
+    if (!round) return c.json({ error: "Round not found" }, 400);
 
     const investorRound = await getInvestorRound(investor.sub, round.id);
-    if (!investorRound) return c.json({ error: "Access denied" }, 403);
+    if (!investorRound) return c.json({ error: "Access denied" }, 422);
 
     if (!investorRound.ndaAcceptedAt) {
       return c.json({ error: "NDA not yet accepted" }, 400);
@@ -1290,7 +1292,7 @@ ir.get("/ir/portal/rounds/:slug/nda/download", requireInvestor, async (c) => {
       : await getActiveNda(round.id);
 
     if (!ndaTemplate) {
-      return c.json({ error: "NDA template not found" }, 404);
+      return c.json({ error: "NDA template not found" }, 400);
     }
 
     // Return JSON if requested

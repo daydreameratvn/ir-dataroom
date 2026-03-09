@@ -91,6 +91,34 @@ const CACHING_DISABLED_POLICY_ID = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad";
 const ALL_VIEWER_ORIGIN_REQUEST_POLICY_ID = "216adef6-5c7f-47e4-b989-5492eafa07d3";
 
 // ============================================================
+// CloudFront Function — SPA Routing
+// ============================================================
+// Rewrites non-file URIs to /index.html so S3 never returns 403/404.
+// This replaces customErrorResponses which intercepted ALL origins
+// (including API /auth/* responses), breaking JSON error responses.
+
+const spaRoutingFunction = new aws.cloudfront.Function(
+  "banyan-prod-spa-routing",
+  {
+    name: "banyan-prod-spa-routing",
+    runtime: "cloudfront-js-2.0",
+    comment: "SPA routing: rewrite non-file paths to /index.html",
+    code: `
+function handler(event) {
+  var request = event.request;
+  var uri = request.uri;
+  // Pass through requests with file extensions (JS, CSS, images, fonts, etc.)
+  if (uri.includes('.')) return request;
+  // SPA fallback: rewrite to /index.html
+  request.uri = '/index.html';
+  return request;
+}
+`,
+    publish: true,
+  },
+);
+
+// ============================================================
 // CloudFront Distribution
 // ============================================================
 
@@ -124,6 +152,7 @@ export const banyanCloudFront = new aws.cloudfront.Distribution(
     ],
 
     // --- Default Behavior: S3 frontend ---
+    // SPA routing handled by CloudFront Function (not customErrorResponses)
     defaultCacheBehavior: {
       targetOriginId: "s3-frontend",
       viewerProtocolPolicy: "redirect-to-https",
@@ -132,6 +161,12 @@ export const banyanCloudFront = new aws.cloudfront.Distribution(
       compress: true,
       cachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6", // CachingOptimized
       originRequestPolicyId: "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf", // CORS-S3Origin
+      functionAssociations: [
+        {
+          eventType: "viewer-request",
+          functionArn: spaRoutingFunction.arn,
+        },
+      ],
     },
 
     // --- Ordered Behaviors ---
@@ -156,21 +191,10 @@ export const banyanCloudFront = new aws.cloudfront.Distribution(
       },
     ],
 
-    // --- SPA Routing: 403/404 → index.html ---
-    customErrorResponses: [
-      {
-        errorCode: 403,
-        responsePagePath: "/index.html",
-        responseCode: 200,
-        errorCachingMinTtl: 0,
-      },
-      {
-        errorCode: 404,
-        responsePagePath: "/index.html",
-        responseCode: 200,
-        errorCachingMinTtl: 0,
-      },
-    ],
+    // NOTE: customErrorResponses REMOVED — they intercepted ALL origins
+    // (including /auth/* API responses), converting JSON 403/404 errors
+    // to 200+HTML which broke the frontend. SPA routing is now handled
+    // by the CloudFront Function above which only affects the S3 behavior.
 
     // Custom domain: oasis.papaya.asia
     // ACM cert must be in us-east-1 for CloudFront (AWS hard requirement)

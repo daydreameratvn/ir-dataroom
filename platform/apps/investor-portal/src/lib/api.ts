@@ -17,6 +17,13 @@ async function resilientFetch(url: string, options?: RequestInit): Promise<Respo
         await new Promise((r) => setTimeout(r, 1000));
         continue;
       }
+      // CloudFront custom error responses can convert API 403/404 into 200+HTML.
+      // Detect this and retry once (the transient issue may resolve).
+      const ct = res.headers.get('content-type') ?? '';
+      if (res.ok && !ct.includes('application/json') && ct.includes('text/html') && attempt === 0) {
+        await new Promise((r) => setTimeout(r, 1000));
+        continue;
+      }
       return res;
     } catch {
       if (attempt === 0) {
@@ -73,6 +80,12 @@ async function apiFetch<T>(
   // Handle 204 No Content
   if (res.status === 204) {
     return undefined as T;
+  }
+
+  // Guard against non-JSON responses (e.g., CloudFront returning HTML for 403/404)
+  const ct = res.headers.get('content-type') ?? '';
+  if (!ct.includes('application/json')) {
+    throw new Error('Service unavailable — please try again later');
   }
 
   return res.json() as Promise<T>;
@@ -324,6 +337,12 @@ export async function getDocumentViewUrl(
   }
 
   const accessLogId = res.headers.get('X-Access-Log-Id') ?? undefined;
+
+  // Guard against non-JSON responses (e.g., CloudFront returning HTML)
+  const viewCt = res.headers.get('Content-Type') ?? '';
+  if (!viewCt.includes('application/json')) {
+    throw new Error('Service unavailable — please try again later');
+  }
 
   // Server always returns JSON with presigned URL for instant preview.
   // Watermarking is only applied on download, not preview.

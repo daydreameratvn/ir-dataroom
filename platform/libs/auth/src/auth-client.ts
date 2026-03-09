@@ -35,6 +35,12 @@ async function authRequest<T>(path: string, options?: RequestInit): Promise<T> {
         await new Promise((r) => setTimeout(r, 1000));
         continue;
       }
+      // CloudFront can convert API 403/404 into 200+HTML — retry once
+      const ct = response.headers.get('content-type') ?? '';
+      if (response.ok && !ct.includes('application/json') && ct.includes('text/html') && attempt === 0) {
+        await new Promise((r) => setTimeout(r, 1000));
+        continue;
+      }
       break;
     } catch {
       if (attempt === 0) {
@@ -63,6 +69,12 @@ async function authRequest<T>(path: string, options?: RequestInit): Promise<T> {
       serverMessage || `Request failed (${response.status})`,
       response.status,
     );
+  }
+
+  // Guard against non-JSON responses (e.g., CloudFront returning HTML for 403/404)
+  const resCt = response.headers.get('content-type') ?? '';
+  if (!resCt.includes('application/json')) {
+    throw new AuthError('Service unavailable — please try again later', 0);
   }
 
   return response.json() as Promise<T>;

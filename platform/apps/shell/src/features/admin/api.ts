@@ -66,6 +66,12 @@ async function adminFetch(url: string, options?: RequestInit): Promise<Response>
         await new Promise((r) => setTimeout(r, 1000));
         continue;
       }
+      // CloudFront can convert API 403/404 into 200+HTML — retry once
+      const ct = res.headers.get('content-type') ?? '';
+      if (res.ok && !ct.includes('application/json') && ct.includes('text/html') && attempt === 0) {
+        await new Promise((r) => setTimeout(r, 1000));
+        continue;
+      }
       return res;
     } catch {
       if (attempt === 0) {
@@ -88,6 +94,11 @@ async function handleResponse<T>(response: Response): Promise<T> {
     }
 
     throw new Error(String(message ?? `Request failed (${response.status})`));
+  }
+  // Guard against non-JSON responses (e.g., CloudFront returning HTML for 403/404)
+  const ct = response.headers.get('content-type') ?? '';
+  if (!ct.includes('application/json')) {
+    throw new Error('Service unavailable — please try again later');
   }
   return response.json() as Promise<T>;
 }
