@@ -18,7 +18,7 @@ const FOLDER_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 const PDF_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 // Known document category folder names (Vietnamese)
-const CATEGORY_PATTERNS: Record<string, RegExp> = {
+export const CATEGORY_PATTERNS: Record<string, RegExp> = {
   contracts: /h[oợ]p\s*[đd][oồ]ng/i,
   terms_and_conditions: /quy\s*t[aắ][cể]|t[&]c|điều\s*khoản/i,
   amendments: /s[uử]a\s*[đd][oổ]i|b[oổ]\s*sung|ph[uụ]\s*l[uụ]c/i,

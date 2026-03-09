@@ -23,6 +23,7 @@ import { parseArgs } from "util";
 
 import { gqlQuery } from "../shared/graphql-client.ts";
 import {
+  CATEGORY_PATTERNS,
   type CompanyFolder,
   type PolicyFile,
   fuzzyMatch,
@@ -207,9 +208,41 @@ async function collectSharedPdfs(sharedTcFolders: CompanyFolder[]): Promise<Poli
 }
 
 /**
+ * Check if a folder is a policy folder by looking at its immediate children.
+ * A policy folder contains category subfolders (HỢP ĐỒNG, QUY TẮC BẢO HIỂM, etc.)
+ * and/or direct PDF files.
+ *
+ * This is a SHALLOW check — it does NOT recurse. Used to distinguish:
+ *   PolicyFolder (has category subfolders) vs CompanyFolder (has policy subfolders)
+ */
+async function isPolicyFolder(folderId: string): Promise<boolean> {
+  const children = await listSubfolders(folderId);
+  const directFiles = await listDirectFiles(folderId);
+
+  // Has direct PDFs → it's a leaf-ish folder (could be a policy folder)
+  if (directFiles.some(f => f.mimeType === PDF_MIME)) return true;
+
+  // Has category-named subfolders (HỢP ĐỒNG, QUY TẮC, DANH SÁCH, etc.)
+  const categoryPatterns = Object.values(CATEGORY_PATTERNS);
+  const hasCategorySubfolder = children.some(child =>
+    categoryPatterns.some(pattern => pattern.test(child.name)),
+  );
+  if (hasCategorySubfolder) return true;
+
+  // No PDFs and no category subfolders → not a policy folder
+  return false;
+}
+
+/**
  * Scan a company folder to find policy number subfolders.
  * Returns one PolicyFolderFiles per policy folder found.
- * If no subfolders exist (files directly in company folder), creates one entry with companyName as policyNumber.
+ *
+ * Policy folder structure:
+ *   Company / PolicyFolder / CategoryFolder (HỢP ĐỒNG, QUY TẮC, ...) / PDFs
+ *   Company / PolicyFolder / direct.pdf
+ *
+ * Uses isPolicyFolder() to verify subfolders are actually policy folders
+ * (not deeper company or sub-insurer folders).
  */
 async function scanPolicyFolders(
   insurerName: string,
@@ -230,7 +263,7 @@ async function scanPolicyFolders(
       results.push({
         insurerName,
         companyName: companyFolder.companyName,
-        policyNumber: companyFolder.companyName, // no policy folder, use company name
+        policyNumber: companyFolder.companyName,
         files: pdfs,
         sharedFiles: sharedPdfs,
       });
@@ -238,27 +271,29 @@ async function scanPolicyFolders(
     return results;
   }
 
-  // Each subfolder is a policy number folder
-  for (const policyFolder of subfolders) {
-    const allFiles = await listFilesInFolder(policyFolder.folderId);
+  // Check each subfolder — only include ones that are actually policy folders
+  for (const subfolder of subfolders) {
+    if (!(await isPolicyFolder(subfolder.folderId))) continue;
+
+    // This is a policy folder — collect all PDFs recursively (from category subfolders)
+    const allFiles = await listFilesInFolder(subfolder.folderId);
     const pdfs = allFiles.filter(f => f.mimeType === PDF_MIME);
     if (pdfs.length === 0) continue;
 
-    console.log(`    📄 Policy "${policyFolder.name}": ${pdfs.length} PDFs + ${sharedPdfs.length} shared T&C`);
+    console.log(`    📄 Policy "${subfolder.name}": ${pdfs.length} PDFs + ${sharedPdfs.length} shared T&C`);
     results.push({
       insurerName,
       companyName: companyFolder.companyName,
-      policyNumber: policyFolder.name,
+      policyNumber: subfolder.name,
       files: pdfs,
       sharedFiles: sharedPdfs,
     });
   }
 
-  // Also check for loose files directly in the company folder (not in any subfolder)
+  // Also check for loose files directly in the company folder
   const directFiles = await listDirectFiles(companyFolder.folderId);
   const directPdfs = directFiles.filter(f => f.mimeType === PDF_MIME);
   if (directPdfs.length > 0) {
-    // Attach loose company-level files to ALL policy folders as shared
     console.log(`    📄 ${directPdfs.length} loose PDFs at company level — attaching to all policies`);
     for (const entry of results) {
       entry.sharedFiles = [...entry.sharedFiles, ...directPdfs];
