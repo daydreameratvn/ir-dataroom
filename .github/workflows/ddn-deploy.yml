@@ -29,12 +29,18 @@ jobs:
         run: |
           CONNECTION_URI=$(aws ssm get-parameter --name /banyan/hasura/ddn-connection-uri --with-decryption --query Parameter.Value --output text)
           JWT_SECRET_KEY=$(aws ssm get-parameter --name /banyan/hasura/jwt-secret-key --with-decryption --query Parameter.Value --output text)
+          APPLE_ENDPOINT=$(aws ssm get-parameter --name /banyan/hasura/apple-endpoint --with-decryption --query Parameter.Value --output text)
+          APPLE_ADMIN_SECRET=$(aws ssm get-parameter --name /banyan/hasura/apple-admin-secret --with-decryption --query Parameter.Value --output text)
           echo "::add-mask::${CONNECTION_URI}"
           echo "::add-mask::${JWT_SECRET_KEY}"
-          cat > hasura/ddn/.env.cloud <<EOF
-          APP_BANYAN_PG_CONNECTION_URI="${CONNECTION_URI}"
-          JWT_SECRET_KEY="${JWT_SECRET_KEY}"
-          EOF
+          echo "::add-mask::${APPLE_ENDPOINT}"
+          echo "::add-mask::${APPLE_ADMIN_SECRET}"
+          {
+            echo "APP_BANYAN_PG_CONNECTION_URI=\"${CONNECTION_URI}\""
+            echo "JWT_SECRET_KEY=\"${JWT_SECRET_KEY}\""
+            echo "APPLE_APPLE_GQL_GRAPHQL_ENDPOINT_1=\"${APPLE_ENDPOINT}\""
+            echo "APPLE_APPLE_GQL_ADMIN_SECRET=\"${APPLE_ADMIN_SECRET}\""
+          } > hasura/ddn/.env.cloud
 
       - name: Install DDN CLI
         run: curl -L https://graphql-engine-cdn.hasura.io/ddn/cli/v4/get.sh | bash
