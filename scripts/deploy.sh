@@ -152,7 +152,7 @@ deploy_frontend() {
   echo ">>> Building frontend..."
   cd "$REPO_ROOT/platform"
   bun install
-  VITE_INVESTOR_PORTAL_URL=https://investors.papaya.asia bun run build
+  bun run build
 
   local BUCKET="banyan-prod-frontend"
   local CF_ID="E1SZ4G9NL7U0ZA"
