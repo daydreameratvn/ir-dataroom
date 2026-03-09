@@ -199,7 +199,7 @@ export const policyRulesTool: AgentTool = {
   description:
     "Look up pre-extracted policy rules for a claim's insurer/policy. Returns structured coverage rules, " +
     "benefit limits, exclusions, drug rules, and copay rates. Use BEFORE assessBenefit to determine " +
-    "coverage terms. If no rules are found, fall back to policyDocSearch + policyDocFetch.",
+    "coverage terms. Policy rules are MANDATORY — if no rules are found, STOP the assessment.",
   parameters: Type.Object({
     claimCode: Type.String({ description: "Claim code to auto-resolve insurer/policy" }),
     category: Type.Optional(
@@ -249,9 +249,9 @@ export const policyRulesTool: AgentTool = {
 
     if (!insurerName) {
       return {
-        content: [{ type: "text", text: `No insurer found for claim "${params.claimCode}". Use policyDocSearch instead.` }],
+        content: [{ type: "text", text: `STOP ASSESSMENT: No insurer found for claim "${params.claimCode}". Cannot proceed without policy rules.` }],
         details: { noRules: true },
-        isError: false,
+        isError: true,
       };
     }
 
@@ -281,9 +281,9 @@ export const policyRulesTool: AgentTool = {
 
       if (!ruleSet) {
         return {
-          content: [{ type: "text", text: `No policy rules found for insurer "${insurerName}" / policy "${policyNumber}". Fall back to policyDocSearch + policyDocFetch.` }],
+          content: [{ type: "text", text: `STOP ASSESSMENT: No policy rules found for insurer "${insurerName}" / policy "${policyNumber}". Policy rules have not been compiled for this insurer/company yet. Cannot proceed without policy rules.` }],
           details: { noRules: true, insurerName, policyNumber },
-          isError: false,
+          isError: true,
         };
       }
 
@@ -345,7 +345,7 @@ export const policyRulesTool: AgentTool = {
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       return {
-        content: [{ type: "text", text: `ERROR: Failed to query policy rules: ${message}. Fall back to policyDocSearch + policyDocFetch.` }],
+        content: [{ type: "text", text: `STOP ASSESSMENT: Failed to query policy rules: ${message}. Cannot proceed without policy rules.` }],
         details: { error: true },
         isError: true,
       };

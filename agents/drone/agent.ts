@@ -20,8 +20,6 @@ import {
   insuredTool,
   medicalProviderTool,
   medicalProvidersTool,
-  policyDocFetchTool,
-  policyDocSearchTool,
   policyRulesTool,
   saveDetailFormTool,
 } from "../shared/tools/index.ts";
@@ -221,8 +219,6 @@ export async function createDroneAgent(claimCode: string, options?: { skipCompli
     ...(!skipCompliance ? [invokeComplianceAgentTool] : []),
     googleSearchTool,
     policyRulesTool,
-    policyDocSearchTool,
-    policyDocFetchTool,
     ...(!hasDetailData ? [saveDetailFormTool] : []),
   ];
 
@@ -252,7 +248,7 @@ ${skipCompliance
 ${options?.mode === "policy-doc"
       ? `      - This claim is a general outpatient case. It may be acute or chronic, any ICD code.
       - Treatment is drug-only outpatient — no surgery, no procedures.
-      - This claim has policy documents available in Google Drive. You MUST look up policy terms during assessment.`
+      - This claim has policy documents available. Use policyRules to get pre-extracted coverage rules.`
       : (options?.tier ?? 1) === 1
       ? `      - This claim is a Tier 1 chronic disease case (Hypertension, Diabetes, Dyslipidemia, GERD, Asthma, etc.)
       - Treatment is drug-only outpatient — no surgery, no procedures.`
@@ -321,26 +317,13 @@ ${options?.mode === "policy-doc"
       - Diagnostic test coverage policy
       - Waiting periods
 
-      If policyRules returns no results (insurer not yet compiled), fall back to
-      policyDocSearch + policyDocFetch for on-demand extraction.
-
-    **Policy Document Lookup (FALLBACK)**:
-${options?.mode === "policy-doc"
-      ? `      If policyRules returns no rules, you MUST call policyDocSearch with the claim code. Then call policyDocFetch on the 1–2 MOST relevant files (the main contract or T&C — NOT every file found) to understand coverage terms BEFORE calling assessBenefit.
-      1. Call policyDocSearch with the claim code to find available policy documents.
-      2. Pick the 1–2 most relevant files (contract, T&C). Do NOT fetch more than 2 files — this wastes turns.
-      3. Call policyDocFetch on those files to read the document text.
-      4. Use the extracted policy terms to verify coverage rules, exclusion clauses, and benefit conditions during assessment.`
-      : `      When policyRules returns no results and you need to check policy terms:
-      1. Call policyDocSearch with the claim code to find available policy documents (contracts, T&C, amendments).
-      2. Call policyDocFetch with the relevant file ID to read the document text.
-      3. Use the extracted text to verify coverage rules, exclusion clauses, and benefit conditions.
-      Only fetch documents when needed — e.g., when determining if a specific item/drug/test is covered by policy terms.`}
+      If policyRules returns no results or an error, STOP the assessment immediately.
+      Do NOT proceed without policy rules. Report that rules are missing for this insurer/company.
 
     **Assessment Workflow (MUST complete ALL steps)**:
       ${skipCompliance ? "" : "1. Call invokeComplianceAgent first (see above).\n      "}2. Call claim tool to get claim data. Pay attention to past claims from same insured — note any non_paid_amount > 0 and their assessment_summary for drug exclusion history.
       3. Call benefits and insured tools to get policy context.
-      3b. **MANDATORY**: Call policyRules with the claim code to get pre-extracted coverage rules. If policyRules returns rules, use them for coverage determination. If no rules found, fall back to policyDocSearch + policyDocFetch.${options?.mode === "policy-doc" ? " In policy-doc mode, if policyRules returns no rules, you MUST call policyDocSearch + policyDocFetch on the 1–2 MOST relevant files." : ""}
+      3b. **MANDATORY**: Call policyRules with the claim code to get pre-extracted coverage rules. If policyRules returns an error or no rules, STOP the assessment — do NOT proceed.
       4. Skip saveDetailForm if claim already has diagnosis and medical_provider populated. Only call when missing.
       5. **Drug & line item validation (MANDATORY — DO NOT SKIP)**:
          a. Review the DOCUMENT ANALYSIS section below for invoice line items, prescription items, and test results.
