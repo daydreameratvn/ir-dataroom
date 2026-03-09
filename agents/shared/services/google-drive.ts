@@ -1,7 +1,7 @@
 import { SSMClient, GetParameterCommand } from "@aws-sdk/client-ssm";
 import { google, type drive_v3 } from "googleapis";
 import { GoogleAuth } from "google-auth-library";
-import pdfParse from "pdf-parse/lib/pdf-parse.js";
+import pdfParse from "pdf-parse";
 
 // ============================================================================
 // Constants
