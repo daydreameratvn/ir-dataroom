@@ -5,6 +5,7 @@ export { default as LoginPage } from './LoginPage';
 export {
   configureAuthClient,
   AuthError,
+  getWorkOSLoginUrl,
   startImpersonation,
   endImpersonation,
   getPasskeyRegisterOptions,

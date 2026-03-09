@@ -96,6 +96,12 @@ export function getSSOUrl(provider: string, tenantId: string, returnUrl?: string
   return `${_authBaseUrl}/sso/${provider}?tenant_id=${encodeURIComponent(tenantId)}&return_url=${encodeURIComponent(url)}`;
 }
 
+// WorkOS AuthKit
+export function getWorkOSLoginUrl(tenantId: string, returnUrl?: string): string {
+  const url = returnUrl ?? `${window.location.origin}/`;
+  return `${_authBaseUrl}/workos/login?tenant_id=${encodeURIComponent(tenantId)}&return_url=${encodeURIComponent(url)}`;
+}
+
 // OTP
 export async function requestEmailOtp(
   email: string,
