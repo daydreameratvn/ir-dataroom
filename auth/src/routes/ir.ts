@@ -57,8 +57,9 @@ import {
   downloadFileBuffer,
   uploadToS3,
 } from "../services/ir-s3.ts";
-import { watermarkFile } from "../services/ir-watermark.ts";
-import { generateSignedNdaPdf } from "../services/ir-nda-pdf.ts";
+// TODO: pdf-lib crashes on Bun 1.3.10 — use lazy imports until fixed
+// import { watermarkFile } from "../services/ir-watermark.ts";
+// import { generateSignedNdaPdf } from "../services/ir-nda-pdf.ts";
 
 // ---------------------------------------------------------------------------
 // Investor JWT helpers (separate from platform JWTs)
@@ -1195,6 +1196,7 @@ ir.get("/ir/portal/rounds/:slug/documents/:docId/download", async (c) => {
         // Apply watermark if enabled, otherwise serve original
         let content: Buffer = buffer;
         if (doc.watermarkEnabled) {
+          const { watermarkFile } = await import("../services/ir-watermark.ts");
           const watermarked = await watermarkFile(buffer, doc.mimeType, investor.email);
           if (watermarked) content = watermarked;
         }
@@ -1305,6 +1307,7 @@ ir.get("/ir/portal/rounds/:slug/nda/download", requireInvestor, async (c) => {
 
     // Generate signed NDA as PDF (default)
     const investorRecord = await getInvestorById(investor.sub);
+    const { generateSignedNdaPdf } = await import("../services/ir-nda-pdf.ts");
     const pdfBuffer = await generateSignedNdaPdf(ndaTemplate.content, {
       email: investor.email,
       name: investor.name,
