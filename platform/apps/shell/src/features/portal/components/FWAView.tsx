@@ -378,7 +378,7 @@ export default function FWAView({ data, claimId, imageForensicsData }: FWAViewPr
       )}
 
       {/* Section 4 — Document Forensics Quick Summary */}
-      {imageForensicsData && imageForensicsData.totalDocumentsAnalyzed > 0 && (
+      {imageForensicsData && (
         <ForensicsQuickSummary data={imageForensicsData} />
       )}
 
