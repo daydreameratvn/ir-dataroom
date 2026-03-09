@@ -72,7 +72,8 @@ export default function TenantBrandingSettings() {
       });
 
       setSaveMessage('Branding saved successfully!');
-    } catch {
+    } catch (error) {
+      console.error('Failed to save branding:', error);
       setSaveMessage('Failed to save branding. Please try again.');
     } finally {
       setIsSaving(false);

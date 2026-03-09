@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import TestWrapper, { ensureI18n } from '@/test/wrapper';
 import TenantBranding from './TenantBranding';
 
@@ -44,9 +44,12 @@ describe('TenantBranding', () => {
       </TestWrapper>,
     );
 
-    // Should have the logo image element
     const logo = screen.getByAltText('Acme Insurance');
-    expect(logo).toBeInTheDocument();
+    fireEvent.error(logo);
+
+    // After error, the initial should be shown instead of the image
+    expect(screen.getByText('A')).toBeInTheDocument();
+    expect(screen.queryByAltText('Acme Insurance')).not.toBeInTheDocument();
   });
 
   it('applies custom size when specified', () => {

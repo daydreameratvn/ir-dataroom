@@ -78,4 +78,33 @@ describe('TenantBrandingSettings', () => {
 
     expect(logoInput).toHaveValue('https://example.com/logo.png');
   });
+
+  it('calls updateTenantBranding with form data on save', async () => {
+    const { updateTenantBranding } = await import('../branding-api');
+    const user = userEvent.setup();
+
+    render(
+      <TestWrapper>
+        <TenantBrandingSettings />
+      </TestWrapper>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/logo url/i)).toBeInTheDocument();
+    });
+
+    const logoInput = screen.getByLabelText(/logo url/i);
+    await user.type(logoInput, 'https://example.com/logo.png');
+
+    const saveButton = screen.getByRole('button', { name: /save/i });
+    await user.click(saveButton);
+
+    await waitFor(() => {
+      expect(updateTenantBranding).toHaveBeenCalledWith({
+        logoUrl: 'https://example.com/logo.png',
+        faviconUrl: undefined,
+        primaryColor: '#ED1B55',
+      });
+    });
+  });
 });

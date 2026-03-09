@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Sparkles, ArrowRight, Shield, FileText, Brain, ChartBar } from 'lucide-react';
 import { cn, Button } from '@papaya/shared-ui';
 import { useTenant } from '@/providers/TenantProvider';
@@ -47,6 +47,18 @@ export default function WelcomeModal({ open, onComplete }: WelcomeModalProps) {
     }
   }, [open]);
 
+  // Pre-compute random star positions so they don't shift on re-render
+  const starPositions = useMemo(
+    () =>
+      Array.from({ length: 50 }, () => ({
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        animationDelay: `${Math.random() * 2}s`,
+        animationDuration: `${2 + Math.random() * 3}s`,
+      })),
+    [],
+  );
+
   if (!open) return null;
 
   const handleContinue = () => {
@@ -58,21 +70,16 @@ export default function WelcomeModal({ open, onComplete }: WelcomeModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center overflow-hidden">
+    <div role="dialog" aria-modal="true" aria-label="Welcome to Oasis" className="fixed inset-0 z-[200] flex items-center justify-center overflow-hidden">
       {/* Animated background */}
       <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
         {/* Subtle animated stars/dots effect */}
         <div className="absolute inset-0 opacity-30">
-          {Array.from({ length: 50 }).map((_, i) => (
+          {starPositions.map((pos, i) => (
             <div
               key={i}
               className="absolute h-1 w-1 rounded-full bg-white animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${2 + Math.random() * 3}s`,
-              }}
+              style={pos}
             />
           ))}
         </div>

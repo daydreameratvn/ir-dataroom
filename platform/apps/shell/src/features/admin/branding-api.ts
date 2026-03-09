@@ -17,7 +17,7 @@ export async function getTenantBranding(): Promise<TenantBranding> {
   });
 
   if (!res.ok) {
-    // Return defaults if API fails
+    console.warn(`[branding-api] GET /api/tenant/branding failed: ${res.status} ${res.statusText}`);
     return {
       logoUrl: '',
       faviconUrl: '',
