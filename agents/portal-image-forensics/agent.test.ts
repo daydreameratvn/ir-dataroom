@@ -32,6 +32,21 @@ vi.mock("@aws-sdk/client-s3", () => ({
   },
 }));
 
+vi.mock("mupdf", () => ({
+  Document: {
+    openDocument: (_buf: any, _mime: string) => ({
+      countPages: () => 2,
+      loadPage: (_i: number) => ({
+        toPixmap: () => ({
+          asPNG: () => Buffer.from("fake-png-data"),
+        }),
+      }),
+    }),
+  },
+  Matrix: { scale: (x: number, y: number) => [x, y] },
+  ColorSpace: { DeviceRGB: "rgb" },
+}));
+
 import { createPortalAgent } from "./agent.ts";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -193,20 +208,37 @@ describe("portal-image-forensics agent", () => {
     expect(savedResult.confidenceScore).toBe(70); // (1 - 0.3) * 100
   });
 
-  it("should skip non-image documents", async () => {
+  it("should render PDF pages and analyze each page", async () => {
     setupClaimWithDocuments(
       [{ type: "Bill", pageNumbers: [1], summary: "Hospital bill" }],
       [{ id: "doc1", documentType: "Bill", fileName: "bill.pdf", fileUrl: "https://s3.amazonaws.com/bucket/bill.pdf" }],
+    );
+    mockS3Download();
+    mockCallForensicsApi.mockResolvedValue(makeForensicsResult());
+
+    const agent = await createPortalAgent("claim-123");
+    await agent.prompt("Process");
+    await agent.waitForIdle();
+
+    // Mock mupdf returns 2 pages, so forensics API should be called twice
+    expect(mockCallForensicsApi).toHaveBeenCalledTimes(2);
+
+    const savedResult = mockMergeExtractedData.mock.calls[0][1];
+    expect(savedResult.totalDocumentsAnalyzed).toBe(2);
+  });
+
+  it("should skip unsupported file types", async () => {
+    setupClaimWithDocuments(
+      [{ type: "Bill", pageNumbers: [1], summary: "Hospital bill" }],
+      [{ id: "doc1", documentType: "Bill", fileName: "bill.docx", fileUrl: "https://s3.amazonaws.com/bucket/bill.docx" }],
     );
 
     const agent = await createPortalAgent("claim-123");
     await agent.prompt("Process");
     await agent.waitForIdle();
 
-    // Should not call forensics API for PDFs
     expect(mockCallForensicsApi).not.toHaveBeenCalled();
 
-    // Should still save a result (empty findings)
     expect(mockMergeExtractedData).toHaveBeenCalledWith(
       "claim-123",
       expect.objectContaining({

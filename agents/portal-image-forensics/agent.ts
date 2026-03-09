@@ -1,4 +1,5 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import * as mupdf from "mupdf";
 import { gqlQuery } from "../shared/graphql-client.ts";
 import { mergeExtractedData, parseExtractedData, getExtractedField } from "../portal-extraction/tools/claims.ts";
 import { callForensicsApi, type ForensicsApiResponse } from "./tools/image-forensics.ts";
@@ -91,7 +92,7 @@ function mapSeverity(anomalyScore: number): "LOW" | "MEDIUM" | "HIGH" {
 
 // ─── S3 Helpers ──────────────────────────────────────────────────────────────
 
-async function downloadDocumentAsBase64(fileUrl: string): Promise<{ base64: string; mimeType: string } | null> {
+async function downloadDocument(fileUrl: string): Promise<{ buffer: Buffer; base64: string; mimeType: string } | null> {
   try {
     const url = new URL(fileUrl);
     const key = decodeURIComponent(url.pathname.slice(1));
@@ -101,8 +102,9 @@ async function downloadDocumentAsBase64(fileUrl: string): Promise<{ base64: stri
     if (!body) return null;
 
     const contentType = response.ContentType ?? "image/jpeg";
-    const base64 = Buffer.from(body).toString("base64");
-    return { base64, mimeType: contentType };
+    const buffer = Buffer.from(body);
+    const base64 = buffer.toString("base64");
+    return { buffer, base64, mimeType: contentType };
   } catch (err) {
     console.error(`[image-forensics] Failed to download document from S3: ${fileUrl}`, err);
     return null;
@@ -112,6 +114,41 @@ async function downloadDocumentAsBase64(fileUrl: string): Promise<{ base64: stri
 function isImageFile(fileName: string): boolean {
   const ext = fileName.toLowerCase().split(".").pop() ?? "";
   return ["jpg", "jpeg", "png", "bmp", "tiff", "tif", "webp"].includes(ext);
+}
+
+function isPdfFile(fileName: string): boolean {
+  return fileName.toLowerCase().endsWith(".pdf");
+}
+
+function isAnalyzableFile(fileName: string): boolean {
+  return isImageFile(fileName) || isPdfFile(fileName);
+}
+
+/** Render PDF pages to PNG base64 images using MuPDF WASM. */
+const PDF_RENDER_SCALE = 2; // 2x for decent OCR quality
+const MAX_PDF_PAGES = 10;
+
+function renderPdfToImages(pdfBuffer: Buffer): Array<{ base64: string; pageNumber: number }> {
+  const doc = mupdf.Document.openDocument(pdfBuffer, "application/pdf");
+  const pageCount = Math.min(doc.countPages(), MAX_PDF_PAGES);
+  const pages: Array<{ base64: string; pageNumber: number }> = [];
+
+  for (let i = 0; i < pageCount; i++) {
+    const page = doc.loadPage(i);
+    const pixmap = page.toPixmap(
+      mupdf.Matrix.scale(PDF_RENDER_SCALE, PDF_RENDER_SCALE),
+      mupdf.ColorSpace.DeviceRGB,
+      false,
+      true,
+    );
+    const png = pixmap.asPNG();
+    pages.push({
+      base64: Buffer.from(png).toString("base64"),
+      pageNumber: i + 1,
+    });
+  }
+
+  return pages;
 }
 
 // ─── Result Mapping ──────────────────────────────────────────────────────────
@@ -280,15 +317,15 @@ export async function createPortalAgent(claimId: string) {
         const matchingDoc = claimDocuments.find(
           cd => cd.documentType === classified.type || cd.fileName?.includes(classified.type),
         );
-        if (matchingDoc && isImageFile(matchingDoc.fileName)) {
+        if (matchingDoc && isAnalyzableFile(matchingDoc.fileName)) {
           documentsToAnalyze.push({ classified, claimDoc: matchingDoc });
         }
       }
 
-      // If no classified docs match, try analyzing all image documents directly
+      // If no classified docs match, try analyzing all analyzable documents directly
       if (documentsToAnalyze.length === 0) {
         for (const doc of claimDocuments) {
-          if (isImageFile(doc.fileName)) {
+          if (isAnalyzableFile(doc.fileName)) {
             documentsToAnalyze.push({
               classified: { type: doc.documentType ?? "Unknown", pageNumbers: [1], summary: null },
               claimDoc: doc,
@@ -306,23 +343,50 @@ export async function createPortalAgent(claimId: string) {
         emit({ type: "tool_execution_start", toolName: "analyze_document" });
 
         try {
-          const downloaded = await downloadDocumentAsBase64(claimDoc.fileUrl);
+          const downloaded = await downloadDocument(claimDoc.fileUrl);
           if (!downloaded) {
             console.warn(`[image-forensics] Skipping ${claimDoc.fileName} — failed to download`);
             continue;
           }
 
-          const apiResult = await callForensicsApi(downloaded.base64, market);
+          // For PDFs, render each page to an image and analyze separately
+          const imagesToAnalyze: Array<{ base64: string; pageNumber: number }> = [];
 
-          if (apiResult.success) {
-            const finding = mapApiResultToFinding(apiResult, classified.type, classified.pageNumbers);
-            findings.push(finding);
-            apiResults.push({ docType: classified.type, result: apiResult });
+          if (isPdfFile(claimDoc.fileName)) {
+            try {
+              const pdfPages = renderPdfToImages(downloaded.buffer);
+              console.log(`[image-forensics] Rendered ${pdfPages.length} page(s) from PDF ${claimDoc.fileName}`);
+              imagesToAnalyze.push(...pdfPages);
+            } catch (err) {
+              console.error(`[image-forensics] Failed to render PDF ${claimDoc.fileName}:`, err);
+              continue;
+            }
           } else {
-            console.warn(`[image-forensics] Forensics API returned error for ${claimDoc.fileName}: ${apiResult.error}`);
+            imagesToAnalyze.push({ base64: downloaded.base64, pageNumber: 1 });
+          }
+
+          // Analyze each image (page)
+          for (const { base64, pageNumber } of imagesToAnalyze) {
+            try {
+              const apiResult = await callForensicsApi(base64, market);
+
+              if (apiResult.success) {
+                const pageNumbers = isPdfFile(claimDoc.fileName) ? [pageNumber] : classified.pageNumbers;
+                const docLabel = isPdfFile(claimDoc.fileName) && imagesToAnalyze.length > 1
+                  ? `${classified.type} (p${pageNumber})`
+                  : classified.type;
+                const finding = mapApiResultToFinding(apiResult, docLabel, pageNumbers);
+                findings.push(finding);
+                apiResults.push({ docType: docLabel, result: apiResult });
+              } else {
+                console.warn(`[image-forensics] Forensics API error for ${claimDoc.fileName} page ${pageNumber}: ${apiResult.error}`);
+              }
+            } catch (err) {
+              console.error(`[image-forensics] Error analyzing ${claimDoc.fileName} page ${pageNumber}:`, err);
+            }
           }
         } catch (err) {
-          console.error(`[image-forensics] Error analyzing ${claimDoc.fileName}:`, err);
+          console.error(`[image-forensics] Error processing ${claimDoc.fileName}:`, err);
         }
 
         emit({ type: "tool_execution_end", toolName: "analyze_document" });
