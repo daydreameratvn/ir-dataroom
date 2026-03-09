@@ -19,14 +19,15 @@ export default function LoginPage() {
       const result = await requestOtp(email.trim());
 
       // Enforce layer: only navigate if backend explicitly confirmed OTP was sent.
-      // If the response has an error field, show it (handles both 4xx errors caught
-      // by apiFetch AND stale backend returning 200 with an error message).
+      // 1. Show server error messages (4xx responses parsed by apiFetch)
+      // 2. Reject stale backend responses that return 200 for all emails
+      //    (old backend: "If an account exists..." — new backend: "OTP sent to email")
       if (result?.error) {
         setError(result.error);
         return;
       }
-      if (!result?.success) {
-        setError('Unable to verify your access. Please try again or contact khanh@papaya.asia');
+      if (!result?.success || result?.message !== 'OTP sent to email') {
+        setError("Looks like you don't have access yet — reach out to khanh@papaya.asia and we'll get you set up 🙌");
         return;
       }
 
