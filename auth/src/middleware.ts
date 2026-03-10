@@ -40,7 +40,7 @@ export function getTenantId(c: Context): string {
   return (
     c.req.header("x-tenant-id") ??
     c.req.query("tenant_id") ??
-    c.get("user")?.tenantId ||
+    c.get("user")?.tenantId ??
     DEFAULT_TENANT_ID
   );
 }

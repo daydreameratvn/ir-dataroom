@@ -11,9 +11,19 @@ import { banyanDbSecret } from "./rds.ts";
 import { banyanAlbSg, banyanRdsSg } from "./security-groups.ts";
 import { banyanVpc, banyanPrivateSubnets } from "./vpc.ts";
 
-// Fetch Hasura admin token from SSM (needed by agents/shared/graphql-client.ts)
+// Fetch agent env vars from SSM (needed by agents/shared/graphql-client.ts)
 const hasuraAdminToken = aws.ssm.getParameterOutput({
   name: "/banyan/hasura/admin-token",
+  withDecryption: true,
+});
+const ddnCloudEndpoint = aws.ssm.getParameterOutput({
+  name: "/banyan/hasura/ddn-cloud-endpoint",
+});
+const appleEndpoint = aws.ssm.getParameterOutput({
+  name: "/banyan/hasura/apple-endpoint",
+});
+const appleAdminSecret = aws.ssm.getParameterOutput({
+  name: "/banyan/hasura/apple-admin-secret",
   withDecryption: true,
 });
 
@@ -204,15 +214,24 @@ new aws.iam.RolePolicyAttachment("banyan-prod-auth-task-policy-attachment", {
 
 export const banyanAuthTaskDef = new aws.ecs.TaskDefinition("banyan-prod-auth-task-def", {
   family: "banyan-prod-auth",
-  cpu: "256",
-  memory: "512",
+  cpu: "512",
+  memory: "1024",
   networkMode: "awsvpc",
   requiresCompatibilities: ["FARGATE"],
   executionRoleArn: banyanExecRole.arn,
   taskRoleArn: banyanTaskRole.arn,
   containerDefinitions: pulumi
-    .all([banyanAuthLogGroup.name, banyanDbSecret.arn, banyanJwtSecret.arn, banyanAuthEcrRepo.repositoryUrl, hasuraAdminToken.value])
-    .apply(([logGroupName, dbSecretArn, jwtSecretArn, ecrUrl, adminToken]) =>
+    .all([
+      banyanAuthLogGroup.name,
+      banyanDbSecret.arn,
+      banyanJwtSecret.arn,
+      banyanAuthEcrRepo.repositoryUrl,
+      hasuraAdminToken.value,
+      ddnCloudEndpoint.value,
+      appleEndpoint.value,
+      appleAdminSecret.value,
+    ])
+    .apply(([logGroupName, dbSecretArn, jwtSecretArn, ecrUrl, adminToken, ddnEndpoint, appleUrl, appleSecret]) =>
       JSON.stringify([
         {
           name: "auth",
@@ -242,6 +261,9 @@ export const banyanAuthTaskDef = new aws.ecs.TaskDefinition("banyan-prod-auth-ta
             { name: "DRIVE_POLICY_ROOT_ID", value: "1HeLlO86_ZlhtQJCWy9NK_zSk7aOoghuZ" },
             { name: "HASURA_ADMIN_TOKEN", value: adminToken },
             { name: "FORENSICS_API_URL", value: "https://prod.banyan.services.papaya.asia" },
+            { name: "HASURA_GRAPHQL_ENDPOINT", value: ddnEndpoint },
+            { name: "APPLE_GRAPHQL_ENDPOINT", value: appleUrl },
+            { name: "APPLE_ADMIN_SECRET", value: appleSecret },
           ],
           logConfiguration: {
             logDriver: "awslogs",
