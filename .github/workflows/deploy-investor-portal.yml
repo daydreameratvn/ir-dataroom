@@ -1,0 +1,57 @@
+name: Deploy Investor Portal
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'platform/apps/investor-portal/**'
+      - 'platform/libs/**'
+      - 'platform/package.json'
+      - 'scripts/deploy.sh'
+
+concurrency:
+  group: deploy-investor-portal
+  cancel-in-progress: false
+
+env:
+  SLACK_CHANNEL_ID: C0A9BUS57K7
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ap-southeast-1
+
+      - name: Deploy
+        run: bash scripts/deploy.sh investor-portal
+
+      - name: Notify Slack (success)
+        if: success()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "✅ Investor Portal deployed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view>"
+
+      - name: Notify Slack (failure)
+        if: failure()
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
+          payload: |
+            channel: ${{ env.SLACK_CHANNEL_ID }}
+            text: "❌ Investor Portal deploy failed\n${{ github.event.head_commit.url }}\n${{ github.event.head_commit.message }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view>"
