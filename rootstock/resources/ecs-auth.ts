@@ -266,6 +266,7 @@ export const banyanAuthTaskDef = new aws.ecs.TaskDefinition("banyan-prod-auth-ta
             { name: "HASURA_GRAPHQL_ENDPOINT", value: ddnEndpoint },
             { name: "APPLE_GRAPHQL_ENDPOINT", value: appleUrl },
             { name: "APPLE_ADMIN_SECRET", value: appleSecret },
+            { name: "IR_S3_BUCKET", value: "papaya-ir-dataroom" },
           ],
           logConfiguration: {
             logDriver: "awslogs",
