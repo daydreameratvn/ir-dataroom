@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ExternalLink, Settings } from 'lucide-react';
-import { cn, Separator } from '@papaya/shared-ui';
+import { ChevronRight, ExternalLink, Settings } from 'lucide-react';
+import { cn, Collapsible, CollapsibleContent, CollapsibleTrigger, Separator } from '@papaya/shared-ui';
 import type { Round } from '../types';
 import { listRounds } from '../api';
 import { INVESTOR_PORTAL_URL } from '../config';
@@ -23,6 +23,7 @@ export default function IRFlyoutContent({ onNavigate, isActive }: IRFlyoutConten
   const { pathname } = useLocation();
   const [rounds, setRounds] = useState<Round[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     listRounds({ limit: 50 })
@@ -30,6 +31,25 @@ export default function IRFlyoutContent({ onNavigate, isActive }: IRFlyoutConten
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  // Auto-expand the round whose path matches the current URL
+  const activeRoundId = useMemo(
+    () => rounds.find((r) => pathname.startsWith(`/ir/${r.id}`))?.id,
+    [rounds, pathname]
+  );
+
+  useEffect(() => {
+    if (activeRoundId) setExpanded((prev) => new Set(prev).add(activeRoundId));
+  }, [activeRoundId]);
+
+  function toggleRound(id: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   if (loading) {
     return (
@@ -77,40 +97,48 @@ export default function IRFlyoutContent({ onNavigate, isActive }: IRFlyoutConten
     <div className="space-y-4">
       {rounds.map((round) => {
         const basePath = `/ir/${round.id}`;
+        const isOpen = expanded.has(round.id);
         return (
-          <div key={round.id} className="space-y-1">
-            <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+          <Collapsible
+            key={round.id}
+            open={isOpen}
+            onOpenChange={() => toggleRound(round.id)}
+          >
+            <CollapsibleTrigger className="flex w-full cursor-pointer items-center gap-1 px-3 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+              <ChevronRight className={cn('size-3 transition-transform', isOpen && 'rotate-90')} />
               {round.name}
-            </p>
-            {SUB_TABS.map((tab) => {
-              const tabPath = `${basePath}${tab.suffix}`;
-              const active = tab.suffix
-                ? pathname.startsWith(tabPath)
-                : pathname === basePath || pathname === `${basePath}/`;
-              return (
-                <Link
-                  key={tab.suffix || 'dashboard'}
-                  to={tabPath}
-                  onClick={onNavigate}
-                  className={cn(
-                    'block rounded-md px-3 py-1.5 text-sm transition-colors hover:bg-accent',
-                    active ? 'font-medium text-foreground bg-accent' : 'text-muted-foreground'
-                  )}
-                >
-                  {tab.label}
-                </Link>
-              );
-            })}
-            <a
-              href={`${INVESTOR_PORTAL_URL}/rounds/${round.slug}/documents`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent"
-            >
-              Investor View
-              <ExternalLink className="size-3" />
-            </a>
-          </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-1 pt-1">
+              {SUB_TABS.map((tab) => {
+                const tabPath = `${basePath}${tab.suffix}`;
+                const active = tab.suffix
+                  ? pathname.startsWith(tabPath)
+                  : pathname === basePath || pathname === `${basePath}/`;
+                return (
+                  <Link
+                    key={tab.suffix || 'dashboard'}
+                    to={tabPath}
+                    onClick={onNavigate}
+                    className={cn(
+                      'block rounded-md px-3 py-1.5 text-sm transition-colors hover:bg-accent',
+                      active ? 'font-medium text-foreground bg-accent' : 'text-muted-foreground'
+                    )}
+                  >
+                    {tab.label}
+                  </Link>
+                );
+              })}
+              <a
+                href={`${INVESTOR_PORTAL_URL}/rounds/${round.slug}/documents`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent"
+              >
+                Investor View
+                <ExternalLink className="size-3" />
+              </a>
+            </CollapsibleContent>
+          </Collapsible>
         );
       })}
 
