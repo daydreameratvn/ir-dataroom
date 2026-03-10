@@ -371,7 +371,8 @@ describe('api client', () => {
       const result = await api.getDocumentDownloadUrl('series-a', 'doc-1');
 
       expect(result.url).toBeNull();
-      expect(result.blob).toBeInstanceOf(Blob);
+      expect(result.blob).toBeDefined();
+      expect(result.blob!.size).toBeGreaterThan(0);
       expect(result.document.id).toBe('doc-1');
       expect(result.document.name).toBe('report.pdf');
       expect(result.document.mimeType).toBe('application/pdf');
