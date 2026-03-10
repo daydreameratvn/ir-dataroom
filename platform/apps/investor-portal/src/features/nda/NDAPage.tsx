@@ -84,7 +84,7 @@ export default function NDAPage() {
             ) : (
               <p className="text-muted-foreground">
                 No NDA template has been provided for this round.
-                Please contact your fund representative.
+                Please contact khanh@papaya.asia.
               </p>
             )}
           </div>
