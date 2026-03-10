@@ -357,9 +357,8 @@ describe('api client', () => {
       mockToken('my-token');
 
       const pdfBytes = new Uint8Array([0x25, 0x50, 0x44, 0x46]); // %PDF
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
       mockFetch.mockResolvedValueOnce(
-        new Response(blob, {
+        new Response(pdfBytes, {
           status: 200,
           headers: {
             'content-type': 'application/pdf',
