@@ -3,8 +3,9 @@ import App from './App';
 import LoginPage from './features/auth/LoginPage';
 import OTPVerifyPage from './features/auth/OTPVerifyPage';
 import InvestorLayout from './features/components/InvestorLayout';
+import PortalLayout from './features/components/PortalLayout';
 import NotFoundPage from './features/components/NotFoundPage';
-import RoundSelectPage from './features/rounds/RoundSelectPage';
+import AssistantPage from './features/assistant/AssistantPage';
 import ProfilePage from './features/profile/ProfilePage';
 import DataroomPage from './features/dataroom/DataroomPage';
 import DocumentViewer from './features/dataroom/DocumentViewer';
@@ -35,38 +36,47 @@ export const routes: RouteObject[] = [
             element: <InvestorLayout />,
             children: [
               {
-                index: true,
-                element: <RoundSelectPage />,
-              },
-              {
-                path: 'profile',
-                element: <ProfilePage />,
-              },
-              {
-                path: 'rounds/:slug',
-                element: <RoundGuard />,
+                element: <PortalLayout />,
                 children: [
                   {
                     index: true,
-                    element: <Navigate to="documents" replace />,
+                    element: <Navigate to="assistant" replace />,
                   },
                   {
-                    path: 'nda',
-                    element: <NDAPage />,
+                    path: 'assistant',
+                    element: <AssistantPage />,
                   },
                   {
-                    path: 'documents',
-                    element: <DataroomPage />,
+                    path: 'profile',
+                    element: <ProfilePage />,
                   },
                   {
-                    path: 'documents/:id',
-                    element: <DocumentViewer />,
+                    path: 'rounds/:slug',
+                    element: <RoundGuard />,
+                    children: [
+                      {
+                        index: true,
+                        element: <Navigate to="documents" replace />,
+                      },
+                      {
+                        path: 'nda',
+                        element: <NDAPage />,
+                      },
+                      {
+                        path: 'documents',
+                        element: <DataroomPage />,
+                      },
+                      {
+                        path: 'documents/:id',
+                        element: <DocumentViewer />,
+                      },
+                    ],
+                  },
+                  {
+                    path: '*',
+                    element: <NotFoundPage />,
                   },
                 ],
-              },
-              {
-                path: '*',
-                element: <NotFoundPage />,
               },
             ],
           },

@@ -133,13 +133,10 @@ export default function DocumentManager({ roundId }: DocumentManagerProps) {
     setUploading(true);
     setUploadError(null);
     try {
-      const mimeType = file.type || 'application/octet-stream';
-
       // 1. Create document record
       const result = await createDocument(roundId, {
         name: file.name,
         category: selectedCategory,
-        mimeType,
       });
 
       // 2. Upload file via server proxy (avoids S3 CORS issues)

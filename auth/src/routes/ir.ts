@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { streamSSE } from "hono/streaming";
 import { SignJWT, jwtVerify } from "jose";
 import { requireAuth, requireAdmin, getEffectiveTenantId, getClientInfo, getTenantId } from "../middleware.ts";
 import { getJwtKey } from "../config.ts";
@@ -453,24 +454,30 @@ ir.post("/ir/rounds/:id/documents", async (c) => {
   try {
     const result = await createDocument(tenantId, roundId, body, user.sub);
 
-    // If mimeType is provided, generate a presigned upload URL
+    // If mimeType is provided, generate a presigned upload URL (best-effort).
+    // S3 failures must not block document creation — the proxy upload
+    // endpoint (/ir/documents/:id/upload) handles S3 independently.
     let uploadUrl: string | null = null;
     if (body.mimeType && body.name) {
-      const s3Result = await generateUploadUrl({
-        tenantId,
-        roundId,
-        docId: result.id,
-        fileName: body.name,
-        mimeType: body.mimeType,
-      });
-      uploadUrl = s3Result.uploadUrl;
+      try {
+        const s3Result = await generateUploadUrl({
+          tenantId,
+          roundId,
+          docId: result.id,
+          fileName: body.name,
+          mimeType: body.mimeType,
+        });
+        uploadUrl = s3Result.uploadUrl;
 
-      // Update the document with S3 metadata
-      await updateDocument(
-        result.id,
-        { s3Key: s3Result.s3Key, s3Bucket: s3Result.s3Bucket },
-        user.sub
-      );
+        // Update the document with S3 metadata
+        await updateDocument(
+          result.id,
+          { s3Key: s3Result.s3Key, s3Bucket: s3Result.s3Bucket },
+          user.sub
+        );
+      } catch (s3Err) {
+        console.warn("[IR API] Presigned URL generation failed (non-critical):", s3Err);
+      }
     }
 
     return c.json({ ...result, uploadUrl }, 201);
@@ -1084,7 +1091,11 @@ ir.get("/ir/portal/rounds/:slug/documents", async (c) => {
       return c.json({ error: "NDA must be accepted first" }, 422);
     }
 
-    const result = await listDocuments(round.id, { category });
+    const result = await listDocuments(round.id, {
+      category,
+      excludeCategory: "ai_knowledge_base",
+      requireS3Key: true,
+    });
 
     // Log document list view
     const { ipAddress, userAgent } = getClientInfo(c);
@@ -1340,6 +1351,120 @@ ir.get("/ir/portal/rounds/:slug/nda/download", requireInvestor, async (c) => {
   } catch (err) {
     console.error("[IR Portal] Error downloading NDA:", err);
     return c.json({ error: "Failed to download NDA" }, 500);
+  }
+});
+
+// ── AI Assistant Chat (SSE) ───────────────────────────────────────────
+
+ir.post("/ir/portal/assistant/chat", requireInvestor, async (c) => {
+  const investor = c.get("investor");
+
+  // Lazy-import to avoid loading Bedrock SDK at module level
+  const { streamInvestorChatResponse } = await import(
+    "../services/ir-chat.ts"
+  );
+
+  const body = await c.req.json<{ messages: Array<{ role: "user" | "assistant"; content: string }> }>();
+
+  if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
+    return c.json({ error: "messages array is required" }, 400);
+  }
+
+  // Validate message format
+  for (const msg of body.messages) {
+    if (!msg.role || !msg.content) {
+      return c.json({ error: "Each message must have role and content" }, 400);
+    }
+    if (msg.role !== "user" && msg.role !== "assistant") {
+      return c.json({ error: "role must be 'user' or 'assistant'" }, 400);
+    }
+  }
+
+  try {
+    // Get the investor's active round(s)
+    const rounds = await listRoundsForInvestor(investor.sub);
+    const activeRound = rounds[0]; // Only 1 active round at a time
+
+    // Build AI context from knowledge base documents
+    let knowledgeBase: Array<{ name: string; content: string }> = [];
+
+    if (activeRound) {
+      const kbDocs = await listDocuments(activeRound.roundId, {
+        category: "ai_knowledge_base",
+      });
+
+      // Download text content from S3 for each KB document
+      const { downloadFileBuffer } = await import("../services/ir-s3.ts");
+      const docContents = await Promise.all(
+        kbDocs.data.map(async (doc) => {
+          if (!doc.s3Key) return null;
+          try {
+            const { buffer } = await downloadFileBuffer({
+              s3Key: doc.s3Key,
+              s3Bucket: doc.s3Bucket ?? undefined,
+            });
+            return { name: doc.name, content: buffer.toString("utf-8") };
+          } catch {
+            console.warn(`[IR Chat] Failed to download KB doc: ${doc.name}`);
+            return null;
+          }
+        })
+      );
+      knowledgeBase = docContents.filter(Boolean) as Array<{
+        name: string;
+        content: string;
+      }>;
+    }
+
+    // Get round details for context
+    const roundInfo = activeRound
+      ? await getRoundById(activeRound.roundId)
+      : null;
+    const investorRecord = await getInvestorById(investor.sub);
+
+    return streamSSE(c, async (stream) => {
+      const abortController = new AbortController();
+      c.req.raw.signal.addEventListener("abort", () => {
+        abortController.abort();
+      });
+
+      try {
+        for await (const chunk of streamInvestorChatResponse(
+          body.messages,
+          {
+            roundName: roundInfo?.name ?? "N/A",
+            roundStatus: roundInfo?.status ?? "unknown",
+            targetRaise: roundInfo?.targetRaise ? parseFloat(roundInfo.targetRaise) : null,
+            currency: roundInfo?.currency ?? null,
+            investorName: investorRecord?.name ?? investor.name,
+            investorFirm: investorRecord?.firm ?? null,
+            knowledgeBase,
+          },
+          abortController.signal
+        )) {
+          await stream.writeSSE({
+            data: JSON.stringify({ type: "delta", text: chunk }),
+          });
+        }
+
+        await stream.writeSSE({
+          data: JSON.stringify({ type: "done" }),
+        });
+      } catch (err) {
+        if (abortController.signal.aborted) return;
+
+        console.error("[IR Chat] Stream error:", (err as Error).message);
+        await stream.writeSSE({
+          data: JSON.stringify({
+            type: "error",
+            message: "Something went wrong. Please try again.",
+          }),
+        });
+      }
+    });
+  } catch (err) {
+    console.error("[IR Chat] Error:", (err as Error).message);
+    return c.json({ error: "Failed to start chat" }, 500);
   }
 });
 

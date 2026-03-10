@@ -3,6 +3,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import type { ReactNode } from 'react';
 import { cn } from '../../lib/utils';
 import CodeBlock from './CodeBlock';
 
@@ -11,6 +12,8 @@ interface MarkdownRendererProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   enableMath?: boolean;
+  /** Optional override for rendering code blocks. Return null to fall back to default CodeBlock. */
+  renderCodeBlock?: (language: string, code: string) => ReactNode | null;
 }
 
 const sanitizeSchema = {
@@ -26,6 +29,7 @@ export default function MarkdownRenderer({
   className,
   size = 'md',
   enableMath = false,
+  renderCodeBlock,
 }: MarkdownRendererProps) {
   const remarkPlugins = [remarkGfm, ...(enableMath ? [remarkMath] : [])];
   const rehypePlugins = [
@@ -75,6 +79,12 @@ export default function MarkdownRenderer({
                   {children}
                 </code>
               );
+            }
+            if (renderCodeBlock) {
+              const lang = codeClassName?.replace('language-', '') || 'text';
+              const code = String(children).trim();
+              const custom = renderCodeBlock(lang, code);
+              if (custom) return <>{custom}</>;
             }
             return (
               <CodeBlock className={codeClassName}>{children}</CodeBlock>

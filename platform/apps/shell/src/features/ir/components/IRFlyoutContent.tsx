@@ -43,6 +43,7 @@ export default function IRFlyoutContent({ onNavigate, isActive }: IRFlyoutConten
   }, [activeRoundId]);
 
   function toggleRound(id: string) {
+    console.log('[IR] toggleRound called:', id, 'currently expanded:', [...expanded]);
     setExpanded((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -102,7 +103,7 @@ export default function IRFlyoutContent({ onNavigate, isActive }: IRFlyoutConten
           <Collapsible
             key={round.id}
             open={isOpen}
-            onOpenChange={() => toggleRound(round.id)}
+            onOpenChange={(val) => { console.log('[IR] onOpenChange:', val, 'round:', round.id); toggleRound(round.id); }}
           >
             <CollapsibleTrigger className="flex w-full cursor-pointer items-center gap-1 px-3 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60 hover:text-muted-foreground transition-colors">
               <ChevronRight className={cn('size-3 transition-transform', isOpen && 'rotate-90')} />

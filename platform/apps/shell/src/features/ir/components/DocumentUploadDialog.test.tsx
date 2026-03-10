@@ -5,6 +5,7 @@ import DocumentUploadDialog from './DocumentUploadDialog';
 
 vi.mock('../api', () => ({
   createDocument: vi.fn().mockResolvedValue({ id: 'doc-1' }),
+  uploadDocumentFile: vi.fn().mockResolvedValue(undefined),
 }));
 
 beforeEach(() => {

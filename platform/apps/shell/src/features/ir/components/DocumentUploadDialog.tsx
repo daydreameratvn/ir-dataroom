@@ -16,7 +16,7 @@ import {
   Textarea,
 } from '@papaya/shared-ui';
 import type { DocumentCategory } from '../types';
-import { createDocument, uploadFileToS3 } from '../api';
+import { createDocument, uploadDocumentFile } from '../api';
 
 interface DocumentUploadDialogProps {
   open: boolean;
@@ -130,7 +130,7 @@ export default function DocumentUploadDialog({
     setError(null);
 
     try {
-      // Step 1: Create document record (with mimeType to get upload URL)
+      // Step 1: Create document record
       setUploadProgress('Creating document record...');
       const payload: Record<string, unknown> = {
         name: name.trim(),
@@ -139,17 +139,12 @@ export default function DocumentUploadDialog({
         watermarkEnabled,
       };
 
-      if (selectedFile) {
-        payload.mimeType = selectedFile.type;
-        payload.fileSizeBytes = selectedFile.size;
-      }
-
       const result = await createDocument(roundId, payload as any);
 
-      // Step 2: Upload file to S3 if we have one and got an upload URL
-      if (selectedFile && result.uploadUrl) {
+      // Step 2: Upload file via server proxy (avoids S3 CORS issues)
+      if (selectedFile) {
         setUploadProgress(`Uploading ${formatFileSize(selectedFile.size)}...`);
-        await uploadFileToS3(result.uploadUrl, selectedFile);
+        await uploadDocumentFile(result.id, selectedFile);
         setUploadProgress('Upload complete!');
       }
 

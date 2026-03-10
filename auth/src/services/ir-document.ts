@@ -66,6 +66,8 @@ function rowToDocument(row: DocumentRow): Document {
 
 export interface ListDocumentsOptions {
   category?: string;
+  excludeCategory?: string;
+  requireS3Key?: boolean;
   page?: number;
   pageSize?: number;
 }
@@ -98,9 +100,19 @@ export async function listDocuments(
   const params: unknown[] = [roundId];
   let paramIdx = 2;
 
+  if (opts?.requireS3Key) {
+    conditions.push("s3_key IS NOT NULL");
+  }
+
   if (opts?.category) {
     conditions.push(`category = $${paramIdx}`);
     params.push(opts.category);
+    paramIdx++;
+  }
+
+  if (opts?.excludeCategory) {
+    conditions.push(`category != $${paramIdx}`);
+    params.push(opts.excludeCategory);
     paramIdx++;
   }
 
