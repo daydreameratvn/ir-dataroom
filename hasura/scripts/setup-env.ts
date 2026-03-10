@@ -19,6 +19,7 @@ const params = await fetchSSMParams();
 
 const dbConnectionUri = requireParam(params, "db-connection-uri");
 const jwtSecretKey = requireParam(params, "jwt-secret-key");
+const phoenixAuthServiceUrl = params["phoenix-auth-service-url"] ?? "https://oasis.papaya.asia";
 
 // Rewrite DB host to localhost tunnel
 const tunnelUri = dbConnectionUri.replace(
@@ -40,6 +41,14 @@ APP_BANYAN_PG_OTEL_EXPORTER_OTLP_ENDPOINT="http://local.hasura.dev:4317"
 APP_BANYAN_PG_OTEL_SERVICE_NAME="app_banyan_pg"
 APP_BANYAN_PG_READ_URL="http://local.hasura.dev:7892"
 APP_BANYAN_PG_WRITE_URL="http://local.hasura.dev:7892"
+APP_PHOENIX_TS_AUTH_SERVICE_URL="${phoenixAuthServiceUrl}"
+APP_PHOENIX_TS_AUTHORIZATION_HEADER="Bearer ${serviceToken}"
+APP_PHOENIX_TS_HASURA_CONNECTOR_PORT=5793
+APP_PHOENIX_TS_HASURA_SERVICE_TOKEN_SECRET="${serviceToken}"
+APP_PHOENIX_TS_OTEL_EXPORTER_OTLP_ENDPOINT="http://local.hasura.dev:4317"
+APP_PHOENIX_TS_OTEL_SERVICE_NAME="app_phoenix_ts"
+APP_PHOENIX_TS_READ_URL="http://local.hasura.dev:5793"
+APP_PHOENIX_TS_WRITE_URL="http://local.hasura.dev:5793"
 JWT_SECRET_KEY="${jwtSecretKey}"
 `;
 
