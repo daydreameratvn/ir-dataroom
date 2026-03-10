@@ -10,6 +10,24 @@ const ssmClient = new SSMClient({ region });
 
 let cachedDbUrl: string | null = null;
 let cachedJwtKey: string | null = null;
+let cachedBerryPublicKey: string | null = null;
+
+export async function getBerryPublicKey(): Promise<string | null> {
+  if (cachedBerryPublicKey) return cachedBerryPublicKey;
+
+  if (process.env.BERRY_JWT_PUBLIC_KEY) {
+    cachedBerryPublicKey = process.env.BERRY_JWT_PUBLIC_KEY;
+    return cachedBerryPublicKey;
+  }
+
+  try {
+    cachedBerryPublicKey = await getSSMParam("/banyan/auth/berry-public-key");
+    return cachedBerryPublicKey;
+  } catch {
+    // Berry JWT verification is optional — return null if key unavailable
+    return null;
+  }
+}
 
 function buildDbUrl(secret: {
   username: string;

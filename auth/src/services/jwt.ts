@@ -1,5 +1,5 @@
-import { SignJWT, jwtVerify } from "jose";
-import { getJwtKey } from "../config.ts";
+import { SignJWT, jwtVerify, importSPKI } from "jose";
+import { getJwtKey, getBerryPublicKey } from "../config.ts";
 import { authConfig } from "../config.ts";
 
 interface HasuraClaims {
@@ -63,30 +63,70 @@ export async function signAccessToken(payload: TokenPayload): Promise<string> {
     .sign(secret);
 }
 
+let cachedBerryKey: CryptoKey | null = null;
+
+async function getBerryKey(): Promise<CryptoKey | null> {
+  if (cachedBerryKey) return cachedBerryKey;
+  const pem = await getBerryPublicKey();
+  if (!pem) return null;
+  cachedBerryKey = await importSPKI(pem, "RS512");
+  return cachedBerryKey;
+}
+
+function extractBanyanPayload(payload: Record<string, unknown>): TokenPayload {
+  const claims = payload["https://hasura.io/jwt/claims"] as HasuraClaims;
+  const impersonatorId = payload.impersonatorId as string | undefined;
+  const canImpersonate = payload.canImpersonate as boolean | undefined;
+
+  return {
+    sub: payload.sub as string,
+    email: payload.email as string,
+    name: payload.name as string,
+    tenantId: claims["x-hasura-tenant-id"],
+    userType: payload.userType as string,
+    role: claims["x-hasura-default-role"],
+    allowedRoles: claims["x-hasura-allowed-roles"],
+    ...(impersonatorId ? { impersonatorId } : {}),
+    ...(canImpersonate ? { canImpersonate } : {}),
+  };
+}
+
+function extractBerryPayload(payload: Record<string, unknown>): TokenPayload {
+  const hasuraClaims = (payload["hasura.claims"] ??
+    payload["https://hasura.io/jwt/claims"]) as HasuraClaims | undefined;
+
+  return {
+    sub: hasuraClaims?.["x-hasura-user-id"] ?? (payload.sub as string),
+    email: (payload.email as string) ?? "",
+    name: (payload.name as string) ?? "",
+    tenantId: hasuraClaims?.["x-hasura-tenant-id"] ?? "",
+    userType: "berry",
+    role: hasuraClaims?.["x-hasura-default-role"] ?? "viewer",
+    allowedRoles: hasuraClaims?.["x-hasura-allowed-roles"] ?? ["viewer"],
+  };
+}
+
 export async function verifyAccessToken(
   token: string
 ): Promise<TokenPayload | null> {
+  // Try Banyan HS256 first
   try {
     const secret = await getSecret();
     const { payload } = await jwtVerify(token, secret);
-    const claims = (payload as Record<string, unknown>)[
-      "https://hasura.io/jwt/claims"
-    ] as HasuraClaims;
+    return extractBanyanPayload(payload as Record<string, unknown>);
+  } catch {
+    // Not a valid Banyan token — try Berry RS512
+  }
 
-    const impersonatorId = (payload as Record<string, unknown>).impersonatorId as string | undefined;
-    const canImpersonate = (payload as Record<string, unknown>).canImpersonate as boolean | undefined;
-
-    return {
-      sub: payload.sub!,
-      email: (payload as Record<string, unknown>).email as string,
-      name: (payload as Record<string, unknown>).name as string,
-      tenantId: claims["x-hasura-tenant-id"],
-      userType: (payload as Record<string, unknown>).userType as string,
-      role: claims["x-hasura-default-role"],
-      allowedRoles: claims["x-hasura-allowed-roles"],
-      ...(impersonatorId ? { impersonatorId } : {}),
-      ...(canImpersonate ? { canImpersonate } : {}),
-    };
+  // Try Berry RS512
+  try {
+    const berryKey = await getBerryKey();
+    if (!berryKey) return null;
+    const { payload } = await jwtVerify(token, berryKey, {
+      issuer: "papaya.asia",
+      audience: "papaya.asia",
+    });
+    return extractBerryPayload(payload as Record<string, unknown>);
   } catch {
     return null;
   }
