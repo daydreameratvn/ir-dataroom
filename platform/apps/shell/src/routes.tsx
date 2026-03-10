@@ -64,6 +64,10 @@ export const routes: RouteObject[] = [
     path: '/status',
     element: <StatusPagePublic />,
   },
+  {
+    path: '/docs/*',
+    element: <DocsPage />,
+  },
 
   // Protected routes
   {
@@ -157,12 +161,6 @@ export const routes: RouteObject[] = [
       {
         path: 'profile',
         element: <ProfilePage />,
-      },
-
-      // Documentation
-      {
-        path: 'docs/*',
-        element: <DocsPage />,
       },
 
       // System Status (authenticated view)
