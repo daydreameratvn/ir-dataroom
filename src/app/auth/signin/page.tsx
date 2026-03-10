@@ -192,6 +192,8 @@ export default function SignInPage() {
               </form>
               <p className="mt-6 text-center text-sm text-muted-foreground">
                 Only approved investors can access the dataroom.
+                <br />
+                Contact khanh@papaya.asia if you need access. 🤝
               </p>
             </CardContent>
           </>
