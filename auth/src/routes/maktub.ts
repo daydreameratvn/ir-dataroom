@@ -4,16 +4,16 @@ import {
   handleCreateSession,
   handleSendMessage,
   handleGetSession,
-} from "../../../agents/claim-submission/handler.ts";
+} from "../../../agents/maktub/handler.ts";
 import { generateUploadUrls } from "../services/claim-upload-s3.ts";
 
-const claimSubmission = new Hono();
+const maktub = new Hono();
 
-claimSubmission.use("/claim-submission/*", requireAuth);
+maktub.use("/maktub/*", requireAuth);
 
 // ─── Create Session ──────────────────────────────────────────────────────────
 
-claimSubmission.post("/claim-submission/sessions", async (c) => {
+maktub.post("/maktub/sessions", async (c) => {
   try {
     const body = await c.req.json();
     const tenantId = getTenantId(c);
@@ -29,7 +29,7 @@ claimSubmission.post("/claim-submission/sessions", async (c) => {
 
     return response;
   } catch (err) {
-    console.error("[claim-submission] Create session error:", err);
+    console.error("[maktub] Create session error:", err);
     return c.json(
       { error: err instanceof Error ? err.message : "Failed to create session" },
       500,
@@ -39,7 +39,7 @@ claimSubmission.post("/claim-submission/sessions", async (c) => {
 
 // ─── Send Message ────────────────────────────────────────────────────────────
 
-claimSubmission.post("/claim-submission/sessions/:id/messages", async (c) => {
+maktub.post("/maktub/sessions/:id/messages", async (c) => {
   try {
     const sessionId = c.req.param("id");
     const body = await c.req.json();
@@ -66,14 +66,14 @@ claimSubmission.post("/claim-submission/sessions/:id/messages", async (c) => {
     if (message.includes("is completed") || message.includes("is failed")) {
       return c.json({ error: message }, 409);
     }
-    console.error("[claim-submission] Send message error:", err);
+    console.error("[maktub] Send message error:", err);
     return c.json({ error: message }, 500);
   }
 });
 
 // ─── Get Session ─────────────────────────────────────────────────────────────
 
-claimSubmission.get("/claim-submission/sessions/:id", async (c) => {
+maktub.get("/maktub/sessions/:id", async (c) => {
   try {
     const sessionId = c.req.param("id");
     const result = await handleGetSession(sessionId);
@@ -82,7 +82,7 @@ claimSubmission.get("/claim-submission/sessions/:id", async (c) => {
     }
     return c.json(result);
   } catch (err) {
-    console.error("[claim-submission] Get session error:", err);
+    console.error("[maktub] Get session error:", err);
     return c.json(
       { error: err instanceof Error ? err.message : "Failed to get session" },
       500,
@@ -92,7 +92,7 @@ claimSubmission.get("/claim-submission/sessions/:id", async (c) => {
 
 // ─── Upload Documents ────────────────────────────────────────────────────────
 
-claimSubmission.post("/claim-submission/uploads", async (c) => {
+maktub.post("/maktub/uploads", async (c) => {
   try {
     const body = await c.req.json();
 
@@ -105,9 +105,9 @@ claimSubmission.post("/claim-submission/uploads", async (c) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to generate upload URLs";
     const status = message.includes("Unsupported") || message.includes("Maximum") ? 400 : 500;
-    if (status === 500) console.error("[claim-submission] Upload error:", err);
+    if (status === 500) console.error("[maktub] Upload error:", err);
     return c.json({ error: message }, status);
   }
 });
 
-export { claimSubmission };
+export { maktub };

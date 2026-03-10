@@ -38,7 +38,7 @@ export async function handleCreateSession(params: {
 
   // Create session in DB
   const sessionId = await sessionStore.create({
-    agentType: "claim-submission",
+    agentType: "maktub",
     context,
     tenantId: params.tenantId,
     userId: params.userId,

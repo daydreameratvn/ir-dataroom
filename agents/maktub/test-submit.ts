@@ -1,11 +1,11 @@
 /**
- * Integration test: Submit a claim via the claim-submission agent.
+ * Integration test: Submit a claim via the Maktub agent.
  *
  * Usage:
  *   AWS_PROFILE=banyan AWS_REGION=ap-southeast-1 \
  *   APPLE_GRAPHQL_ENDPOINT=... APPLE_ADMIN_SECRET=... \
  *   HASURA_GRAPHQL_ENDPOINT=... HASURA_ADMIN_TOKEN=... \
- *   bun run agents/claim-submission/test-submit.ts
+ *   bun run agents/maktub/test-submit.ts
  */
 import { createClaimSubmissionAgent } from "./agent.ts";
 import { getClient } from "../shared/graphql-client.ts";
@@ -279,7 +279,7 @@ Ký: Nguyễn Thị Thanh Lan
 // ─── Run ─────────────────────────────────────────────────────────────────────
 
 console.log("═".repeat(80));
-console.log("CLAIM SUBMISSION AGENT — Integration Test");
+console.log("MAKTUB — Claim Submission Agent — Integration Test");
 console.log("═".repeat(80));
 console.log("\nPatient: NGUYỄN NGỌC ĐOAN PHƯƠNG");
 console.log("Diagnosis: Lệch C2 C3 C4 sang Phải, Hẹp biên độ cột sống cổ");

@@ -133,7 +133,7 @@ rootstock/
 |-------|------|
 | `drone` | Orchestrator — dispatches to specialist agents |
 | `claim-assessor` | Full claim adjudication (policy rules, compliance, medical necessity) |
-| `claim-submission` | Claim intake and submission processing |
+| `maktub` | Claim intake and submission processing |
 | `scourge` | FWA (fraud, waste, abuse) detection pipeline |
 | `document-forensics` | Document forgery detection (TruFor + Gemini Vision + EasyOCR/Gemini OCR) |
 | `document-compliance` | Document compliance checking |

@@ -1,6 +1,6 @@
 -- migrate:up
 -- Create agent_sessions and agent_session_events for persistent agent chat sessions.
--- Supports claim-submission and other interactive agents with full event logging,
+-- Supports maktub (claim submission) and other interactive agents with full event logging,
 -- message history for resumption, and debugging/troubleshooting.
 
 CREATE TABLE agent_sessions (
