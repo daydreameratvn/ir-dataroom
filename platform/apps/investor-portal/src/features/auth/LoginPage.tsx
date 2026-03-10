@@ -106,7 +106,7 @@ export default function LoginPage() {
         <p className="mt-6 text-center text-xs text-muted-foreground">
           Only authorized investors can access this portal.
           <br />
-          Contact khanh@papaya.asia if you need access.
+          Contact khanh@papaya.asia if you need access. 🤝
         </p>
       </div>
     </div>
