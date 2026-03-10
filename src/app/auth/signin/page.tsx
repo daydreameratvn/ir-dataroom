@@ -191,9 +191,16 @@ export default function SignInPage() {
                 </Button>
               </form>
               <p className="mt-6 text-center text-sm text-muted-foreground">
-                Only approved investors can access the dataroom.
+                Only authorized investors can access this portal.
                 <br />
-                Contact khanh@papaya.asia if you need access. 🤝
+                Contact{" "}
+                <a
+                  href="mailto:khanh@papaya.asia"
+                  className="text-slate-700 underline underline-offset-2 hover:text-slate-900"
+                >
+                  khanh@papaya.asia
+                </a>{" "}
+                if you need access. 🤝
               </p>
             </CardContent>
           </>
