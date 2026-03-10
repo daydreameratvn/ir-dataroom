@@ -93,6 +93,7 @@ const translations = {
     aiAgents: 'เอไอเอเจนท์',
     drone: 'Drone',
     portal: 'พอร์ทัล',
+    docs: 'เอกสาร',
     ir: 'นักลงทุนสัมพันธ์',
     irRounds: 'รอบการระดมทุน',
     irInvestors: 'นักลงทุน',

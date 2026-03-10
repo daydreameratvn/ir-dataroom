@@ -104,6 +104,7 @@ const translations = {
     aiAgents: 'AI Agents',
     drone: 'Drone',
     portal: 'Portal',
+    docs: 'Documentation',
     ir: 'Investor Relations',
     irRounds: 'Rounds',
     irInvestors: 'Investors',

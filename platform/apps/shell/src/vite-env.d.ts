@@ -2,6 +2,11 @@
 
 declare const __BUILD_ID__: string;
 
+declare module '*.md?raw' {
+  const content: string;
+  export default content;
+}
+
 declare module 'sample/entry' {
   import type { ComponentType } from 'react';
   interface EntryProps {

@@ -93,6 +93,7 @@ const translations = {
     aiAgents: 'Trợ lý AI',
     drone: 'Drone',
     portal: 'Cổng thông tin',
+    docs: 'Tài liệu',
     ir: 'Quan hệ nhà đầu tư',
     irRounds: 'Vòng gọi vốn',
     irInvestors: 'Nhà đầu tư',

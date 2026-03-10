@@ -44,6 +44,7 @@ const DesignSystemPage = lazyWithReload(() => import('./features/design-system/D
 const StatusPage = lazyWithReload(() => import('./features/status/StatusPage'));
 const ProfilePage = lazyWithReload(() => import('./features/profile/ProfilePage'));
 const StatusPagePublic = lazyWithReload(() => import('./features/status/StatusPagePublic'));
+const DocsPage = lazyWithReload(() => import('./features/docs/DocsPage'));
 
 // Remote app routes are injected dynamically in bootstrap.tsx via remotes.tsx.
 // They cannot be statically imported here because Vite and MF would fail to resolve
@@ -156,6 +157,12 @@ export const routes: RouteObject[] = [
       {
         path: 'profile',
         element: <ProfilePage />,
+      },
+
+      // Documentation
+      {
+        path: 'docs/*',
+        element: <DocsPage />,
       },
 
       // System Status (authenticated view)

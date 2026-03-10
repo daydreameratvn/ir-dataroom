@@ -93,6 +93,7 @@ const translations = {
     aiAgents: 'AI智能体',
     drone: 'Drone',
     portal: '门户',
+    docs: '文档',
     ir: '投资者关系',
     irRounds: '融资轮次',
     irInvestors: '投资者',

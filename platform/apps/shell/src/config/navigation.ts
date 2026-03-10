@@ -112,6 +112,13 @@ export const navigationGroups: NavGroup[] = [
         children: [],
       },
       {
+        id: 'docs',
+        labelKey: 'nav.docs',
+        icon: 'BookOpen',
+        path: '/docs',
+        children: [],
+      },
+      {
         id: 'admin',
         labelKey: 'nav.admin',
         icon: 'Settings',
