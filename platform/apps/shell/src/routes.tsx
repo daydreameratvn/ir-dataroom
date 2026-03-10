@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
 import App from './App';
-import { ProtectedRoute, LoginPage } from '@papaya/auth';
+import { ProtectedRoute, LoginPage, WorkOSLoginPage } from '@papaya/auth';
 import ErrorPage from './components/ErrorPage';
 
 /**
@@ -54,6 +54,10 @@ export const routes: RouteObject[] = [
   {
     path: '/login',
     element: <LoginPage />,
+  },
+  {
+    path: '/login-workos',
+    element: <WorkOSLoginPage />,
   },
   {
     path: '/status',

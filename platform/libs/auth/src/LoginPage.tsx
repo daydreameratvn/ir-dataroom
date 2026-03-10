@@ -15,7 +15,6 @@ import { startAuthentication } from '@simplewebauthn/browser';
 import { useAuth } from './AuthProvider';
 import {
   getSSOUrl,
-  getWorkOSLoginUrl,
   requestEmailOtp,
   requestPhoneOtp,
   verifyOtp,
@@ -24,7 +23,7 @@ import {
   AuthError,
 } from './auth-client';
 
-type LoginStep = 'choose' | 'legacy' | 'otp-verify';
+type LoginStep = 'main' | 'otp-verify';
 
 interface LocationState {
   from?: { pathname: string };
@@ -87,7 +86,7 @@ export default function LoginPage() {
   const location = useLocation();
   const { signIn } = useAuth();
 
-  const [step, setStep] = useState<LoginStep>('choose');
+  const [step, setStep] = useState<LoginStep>('main');
   const [destination, setDestination] = useState('');
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -252,38 +251,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          {step === 'choose' && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              {/* Primary: WorkOS AuthKit */}
-              <a
-                href={getWorkOSLoginUrl(tenantId, returnUrl)}
-                className="group flex items-center justify-center gap-3 w-full h-12 rounded-xl bg-gradient-to-r from-papaya to-[#D9184E] text-white text-[15px] font-semibold shadow-lg shadow-papaya/25 hover:shadow-xl hover:shadow-papaya/30 hover:scale-[1.01] active:scale-[0.99] transition-all"
-              >
-                {t('auth.login.signIn')}
-              </a>
-
-              <p className="mt-4 text-center text-xs text-papaya-muted/60">
-                {t('auth.login.authkitHint', { defaultValue: 'Sign in with SSO, email, or passkey' })}
-              </p>
-
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-papaya-border/60" />
-                </div>
-              </div>
-
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setStep('legacy')}
-                className="w-full text-xs font-medium text-papaya-muted/50 hover:text-papaya-muted hover:bg-transparent"
-              >
-                {t('auth.login.otherMethods', { defaultValue: 'Other sign-in options' })}
-              </Button>
-            </div>
-          )}
-
-          {step === 'legacy' && (
+          {step === 'main' && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               {/* SSO Buttons */}
               <div className="flex flex-col gap-3">
@@ -345,15 +313,6 @@ export default function LoginPage() {
                   </Button>
                 </>
               )}
-
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => { setStep('choose'); setError(null); }}
-                className="w-full mt-4 text-sm font-medium text-papaya-muted hover:text-[#111316] hover:bg-transparent"
-              >
-                &larr; {t('common.back')}
-              </Button>
             </div>
           )}
 
@@ -391,7 +350,7 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="ghost"
-                onClick={() => { setStep('choose'); setCode(''); setOtpSent(false); setError(null); }}
+                onClick={() => { setStep('main'); setCode(''); setOtpSent(false); setError(null); }}
                 className="w-full text-sm font-medium text-papaya-muted hover:text-[#111316] hover:bg-transparent"
               >
                 &larr; {t('common.back')}
