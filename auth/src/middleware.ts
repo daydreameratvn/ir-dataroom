@@ -36,10 +36,11 @@ export async function requireAuth(c: Context, next: Next) {
 const DEFAULT_TENANT_ID = "00000000-0000-0000-0000-000000000001";
 
 export function getTenantId(c: Context): string {
-  // Tenant ID comes from header (set by platform) or query param
+  // Tenant ID comes from header (set by platform), query param, or JWT claims
   return (
     c.req.header("x-tenant-id") ??
     c.req.query("tenant_id") ??
+    c.get("user")?.tenantId ||
     DEFAULT_TENANT_ID
   );
 }
