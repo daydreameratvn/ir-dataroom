@@ -1,5 +1,6 @@
 import type {
   PhoenixConfig,
+  PhoenixEnvironment,
   LoginResult,
   Claim,
   ClaimDetail,
@@ -9,7 +10,14 @@ import type {
   UploadDocumentResult,
 } from './types';
 
-const DEFAULT_GRAPHQL_URL = 'https://banyan.services.papaya.asia/graphql';
+// ── Environment → GraphQL endpoint resolution ──
+
+const GRAPHQL_ENDPOINTS: Record<PhoenixEnvironment, string> = {
+  production: 'https://banyan.services.papaya.asia/graphql',
+  staging: 'https://staging.banyan.services.papaya.asia/graphql',
+  uat: 'https://uat.banyan.services.papaya.asia/graphql',
+  development: 'http://localhost:3280/graphql',
+};
 
 // ── GraphQL field selections (matches Hasura DDN schema) ──
 
@@ -36,15 +44,14 @@ const CLAIM_NOTE_FIELDS = `
 `;
 
 export class PhoenixClient {
-  private baseUrl: string;
   private graphqlUrl: string;
   private timeout: number;
   private token: string | null = null;
   private tenantId: string | null = null;
 
   constructor(config: PhoenixConfig) {
-    this.baseUrl = config.baseUrl.replace(/\/$/, '');
-    this.graphqlUrl = (config.graphqlUrl ?? DEFAULT_GRAPHQL_URL).replace(/\/$/, '');
+    const url = config.graphqlUrl ?? GRAPHQL_ENDPOINTS[config.environment];
+    this.graphqlUrl = url.replace(/\/$/, '');
     this.timeout = config.timeout ?? 30_000;
   }
 
@@ -57,38 +64,55 @@ export class PhoenixClient {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // Auth REST endpoints (login, token refresh, OTP)
+  // Auth operations (GraphQL mutations → Hasura DDN commands → auth service)
   // ═══════════════════════════════════════════════════════════════════════════
 
   async login(policyNumbers: string[]): Promise<LoginResult[]> {
-    const res = await this.restRequest<{ results: LoginResult[] }>('/auth/phoenix/login', {
-      method: 'POST',
-      body: JSON.stringify({ policyNumbers }),
-    });
-    return res.results;
+    const data = await this.gql<{ phoenixLogin: { results: LoginResult[] } }>(
+      `mutation PhoenixLogin($policyNumbers: [String!]!) {
+        phoenixLogin(policyNumbers: $policyNumbers) {
+          results {
+            policyNumber success message token
+            policy { id policyNumber insuredName status }
+          }
+        }
+      }`,
+      { policyNumbers },
+    );
+    return data.phoenixLogin.results;
   }
 
   async refreshToken(): Promise<{ token: string }> {
-    return this.restRequest<{ token: string }>('/auth/phoenix/token/refresh', {
-      method: 'POST',
-    });
+    const data = await this.gql<{ phoenixRefreshToken: { token: string } }>(
+      `mutation PhoenixRefreshToken {
+        phoenixRefreshToken { token }
+      }`,
+    );
+    return data.phoenixRefreshToken;
   }
 
   async requestOtp(claimId: string): Promise<{ success: boolean }> {
-    return this.restRequest<{ success: boolean }>(`/auth/phoenix/claims/${claimId}/otp/request`, {
-      method: 'POST',
-    });
+    const data = await this.gql<{ phoenixRequestOtp: { success: boolean } }>(
+      `mutation PhoenixRequestOtp($claimId: Uuid!) {
+        phoenixRequestOtp(claimId: $claimId) { success }
+      }`,
+      { claimId },
+    );
+    return data.phoenixRequestOtp;
   }
 
   async verifyOtp(claimId: string, code: string): Promise<{ success: boolean; verified: boolean }> {
-    return this.restRequest<{ success: boolean; verified: boolean }>(`/auth/phoenix/claims/${claimId}/otp/verify`, {
-      method: 'POST',
-      body: JSON.stringify({ code }),
-    });
+    const data = await this.gql<{ phoenixVerifyOtp: { success: boolean; verified: boolean } }>(
+      `mutation PhoenixVerifyOtp($claimId: Uuid!, $code: String!) {
+        phoenixVerifyOtp(claimId: $claimId, code: $code) { success verified }
+      }`,
+      { claimId, code },
+    );
+    return data.phoenixVerifyOtp;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // GraphQL data operations (via Hasura DDN)
+  // Data operations (GraphQL queries/mutations → Hasura DDN)
   // ═══════════════════════════════════════════════════════════════════════════
 
   async listClaims(): Promise<Claim[]> {
@@ -172,10 +196,19 @@ export class PhoenixClient {
   }
 
   async uploadDocument(claimId: string, input: UploadDocumentInput): Promise<UploadDocumentResult> {
-    return this.restRequest<UploadDocumentResult>(`/auth/phoenix/claims/${claimId}/documents`, {
-      method: 'POST',
-      body: JSON.stringify(input),
-    });
+    const data = await this.gql<{ phoenixUploadDocument: { uploadUrl: string; document: RawDocument } }>(
+      `mutation PhoenixUploadDocument($claimId: Uuid!, $fileName: String!, $fileType: String!, $documentType: String) {
+        phoenixUploadDocument(claimId: $claimId, fileName: $fileName, fileType: $fileType, documentType: $documentType) {
+          uploadUrl
+          document { ${CLAIM_DOCUMENT_FIELDS} }
+        }
+      }`,
+      { claimId, ...input },
+    );
+    return {
+      uploadUrl: data.phoenixUploadDocument.uploadUrl,
+      document: mapDocument(data.phoenixUploadDocument.document),
+    };
   }
 
   async getClaimDocuments(claimId: string): Promise<ClaimDocument[]> {
@@ -229,6 +262,10 @@ export class PhoenixClient {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
+    if (this.tenantId) {
+      headers['x-tenant-id'] = this.tenantId;
+    }
+
     try {
       const response = await fetch(this.graphqlUrl, {
         method: 'POST',
@@ -246,40 +283,6 @@ export class PhoenixClient {
         throw new Error(`Phoenix GraphQL error: ${json.errors[0]!.message}`);
       }
       return json.data as T;
-    } finally {
-      clearTimeout(timeoutId);
-    }
-  }
-
-  /** REST request to the auth service. */
-  private async restRequest<T>(path: string, options?: RequestInit): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-
-    if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
-    }
-
-    if (this.tenantId) {
-      headers['x-tenant-id'] = this.tenantId;
-    }
-
-    try {
-      const response = await fetch(`${this.baseUrl}${path}`, {
-        headers,
-        signal: controller.signal,
-        ...options,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Phoenix API error: ${response.status} ${response.statusText}`);
-      }
-
-      return response.json() as Promise<T>;
     } finally {
       clearTimeout(timeoutId);
     }

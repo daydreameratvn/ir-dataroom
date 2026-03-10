@@ -26,6 +26,7 @@ const jwtSecretKey = requireParam(params, "jwt-secret-key");
 const appleEndpoint = requireParam(params, "apple-endpoint");
 const appleAdminSecret = requireParam(params, "apple-admin-secret");
 const sweetpotatoConnectionUri = requireParam(params, "sweetpotato-connection-uri");
+const phoenixAuthServiceUrl = params["phoenix-auth-service-url"] ?? "https://oasis.papaya.asia";
 
 // Connector config vars. READ_URL/WRITE_URL/AUTHORIZATION_HEADER are
 // auto-populated by DDN CLI from connector builds into .env.cloud.
@@ -35,6 +36,7 @@ const envContent = [
   `APPLE_APPLE_GQL_GRAPHQL_ENDPOINT_1="${appleEndpoint}"`,
   `APPLE_APPLE_GQL_ADMIN_SECRET="${appleAdminSecret}"`,
   `SWEETPOTATO_SWEETPOTATO_PG_CONNECTION_URI="${sweetpotatoConnectionUri}"`,
+  `APP_PHOENIX_TS_AUTH_SERVICE_URL="${phoenixAuthServiceUrl}"`,
   "",
 ].join("\n");
 

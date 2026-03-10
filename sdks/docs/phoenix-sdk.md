@@ -39,7 +39,7 @@ The Phoenix Claims SDK provides partner applications with a complete insurance c
 
 | Package | Purpose | Runtime |
 |---|---|---|
-| `@papaya/phoenix` | Core HTTP client + types | Node.js >= 18, browsers |
+| `@papaya/phoenix` | Core GraphQL client + types | Node.js >= 18, browsers |
 | `@papaya/phoenix-react` | React provider, hooks, and UI components | React 18 or 19 |
 
 The React SDK wraps the core client. You can use the core client alone for server-side integrations or custom UIs, or use the React SDK for a drop-in portal experience.
@@ -64,21 +64,23 @@ The React SDK wraps the core client. You can use the core client alone for serve
 │  │              │                               │  │
 │  │  ┌───────────▼──────────────────────────┐   │  │
 │  │  │  @papaya/phoenix (Core Client)       │   │  │
-│  │  │  HTTP Client + Types                 │   │  │
+│  │  │  GraphQL Client + Types              │   │  │
 │  │  └───────────┬──────────────────────────┘   │  │
 │  └──────────────┼──────────────────────────────┘  │
 │                 │                                  │
 └─────────────────┼──────────────────────────────────┘
-                  │ HTTPS
+                  │ HTTPS (GraphQL)
                   ▼
-       Phoenix Claims API
-       (phoenix.papaya.asia)
+       Banyan GraphQL API
+       (banyan.services.papaya.asia)
 ```
+
+All SDK operations go through a single GraphQL endpoint at `banyan.services.papaya.asia`. The SDK resolves the correct endpoint URL automatically based on the configured `environment`.
 
 ### Dependency Chain
 
 ```
-@papaya/phoenix          (zero dependencies, core HTTP client)
+@papaya/phoenix          (zero dependencies, core GraphQL client)
   └── @papaya/phoenix-react  (peer: react ^18 || ^19)
 ```
 
@@ -169,7 +171,7 @@ import { PhoenixPortal } from '@papaya/phoenix-react';
 function App() {
   return (
     <PhoenixPortal
-      baseUrl="https://phoenix.papaya.asia"
+      environment="production"
       policyNumbers={['POL-001', 'POL-002']}
       tenantId="your-tenant-id"
       onClaimSubmitted={(claim) => {
@@ -197,7 +199,7 @@ import {
 function ClaimsApp() {
   return (
     <PhoenixProvider
-      config={{ baseUrl: 'https://phoenix.papaya.asia' }}
+      config={{ environment: 'production' }}
       policyNumbers={['POL-001']}
       tenantId="your-tenant-id"
     >
@@ -217,7 +219,7 @@ function ClaimsApp() {
 import { PhoenixClient } from '@papaya/phoenix';
 
 const client = new PhoenixClient({
-  baseUrl: 'https://phoenix.papaya.asia',
+  environment: 'production',
   timeout: 30000,
 });
 
@@ -241,7 +243,7 @@ Phoenix SDK uses **policy number authentication**. Policyholders authenticate by
 ### How It Works
 
 1. The partner app provides one or more policy numbers
-2. The SDK calls `POST /auth/phoenix/login` with those numbers
+2. The SDK sends a `phoenixLogin` GraphQL mutation with those numbers
 3. The API returns a `LoginResult[]` — one entry per policy number, each with a JWT token if successful
 4. The SDK stores tokens internally and attaches them as `Authorization: Bearer <token>` on all subsequent API calls
 
@@ -251,7 +253,7 @@ A single user may have multiple policies. The SDK authenticates all of them simu
 
 ```tsx
 <PhoenixProvider
-  config={{ baseUrl: '' }}
+  config={{ environment: 'production' }}
   policyNumbers={['POL-001', 'POL-002', 'POL-003']}
   tenantId="your-tenant-id"
 >
@@ -305,7 +307,8 @@ const client = new PhoenixClient(config: PhoenixConfig);
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `config.baseUrl` | `string` | — | Base URL of the Phoenix API |
+| `config.environment` | `PhoenixEnvironment` | — | Target environment (`'production'`, `'staging'`, `'uat'`, `'development'`) |
+| `config.graphqlUrl` | `string` | — | Override the GraphQL endpoint URL (optional, resolved automatically from `environment`) |
 | `config.timeout` | `number` | `30000` | Request timeout in milliseconds |
 
 #### Methods
@@ -398,7 +401,7 @@ The context provider that initializes the SDK client, manages authentication sta
 import { PhoenixProvider } from '@papaya/phoenix-react';
 
 <PhoenixProvider
-  config={{ baseUrl: 'https://phoenix.papaya.asia' }}
+  config={{ environment: 'production' }}
   tenantId="your-tenant-id"
   policyNumbers={['POL-001']}
   theme={customTheme}
@@ -412,7 +415,7 @@ import { PhoenixProvider } from '@papaya/phoenix-react';
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `config` | `PhoenixConfig` | — | Client configuration (`baseUrl`, `timeout`) |
+| `config` | `PhoenixConfig` | — | Client configuration (`environment`, optional `graphqlUrl`, `timeout`) |
 | `tenantId` | `string` | — | Tenant identifier (sent as `x-tenant-id` header) |
 | `policyNumbers` | `string[]` | — | Policy numbers for auto-login on mount |
 | `theme` | `PhoenixTheme` | `defaultTheme` | Custom color and typography theme |
@@ -448,12 +451,13 @@ A self-contained portal that wraps `PhoenixProvider` with its own internal navig
 import { PhoenixPortal } from '@papaya/phoenix-react';
 
 <PhoenixPortal
-  baseUrl="https://phoenix.papaya.asia"
+  environment="production"
   policyNumbers={['POL-001']}
   tenantId="your-tenant-id"
   theme={customTheme}
   locale="en"
   onClaimSubmitted={(claim) => console.log(claim)}
+  graphqlUrl="/graphql"  {/* Optional: override endpoint for proxy setups */}
   className="my-portal"
 />
 ```
@@ -462,7 +466,8 @@ import { PhoenixPortal } from '@papaya/phoenix-react';
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `baseUrl` | `string` | — | Phoenix API base URL |
+| `environment` | `PhoenixEnvironment` | — | Target environment (`'production'`, `'staging'`, `'uat'`, `'development'`) |
+| `graphqlUrl` | `string` | — | Override the GraphQL endpoint URL (optional, resolved automatically from `environment`) |
 | `policyNumbers` | `string[]` | — | Policy numbers for authentication |
 | `tenantId` | `string` | — | Tenant identifier |
 | `theme` | `PhoenixTheme` | `defaultTheme` | Custom theme |
@@ -779,7 +784,7 @@ const partnerTheme: PhoenixTheme = {
 };
 
 <PhoenixProvider
-  config={{ baseUrl: '' }}
+  config={{ environment: 'production' }}
   policyNumbers={['POL-001']}
   theme={partnerTheme}
 >
@@ -871,22 +876,22 @@ bun add @papaya/phoenix @papaya/phoenix-react
 
 #### 2. Configure `next.config.ts`
 
-The SDK client runs in the browser. To avoid CORS issues during development, use Next.js rewrites to proxy API requests:
+The SDK client runs in the browser. If you need to proxy GraphQL requests through your server (e.g., to avoid CORS during development), use Next.js rewrites:
 
 ```typescript
 // next.config.ts
 import type { NextConfig } from 'next';
 
-const PHOENIX_API =
-  process.env.NEXT_PUBLIC_PHOENIX_URL ?? 'https://phoenix.papaya.asia';
+const GRAPHQL_API =
+  process.env.NEXT_PUBLIC_GRAPHQL_URL ?? 'https://banyan.services.papaya.asia/graphql';
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@papaya/phoenix', '@papaya/phoenix-react'],
   async rewrites() {
     return [
       {
-        source: '/auth/:path*',
-        destination: `${PHOENIX_API}/auth/:path*`,
+        source: '/graphql',
+        destination: GRAPHQL_API,
       },
     ];
   },
@@ -899,9 +904,12 @@ export default nextConfig;
 
 ```typescript
 // src/lib/config.ts
+import type { PhoenixEnvironment } from '@papaya/phoenix';
 
-// Empty baseUrl = same-origin requests, proxied by Next.js rewrites
-export const PHOENIX_URL = process.env.NEXT_PUBLIC_PHOENIX_URL ?? '';
+export const PHOENIX_ENVIRONMENT =
+  (process.env.NEXT_PUBLIC_PHOENIX_ENV ?? 'production') as PhoenixEnvironment;
+// Optional: override the GraphQL URL for proxy setups (e.g., '/graphql' for same-origin proxy)
+export const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL ?? undefined;
 export const POLICY_NUMBERS =
   (process.env.NEXT_PUBLIC_POLICY_NUMBERS ?? '').split(',');
 export const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID ?? undefined;
@@ -914,12 +922,12 @@ export const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID ?? undefined;
 'use client';
 
 import { PhoenixProvider } from '@papaya/phoenix-react';
-import { PHOENIX_URL, POLICY_NUMBERS, TENANT_ID } from '@/lib/config';
+import { PHOENIX_ENVIRONMENT, GRAPHQL_URL, POLICY_NUMBERS, TENANT_ID } from '@/lib/config';
 
 export function PhoenixSetup({ children }: { children: React.ReactNode }) {
   return (
     <PhoenixProvider
-      config={{ baseUrl: PHOENIX_URL }}
+      config={{ environment: PHOENIX_ENVIRONMENT, graphqlUrl: GRAPHQL_URL }}
       tenantId={TENANT_ID}
       policyNumbers={POLICY_NUMBERS}
       locale="en"
@@ -964,7 +972,7 @@ import { PhoenixPortal } from '@papaya/phoenix-react';
 function App() {
   return (
     <PhoenixPortal
-      baseUrl="https://phoenix.papaya.asia"
+      environment="production"
       policyNumbers={['POL-001']}
       tenantId="your-tenant-id"
     />
@@ -978,11 +986,11 @@ For Vite, no special configuration is needed. The SDK uses standard ESM imports 
 
 ### CORS & Proxy Configuration
 
-The SDK's HTTP client uses browser `fetch`. When running on a different origin than the API, you must handle CORS.
+The SDK's GraphQL client uses browser `fetch`. When running on a different origin than the API, you must handle CORS.
 
 #### Development (Recommended: Proxy)
 
-Use your framework's dev server proxy to route API requests through the same origin:
+Use your framework's dev server proxy to route GraphQL requests through the same origin:
 
 **Next.js** — Use `rewrites()` in `next.config.ts` (shown above)
 
@@ -993,8 +1001,8 @@ Use your framework's dev server proxy to route API requests through the same ori
 export default defineConfig({
   server: {
     proxy: {
-      '/auth': {
-        target: 'https://phoenix.papaya.asia',
+      '/graphql': {
+        target: 'https://banyan.services.papaya.asia',
         changeOrigin: true,
       },
     },
@@ -1002,14 +1010,18 @@ export default defineConfig({
 });
 ```
 
-When using a proxy, set `baseUrl` to `''` (empty string) so requests are made to the same origin.
+When using a proxy, set `graphqlUrl` to `'/graphql'` (or your proxy path) so requests are routed through the same origin instead of directly to the API:
+
+```tsx
+<PhoenixProvider config={{ environment: 'production', graphqlUrl: '/graphql' }} ...>
+```
 
 #### Production
 
 In production, either:
 1. **Deploy behind the same domain** — API and frontend on the same origin (no CORS needed)
 2. **CORS headers on the API** — The Phoenix API must include your domain in its `Access-Control-Allow-Origin` header
-3. **Reverse proxy** — Use your CDN/load balancer (CloudFront, nginx) to route `/auth/*` to the API
+3. **Reverse proxy** — Use your CDN/load balancer (CloudFront, nginx) to route `/graphql` to the API
 
 ---
 
@@ -1018,9 +1030,12 @@ In production, either:
 ### Configuration
 
 ```typescript
+type PhoenixEnvironment = 'production' | 'staging' | 'uat' | 'development';
+
 interface PhoenixConfig {
-  baseUrl: string;
-  timeout?: number;  // Default: 30000ms
+  environment: PhoenixEnvironment;
+  graphqlUrl?: string;  // Override the GraphQL endpoint URL (resolved automatically from environment)
+  timeout?: number;     // Default: 30000ms
 }
 ```
 
@@ -1149,7 +1164,7 @@ interface ClaimNote {
 
 **Symptom:** Browser console shows `TypeError: Failed to fetch` or `Access to fetch has been blocked by CORS policy`.
 
-**Cause:** The SDK client runs in the browser and makes requests to a different origin (e.g., `localhost:3000` calling `phoenix.papaya.asia`).
+**Cause:** The SDK client runs in the browser and makes GraphQL requests to a different origin (e.g., `localhost:3000` calling `banyan.services.papaya.asia`).
 
 **Solutions:**
 
@@ -1158,11 +1173,11 @@ interface ClaimNote {
    ```typescript
    // next.config.ts
    async rewrites() {
-     return [{ source: '/auth/:path*', destination: 'https://phoenix.papaya.asia/auth/:path*' }];
+     return [{ source: '/graphql', destination: 'https://banyan.services.papaya.asia/graphql' }];
    }
    ```
 
-   Then set `baseUrl` to `''` (empty string).
+   Then set `graphqlUrl` to `'/graphql'` to route requests through the proxy.
 
 2. **Use the same origin** in production — deploy your app on the same domain as the API.
 
@@ -1177,9 +1192,9 @@ interface ClaimNote {
 **Checks:**
 
 1. Verify `policyNumbers` is a non-empty array of valid policy numbers
-2. Check the browser Network tab — look for `POST /auth/phoenix/login` and inspect the response
+2. Check the browser Network tab — look for the `phoenixLogin` GraphQL mutation request and inspect the response
 3. Each item in the response has a `success` field — check if any return `false` with a `message`
-4. Verify `baseUrl` is correct and reachable
+4. Verify `environment` is correct (or `graphqlUrl` if overriding) and the endpoint is reachable
 5. If using a proxy, verify the rewrite rule is working (check that requests reach the API)
 
 **Debug:**
@@ -1239,7 +1254,7 @@ console.log({ loading, isAuthenticated, policies });
 
 ```tsx
 <PhoenixProvider
-  config={{ baseUrl: '', timeout: 60000 }}  // 60 seconds
+  config={{ environment: 'production', timeout: 60000 }}  // 60 seconds
   ...
 >
 ```
@@ -1247,7 +1262,7 @@ console.log({ loading, isAuthenticated, policies });
 Or on the client directly:
 
 ```typescript
-const client = new PhoenixClient({ baseUrl: '', timeout: 60000 });
+const client = new PhoenixClient({ environment: 'production', timeout: 60000 });
 ```
 
 ---
@@ -1256,7 +1271,7 @@ const client = new PhoenixClient({ baseUrl: '', timeout: 60000 });
 
 **Checks:**
 
-1. The `requestOtp` call must succeed — check the Network tab for `POST /auth/phoenix/claims/{id}/otp/request`
+1. The `requestOtp` call must succeed — check the Network tab for the `phoenixRequestOtp` GraphQL mutation
 2. OTP is sent via the channel configured on the API side (SMS, email) — verify the claimant's contact info is correct
 3. The `claim:otp_requested` event fires if the request succeeded — listen for `claim:otp_failed` for errors
 4. Wait 30 seconds before resending (rate limiting may apply)
@@ -1333,7 +1348,7 @@ These styles are injected via a `<style>` tag from `<PhoenixProvider>`. If your 
 ## FAQ
 
 **Q: Can I use the SDK without React?**
-A: Yes. `@papaya/phoenix` is a framework-agnostic HTTP client. Use it in Node.js, Vue, Svelte, or any JavaScript environment with `fetch` support.
+A: Yes. `@papaya/phoenix` is a framework-agnostic GraphQL client. Use it in Node.js, Vue, Svelte, or any JavaScript environment with `fetch` support.
 
 **Q: Does the SDK bundle any CSS files?**
 A: No. All styles are inline or injected via `<style>` tags. There are no CSS imports to configure in your build.
@@ -1348,7 +1363,7 @@ A: The SDK currently supports English and Vietnamese. For other languages, use t
 A: The `login` method returns results for all policy numbers. Invalid ones return `{ success: false, message: '...' }`. The SDK authenticates with the first valid policy and ignores invalid ones.
 
 **Q: Can I embed the portal in an iframe?**
-A: Yes. `<PhoenixPortal>` works in iframes. Ensure the `baseUrl` is set correctly from the iframe's perspective (use a proxy if needed to avoid CORS).
+A: Yes. `<PhoenixPortal>` works in iframes. Ensure the `environment` is set correctly (or use `graphqlUrl` to override the endpoint from the iframe's perspective). Use a proxy if needed to avoid CORS.
 
 **Q: Is the SDK tree-shakeable?**
 A: Yes. Both packages use ESM and named exports. If you only import `PhoenixPortal`, bundlers will tree-shake unused hooks and utilities.

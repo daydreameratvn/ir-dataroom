@@ -30,7 +30,7 @@ vi.mock('@papaya/phoenix', () => ({
 function createWrapper() {
   return function Wrapper({ children }: { children: ReactNode }) {
     return (
-      <PhoenixProvider config={{ baseUrl: 'https://test.example.com' }}>
+      <PhoenixProvider config={{ environment: 'production' }}>
         {children}
       </PhoenixProvider>
     );

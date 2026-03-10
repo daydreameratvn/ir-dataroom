@@ -1,5 +1,6 @@
 export { PhoenixClient } from './client';
 export type {
+  PhoenixEnvironment,
   PhoenixConfig,
   LoginResult,
   PolicyInfo,

@@ -1,0 +1,576 @@
+# Phoenix Auth Commands
+#
+# GraphQL mutations that proxy authentication operations to the auth service
+# via the phoenix_ts TypeScript Lambda connector.
+#
+# These commands match the Phoenix SDK's expected GraphQL API:
+#   phoenixLogin, phoenixRefreshToken, phoenixRequestOtp,
+#   phoenixVerifyOtp, phoenixUploadDocument
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Object Types (output types for Phoenix responses)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PhoenixPolicyInfo
+  fields:
+    - name: id
+      type: String!
+    - name: policyNumber
+      type: String!
+    - name: insuredName
+      type: String!
+    - name: status
+      type: String!
+  graphql:
+    typeName: PhoenixPolicyInfo
+    inputTypeName: PhoenixPolicyInfoInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: phoenix_ts
+      dataConnectorObjectType: PolicyInfo
+      fieldMapping:
+        id:
+          column:
+            name: id
+        policyNumber:
+          column:
+            name: policyNumber
+        insuredName:
+          column:
+            name: insuredName
+        status:
+          column:
+            name: status
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PhoenixPolicyInfo
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - policyNumber
+          - insuredName
+          - status
+    - role: policyholder
+      output:
+        allowedFields:
+          - id
+          - policyNumber
+          - insuredName
+          - status
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PhoenixLoginResultItem
+  fields:
+    - name: policyNumber
+      type: String!
+    - name: success
+      type: Boolean!
+    - name: message
+      type: String
+    - name: token
+      type: String
+    - name: policy
+      type: PhoenixPolicyInfo
+  graphql:
+    typeName: PhoenixLoginResultItem
+    inputTypeName: PhoenixLoginResultItemInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: phoenix_ts
+      dataConnectorObjectType: LoginResultItem
+      fieldMapping:
+        policyNumber:
+          column:
+            name: policyNumber
+        success:
+          column:
+            name: success
+        message:
+          column:
+            name: message
+        token:
+          column:
+            name: token
+        policy:
+          column:
+            name: policy
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PhoenixLoginResultItem
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - policyNumber
+          - success
+          - message
+          - token
+          - policy
+    - role: policyholder
+      output:
+        allowedFields:
+          - policyNumber
+          - success
+          - message
+          - token
+          - policy
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PhoenixLoginResponse
+  fields:
+    - name: results
+      type: "[PhoenixLoginResultItem!]!"
+  graphql:
+    typeName: PhoenixLoginResponse
+    inputTypeName: PhoenixLoginResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: phoenix_ts
+      dataConnectorObjectType: PhoenixLoginResponse
+      fieldMapping:
+        results:
+          column:
+            name: results
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PhoenixLoginResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - results
+    - role: policyholder
+      output:
+        allowedFields:
+          - results
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PhoenixRefreshTokenResponse
+  fields:
+    - name: token
+      type: String!
+  graphql:
+    typeName: PhoenixRefreshTokenResponse
+    inputTypeName: PhoenixRefreshTokenResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: phoenix_ts
+      dataConnectorObjectType: PhoenixRefreshTokenResponse
+      fieldMapping:
+        token:
+          column:
+            name: token
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PhoenixRefreshTokenResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - token
+    - role: policyholder
+      output:
+        allowedFields:
+          - token
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PhoenixOtpResponse
+  fields:
+    - name: success
+      type: Boolean!
+  graphql:
+    typeName: PhoenixOtpResponse
+    inputTypeName: PhoenixOtpResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: phoenix_ts
+      dataConnectorObjectType: PhoenixOtpResponse
+      fieldMapping:
+        success:
+          column:
+            name: success
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PhoenixOtpResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - success
+    - role: policyholder
+      output:
+        allowedFields:
+          - success
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PhoenixVerifyOtpResponse
+  fields:
+    - name: success
+      type: Boolean!
+    - name: verified
+      type: Boolean!
+  graphql:
+    typeName: PhoenixVerifyOtpResponse
+    inputTypeName: PhoenixVerifyOtpResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: phoenix_ts
+      dataConnectorObjectType: PhoenixVerifyOtpResponse
+      fieldMapping:
+        success:
+          column:
+            name: success
+        verified:
+          column:
+            name: verified
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PhoenixVerifyOtpResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - success
+          - verified
+    - role: policyholder
+      output:
+        allowedFields:
+          - success
+          - verified
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PhoenixClaimDocumentInfo
+  fields:
+    - name: id
+      type: String!
+    - name: claimId
+      type: String!
+    - name: fileName
+      type: String!
+    - name: fileType
+      type: String
+    - name: fileUrl
+      type: String
+    - name: fileSizeBytes
+      type: Float
+    - name: documentType
+      type: String
+    - name: createdAt
+      type: String!
+  graphql:
+    typeName: PhoenixClaimDocumentInfo
+    inputTypeName: PhoenixClaimDocumentInfoInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: phoenix_ts
+      dataConnectorObjectType: ClaimDocumentInfo
+      fieldMapping:
+        id:
+          column:
+            name: id
+        claimId:
+          column:
+            name: claimId
+        fileName:
+          column:
+            name: fileName
+        fileType:
+          column:
+            name: fileType
+        fileUrl:
+          column:
+            name: fileUrl
+        fileSizeBytes:
+          column:
+            name: fileSizeBytes
+        documentType:
+          column:
+            name: documentType
+        createdAt:
+          column:
+            name: createdAt
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PhoenixClaimDocumentInfo
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - claimId
+          - fileName
+          - fileType
+          - fileUrl
+          - fileSizeBytes
+          - documentType
+          - createdAt
+    - role: policyholder
+      output:
+        allowedFields:
+          - id
+          - claimId
+          - fileName
+          - fileType
+          - fileUrl
+          - fileSizeBytes
+          - documentType
+          - createdAt
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PhoenixUploadDocumentResponse
+  fields:
+    - name: uploadUrl
+      type: String!
+    - name: document
+      type: PhoenixClaimDocumentInfo!
+  graphql:
+    typeName: PhoenixUploadDocumentResponse
+    inputTypeName: PhoenixUploadDocumentResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: phoenix_ts
+      dataConnectorObjectType: PhoenixUploadDocumentResponse
+      fieldMapping:
+        uploadUrl:
+          column:
+            name: uploadUrl
+        document:
+          column:
+            name: document
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PhoenixUploadDocumentResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - uploadUrl
+          - document
+    - role: policyholder
+      output:
+        allowedFields:
+          - uploadUrl
+          - document
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Commands (GraphQL mutations)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+---
+kind: Command
+version: v1
+definition:
+  name: PhoenixLogin
+  outputType: PhoenixLoginResponse!
+  arguments:
+    - name: policyNumbers
+      type: "[String!]!"
+  source:
+    dataConnectorName: phoenix_ts
+    dataConnectorCommand:
+      procedure: phoenix_login
+    argumentMapping:
+      policyNumbers: policyNumbers
+  graphql:
+    rootFieldName: phoenixLogin
+    rootFieldKind: Mutation
+  description: Authenticate policy holders by policy numbers and return JWT tokens
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: PhoenixLogin
+  permissions:
+    - role: admin
+      allowExecution: true
+    - role: policyholder
+      allowExecution: true
+
+---
+kind: Command
+version: v1
+definition:
+  name: PhoenixRefreshToken
+  outputType: PhoenixRefreshTokenResponse!
+  arguments:
+    - name: token
+      type: String!
+  source:
+    dataConnectorName: phoenix_ts
+    dataConnectorCommand:
+      procedure: phoenix_refresh_token
+    argumentMapping:
+      token: token
+  graphql:
+    rootFieldName: phoenixRefreshToken
+    rootFieldKind: Mutation
+  description: Refresh an expired Phoenix JWT token
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: PhoenixRefreshToken
+  permissions:
+    - role: admin
+      allowExecution: true
+    - role: policyholder
+      allowExecution: true
+
+---
+kind: Command
+version: v1
+definition:
+  name: PhoenixRequestOtp
+  outputType: PhoenixOtpResponse!
+  arguments:
+    - name: claimId
+      type: String!
+    - name: token
+      type: String!
+  source:
+    dataConnectorName: phoenix_ts
+    dataConnectorCommand:
+      procedure: phoenix_request_otp
+    argumentMapping:
+      claimId: claimId
+      token: token
+  graphql:
+    rootFieldName: phoenixRequestOtp
+    rootFieldKind: Mutation
+  description: Request an OTP code for claim verification
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: PhoenixRequestOtp
+  permissions:
+    - role: admin
+      allowExecution: true
+    - role: policyholder
+      allowExecution: true
+
+---
+kind: Command
+version: v1
+definition:
+  name: PhoenixVerifyOtp
+  outputType: PhoenixVerifyOtpResponse!
+  arguments:
+    - name: claimId
+      type: String!
+    - name: code
+      type: String!
+    - name: token
+      type: String!
+  source:
+    dataConnectorName: phoenix_ts
+    dataConnectorCommand:
+      procedure: phoenix_verify_otp
+    argumentMapping:
+      claimId: claimId
+      code: code
+      token: token
+  graphql:
+    rootFieldName: phoenixVerifyOtp
+    rootFieldKind: Mutation
+  description: Verify an OTP code for claim action authorization
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: PhoenixVerifyOtp
+  permissions:
+    - role: admin
+      allowExecution: true
+    - role: policyholder
+      allowExecution: true
+
+---
+kind: Command
+version: v1
+definition:
+  name: PhoenixUploadDocument
+  outputType: PhoenixUploadDocumentResponse!
+  arguments:
+    - name: claimId
+      type: String!
+    - name: fileName
+      type: String!
+    - name: fileType
+      type: String!
+    - name: documentType
+      type: String
+    - name: token
+      type: String!
+  source:
+    dataConnectorName: phoenix_ts
+    dataConnectorCommand:
+      procedure: phoenix_upload_document
+    argumentMapping:
+      claimId: claimId
+      fileName: fileName
+      fileType: fileType
+      documentType: documentType
+      token: token
+  graphql:
+    rootFieldName: phoenixUploadDocument
+    rootFieldKind: Mutation
+  description: Request a presigned S3 upload URL for a claim document
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: PhoenixUploadDocument
+  permissions:
+    - role: admin
+      allowExecution: true
+    - role: policyholder
+      allowExecution: true

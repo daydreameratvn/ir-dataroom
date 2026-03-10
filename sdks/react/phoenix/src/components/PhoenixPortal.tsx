@@ -6,11 +6,12 @@ import { ClaimSubmission } from './ClaimSubmission';
 import { AdditionalDocs } from './AdditionalDocs';
 import type { PhoenixTheme } from '../styles/theme';
 import type { Locale } from '../i18n';
-import type { Claim } from '@papaya/phoenix';
+import type { Claim, PhoenixEnvironment } from '@papaya/phoenix';
 
 export interface PhoenixPortalProps {
   policyNumbers: string[];
-  baseUrl: string;
+  environment: PhoenixEnvironment;
+  graphqlUrl?: string;
   tenantId?: string;
   theme?: PhoenixTheme;
   locale?: Locale;
@@ -26,14 +27,15 @@ type PortalView =
 
 export function PhoenixPortal({
   policyNumbers,
-  baseUrl,
+  environment,
+  graphqlUrl,
   tenantId,
   theme,
   locale,
   onClaimSubmitted,
   className,
 }: PhoenixPortalProps) {
-  const config: PhoenixProviderProps['config'] = { baseUrl };
+  const config: PhoenixProviderProps['config'] = { environment, graphqlUrl };
 
   return (
     <PhoenixProvider

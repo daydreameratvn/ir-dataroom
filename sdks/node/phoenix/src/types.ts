@@ -1,8 +1,11 @@
+export type PhoenixEnvironment = 'production' | 'staging' | 'uat' | 'development';
+
 export interface PhoenixConfig {
-  /** Auth service base URL for login, OTP, and token refresh. */
-  baseUrl: string;
-  /** Hasura GraphQL endpoint for data queries/mutations. Defaults to `https://banyan.services.papaya.asia/graphql`. */
+  /** Environment to connect to. Determines the GraphQL endpoint automatically. */
+  environment: PhoenixEnvironment;
+  /** Override the GraphQL endpoint URL. Takes precedence over environment resolution. */
   graphqlUrl?: string;
+  /** Request timeout in milliseconds. Default: 30000. */
   timeout?: number;
 }
 

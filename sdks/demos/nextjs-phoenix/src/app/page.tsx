@@ -61,7 +61,7 @@ export default function HomePage() {
 function App() {
   return (
     <PhoenixProvider
-      config={{ baseUrl: 'https://phoenix.papaya.asia' }}
+      config={{ environment: 'production' }}
       policyNumbers={['287686']}
     >
       <ClaimsList onClaimSelect={(c) => console.log(c)} />

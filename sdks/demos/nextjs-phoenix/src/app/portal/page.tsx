@@ -4,7 +4,7 @@ import { PhoenixPortal } from '@papaya/phoenix-react';
 import { PhoenixSetup } from '@/providers/PhoenixSetup';
 import { SdkZone } from '@/components/SdkZone';
 import { EventLog } from '@/components/EventLog';
-import { PHOENIX_URL, POLICY_NUMBERS, TENANT_ID } from '@/lib/config';
+import { PHOENIX_ENVIRONMENT, POLICY_NUMBERS, TENANT_ID } from '@/lib/config';
 
 export default function PortalPage() {
   return (
@@ -18,7 +18,7 @@ export default function PortalPage() {
           </p>
           <SdkZone label="PhoenixPortal">
             <PhoenixPortal
-              baseUrl={PHOENIX_URL}
+              environment={PHOENIX_ENVIRONMENT}
               policyNumbers={POLICY_NUMBERS}
               tenantId={TENANT_ID}
               onClaimSubmitted={(claim) =>
