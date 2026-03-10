@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.9.25"
-    kotlin("plugin.serialization") version "1.9.22"
+    kotlin("jvm") version "2.3.0"
+    kotlin("plugin.serialization") version "2.3.0"
     `maven-publish`
 }
 
@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
     implementation("io.ktor:ktor-client-core:3.4.1")
     implementation("io.ktor:ktor-client-cio:3.4.1")
     implementation("io.ktor:ktor-client-content-negotiation:3.4.1")
