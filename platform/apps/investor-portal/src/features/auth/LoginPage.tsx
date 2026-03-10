@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '@papaya/shared-ui';
 import { Loader2 } from 'lucide-react';
 import { requestOtp } from '@/lib/api';
+import { SUPPORT_EMAIL } from '@/lib/constants';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function LoginPage() {
         return;
       }
       if (!result?.success || result?.message !== 'OTP sent to email') {
-        setError("Looks like you don't have access yet — reach out to khanh@papaya.asia and we'll get you set up 🙌");
+        setError(`Looks like you don't have access yet — reach out to ${SUPPORT_EMAIL} and we'll get you set up 🙌`);
         return;
       }
 
@@ -106,7 +107,11 @@ export default function LoginPage() {
         <p className="mt-6 text-center text-xs text-muted-foreground">
           Only authorized investors can access this portal.
           <br />
-          Contact khanh@papaya.asia if you need access. 🤝
+          Contact{' '}
+          <a href={`mailto:${SUPPORT_EMAIL}`} className="underline">
+            {SUPPORT_EMAIL}
+          </a>{' '}
+          if you need access.
         </p>
       </div>
     </div>

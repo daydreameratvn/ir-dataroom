@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@papaya/shared-ui';
 import { CheckCircle2, Loader2, ShieldCheck } from 'lucide-react';
 import { getRound, acceptNda } from '@/lib/api';
+import { SUPPORT_EMAIL } from '@/lib/constants';
 
 export default function NDAPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -83,8 +84,11 @@ export default function NDAPage() {
               </div>
             ) : (
               <p className="text-muted-foreground">
-                No NDA template has been provided for this round.
-                Please contact khanh@papaya.asia.
+                No NDA template has been provided for this round. Please contact{' '}
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="underline">
+                  {SUPPORT_EMAIL}
+                </a>
+                .
               </p>
             )}
           </div>
