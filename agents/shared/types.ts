@@ -41,6 +41,7 @@ export const APPROVAL_TOOLS = new Set([
   "approve",
   "issuePendingCodes",
   "createSupplementRequest",
+  "submitClaim",
 ]);
 
 // Approval sentinel returned by tools that need approval

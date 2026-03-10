@@ -3,7 +3,7 @@ import { Agent } from "@mariozechner/pi-agent-core";
 import type { ImageContent } from "@mariozechner/pi-ai";
 import dedent from "dedent";
 
-import { geminiFlash } from "../shared/model.ts";
+import { geminiFlashLite } from "../shared/model.ts";
 import { insuredTool, icdTool, medicalProviderTool, medicalProvidersTool } from "../shared/tools/index.ts";
 import {
   banksTool,
@@ -13,13 +13,14 @@ import {
   lastBankInfoTool,
   saveAssessedDiagnosesTool,
   sendOtpTool,
-  submitClaimTool,
+  createSubmitClaimTool,
   createUploadDocumentsTool,
 } from "./tools/index.ts";
-import type { DocumentInfo } from "./tools/index.ts";
+import type { DocumentInfo, SubmitClaimApprovalState } from "./tools/index.ts";
 
 type ClaimSubmissionAgentParams = {
   allowedCertificateIds?: string[];
+  approvalState?: SubmitClaimApprovalState;
   documentAnalysis?: string;
   documents?: DocumentInfo[];
   pageCount?: number;
@@ -61,6 +62,7 @@ export async function downloadDocumentImages(documents: DocumentInfo[]): Promise
  */
 export async function createClaimSubmissionAgent({
   allowedCertificateIds,
+  approvalState = { approved: false },
   documentAnalysis,
   documents = [],
   pageCount,
@@ -123,16 +125,20 @@ export async function createClaimSubmissionAgent({
       ${diagnoseStep}. After submitClaim (and uploadDocuments if applicable), call saveAssessedDiagnoses with the ICD UUIDs and claim case ID.
       ${summaryStep}. After ALL claims are submitted, provide a final summary.
 
-    **OTP Verification** (CRITICAL — determine from findInsured response):
+    **OTP Verification & Approval** (CRITICAL — determine from findInsured response):
       The findInsured response includes these fields per certificate: "requiresOtp", "requiresInsuredPersonOtp", and "otpPhone".
 
       **Case 1: requiresOtp is false** → No OTP needed. Skip sendOtp entirely. Submit claims WITHOUT otp/recipient fields.
+        - When you call submitClaim without OTP, the system will automatically request user approval before actually submitting.
+        - The user will see an approval button. If they approve, submitClaim will be called again and actually submit.
+        - You do NOT need to handle this — the system manages it automatically.
 
       **Case 2: requiresOtp is true AND requiresInsuredPersonOtp is false** (standard OTP):
         - Use the insured person's EMAIL to send OTP. Get it from findInsured: "insuredPerson.email" or the certificate "email" field.
         - Call sendOtp with that email. Do NOT ask the user for a phone number.
         - STOP and wait for user to provide the OTP code.
         - The "recipient" in submitClaim must be the same email used in sendOtp.
+        - Providing OTP = implicit user approval. The claim will be submitted directly.
 
       **Case 3: requiresInsuredPersonOtp is true** (insured person OTP — e.g. DBV insurer):
         - OTP MUST be sent to the INSURED PERSON's phone number, NOT email.
@@ -144,6 +150,7 @@ export async function createClaimSubmissionAgent({
             c. When user provides a phone number, call updateCertificatePhone to save it, then call sendOtp with that phone.
             d. STOP and wait for user to provide OTP.
         - The "recipient" in submitClaim must be the same phone used in sendOtp.
+        - Providing OTP = implicit user approval. The claim will be submitted directly.
 
       **OTP Reuse**:
         - Call sendOtp exactly ONCE per session. Reuse the same OTP code and recipient for all submitClaim calls.
@@ -158,7 +165,8 @@ export async function createClaimSubmissionAgent({
       - After uploadDocuments succeeds, ALWAYS call saveAssessedDiagnoses with the same ICD UUIDs${certificateRestriction}
   `;
 
-  // Build tools list — uploadDocuments is a factory that captures the documents array
+  // Build tools list — factories capture session-specific state
+  const submitClaimTool = createSubmitClaimTool(approvalState);
   const uploadDocumentsTool = createUploadDocumentsTool(documents);
 
   // If resuming, skip document injection (it's already in the messages)
@@ -167,7 +175,7 @@ export async function createClaimSubmissionAgent({
   const agent = new Agent({
     initialState: {
       systemPrompt,
-      model: geminiFlash,
+      model: geminiFlashLite,
       tools: [
         findInsuredTool,
         updateCertificatePhoneTool,

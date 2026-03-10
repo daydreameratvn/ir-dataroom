@@ -52,6 +52,7 @@ claimSubmission.post("/claim-submission/sessions/:id/messages", async (c) => {
     const response = await handleSendMessage({
       sessionId,
       text: body.text,
+      approval: body.approval,
       documents: body.documents,
       tenantId,
     });

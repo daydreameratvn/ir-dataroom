@@ -24,3 +24,8 @@ export const geminiFlash = getModel(
   "google",
   "gemini-3-flash-preview",
 );
+
+export const geminiFlashLite = getModel(
+  "google",
+  "gemini-3.1-flash-lite-preview",
+);

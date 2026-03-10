@@ -26,17 +26,32 @@ const APPLE_AUTH_HEADERS: Record<string, string> = process.env.APPLE_ADMIN_SECRE
 // ---------------------------------------------------------------------------
 // gqlQuery — fetch-based client for DDN (Banyan supergraph / sweetpotato).
 // Use this for all standard CRUD queries and mutations.
+//
+// Single retry on DDN Cloud's "internal error" — a known transient failure
+// from Hasura's managed infrastructure. Without this, the agent LLM wastes
+// tokens re-processing failed tool calls. TODO: re-deploy self-hosted DDN
+// engine to eliminate this entirely.
 // ---------------------------------------------------------------------------
 
 export async function gqlQuery<T = unknown>(query: string, variables?: Record<string, unknown>): Promise<T> {
-  const res = await fetch(DDN_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...DDN_AUTH_HEADERS },
-    body: JSON.stringify({ query, variables }),
-  });
-  const json = (await res.json()) as { data?: T; errors?: Array<{ message: string }> };
-  if (json.errors?.length) throw new Error(json.errors[0]!.message);
-  return json.data as T;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await fetch(DDN_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...DDN_AUTH_HEADERS },
+      body: JSON.stringify({ query, variables }),
+    });
+    const json = (await res.json()) as { data?: T; errors?: Array<{ message: string }> };
+
+    if (json.errors?.length) {
+      const msg = json.errors[0]!.message;
+      if (msg === "internal error" && attempt === 0) continue;
+      throw new Error(msg);
+    }
+
+    return json.data as T;
+  }
+
+  throw new Error("internal error");
 }
 
 // ---------------------------------------------------------------------------

@@ -425,15 +425,19 @@ console.log(`Cache read:       ${totalCacheReadTokens.toLocaleString()}`);
 console.log(`Cache write:      ${totalCacheWriteTokens.toLocaleString()}`);
 console.log(`Total tokens:     ${(totalInputTokens + totalOutputTokens + totalCacheReadTokens + totalCacheWriteTokens).toLocaleString()}`);
 
-// Cost calculation (Gemini Flash 3 Preview pricing: $0.50/M input, $3/M output, $0.05/M cache read)
+// Cost calculation (Gemini 3.1 Flash Lite pricing: $0.50/M input, $3/M output, $0.05/M cache read)
 const inputCost = (0.50 / 1_000_000) * totalInputTokens;
 const outputCost = (3.0 / 1_000_000) * totalOutputTokens;
 const cacheReadCost = (0.05 / 1_000_000) * totalCacheReadTokens;
 const totalCost = inputCost + outputCost + cacheReadCost;
-console.log(`\nEstimated cost:   $${totalCost.toFixed(4)}`);
+const USD_TO_VND = 26_200;
+console.log(`\nEstimated cost (USD):`);
 console.log(`  Input:          $${inputCost.toFixed(4)}`);
 console.log(`  Output:         $${outputCost.toFixed(4)}`);
 console.log(`  Cache read:     $${cacheReadCost.toFixed(4)}`);
+console.log(`  Total:          $${totalCost.toFixed(4)}`);
+console.log(`\nEstimated cost (VND @ ${USD_TO_VND.toLocaleString()} VND/USD):`);
+console.log(`  Total:          ${Math.round(totalCost * USD_TO_VND).toLocaleString()} VND`);
 console.log("═".repeat(80));
 console.log("DONE");
 console.log("═".repeat(80));

@@ -6,10 +6,13 @@ import { recordAgentEvents } from "./event-recorder.ts";
 import { sessionStore } from "./session-store.ts";
 import type { SessionContext } from "./session-store.ts";
 import { createSSEResponse } from "../shared/sse-stream.ts";
-import type { DocumentInfo } from "./tools/index.ts";
+import type { DocumentInfo, SubmitClaimApprovalState } from "./tools/index.ts";
 
 export type { DocumentInfo };
 export { sessionStore };
+
+// Per-session approval state — shared by reference with the submitClaim tool
+const sessionApprovalStates = new Map<string, SubmitClaimApprovalState>();
 
 // ─── Session-based handlers ──────────────────────────────────────────────────
 
@@ -47,8 +50,13 @@ export async function handleCreateSession(params: {
     imageBlocks = await downloadDocumentImages(documents);
   }
 
+  // Create per-session approval state (shared by reference with the tool)
+  const approvalState: SubmitClaimApprovalState = { approved: false };
+  sessionApprovalStates.set(sessionId, approvalState);
+
   // Create agent
   const agent = await createClaimSubmissionAgent({
+    approvalState,
     documentAnalysis: params.documentAnalysis,
     documents,
     pageCount,
@@ -104,6 +112,7 @@ export async function handleCreateSession(params: {
 export async function handleSendMessage(params: {
   sessionId: string;
   text: string;
+  approval?: { approved: boolean };
   documents?: DocumentInfo[];
   tenantId: string;
 }): Promise<Response> {
@@ -118,8 +127,14 @@ export async function handleSendMessage(params: {
       throw new Error(`Session ${params.sessionId} is ${session.status}`);
     }
 
+    // Ensure approval state exists for reconstructed sessions
+    if (!sessionApprovalStates.has(params.sessionId)) {
+      sessionApprovalStates.set(params.sessionId, { approved: false });
+    }
+
     // Reconstruct agent with persisted messages
     const agent = await createClaimSubmissionAgent({
+      approvalState: sessionApprovalStates.get(params.sessionId)!,
       documents: session.context.documents,
       pageCount: session.context.pageCount,
       allowedCertificateIds: session.context.allowedCertificateIds,
@@ -129,6 +144,14 @@ export async function handleSendMessage(params: {
     sessionStore.setAgent(params.sessionId, agent, session.context, session.tenantId);
     recordAgentEvents(agent, params.sessionId, session.tenantId, sessionStore);
     entry = sessionStore.getAgent(params.sessionId)!;
+  }
+
+  // Handle approval response — set the shared approval state before prompting
+  if (params.approval?.approved === true) {
+    const state = sessionApprovalStates.get(params.sessionId);
+    if (state) {
+      state.approved = true;
+    }
   }
 
   // Record user message
