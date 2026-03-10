@@ -3,55 +3,46 @@ import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client/core";
 // ---------------------------------------------------------------------------
 // DDN endpoint — Banyan supergraph with sweetpotato (direct PostgreSQL).
 // This is the primary endpoint for all new agent queries and mutations.
+// Source of truth: SSM /banyan/hasura/ddn-cloud-endpoint
 // ---------------------------------------------------------------------------
-const DDN_ENDPOINT = process.env.HASURA_GRAPHQL_ENDPOINT ?? "https://banyan.services.papaya.asia/graphql";
+if (!process.env.HASURA_GRAPHQL_ENDPOINT) throw new Error("HASURA_GRAPHQL_ENDPOINT is required");
+if (!process.env.HASURA_ADMIN_TOKEN) throw new Error("HASURA_ADMIN_TOKEN is required");
 
-const DDN_AUTH_HEADERS: Record<string, string> = process.env.HASURA_ADMIN_TOKEN
-  ? { Authorization: `Bearer ${process.env.HASURA_ADMIN_TOKEN}` }
-  : {};
+const DDN_ENDPOINT = process.env.HASURA_GRAPHQL_ENDPOINT;
+
+const DDN_AUTH_HEADERS: Record<string, string> = {
+  Authorization: `Bearer ${process.env.HASURA_ADMIN_TOKEN}`,
+};
 
 // ---------------------------------------------------------------------------
 // Apple v2 endpoint — ONLY for custom actions that don't exist in DDN:
 //   createOtpForAnyRecipient, submitClaimWithOtp, payout.getBankAccountInfo,
 //   claimInsuredBenefitDetail, approveClaim, createUpdateClaimDetail
+// Source of truth: SSM /banyan/hasura/apple-endpoint
 // ---------------------------------------------------------------------------
-const APPLE_ENDPOINT = process.env.APPLE_GRAPHQL_ENDPOINT ?? DDN_ENDPOINT;
+if (!process.env.APPLE_GRAPHQL_ENDPOINT) throw new Error("APPLE_GRAPHQL_ENDPOINT is required");
+if (!process.env.APPLE_ADMIN_SECRET) throw new Error("APPLE_ADMIN_SECRET is required");
 
-const APPLE_AUTH_HEADERS: Record<string, string> = process.env.APPLE_ADMIN_SECRET
-  ? { "x-hasura-admin-secret": process.env.APPLE_ADMIN_SECRET }
-  : process.env.HASURA_ADMIN_SECRET
-    ? { "x-hasura-admin-secret": process.env.HASURA_ADMIN_SECRET }
-    : DDN_AUTH_HEADERS;
+const APPLE_ENDPOINT = process.env.APPLE_GRAPHQL_ENDPOINT;
+
+const APPLE_AUTH_HEADERS: Record<string, string> = {
+  "x-hasura-admin-secret": process.env.APPLE_ADMIN_SECRET,
+};
 
 // ---------------------------------------------------------------------------
 // gqlQuery — fetch-based client for DDN (Banyan supergraph / sweetpotato).
 // Use this for all standard CRUD queries and mutations.
-//
-// Single retry on DDN Cloud's "internal error" — a known transient failure
-// from Hasura's managed infrastructure. Without this, the agent LLM wastes
-// tokens re-processing failed tool calls. TODO: re-deploy self-hosted DDN
-// engine to eliminate this entirely.
 // ---------------------------------------------------------------------------
 
 export async function gqlQuery<T = unknown>(query: string, variables?: Record<string, unknown>): Promise<T> {
-  for (let attempt = 0; attempt < 2; attempt++) {
-    const res = await fetch(DDN_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...DDN_AUTH_HEADERS },
-      body: JSON.stringify({ query, variables }),
-    });
-    const json = (await res.json()) as { data?: T; errors?: Array<{ message: string }> };
-
-    if (json.errors?.length) {
-      const msg = json.errors[0]!.message;
-      if (msg === "internal error" && attempt === 0) continue;
-      throw new Error(msg);
-    }
-
-    return json.data as T;
-  }
-
-  throw new Error("internal error");
+  const res = await fetch(DDN_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...DDN_AUTH_HEADERS },
+    body: JSON.stringify({ query, variables }),
+  });
+  const json = (await res.json()) as { data?: T; errors?: Array<{ message: string }> };
+  if (json.errors?.length) throw new Error(json.errors[0]!.message);
+  return json.data as T;
 }
 
 // ---------------------------------------------------------------------------
