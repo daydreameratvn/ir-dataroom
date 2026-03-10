@@ -6,13 +6,12 @@ import { createElement } from 'react';
 const mockListClaims = vi.fn();
 const mockGetClaim = vi.fn();
 
-vi.mock('@papaya/sample', () => {
-  const MockPapayaClient = vi.fn().mockImplementation(() => ({
-    listClaims: mockListClaims,
-    getClaim: mockGetClaim,
-  }));
-  return { PapayaClient: MockPapayaClient };
-});
+vi.mock('@papaya/sample', () => ({
+  PapayaClient: class {
+    listClaims = mockListClaims;
+    getClaim = mockGetClaim;
+  },
+}));
 
 import { PapayaProvider } from '../provider';
 import { useClaims, useClaim } from './useClaims';

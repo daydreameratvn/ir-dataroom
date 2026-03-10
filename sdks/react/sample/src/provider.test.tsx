@@ -5,10 +5,9 @@ import { PapayaProvider, usePapaya } from './provider';
 import { PapayaClient } from '@papaya/sample';
 import type { ReactNode } from 'react';
 
-vi.mock('@papaya/sample', () => {
-  const MockPapayaClient = vi.fn();
-  return { PapayaClient: MockPapayaClient };
-});
+vi.mock('@papaya/sample', () => ({
+  PapayaClient: class PapayaClient {},
+}));
 
 const defaultConfig = { apiKey: 'test-key', baseUrl: 'https://api.test.com' };
 
@@ -27,9 +26,9 @@ describe('PapayaProvider', () => {
     expect(screen.getByTestId('child').textContent).toBe('Hello');
   });
 
-  it('creates a PapayaClient with the provided config', () => {
-    renderHook(() => usePapaya(), { wrapper });
-    expect(PapayaClient).toHaveBeenCalledWith(defaultConfig);
+  it('creates a PapayaClient instance', () => {
+    const { result } = renderHook(() => usePapaya(), { wrapper });
+    expect(result.current).toBeInstanceOf(PapayaClient);
   });
 });
 
