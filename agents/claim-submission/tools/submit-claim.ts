@@ -1,9 +1,9 @@
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { Type } from "@mariozechner/pi-ai";
-import { graphql } from "@papaya/graphql/sdk";
 
-import { getClient } from "../../shared/graphql-client.ts";
+import { appleQuery } from "../../shared/graphql-client.ts";
 
+// Custom action — must stay on Apple v2
 export const submitClaimTool: AgentTool = {
   name: "submitClaim",
   label: "Submit Claim",
@@ -29,52 +29,50 @@ export const submitClaimTool: AgentTool = {
   }),
   execute: async (toolCallId, params: any) => {
     try {
-      const { data } = await getClient().mutate({
-        mutation: graphql(`
-          mutation SubmitClaimWithOtp(
-            $insuredCertificateId: ID!
-            $benefitType: String!
-            $requestAmount: Int!
-            $otp: String!
-            $recipient: String!
-            $physicalExaminationDate: String
-            $diagnosis: String
-            $treatmentMethod: String
-            $icdCodeIds: [UUID!]
-            $medicalProviderId: ID
-            $medicalProviderName: String
-            $bankId: ID
-            $paymentAccountName: String
-            $paymentAccountNumber: String
-            $paymentBankName: String
-            $source: String
+      const data = await appleQuery<{ submitClaimWithOtp: any }>(
+        `mutation SubmitClaimWithOtp(
+          $insuredCertificateId: ID!
+          $benefitType: String!
+          $requestAmount: Int!
+          $otp: String!
+          $recipient: String!
+          $physicalExaminationDate: String
+          $diagnosis: String
+          $treatmentMethod: String
+          $icdCodeIds: [UUID!]
+          $medicalProviderId: ID
+          $medicalProviderName: String
+          $bankId: ID
+          $paymentAccountName: String
+          $paymentAccountNumber: String
+          $paymentBankName: String
+          $source: String
+        ) {
+          submitClaimWithOtp(
+            insuredCertificateId: $insuredCertificateId
+            benefitType: $benefitType
+            requestAmount: $requestAmount
+            otp: $otp
+            recipient: $recipient
+            physicalExaminationDate: $physicalExaminationDate
+            diagnosis: $diagnosis
+            treatmentMethod: $treatmentMethod
+            icdCodeIds: $icdCodeIds
+            medicalProviderId: $medicalProviderId
+            medicalProviderName: $medicalProviderName
+            bankId: $bankId
+            paymentAccountName: $paymentAccountName
+            paymentAccountNumber: $paymentAccountNumber
+            paymentBankName: $paymentBankName
+            source: $source
           ) {
-            submitClaimWithOtp(
-              insuredCertificateId: $insuredCertificateId
-              benefitType: $benefitType
-              requestAmount: $requestAmount
-              otp: $otp
-              recipient: $recipient
-              physicalExaminationDate: $physicalExaminationDate
-              diagnosis: $diagnosis
-              treatmentMethod: $treatmentMethod
-              icdCodeIds: $icdCodeIds
-              medicalProviderId: $medicalProviderId
-              medicalProviderName: $medicalProviderName
-              bankId: $bankId
-              paymentAccountName: $paymentAccountName
-              paymentAccountNumber: $paymentAccountNumber
-              paymentBankName: $paymentBankName
-              source: $source
-            ) {
-              success
-              message
-              claimId
-              claim { id code }
-            }
+            success
+            message
+            claimId
+            claim { id code }
           }
-        `),
-        variables: {
+        }`,
+        {
           insuredCertificateId: params.insuredCertificateId,
           benefitType: params.benefitType,
           requestAmount: Math.round(params.requestAmount),
@@ -92,9 +90,9 @@ export const submitClaimTool: AgentTool = {
           paymentBankName: params.paymentBankName,
           source: "AGENT_CARE_APP",
         },
-      });
+      );
 
-      const result = (data as any)?.submitClaimWithOtp;
+      const result = data?.submitClaimWithOtp;
       return {
         content: [{ type: "text", text: JSON.stringify(result) }],
         details: {

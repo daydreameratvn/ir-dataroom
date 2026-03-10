@@ -1,8 +1,7 @@
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { Type } from "@mariozechner/pi-ai";
-import { graphql } from "@papaya/graphql/sdk";
 
-import { getClient } from "../../shared/graphql-client.ts";
+import { gqlQuery } from "../../shared/graphql-client.ts";
 
 export interface DocumentInfo {
   /** S3 URL of the document file */
@@ -20,11 +19,11 @@ export interface DocumentInfo {
 }
 
 /**
- * Creates an uploadDocuments tool that inserts claim_documents + files
- * on the Apple v2 endpoint, linking them to the submitted claim case.
+ * Creates an uploadDocuments tool that inserts files + claim_documents
+ * via the sweetpotato DDN subgraph.
  *
- * The documents array is captured from the handler input — the agent
- * only needs to provide the claimCaseId after a successful submitClaim call.
+ * DDN doesn't support nested inserts, so we insert the file first,
+ * then insert the claim_document linking to it.
  */
 export function createUploadDocumentsTool(documents: DocumentInfo[]): AgentTool {
   return {
@@ -45,47 +44,57 @@ export function createUploadDocumentsTool(documents: DocumentInfo[]): AgentTool 
         };
       }
 
-      const client = getClient();
       const results: Array<{ success: boolean; fileName: string; documentId?: string; error?: string }> = [];
 
       for (const doc of documents) {
         try {
-          const { data } = await client.mutate({
-            mutation: graphql(`
-              mutation InsertClaimDocumentWithFile($input: claim_documents_insert_input!) {
-                insert_claim_documents_one(object: $input) {
-                  id
-                  claim_case_id
-                  type
-                  file { id url }
-                }
+          // Step 1: Insert claim_document record
+          const docData = await gqlQuery<{ insertClaimDocuments_1: { affectedRows: number; returning: any[] } }>(
+            `mutation InsertClaimDocument($objects: [InsertClaimDocumentsObjectInput_1!]!) {
+              insertClaimDocuments_1(objects: $objects) {
+                affectedRows
+                returning { claimDocumentId claimCaseId type }
               }
-            `),
-            variables: {
-              input: {
-                claim_case_id: claimCaseId,
+            }`,
+            {
+              objects: [{
+                claimCaseId,
                 type: doc.documentType ?? "OtherPaper",
                 source: "AGENT_CARE_APP",
-                file: {
-                  data: {
-                    name: doc.fileName,
-                    url: doc.fileUrl,
-                    // bucket_name is required (NOT NULL) — legacy composite "bucket/prefix" format
-                    bucket_name: doc.bucket ?? "banyan-portal-documents",
-                    bucket_name_v2: doc.bucket ?? "banyan-portal-documents",
-                    bucket_object_key: doc.key ?? null,
-                    mime_type: doc.fileType ?? null,
-                  },
-                },
-              },
+              }],
             },
-          });
+          );
 
-          const inserted = (data as any)?.insert_claim_documents_one;
+          const claimDocumentId = docData.insertClaimDocuments_1?.returning?.[0]?.claimDocumentId;
+          if (!claimDocumentId) {
+            results.push({ success: false, fileName: doc.fileName, error: "Failed to insert claim document" });
+            continue;
+          }
+
+          // Step 2: Insert file record linked to the claim_document
+          await gqlQuery<{ insertFiles: { affectedRows: number } }>(
+            `mutation InsertFile($objects: [InsertFilesObjectInput!]!) {
+              insertFiles(objects: $objects) {
+                affectedRows
+              }
+            }`,
+            {
+              objects: [{
+                claimDocumentId,
+                name: doc.fileName,
+                url: doc.fileUrl,
+                bucketName: doc.bucket ?? "banyan-portal-documents",
+                bucketNameV2: doc.bucket ?? "banyan-portal-documents",
+                bucketObjectKey: doc.key ?? null,
+                mimeType: doc.fileType ?? "application/octet-stream",
+              }],
+            },
+          );
+
           results.push({
             success: true,
             fileName: doc.fileName,
-            documentId: inserted?.id,
+            documentId: claimDocumentId,
           });
         } catch (error) {
           console.error(`[uploadDocuments] Failed to insert document ${doc.fileName}:`, error instanceof Error ? error.message : error);

@@ -80,9 +80,9 @@ const FETCH_CLAIM_HISTORY_QUERY = `
       where: {
         claimantName: { _eq: $claimantName }
         id: { _neq: $excludeId }
-        deletedAt: { _isNull: true }
+        deletedAt: { _is_null: true }
       }
-      orderBy: [{ createdAt: Desc }]
+      order_by: [{ createdAt: Desc }]
       limit: 50
     ) {
       id

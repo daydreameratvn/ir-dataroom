@@ -18,3 +18,9 @@ export const bedrockHaiku = getModel(
   "amazon-bedrock",
   "global.anthropic.claude-haiku-4-5-20251001-v1:0",
 );
+
+// Google models — requires GEMINI_API_KEY env var (from SSM /banyan/forensics/gemini-api-key)
+export const geminiFlash = getModel(
+  "google",
+  "gemini-3-flash-preview",
+);

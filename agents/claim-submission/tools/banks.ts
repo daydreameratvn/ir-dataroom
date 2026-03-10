@@ -1,10 +1,7 @@
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { Type } from "@mariozechner/pi-ai";
-import { graphql } from "@papaya/graphql/sdk";
 
-import { getClient } from "../../shared/graphql-client.ts";
-
-const client = getClient();
+import { gqlQuery, appleQuery } from "../../shared/graphql-client.ts";
 
 export const banksTool: AgentTool = {
   name: "banks",
@@ -15,16 +12,14 @@ export const banksTool: AgentTool = {
     offset: Type.Number({ description: "The offset for pagination" }),
   }),
   execute: async (toolCallId, { limit, offset }) => {
-    const { data } = await client.query({
-      query: graphql(`
-        query Banks($limit: Int!, $offset: Int!) {
-          banks(limit: $limit, offset: $offset, order_by: { en_name: asc }) {
-            id en_name short_name
-          }
+    const data = await gqlQuery<{ banks: any[] }>(
+      `query Banks($limit: Int!, $offset: Int!) {
+        banks(limit: $limit, offset: $offset, order_by: { enName: Asc }) {
+          id enName shortName
         }
-      `),
-      variables: { limit, offset },
-    });
+      }`,
+      { limit, offset },
+    );
     return {
       content: [{ type: "text", text: JSON.stringify(data) }],
       details: { limit, offset },
@@ -32,6 +27,7 @@ export const banksTool: AgentTool = {
   },
 };
 
+// Custom action — must stay on Apple v2
 export const verifyBankAccountTool: AgentTool = {
   name: "verifyBankAccount",
   label: "Verify Bank Account",
@@ -42,18 +38,16 @@ export const verifyBankAccountTool: AgentTool = {
   }),
   execute: async (toolCallId, { bank_id, account_number }) => {
     try {
-      const { data } = await client.query({
-        query: graphql(`
-          query BankAccountInfo($bankId: UUID!, $accountNumber: String!) {
-            payout {
-              getBankAccountInfo(bankId: $bankId, accountNumber: $accountNumber) {
-                accountName accountNumber bankName
-              }
+      const data = await appleQuery<{ payout: { getBankAccountInfo: any } }>(
+        `query BankAccountInfo($bankId: UUID!, $accountNumber: String!) {
+          payout {
+            getBankAccountInfo(bankId: $bankId, accountNumber: $accountNumber) {
+              accountName accountNumber bankName
             }
           }
-        `),
-        variables: { bankId: bank_id, accountNumber: account_number },
-      });
+        }`,
+        { bankId: bank_id, accountNumber: account_number },
+      );
       const accountInfo = data?.payout?.getBankAccountInfo;
       if (accountInfo == null) {
         return {

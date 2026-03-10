@@ -1,8 +1,7 @@
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { Type } from "@mariozechner/pi-ai";
-import { graphql } from "@papaya/graphql/sdk";
 
-import { getClient } from "../../shared/graphql-client.ts";
+import { gqlQuery } from "../../shared/graphql-client.ts";
 
 export const saveAssessedDiagnosesTool: AgentTool = {
   name: "saveAssessedDiagnoses",
@@ -16,26 +15,21 @@ export const saveAssessedDiagnosesTool: AgentTool = {
   }),
   execute: async (_toolCallId, params: any) => {
     try {
-      const { data } = await getClient().mutate({
-        mutation: graphql(`
-          mutation SaveAssessedDiagnoses($input: [claim_case_assessed_diagnoses_insert_input!]!) {
-            insert_claim_case_assessed_diagnoses(
-              objects: $input
-              on_conflict: { constraint: claim_case_assessed_diagnoses_claim_case_id_icd_metadata_id_key, update_columns: [updated_at] }
-            ) {
-              affected_rows
-            }
+      const data = await gqlQuery<{ insertClaimCaseAssessedDiagnoses: { affectedRows: number } }>(
+        `mutation SaveAssessedDiagnoses($objects: [InsertClaimCaseAssessedDiagnosesObjectInput!]!) {
+          insertClaimCaseAssessedDiagnoses(objects: $objects) {
+            affectedRows
           }
-        `),
-        variables: {
-          input: params.icdIds.map((icdId: string) => ({
-            claim_case_id: params.claimCaseId,
-            icd_metadata_id: icdId,
+        }`,
+        {
+          objects: params.icdIds.map((icdId: string) => ({
+            claimCaseId: params.claimCaseId,
+            icdMetadataId: icdId,
           })),
         },
-      });
+      );
 
-      const affected = (data as any)?.insert_claim_case_assessed_diagnoses?.affected_rows ?? 0;
+      const affected = data.insertClaimCaseAssessedDiagnoses?.affectedRows ?? 0;
       return {
         content: [{ type: "text", text: JSON.stringify({ success: true, affected_rows: affected }) }],
         details: { claimCaseId: params.claimCaseId, icdCount: params.icdIds.length },

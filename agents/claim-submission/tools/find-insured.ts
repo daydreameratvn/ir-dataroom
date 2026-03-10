@@ -1,8 +1,7 @@
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { Type } from "@mariozechner/pi-ai";
-import { graphql } from "@papaya/graphql/sdk";
 
-import { getClient } from "../../shared/graphql-client.ts";
+import { gqlQuery } from "../../shared/graphql-client.ts";
 
 export const findInsuredTool: AgentTool = {
   name: "findInsured",
@@ -19,7 +18,7 @@ export const findInsuredTool: AgentTool = {
     const conditions: Record<string, unknown>[] = [];
     if (name) conditions.push({ name: { _ilike: `%${name}%` } });
     if (phone) conditions.push({ phone: { _eq: phone } });
-    if (paper_id) conditions.push({ paper_id: { _eq: paper_id } });
+    if (paper_id) conditions.push({ paperId: { _eq: paper_id } });
 
     if (conditions.length === 0) {
       return {
@@ -29,37 +28,54 @@ export const findInsuredTool: AgentTool = {
       };
     }
 
-    const { data } = await getClient().query({
-      query: graphql(`
-        query FindInsuredPersons($where: insured_persons_bool_exp!) {
-          insured_persons(where: $where, limit: 10) {
-            id
-            name
-            email
-            phone
-            dob
-            paper_id
-            insured_certificates(where: { deleted_at: { _is_null: true } }) {
-              id
-              effective_date
-              expiry_date
-              phone
-              policy { id policy_number }
-            }
+    // Query via insuredCertificates + insuredPerson relationship
+    // (insuredPersons list query has a DDN connector bug with _is_null)
+    const data = await gqlQuery<{ insuredCertificates: any[] }>(
+      `query FindInsuredPersons($where: InsuredCertificatesBoolExp!) {
+        insuredCertificates(where: $where, limit: 20) {
+          insuredCertificateId
+          effectiveDate
+          expiryDate
+          phone
+          plan { planId }
+          insuredPerson {
+            insuredPersonId name email phone dob paperId
           }
         }
-      `),
-      variables: {
+      }`,
+      {
         where: {
-          _or: conditions,
-          deleted_at: { _is_null: true },
+          insuredPerson: { _or: conditions },
         },
       },
-    });
+    );
+
+    // Group by insured person and map to stable field names
+    const personMap = new Map<string, any>();
+    for (const cert of data.insuredCertificates ?? []) {
+      const p = cert.insuredPerson;
+      if (!p) continue;
+      if (!personMap.has(p.insuredPersonId)) {
+        personMap.set(p.insuredPersonId, {
+          ...p,
+          id: p.insuredPersonId,
+          insured_certificates: [],
+        });
+      }
+      personMap.get(p.insuredPersonId)!.insured_certificates.push({
+        insuredCertificateId: cert.insuredCertificateId,
+        effectiveDate: cert.effectiveDate,
+        expiryDate: cert.expiryDate,
+        phone: cert.phone,
+        plan: cert.plan,
+        id: cert.insuredCertificateId,
+      });
+    }
+    const mapped = { insured_persons: [...personMap.values()] };
 
     return {
-      content: [{ type: "text", text: JSON.stringify(data) }],
-      details: { matchCount: (data as any)?.insured_persons?.length ?? 0 },
+      content: [{ type: "text", text: JSON.stringify(mapped) }],
+      details: { matchCount: data.insuredPersons?.length ?? 0 },
     };
   },
 };

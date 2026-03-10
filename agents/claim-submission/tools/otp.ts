@@ -1,9 +1,9 @@
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { Type } from "@mariozechner/pi-ai";
-import { graphql } from "@papaya/graphql/sdk";
 
-import { getClient } from "../../shared/graphql-client.ts";
+import { appleQuery } from "../../shared/graphql-client.ts";
 
+// Custom action — must stay on Apple v2
 export const sendOtpTool: AgentTool = {
   name: "sendOtp",
   label: "Send OTP",
@@ -13,18 +13,16 @@ export const sendOtpTool: AgentTool = {
     phone: Type.Optional(Type.String({ description: "Phone number to send OTP to" })),
   }),
   execute: async (toolCallId, { email, phone }) => {
-    const { data } = await getClient().mutate({
-      mutation: graphql(`
-        mutation SendOtp($email: String, $phone: String) {
-          createOtpForAnyRecipient(email: $email, phone: $phone) {
-            success
-            message
-            data { expiresAt }
-          }
+    const data = await appleQuery<{ createOtpForAnyRecipient: any }>(
+      `mutation SendOtp($email: String, $phone: String) {
+        createOtpForAnyRecipient(email: $email, phone: $phone) {
+          success
+          message
+          data { expiresAt }
         }
-      `),
-      variables: { email, phone },
-    });
+      }`,
+      { email, phone },
+    );
     return {
       content: [{ type: "text", text: JSON.stringify(data?.createOtpForAnyRecipient) }],
       details: { email, phone },

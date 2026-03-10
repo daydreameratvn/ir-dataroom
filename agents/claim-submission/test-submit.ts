@@ -298,6 +298,11 @@ const agent = await createClaimSubmissionAgent({
 let submittedClaimId: string | null = null;
 let otpSent = false;
 const testStartedAt = new Date().toISOString();
+let totalInputTokens = 0;
+let totalOutputTokens = 0;
+let totalCacheReadTokens = 0;
+let totalCacheWriteTokens = 0;
+let llmCallCount = 0;
 
 const RECIPIENTS = ["phuong.nguyennd2@homecredit.vn", "0988391039"];
 
@@ -321,6 +326,15 @@ agent.subscribe((event: any) => {
         if (parsed.claimId) submittedClaimId = parsed.claimId;
       } catch {}
     }
+  }
+  if (event.type === "message_end" && event.message?.role === "assistant" && event.message?.usage) {
+    const u = event.message.usage;
+    totalInputTokens += u.input;
+    totalOutputTokens += u.output;
+    totalCacheReadTokens += u.cacheRead;
+    totalCacheWriteTokens += u.cacheWrite;
+    llmCallCount++;
+    console.log(`\n📊 [LLM call #${llmCallCount}] input=${u.input} output=${u.output} cache_read=${u.cacheRead} cache_write=${u.cacheWrite}`);
   }
   if (event.type === "error" || event.type === "message_error") {
     console.error(`\n❌ [${event.type}]`, JSON.stringify(event).slice(0, 500));
@@ -400,6 +414,26 @@ if (verification.count === testDocuments.length) {
   process.exit(1);
 }
 
+// ─── Token Usage Summary ──────────────────────────────────────────────────────
 console.log("\n" + "═".repeat(80));
+console.log("TOKEN USAGE SUMMARY");
+console.log("═".repeat(80));
+console.log(`LLM calls:        ${llmCallCount}`);
+console.log(`Input tokens:     ${totalInputTokens.toLocaleString()}`);
+console.log(`Output tokens:    ${totalOutputTokens.toLocaleString()}`);
+console.log(`Cache read:       ${totalCacheReadTokens.toLocaleString()}`);
+console.log(`Cache write:      ${totalCacheWriteTokens.toLocaleString()}`);
+console.log(`Total tokens:     ${(totalInputTokens + totalOutputTokens + totalCacheReadTokens + totalCacheWriteTokens).toLocaleString()}`);
+
+// Cost calculation (Gemini Flash 3 Preview pricing: $0.50/M input, $3/M output, $0.05/M cache read)
+const inputCost = (0.50 / 1_000_000) * totalInputTokens;
+const outputCost = (3.0 / 1_000_000) * totalOutputTokens;
+const cacheReadCost = (0.05 / 1_000_000) * totalCacheReadTokens;
+const totalCost = inputCost + outputCost + cacheReadCost;
+console.log(`\nEstimated cost:   $${totalCost.toFixed(4)}`);
+console.log(`  Input:          $${inputCost.toFixed(4)}`);
+console.log(`  Output:         $${outputCost.toFixed(4)}`);
+console.log(`  Cache read:     $${cacheReadCost.toFixed(4)}`);
+console.log("═".repeat(80));
 console.log("DONE");
 console.log("═".repeat(80));

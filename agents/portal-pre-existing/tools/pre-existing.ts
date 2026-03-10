@@ -33,7 +33,7 @@ const FETCH_CLAIM_HISTORY_QUERY = `
         id: { _neq: $excludeId }
         deletedAt: { _is_null: true }
       }
-      orderBy: [{ createdAt: Desc }]
+      order_by: [{ createdAt: Desc }]
       limit: 50
     ) {
       id

@@ -1,24 +1,7 @@
 import type { AgentTool } from "@mariozechner/pi-agent-core";
 import { Type } from "@mariozechner/pi-ai";
-import { graphql } from "@papaya/graphql/sdk";
 
-import { getClient } from "../graphql-client.ts";
-
-const client = getClient();
-
-const MedicalProviderDocument = graphql(`
-  query MedicalProviderV2($where: mp_medical_providers_bool_exp!) {
-    mp_medical_providers(where: $where) { id name address }
-  }
-`);
-
-const MedicalProvidersDocument = graphql(`
-  query MedicalProvidersV2($where: mp_medical_providers_bool_exp, $limit: Int!, $offset: Int!) {
-    mp_medical_providers(where: $where, limit: $limit, offset: $offset, order_by: [{ claim_cases_aggregate: { count: desc } }]) {
-      id name address
-    }
-  }
-`);
+import { gqlQuery } from "../graphql-client.ts";
 
 export const medicalProviderTool: AgentTool = {
   name: "medicalProvider",
@@ -29,12 +12,18 @@ export const medicalProviderTool: AgentTool = {
     address: Type.String({ description: "The address of the medical provider" }),
   }),
   execute: async (toolCallId, { name, address }) => {
-    const { data } = await client.query({
-      query: MedicalProviderDocument,
-      variables: { where: { address: { _ilike: `%${address}%` }, name: { _ilike: `%${name}%` } } },
-    });
+    const data = await gqlQuery<{ mpMedicalProviders: any[] }>(
+      `query MedicalProvider($where: MpMedicalProvidersBoolExp!) {
+        mpMedicalProviders(where: $where) { medicalProviderId name address }
+      }`,
+      { where: { address: { _ilike: `%${address}%` }, name: { _ilike: `%${name}%` } } },
+    );
+
+    const mapped = {
+      mp_medical_providers: data.mpMedicalProviders?.map((p: any) => ({ ...p, id: p.medicalProviderId })),
+    };
     return {
-      content: [{ type: "text", text: JSON.stringify(data) }],
+      content: [{ type: "text", text: JSON.stringify(mapped) }],
       details: { name, address },
     };
   },
@@ -62,12 +51,20 @@ export const medicalProvidersTool: AgentTool = {
     }),
   }),
   execute: async (toolCallId, { limit, offset, where }) => {
-    const { data } = await client.query({
-      query: MedicalProvidersDocument,
-      variables: { limit, offset, where: { ...where, deleted_at: { _is_null: true } } },
-    });
+    const data = await gqlQuery<{ mpMedicalProviders: any[] }>(
+      `query MedicalProviders($where: MpMedicalProvidersBoolExp, $limit: Int!, $offset: Int!) {
+        mpMedicalProviders(where: $where, limit: $limit, offset: $offset) {
+          medicalProviderId name address
+        }
+      }`,
+      { limit, offset, where },
+    );
+
+    const mapped = {
+      mp_medical_providers: data.mpMedicalProviders?.map((p: any) => ({ ...p, id: p.medicalProviderId })),
+    };
     return {
-      content: [{ type: "text", text: JSON.stringify(data) }],
+      content: [{ type: "text", text: JSON.stringify(mapped) }],
       details: { limit, offset },
     };
   },

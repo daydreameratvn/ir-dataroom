@@ -3,7 +3,7 @@ import { Agent } from "@mariozechner/pi-agent-core";
 import type { ImageContent } from "@mariozechner/pi-ai";
 import dedent from "dedent";
 
-import { bedrockSonnet } from "../shared/model.ts";
+import { geminiFlash } from "../shared/model.ts";
 import { insuredTool, icdTool, medicalProviderTool, medicalProvidersTool } from "../shared/tools/index.ts";
 import {
   banksTool,
@@ -138,7 +138,7 @@ export async function createClaimSubmissionAgent({
   const agent = new Agent({
     initialState: {
       systemPrompt,
-      model: bedrockSonnet,
+      model: geminiFlash,
       tools: [
         findInsuredTool,
         insuredTool,
