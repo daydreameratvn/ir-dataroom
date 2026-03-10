@@ -9,6 +9,7 @@ import {
   banksTool,
   verifyBankAccountTool,
   findInsuredTool,
+  updateCertificatePhoneTool,
   lastBankInfoTool,
   saveAssessedDiagnosesTool,
   sendOtpTool,
@@ -74,9 +75,11 @@ export async function createClaimSubmissionAgent({
     : "";
 
   const hasDocuments = documents.length > 0;
-  const documentUploadInstruction = hasDocuments
+  const uploadStep = hasDocuments
     ? `\n      7. After EACH claim is submitted, call uploadDocuments with the claimCaseId to attach documents.`
     : "";
+  const diagnoseStep = hasDocuments ? "8" : "7";
+  const summaryStep = hasDocuments ? "9" : "8";
 
   const systemPrompt = dedent`
     **Role**:
@@ -110,15 +113,41 @@ export async function createClaimSubmissionAgent({
 
     **Document Pages**: The uploaded documents have ${effectivePageCount} pages (0-indexed).
 
-    **Submission Order** (ALWAYS complete steps 1-5 in a SINGLE turn — do NOT stop and wait for user confirmation):
+    **Submission Order** (ALWAYS complete steps 1-4 in a SINGLE turn — do NOT stop and wait for user confirmation):
       1. Analyze ALL documents and identify ALL claim groups.
       2. For EACH unique insured person, call findInsured ONCE to look up by name, phone, or CCCD/CMND.
       3. For found certificates, call lastBankInfo to auto-retrieve previously used bank account.
       4. Determine ICD-10 codes from the diagnosis and call \`icd\` to get their UUIDs.
-      5. Send OTP ONCE (call sendOtp with the insured person's email or phone). STOP and wait for user to provide the OTP code.
-      6. After the user provides the OTP, submit claims one by one using submitClaim — include \`icdCodeIds\`.${documentUploadInstruction}
-      ${hasDocuments ? "8. After uploading documents, call saveAssessedDiagnoses with the ICD UUIDs and claim case ID." : "7. After submitClaim, call saveAssessedDiagnoses with the ICD UUIDs and claim case ID."}
-      ${hasDocuments ? "9" : "8"}. After ALL claims are submitted, provide a final summary.
+      5. Check the OTP requirements from findInsured (see **OTP Verification** below). Handle accordingly.
+      6. Submit claims one by one using submitClaim — include \`icdCodeIds\`.${uploadStep}
+      ${diagnoseStep}. After submitClaim (and uploadDocuments if applicable), call saveAssessedDiagnoses with the ICD UUIDs and claim case ID.
+      ${summaryStep}. After ALL claims are submitted, provide a final summary.
+
+    **OTP Verification** (CRITICAL — determine from findInsured response):
+      The findInsured response includes these fields per certificate: "requiresOtp", "requiresInsuredPersonOtp", and "otpPhone".
+
+      **Case 1: requiresOtp is false** → No OTP needed. Skip sendOtp entirely. Submit claims WITHOUT otp/recipient fields.
+
+      **Case 2: requiresOtp is true AND requiresInsuredPersonOtp is false** (standard OTP):
+        - Use the insured person's EMAIL to send OTP. Get it from findInsured: "insuredPerson.email" or the certificate "email" field.
+        - Call sendOtp with that email. Do NOT ask the user for a phone number.
+        - STOP and wait for user to provide the OTP code.
+        - The "recipient" in submitClaim must be the same email used in sendOtp.
+
+      **Case 3: requiresInsuredPersonOtp is true** (insured person OTP — e.g. DBV insurer):
+        - OTP MUST be sent to the INSURED PERSON's phone number, NOT email.
+        - Check the "otpPhone" field:
+          - If "otpPhone" has a value: call sendOtp with ONLY that phone number (not email). STOP and wait for user to provide OTP.
+          - If "otpPhone" is null (phone is missing):
+            a. Ask the user in Vietnamese: "Chúng tôi không tìm thấy số điện thoại của người được bảo hiểm. Vui lòng cung cấp số điện thoại để xác thực OTP."
+            b. STOP and wait for user response. Do NOT call any other tools.
+            c. When user provides a phone number, call updateCertificatePhone to save it, then call sendOtp with that phone.
+            d. STOP and wait for user to provide OTP.
+        - The "recipient" in submitClaim must be the same phone used in sendOtp.
+
+      **OTP Reuse**:
+        - Call sendOtp exactly ONCE per session. Reuse the same OTP code and recipient for all submitClaim calls.
+        - Only re-send if a submitClaim fails with an OTP-related error (e.g., expired).
 
     **Rules**:
       - NEVER submit a claim without a valid insured certificate ID
@@ -141,6 +170,7 @@ export async function createClaimSubmissionAgent({
       model: geminiFlash,
       tools: [
         findInsuredTool,
+        updateCertificatePhoneTool,
         insuredTool,
         lastBankInfoTool,
         banksTool,

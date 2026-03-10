@@ -3,19 +3,102 @@ import { Type } from "@mariozechner/pi-ai";
 
 import { appleQuery } from "../../shared/graphql-client.ts";
 
+const SUBMIT_CLAIM_MUTATION = `mutation SubmitClaim(
+  $insuredCertificateId: ID!
+  $benefitType: String!
+  $requestAmount: Int!
+  $physicalExaminationDate: String
+  $diagnosis: String
+  $treatmentMethod: String
+  $icdCodeIds: [UUID!]
+  $medicalProviderId: ID
+  $medicalProviderName: String
+  $bankId: ID
+  $paymentAccountName: String
+  $paymentAccountNumber: String
+  $paymentBankName: String
+  $source: String
+) {
+  submitClaim(
+    insuredCertificateId: $insuredCertificateId
+    benefitType: $benefitType
+    requestAmount: $requestAmount
+    physicalExaminationDate: $physicalExaminationDate
+    diagnosis: $diagnosis
+    treatmentMethod: $treatmentMethod
+    icdCodeIds: $icdCodeIds
+    medicalProviderId: $medicalProviderId
+    medicalProviderName: $medicalProviderName
+    bankId: $bankId
+    paymentAccountName: $paymentAccountName
+    paymentAccountNumber: $paymentAccountNumber
+    paymentBankName: $paymentBankName
+    source: $source
+  ) {
+    success
+    message
+    claimId
+    claim { id code }
+  }
+}`;
+
+const SUBMIT_CLAIM_WITH_OTP_MUTATION = `mutation SubmitClaimWithOtp(
+  $insuredCertificateId: ID!
+  $benefitType: String!
+  $requestAmount: Int!
+  $otp: String!
+  $recipient: String!
+  $physicalExaminationDate: String
+  $diagnosis: String
+  $treatmentMethod: String
+  $icdCodeIds: [UUID!]
+  $medicalProviderId: ID
+  $medicalProviderName: String
+  $bankId: ID
+  $paymentAccountName: String
+  $paymentAccountNumber: String
+  $paymentBankName: String
+  $source: String
+) {
+  submitClaimWithOtp(
+    insuredCertificateId: $insuredCertificateId
+    benefitType: $benefitType
+    requestAmount: $requestAmount
+    otp: $otp
+    recipient: $recipient
+    physicalExaminationDate: $physicalExaminationDate
+    diagnosis: $diagnosis
+    treatmentMethod: $treatmentMethod
+    icdCodeIds: $icdCodeIds
+    medicalProviderId: $medicalProviderId
+    medicalProviderName: $medicalProviderName
+    bankId: $bankId
+    paymentAccountName: $paymentAccountName
+    paymentAccountNumber: $paymentAccountNumber
+    paymentBankName: $paymentBankName
+    source: $source
+  ) {
+    success
+    message
+    claimId
+    claim { id code }
+  }
+}`;
+
 // Custom action — must stay on Apple v2
 export const submitClaimTool: AgentTool = {
   name: "submitClaim",
   label: "Submit Claim",
   description:
-    "Submit an insurance claim with OTP verification. Returns the new claim case ID and code. " +
+    "Submit an insurance claim. If OTP is required (from findInsured response), include otp and recipient. " +
+    "If requiresOtp is false, omit otp and recipient. " +
     "IMPORTANT: After this succeeds, you MUST call uploadDocuments to attach documents to the claim.",
   parameters: Type.Object({
     insuredCertificateId: Type.String({ description: "The insured certificate ID" }),
     benefitType: Type.String({ description: "Benefit type: OutPatient or InPatient" }),
     requestAmount: Type.Number({ description: "Request amount in VND" }),
-    otp: Type.String({ description: "OTP code provided by the user" }),
-    recipient: Type.String({ description: "The email or phone that received the OTP" }),
+    otp: Type.Optional(Type.String({ description: "OTP code — required only when requiresOtp is true" })),
+    recipient: Type.Optional(Type.String({ description: "The email or phone that received the OTP — required only when otp is provided" })),
     physicalExaminationDate: Type.Optional(Type.String({ description: "Date of examination (YYYY-MM-DD)" })),
     diagnosis: Type.Optional(Type.String({ description: "Diagnosis text" })),
     treatmentMethod: Type.Optional(Type.String({ description: "Treatment method" })),
@@ -29,70 +112,34 @@ export const submitClaimTool: AgentTool = {
   }),
   execute: async (toolCallId, params: any) => {
     try {
-      const data = await appleQuery<{ submitClaimWithOtp: any }>(
-        `mutation SubmitClaimWithOtp(
-          $insuredCertificateId: ID!
-          $benefitType: String!
-          $requestAmount: Int!
-          $otp: String!
-          $recipient: String!
-          $physicalExaminationDate: String
-          $diagnosis: String
-          $treatmentMethod: String
-          $icdCodeIds: [UUID!]
-          $medicalProviderId: ID
-          $medicalProviderName: String
-          $bankId: ID
-          $paymentAccountName: String
-          $paymentAccountNumber: String
-          $paymentBankName: String
-          $source: String
-        ) {
-          submitClaimWithOtp(
-            insuredCertificateId: $insuredCertificateId
-            benefitType: $benefitType
-            requestAmount: $requestAmount
-            otp: $otp
-            recipient: $recipient
-            physicalExaminationDate: $physicalExaminationDate
-            diagnosis: $diagnosis
-            treatmentMethod: $treatmentMethod
-            icdCodeIds: $icdCodeIds
-            medicalProviderId: $medicalProviderId
-            medicalProviderName: $medicalProviderName
-            bankId: $bankId
-            paymentAccountName: $paymentAccountName
-            paymentAccountNumber: $paymentAccountNumber
-            paymentBankName: $paymentBankName
-            source: $source
-          ) {
-            success
-            message
-            claimId
-            claim { id code }
-          }
-        }`,
-        {
-          insuredCertificateId: params.insuredCertificateId,
-          benefitType: params.benefitType,
-          requestAmount: Math.round(params.requestAmount),
-          otp: params.otp,
-          recipient: params.recipient,
-          physicalExaminationDate: params.physicalExaminationDate,
-          diagnosis: params.diagnosis,
-          treatmentMethod: params.treatmentMethod,
-          icdCodeIds: params.icdCodeIds,
-          medicalProviderId: params.medicalProviderId,
-          medicalProviderName: params.medicalProviderName,
-          bankId: params.bankId,
-          paymentAccountName: params.paymentAccountName,
-          paymentAccountNumber: params.paymentAccountNumber,
-          paymentBankName: params.paymentBankName,
-          source: "AGENT_CARE_APP",
-        },
-      );
+      const useOtp = params.otp && params.recipient;
+      const mutation = useOtp ? SUBMIT_CLAIM_WITH_OTP_MUTATION : SUBMIT_CLAIM_MUTATION;
 
-      const result = data?.submitClaimWithOtp;
+      const variables: Record<string, unknown> = {
+        insuredCertificateId: params.insuredCertificateId,
+        benefitType: params.benefitType,
+        requestAmount: Math.round(params.requestAmount),
+        physicalExaminationDate: params.physicalExaminationDate,
+        diagnosis: params.diagnosis,
+        treatmentMethod: params.treatmentMethod,
+        icdCodeIds: params.icdCodeIds,
+        medicalProviderId: params.medicalProviderId,
+        medicalProviderName: params.medicalProviderName,
+        bankId: params.bankId,
+        paymentAccountName: params.paymentAccountName,
+        paymentAccountNumber: params.paymentAccountNumber,
+        paymentBankName: params.paymentBankName,
+        source: "AGENT_CARE_APP",
+      };
+
+      if (useOtp) {
+        variables.otp = params.otp;
+        variables.recipient = params.recipient;
+      }
+
+      const data = await appleQuery<Record<string, any>>(mutation, variables);
+
+      const result = useOtp ? data?.submitClaimWithOtp : data?.submitClaim;
       return {
         content: [{ type: "text", text: JSON.stringify(result) }],
         details: {

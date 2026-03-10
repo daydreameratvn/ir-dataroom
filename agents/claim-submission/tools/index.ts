@@ -1,5 +1,5 @@
 export { banksTool, verifyBankAccountTool } from "./banks.ts";
-export { findInsuredTool } from "./find-insured.ts";
+export { findInsuredTool, updateCertificatePhoneTool } from "./find-insured.ts";
 export { lastBankInfoTool } from "./last-bank-info.ts";
 export { sendOtpTool } from "./otp.ts";
 export { saveAssessedDiagnosesTool } from "./save-assessed-diagnoses.ts";
