@@ -14,18 +14,18 @@ const mockListClaims = vi.fn();
 const mockGetClaim = vi.fn();
 
 vi.mock('@papaya/phoenix', () => ({
-  PhoenixClient: vi.fn().mockImplementation(() => ({
-    login: mockLogin,
-    setToken: mockSetToken,
-    setTenantId: mockSetTenantId,
-    listClaims: mockListClaims,
-    getClaim: mockGetClaim,
-    refreshToken: vi.fn(),
-    submitClaim: vi.fn(),
-    uploadDocument: vi.fn(),
-    requestOtp: vi.fn(),
-    verifyOtp: vi.fn(),
-  })),
+  PhoenixClient: class {
+    login = mockLogin;
+    setToken = mockSetToken;
+    setTenantId = mockSetTenantId;
+    listClaims = mockListClaims;
+    getClaim = mockGetClaim;
+    refreshToken = vi.fn();
+    submitClaim = vi.fn();
+    uploadDocument = vi.fn();
+    requestOtp = vi.fn();
+    verifyOtp = vi.fn();
+  },
 }));
 
 // ---------------------------------------------------------------------------

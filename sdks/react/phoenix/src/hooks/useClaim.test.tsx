@@ -9,18 +9,18 @@ import { useClaim } from './useClaim';
 // ---------------------------------------------------------------------------
 
 vi.mock('@papaya/phoenix', () => ({
-  PhoenixClient: vi.fn().mockImplementation(() => ({
-    login: vi.fn(),
-    setToken: vi.fn(),
-    setTenantId: vi.fn(),
-    listClaims: vi.fn(),
-    getClaim: vi.fn(),
-    refreshToken: vi.fn(),
-    submitClaim: vi.fn(),
-    uploadDocument: vi.fn(),
-    requestOtp: vi.fn(),
-    verifyOtp: vi.fn(),
-  })),
+  PhoenixClient: class {
+    login = vi.fn();
+    setToken = vi.fn();
+    setTenantId = vi.fn();
+    listClaims = vi.fn();
+    getClaim = vi.fn();
+    refreshToken = vi.fn();
+    submitClaim = vi.fn();
+    uploadDocument = vi.fn();
+    requestOtp = vi.fn();
+    verifyOtp = vi.fn();
+  },
 }));
 
 // ---------------------------------------------------------------------------
