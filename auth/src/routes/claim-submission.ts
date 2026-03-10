@@ -5,6 +5,7 @@ import {
   handleSendMessage,
   handleGetSession,
 } from "../../../agents/claim-submission/handler.ts";
+import { generateUploadUrls } from "../services/claim-upload-s3.ts";
 
 const claimSubmission = new Hono();
 
@@ -85,6 +86,26 @@ claimSubmission.get("/claim-submission/sessions/:id", async (c) => {
       { error: err instanceof Error ? err.message : "Failed to get session" },
       500,
     );
+  }
+});
+
+// ─── Upload Documents ────────────────────────────────────────────────────────
+
+claimSubmission.post("/claim-submission/uploads", async (c) => {
+  try {
+    const body = await c.req.json();
+
+    if (!body.files || !Array.isArray(body.files) || body.files.length === 0) {
+      return c.json({ error: "files array is required" }, 400);
+    }
+
+    const result = await generateUploadUrls(body.files);
+    return c.json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to generate upload URLs";
+    const status = message.includes("Unsupported") || message.includes("Maximum") ? 400 : 500;
+    if (status === 500) console.error("[claim-submission] Upload error:", err);
+    return c.json({ error: message }, status);
   }
 });
 
