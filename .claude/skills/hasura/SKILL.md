@@ -15,7 +15,7 @@ Conventions for database schema, HML metadata, and permissions in Banyan.
 
 **Architecture**: Hasura DDN Cloud (managed v3) with NDC PostgreSQL connector (`banyan_pg`). Metadata is HML (YAML) files in `hasura/ddn/app/metadata/`. Migrations use dbmate (raw SQL). See `hasura/CLAUDE.md` for commands, file structure, and migration rules.
 
-**DDN Cloud**: Project `banyan-prod` at `https://banyan-prod.ddn.hasura.app/graphql`. Auth via JWT HS256 Bearer tokens.
+**DDN Cloud**: Project `banyan-prod` at `https://banyan.services.papaya.asia/graphql`. Auth via JWT HS256 Bearer tokens.
 
 ## DB Connection
 
@@ -287,7 +287,7 @@ Verify on the DDN Cloud console: `https://console.hasura.io/project/banyan-prod`
 
 Test the new table via GraphQL:
 ```bash
-curl -s https://banyan-prod.ddn.hasura.app/graphql \
+curl -s https://banyan.services.papaya.asia/graphql \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <jwt-token>" \
   -d '{"query":"{ <newTable>(limit: 5) { id } }"}'

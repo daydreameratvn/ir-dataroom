@@ -125,7 +125,7 @@ export const banyanNlbEndpointParam = new aws.ssm.Parameter("banyan-prod-nlb-rds
 export const banyanDdnEndpointParam = new aws.ssm.Parameter("banyan-prod-ddn-endpoint", {
   name: "/banyan/hasura/ddn-cloud-endpoint",
   type: "String",
-  value: "https://banyan-prod.ddn.hasura.app/graphql",
+  value: "https://banyan.services.papaya.asia/graphql",
   description: "DDN Cloud GraphQL API endpoint for agents and frontend",
   tags: mergeTags({
     Name: "banyan-prod-ddn-endpoint",

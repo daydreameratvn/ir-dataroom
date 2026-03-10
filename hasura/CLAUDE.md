@@ -134,7 +134,7 @@ deleted_by   uuid        REFERENCES users(id)
 ## DDN Cloud
 
 - **Project**: `banyan-prod`
-- **API URL**: `https://banyan-prod.ddn.hasura.app/graphql`
+- **API URL**: `https://banyan.services.papaya.asia/graphql`
 - **Console**: `https://console.hasura.io/project/banyan-prod`
 - **Auth**: JWT HS256 via `Authorization: Bearer <token>` header
 

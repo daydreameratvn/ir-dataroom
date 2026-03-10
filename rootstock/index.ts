@@ -34,7 +34,7 @@ export const stackOutputs = {
   VpcId: resources.banyanVpc.id,
   AlbDnsName: resources.banyanAlb.dnsName,
   NlbDnsName: resources.banyanNlb.dnsName,
-  DdnCloudEndpoint: "https://banyan-prod.ddn.hasura.app/graphql",
+  DdnCloudEndpoint: "https://banyan.services.papaya.asia/graphql",
   RdsEndpoint: resources.banyanDb.endpoint,
   SecretArn: resources.banyanDbSecret.arn,
 
