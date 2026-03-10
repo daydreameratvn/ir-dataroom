@@ -1,0 +1,15 @@
+services:
+  app_phoenix_ts:
+    build:
+      context: .
+      dockerfile: .hasura-connector/Dockerfile
+    environment:
+      PHOENIX_AUTH_SERVICE_URL: $APP_PHOENIX_TS_AUTH_SERVICE_URL
+      HASURA_CONNECTOR_PORT: $APP_PHOENIX_TS_HASURA_CONNECTOR_PORT
+      HASURA_SERVICE_TOKEN_SECRET: $APP_PHOENIX_TS_HASURA_SERVICE_TOKEN_SECRET
+      OTEL_EXPORTER_OTLP_ENDPOINT: $APP_PHOENIX_TS_OTEL_EXPORTER_OTLP_ENDPOINT
+      OTEL_SERVICE_NAME: $APP_PHOENIX_TS_OTEL_SERVICE_NAME
+    extra_hosts:
+      - local.hasura.dev:host-gateway
+    ports:
+      - 5793:8080
