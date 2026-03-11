@@ -71,15 +71,17 @@ async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
     const message = (body as Record<string, unknown>).error;
+    const detail = (body as Record<string, unknown>).detail;
 
     if (!message && response.status >= 500) {
       throw new ApiError('Service unavailable — please try again later', response.status);
     }
 
-    throw new ApiError(
-      String(message ?? `Request failed (${response.status})`),
-      response.status,
-    );
+    // Include detail if present (e.g., DB error info for admin debugging)
+    const fullMessage = detail
+      ? `${message}: ${detail}`
+      : String(message ?? `Request failed (${response.status})`);
+    throw new ApiError(fullMessage, response.status);
   }
   // Guard against non-JSON responses (e.g., CloudFront returning HTML for 403/404)
   const ct = response.headers.get('content-type') ?? '';

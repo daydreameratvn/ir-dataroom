@@ -170,29 +170,53 @@ export async function createDocument(
   tenantId: string,
   roundId: string,
   data: CreateDocumentData,
-  userId: string
+  userId: string | null
 ): Promise<{ id: string }> {
-  const result = await query<{ id: string }>(
-    `INSERT INTO ir_documents (tenant_id, round_id, name, description, category, mime_type, file_size_bytes, s3_key, s3_bucket, sort_order, watermark_enabled, created_by, updated_by)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $12)
-     RETURNING id`,
-    [
-      tenantId,
-      roundId,
-      data.name,
-      data.description ?? null,
-      data.category ?? "other",
-      data.mimeType ?? null,
-      data.fileSizeBytes ?? null,
-      data.s3Key ?? null,
-      data.s3Bucket ?? null,
-      data.sortOrder ?? 0,
-      data.watermarkEnabled ?? true,
-      userId,
-    ]
-  );
+  const params = [
+    tenantId,
+    roundId,
+    data.name,
+    data.description ?? null,
+    data.category ?? "other",
+    data.mimeType ?? null,
+    data.fileSizeBytes ?? null,
+    data.s3Key ?? null,
+    data.s3Bucket ?? null,
+    data.sortOrder ?? 0,
+    data.watermarkEnabled ?? true,
+    userId,
+  ];
 
-  return { id: result.rows[0]!.id };
+  // Retry once on transient DB errors (connection reset, timeout)
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const result = await query<{ id: string }>(
+        `INSERT INTO ir_documents (tenant_id, round_id, name, description, category, mime_type, file_size_bytes, s3_key, s3_bucket, sort_order, watermark_enabled, created_by, updated_by)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $12)
+         RETURNING id`,
+        params
+      );
+      return { id: result.rows[0]!.id };
+    } catch (err) {
+      if (attempt === 0 && isTransientDbError(err)) {
+        await new Promise((r) => setTimeout(r, 500));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error("createDocument: max retries exceeded");
+}
+
+function isTransientDbError(err: unknown): boolean {
+  if (!(err instanceof Error)) return false;
+  const msg = err.message.toLowerCase();
+  return (
+    msg.includes("connection") ||
+    msg.includes("timeout") ||
+    msg.includes("econnreset") ||
+    msg.includes("terminating connection")
+  );
 }
 
 export interface UpdateDocumentData {

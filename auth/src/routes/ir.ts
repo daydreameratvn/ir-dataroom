@@ -457,18 +457,23 @@ ir.post("/ir/rounds/:id/documents", async (c) => {
     return c.json({ error: "Round not found" }, 404);
   }
 
+  // Validate user exists in users table (avoids FK violation on created_by)
+  const userCheck = await query(`SELECT 1 FROM users WHERE id = $1`, [user.sub]);
+  const creatorId = userCheck.rows.length > 0 ? user.sub : null;
+
   // Step 1: Create document record (DB only, no S3)
   let result: { id: string };
   try {
-    result = await createDocument(tenantId, roundId, body, user.sub);
+    result = await createDocument(tenantId, roundId, body, creatorId);
   } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err);
     console.error("[IR API] DB error creating document:", {
-      error: err instanceof Error ? err.message : String(err),
+      error: detail,
       tenantId,
       roundId,
       userId: user.sub,
     });
-    return c.json({ error: "Failed to create document" }, 500);
+    return c.json({ error: "Failed to create document", detail }, 500);
   }
 
   // Step 2: Best-effort presigned URL — S3 failures never block creation.
