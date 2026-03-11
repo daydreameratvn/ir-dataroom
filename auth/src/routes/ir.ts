@@ -146,6 +146,20 @@ const ir = new Hono<{
   };
 }>();
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Validate that a user ID exists in the users table.
+ * Returns the userId if valid, or null if not found.
+ * Prevents FK violations on created_by / updated_by columns.
+ */
+async function getValidUserId(userSub: string): Promise<string | null> {
+  const result = await query(`SELECT 1 FROM users WHERE id = $1`, [userSub]);
+  return result.rows.length > 0 ? userSub : null;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // ADMIN ROUTES — catch-all: every /ir/* route requires auth + admin,
 // EXCEPT /ir/portal/* which uses investor auth (declared further below).
@@ -457,9 +471,7 @@ ir.post("/ir/rounds/:id/documents", async (c) => {
     return c.json({ error: "Round not found" }, 404);
   }
 
-  // Validate user exists in users table (avoids FK violation on created_by)
-  const userCheck = await query(`SELECT 1 FROM users WHERE id = $1`, [user.sub]);
-  const creatorId = userCheck.rows.length > 0 ? user.sub : null;
+  const creatorId = await getValidUserId(user.sub);
 
   // Step 1: Create document record (DB only, no S3)
   let result: { id: string };
@@ -533,6 +545,7 @@ ir.post("/ir/documents/:id/upload", async (c) => {
     });
 
     // Update document with S3 metadata
+    const validUserId = await getValidUserId(user.sub);
     await updateDocument(
       id,
       {
@@ -541,13 +554,14 @@ ir.post("/ir/documents/:id/upload", async (c) => {
         mimeType,
         fileSizeBytes: buffer.length,
       },
-      user.sub
+      validUserId
     );
 
     return c.json({ success: true, s3Key: s3Result.s3Key });
   } catch (err) {
-    console.error("[IR API] Error uploading file:", err);
-    return c.json({ error: "Failed to upload file" }, 500);
+    const detail = err instanceof Error ? err.message : String(err);
+    console.error("[IR API] Error uploading file:", { error: detail, docId: id, userId: user.sub });
+    return c.json({ error: "Failed to upload file", detail }, 500);
   }
 });
 

@@ -234,7 +234,7 @@ export interface UpdateDocumentData {
 export async function updateDocument(
   id: string,
   data: UpdateDocumentData,
-  userId: string
+  userId: string | null
 ): Promise<Document | null> {
   const setClauses: string[] = ["updated_at = now()", "updated_by = $2"];
   const params: unknown[] = [id, userId];
