@@ -451,40 +451,51 @@ ir.post("/ir/rounds/:id/documents", async (c) => {
     return c.json({ error: "name is required" }, 400);
   }
 
+  // Validate round exists and belongs to this tenant
+  const round = await getRoundById(roundId);
+  if (!round || round.tenantId !== tenantId) {
+    return c.json({ error: "Round not found" }, 404);
+  }
+
+  // Step 1: Create document record (DB only, no S3)
+  let result: { id: string };
   try {
-    const result = await createDocument(tenantId, roundId, body, user.sub);
-
-    // If mimeType is provided, generate a presigned upload URL (best-effort).
-    // S3 failures must not block document creation — the proxy upload
-    // endpoint (/ir/documents/:id/upload) handles S3 independently.
-    let uploadUrl: string | null = null;
-    if (body.mimeType && body.name) {
-      try {
-        const s3Result = await generateUploadUrl({
-          tenantId,
-          roundId,
-          docId: result.id,
-          fileName: body.name,
-          mimeType: body.mimeType,
-        });
-        uploadUrl = s3Result.uploadUrl;
-
-        // Update the document with S3 metadata
-        await updateDocument(
-          result.id,
-          { s3Key: s3Result.s3Key, s3Bucket: s3Result.s3Bucket },
-          user.sub
-        );
-      } catch (s3Err) {
-        console.warn("[IR API] Presigned URL generation failed (non-critical):", s3Err);
-      }
-    }
-
-    return c.json({ ...result, uploadUrl }, 201);
+    result = await createDocument(tenantId, roundId, body, user.sub);
   } catch (err) {
-    console.error("[IR API] Error creating document:", err);
+    console.error("[IR API] DB error creating document:", {
+      error: err instanceof Error ? err.message : String(err),
+      tenantId,
+      roundId,
+      userId: user.sub,
+    });
     return c.json({ error: "Failed to create document" }, 500);
   }
+
+  // Step 2: Best-effort presigned URL — S3 failures never block creation.
+  // The proxy upload endpoint (/ir/documents/:id/upload) handles S3 independently.
+  let uploadUrl: string | null = null;
+  if (body.mimeType && body.name) {
+    try {
+      const s3Result = await generateUploadUrl({
+        tenantId,
+        roundId,
+        docId: result.id,
+        fileName: body.name,
+        mimeType: body.mimeType,
+      });
+      uploadUrl = s3Result.uploadUrl;
+
+      await updateDocument(
+        result.id,
+        { s3Key: s3Result.s3Key, s3Bucket: s3Result.s3Bucket },
+        user.sub
+      );
+    } catch (s3Err) {
+      console.warn("[IR API] Presigned URL failed (non-critical):", s3Err);
+    }
+  }
+
+  return c.json({ ...result, uploadUrl }, 201);
 });
 
 // ── Document File Upload (proxy through server to avoid S3 CORS) ─────────
